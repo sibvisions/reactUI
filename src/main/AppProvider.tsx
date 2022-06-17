@@ -234,10 +234,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
                     }
                 }
+            }
 
-                if (contextState.server.wsPingInterval >= 0) {
-                    setInterval(() => ws.current?.send("PING"), contextState.server.wsPingInterval >= 10000 ? contextState.server.wsPingInterval : 10000);
-                }
+            if (contextState.server.wsPingInterval >= 0) {
+                setInterval(() => ws.current?.send("PING"), contextState.server.wsPingInterval >= 10000 ? contextState.server.wsPingInterval : 10000);
             }
         }
 

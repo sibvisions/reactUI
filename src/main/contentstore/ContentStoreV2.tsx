@@ -304,10 +304,4 @@ export default class ContentStoreV2 extends BaseContentStore {
         }
         return children;
     }
-
-    closeInternalFrame(props: IFrame) {
-        this.flatContent.delete(props.id)
-        this.removedContent.set(props.id, {...props})
-        this.subManager.parentSubscriber.get(props.parent as string)?.apply(undefined, []);
-    }
 }

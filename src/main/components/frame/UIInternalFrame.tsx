@@ -118,6 +118,15 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         }
     }
 
+    useLayoutEffect(() => {
+        if (rndRef.current) {
+            rndRef.current.setState({bounds: {
+                ...rndRef.current.state.bounds,
+                top: 0
+            }});
+        }
+    }, [])
+
     // When the frame has already initialised, props.pack is true and a pack-size has already been calculated, update the size of the window and send a boundsreq to the server
     useEffect(() => {
         if (!initFrame.current && rndRef.current && props.pack && packSize && context.contentStore.getComponentById(props.id)) {
@@ -265,7 +274,33 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                     ref={rndRef}
                     style={style as CSSProperties}
                     onResize={handleResize}
-                    bounds={props.modal ? "window" : "parent"}
+                    onDragStart={(event) => {
+                        if (rndRef.current) {
+                            console.log("dragstart")
+                            
+                            rndRef.current.setState({bounds: {
+                                top: 0,
+                                bottom: window.innerHeight,
+                                left: -100000,
+                                right: 100000
+                            }});
+                            event.stopPropagation();
+                        }
+
+
+                    }}
+                    onDrag={(event) => {
+                        if (rndRef.current) {
+                            rndRef.current.setState({bounds: {
+                                top: 0,
+                                bottom: window.innerHeight,
+                                left: -100000,
+                                right: 100000
+                            }});
+                        }
+                        
+                    }}
+                    bounds={"body"}
                     default={{
                         x: 0,
                         y: 0,

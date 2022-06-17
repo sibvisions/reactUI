@@ -97,7 +97,7 @@ const UIFrame: FC<IFrame> = (props) => {
                         onClick={() => {
                             const closeReq = createCloseFrameRequest();
                             closeReq.componentId = props.name;
-                            showTopBar(context.server.sendRequest(closeReq, props.modal ? REQUEST_KEYWORDS.CLOSE_CONTENT : REQUEST_KEYWORDS.CLOSE_FRAME), topbar).then(() => (context.contentStore as ContentStoreV2).closeInternalFrame(props));
+                            showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
                         }}
                     />}
                 </div>
