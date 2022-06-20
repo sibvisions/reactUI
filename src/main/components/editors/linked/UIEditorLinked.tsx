@@ -29,7 +29,7 @@ import Server from "../../../server/Server";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
 import ServerV2 from "../../../server/ServerV2";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
-import { MetaDataResponse } from "src/main/response";
+import type { MetaDataResponse } from "../../../response";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor{

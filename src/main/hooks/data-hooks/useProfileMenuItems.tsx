@@ -18,7 +18,7 @@ import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../AppProvider";
 import { createLogoutRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
-import { useTranslation } from "..";
+import useTranslation from "../app-hooks/useTranslation";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import { ApplicationSettingsResponse } from "../../response";
 import { LIB_VERSION } from "../../../version";

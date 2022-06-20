@@ -15,10 +15,10 @@
 
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
+import { useConstants, useEventHandler } from "../../main/hooks";
 import { appVersion } from "../../main/AppSettings";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { concatClassnames } from "../../main/util";
-import { useConstants, useEventHandler } from "../../moduleIndex";
 
 export type IServerFailMessage = {
     headerMessage:string,

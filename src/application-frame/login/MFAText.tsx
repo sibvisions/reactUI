@@ -16,10 +16,11 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import React, { CSSProperties, FC, useContext, useState } from "react";
+import { createCancelLoginRequest, createLoginRequest } from "../../main/factories/RequestFactory";
+import { useConstants } from "../../main/hooks";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { REQUEST_KEYWORDS } from "../../main/request";
-import { createCancelLoginRequest, createLoginRequest, useConstants } from "../../moduleIndex";
 import { LoginContext } from "./Login";
 import { ILoginForm } from "./LoginForm";
 

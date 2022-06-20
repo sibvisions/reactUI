@@ -21,6 +21,7 @@ const webpack = require('webpack');
 
 module.exports = () => {
     return {
+        mode: 'development',
         entry: './src/moduleIndex.ts',
         output: {
             filename: 'moduleIndex.js',
@@ -35,7 +36,7 @@ module.exports = () => {
             }),
             new CircularDependencyPlugin({
                 exclude: /a\.js|node_modules/,
-                include: /dir/,
+                include: /src/,
                 failOnError: true,
                 allowAsyncCycles: false,
                 cwd: process.cwd(),

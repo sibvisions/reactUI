@@ -15,11 +15,10 @@
 
 import React, { createContext, PropsWithChildren, FC, useContext, useCallback, useState, useRef, SyntheticEvent } from "react";
 import { ContextMenu } from 'primereact/contextmenu';
-import { createComponentRequest, getClientId } from "../../../moduleIndex";
 import BaseComponent from "../../util/types/BaseComponent";
 import { MenuItem } from "primereact/menuitem";
 import { parseIconData } from "../../components/comp-props";
-import { createDispatchActionRequest } from "../../factories/RequestFactory";
+import { createComponentRequest, createDispatchActionRequest, getClientId } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
 import { appContext } from "../../AppProvider";
 

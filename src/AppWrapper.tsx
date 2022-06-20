@@ -17,7 +17,6 @@ import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } f
 import { Helmet } from "react-helmet";
 import TopBar, { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
 import UIToast from './main/components/toast/UIToast';
-import { createOpenScreenRequest, IPanel, useConfirmDialogProps } from "./moduleIndex";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import ErrorBar from "./application-frame/error-bar/ErrorBar";
@@ -27,6 +26,9 @@ import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { REQUEST_KEYWORDS } from "./main/request";
 import { appContext } from "./main/AppProvider";
 import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
+import { useConfirmDialogProps } from "./main/hooks";
+import { createOpenScreenRequest } from "./main/factories/RequestFactory";
+import { IPanel } from "./main/components/panels";
 interface IAppWrapper {
     embedOptions?: { [key:string]:any }
     theme?:string

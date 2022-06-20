@@ -14,7 +14,10 @@
  */
 
 import { CSSProperties, useMemo } from "react";
-import { useCellEditorStyle, useComponentConstants, useMetaData, useRowSelect } from "..";
+import useRowSelect from "../data-hooks/useRowSelect";
+import useMetaData from "../data-hooks/useMetaData";
+import useComponentConstants from "../components-hooks/useComponentConstants";
+import useCellEditorStyle from "../style-hooks/useCellEditorStyle";
 import { AppContextType } from "../../AppProvider";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
 //import { CELLEDITOR_CLASSNAMES } from "../../components/editors";

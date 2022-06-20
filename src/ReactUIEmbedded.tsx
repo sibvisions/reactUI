@@ -21,7 +21,7 @@ import { Login } from "./application-frame/login";
 import LoadingScreen from './application-frame/loading/Loadingscreen';
 import { ICustomContent } from "./MiddleMan";
 import AppWrapper from "./AppWrapper";
-import { appContext } from "./moduleIndex";
+import { appContext } from "./main/AppProvider";
 
 /**
  * This component manages the start and routing of the application, if the application is started embedded.

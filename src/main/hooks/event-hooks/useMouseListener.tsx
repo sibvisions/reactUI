@@ -14,7 +14,7 @@
  */
 
 import { useContext, useRef } from "react";
-import { useEventHandler } from "..";
+import useEventHandler from "../event-hooks/useEventHandler";
 import { appContext } from "../../AppProvider";
 import { createMouseClickedRequest, createMouseRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";

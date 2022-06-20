@@ -20,7 +20,6 @@ import ContentStore from "./contentstore/ContentStore";
 import { SubscriptionManager } from "./SubscriptionManager";
 import API from "./API";
 import AppSettings, { appVersion } from "./AppSettings";
-import { createAliveRequest, createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId, useEventHandler } from "../moduleIndex";
 import { addCSSDynamically, Timer } from "./util";
 import { ICustomContent } from "../MiddleMan";
 import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "./request";
@@ -28,6 +27,8 @@ import { showTopBar, TopBarContext } from "./components/topbar/TopBar";
 import ContentStoreV2 from "./contentstore/ContentStoreV2";
 import ServerV2 from "./server/ServerV2";
 import { RESPONSE_NAMES } from "./response";
+import { createAliveRequest, createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./factories/RequestFactory";
+import useEventHandler from "./hooks/event-hooks/useEventHandler";
 
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreV2): contentStore is ContentStore {
     return (contentStore as ContentStore).menuItems !== undefined;

@@ -27,8 +27,8 @@ import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel"
 import { IToolBarHelper } from "../components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { componentHandler } from "../factories/UIFactory";
-import { IPanel } from "../../moduleIndex";
 import { IChangedColumns } from "../response/data/DataProviderChangedResponse";
+import { IPanel } from "../components/panels";
 
 export type ActiveScreen = {
     name: string,

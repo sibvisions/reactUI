@@ -13,13 +13,13 @@
  * the License.
  */
 
-import { IPanel } from "../../moduleIndex";
 import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import { SubscriptionManager } from "../SubscriptionManager";
 import { isWorkScreen } from "../util";
 import BaseComponent from "../util/types/BaseComponent";
+import { IPanel } from "../components/panels";
 
 export default class ContentStoreV2 extends BaseContentStore {
     /** subscriptionManager instance */

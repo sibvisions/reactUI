@@ -17,11 +17,12 @@ import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
 import React, { CSSProperties, FC, FormEvent, useContext, useEffect, useState } from "react";
+import { createLoginRequest } from "../../main/factories/RequestFactory";
+import { useConstants } from "../../main/hooks";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { REQUEST_KEYWORDS } from "../../main/request";
 import { concatClassnames } from "../../main/util";
-import { createLoginRequest, useConstants } from "../../moduleIndex";
 import ChangePasswordDialog from "../change-password/ChangePasswordDialog";
 import { LoginContext } from "./Login";
 
