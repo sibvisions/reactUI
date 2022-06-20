@@ -52,7 +52,8 @@ export type AppContextType = {
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
-    appReady: boolean
+    appReady: boolean,
+    launcherReady: boolean
 }
 
 /** Contentstore instance */
@@ -537,6 +538,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.server = new ServerV2(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);
+                contextState.launcherReady = false;
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);

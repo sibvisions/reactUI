@@ -143,6 +143,7 @@
                 height: var(--iconHeight);
                 display: inline-block;
                 background-image: var(--iconImage);
+                background-size: var(--iconWidth);
             }
         }
     }

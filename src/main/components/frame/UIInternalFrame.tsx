@@ -13,18 +13,18 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
 import { REQUEST_KEYWORDS } from "../../request";
-import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelV2";
 import { concatClassnames, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
 import { checkSizes } from "../../util/server-util/SendOnLoadCallback";
 import { useComponentConstants, useComponents, useEventHandler } from "../../hooks";
 import UIFrame from "./UIFrame";
+import { Bounds } from "../layouts";
 
 export interface IInternalFrame extends IWindow {
     iconifiable?: boolean
@@ -64,12 +64,14 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     /** Flag, true, if framestyle needs to be initially set */
     const initFrame = useRef<boolean>(true);
 
+    const bounds = useMemo(() => props.bounds ? new Bounds(props.bounds.split(",")) : null, [props.bounds]);
+
     /** Returns the Element which this InternalFrame is centered to, or undefined if it wasn't found */
     const getCenterRelativeElem = useCallback(() => {
         if (props.centerRelativeTo) {
             const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
             if (relativeComp) {
-                if (relativeComp.parent?.includes("IF")) {
+                if (relativeComp.parent?.includes("IF") && !frameContext.tabMode) {
                     return document.getElementById(relativeComp.name)?.closest(".rc-frame") as HTMLElement
                 }
                 else {
@@ -81,7 +83,9 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     }, [props.centerRelativeTo]);
 
     /** Flag, true, if the InternalFrame still needs to be centered */
-    const [centerFlag, setCenterFlag] = useState<boolean>(true);
+    const [positionFlag, setPositionFlag] = useState<boolean>(true);
+
+    const [framePosition, setFramePosition] = useState<{x: number, y: number}>({ x: bounds ? bounds.left : 0, y: bounds ? bounds.top : 0 });
 
     /** Reference for the Rnd element */
     const rndRef = useRef<Rnd>(null);
@@ -102,11 +106,13 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
      * Sends a bounds-request to the server
      * @param size - the size of the InternalFrame
      */
-     const sendBoundsRequest = useCallback((size:Dimension) => {
+     const sendBoundsRequest = useCallback((boundsObj: {width?: number, height?: number, x?: number, y?:number}) => {
         const boundsReq = createBoundsRequest();
         boundsReq.componentId = props.name;
-        boundsReq.width = size.width;
-        boundsReq.height = size.height;
+        boundsReq.width = boundsObj.width;
+        boundsReq.height = boundsObj.height;
+        boundsReq.x  = boundsObj.x;
+        boundsReq.y = boundsObj.y;
         context.server.sendRequest(boundsReq, REQUEST_KEYWORDS.BOUNDS);
     }, [context.server, topbar])
 
@@ -121,8 +127,10 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     useLayoutEffect(() => {
         if (rndRef.current) {
             rndRef.current.setState({bounds: {
-                ...rndRef.current.state.bounds,
-                top: 0
+                top: 0,
+                left: -10000,
+                right: 10000,
+                bottom: 10000
             }});
         }
     }, [])
@@ -131,7 +139,6 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     useEffect(() => {
         if (!initFrame.current && rndRef.current && props.pack && packSize && context.contentStore.getComponentById(props.id)) {
             rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
-            sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
             setFrameStyle(packSize);
             (context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
         }
@@ -169,26 +176,38 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
 
     // Initially sets the framestyle and sends a boundsrquest to the server, also tells the frameContext the name of the opened frame
     useEffect(() => {
-        if (initFrame.current) {
+        if (context.version === 2 && context.launcherReady && initFrame.current) {
             if (rndRef.current) {
-                if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
-                    //height + 35 because of header + border + padding, width + 8 because of padding + border 
-                    rndRef.current.updateSize({ width: layoutStyle.width as number + 8, height: layoutStyle.height as number + 35 });
-                    sendBoundsRequest({ width: layoutStyle.width as number, height: layoutStyle.height as number });
-                    setFrameStyle(layoutStyle);
+                if (bounds && (bounds.height || bounds.width)) {
+                    rndRef.current.updateSize({ width: bounds.width + 8, height: bounds.height + 35 });
+                    setFrameStyle({ position: "absolute", width: bounds.width, height: bounds.height });
                     initFrame.current = false;
                 }
-                else if (packSize) {
-                    rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
-                    sendBoundsRequest({ width: packSize.width as number, height: packSize.height as number });
-                    setFrameStyle(packSize);
-                    (context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
-                    initFrame.current = false;
+                else {
+                    if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
+                        //height + 35 because of header + border + padding, width + 8 because of padding + border 
+                        rndRef.current.updateSize({ width: layoutStyle.width as number + 8, height: layoutStyle.height as number + 35 });
+                        setFrameStyle(layoutStyle);
+                        initFrame.current = false;
+                    }
+                    else if (packSize) {
+                        rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
+                        setFrameStyle(packSize);
+                        (context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
+                        initFrame.current = false;
+                    }
                 }
             }
             frameContext.openFramesCallback(props.name, true);
         }
-    }, [layoutStyle?.width, layoutStyle?.height, packSize]);
+    //@ts-ignore
+    }, [layoutStyle?.width, layoutStyle?.height, packSize, context.launcherReady, bounds]);
+
+    useEffect(() => {
+        if (!initFrame.current && !positionFlag && frameStyle && framePosition) {
+            sendBoundsRequest({ width: (frameStyle.width as number), height: (frameStyle.height as number), x: framePosition.x, y: framePosition.y });
+        }
+    }, [frameStyle, framePosition])
 
     // When the server sends a dispose, call closeScreen
     useEffect(() => {
@@ -197,50 +216,53 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         }   
     }, [props.dispose])
 
-    /** When the centerRelativeTo property changes, center again */
-    useEffect(() => {
-        setCenterFlag(true);
-    }, [props.centerRelativeTo]);
-
     // Centers the frame to its relative component
     useEffect(() => {
-        if (rndRef.current && centerFlag) {
-            if (props.centerRelativeTo) {
-                const relativeElem = getCenterRelativeElem();
-                const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
-                const relativeCompParent = relativeComp ? context.contentStore.getComponentByName(context.contentStore.getScreenName(relativeComp.id) as string) : undefined;
-                
-                let parentElem;
-
-                if (relativeCompParent) {
-                    parentElem = document.getElementById(relativeCompParent.name);
-                    const launcherMenuHeight = document.getElementsByClassName("mobile-launcher-menu").length 
-                    ? 
-                        (document.getElementsByClassName("mobile-launcher-menu")[0] as HTMLElement).offsetHeight 
-                    : 
-                        0;
-                    // The centerRelative Component only has the right size when its parent no longer has visibility hidden
-                    if (relativeComp && relativeElem && frameStyle && parentElem?.style.visibility !== "hidden") {
-                        const boundingRect = relativeElem.getBoundingClientRect();
-                        // Calculate the center position of the frame and then add left respectively top of the relative component. 
-                        // Take away the launcher menu height because top takes entire window 
-                        let centerX = boundingRect.left + boundingRect.width / 2 - (frameStyle.width as number + 8) / 2;
-                        let centerY = (boundingRect.top - launcherMenuHeight) + boundingRect.height / 2 - (frameStyle.height as number + 35) / 2;
-                        rndRef.current.updatePosition({ x: centerX, y: centerY });
-                        if (!(relativeComp.id.includes("DP") && (boundingRect.height < 10 || boundingRect.width < 10))) {
-                            setCenterFlag(false);
-                        }
-                        return
-                    }
-                }
+        if (rndRef.current && positionFlag) {
+            if (bounds && (bounds.left || bounds.top)) {
+                rndRef.current.updatePosition({ x: bounds.left, y: bounds.top });
+                setFramePosition({ x: bounds.left, y: bounds.top })
+                setPositionFlag(false);
             }
             else {
-                rndRef.current.updatePosition({ x: 25 * (frameContext.openFrames.length - 1), y: 32 * (frameContext.openFrames.length - 1) });
-                setCenterFlag(false);
-                return
+                if (props.centerRelativeTo) {
+                    const relativeElem = getCenterRelativeElem();
+                    const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
+                    const relativeCompParent = relativeComp ? context.contentStore.getComponentByName(context.contentStore.getScreenName(relativeComp.id) as string) : undefined;
+                    
+                    let parentElem;
+                    if (relativeCompParent) {
+                        parentElem = document.getElementById(relativeCompParent.name);
+                        const launcherMenuHeight = document.getElementsByClassName("mobile-launcher-menu").length 
+                        ? 
+                            (document.getElementsByClassName("mobile-launcher-menu")[0] as HTMLElement).offsetHeight 
+                        : 
+                            0;
+                        // The centerRelative Component only has the right size when its parent no longer has visibility hidden
+                        if (relativeComp && relativeElem && frameStyle && parentElem?.style.visibility !== "hidden") {
+                            const boundingRect = relativeElem.getBoundingClientRect();
+                            // Calculate the center position of the frame and then add left respectively top of the relative component. 
+                            // Take away the launcher menu height because top takes entire window 
+                            let centerX = boundingRect.left + boundingRect.width / 2 - (frameStyle.width as number + 8) / 2;
+                            let centerY = (boundingRect.top - launcherMenuHeight) + boundingRect.height / 2 - (frameStyle.height as number + 35) / 2;
+                            rndRef.current.updatePosition({ x: centerX, y: centerY });
+                            setFramePosition({ x: centerX, y: centerY })
+                            if (!(relativeComp.id.includes("DP") && (boundingRect.height < 10 || boundingRect.width < 10))) {
+                                setPositionFlag(false);
+                            }
+                            return
+                        }
+                    }
+                }
+                else {
+                    rndRef.current.updatePosition({ x: 25 * (frameContext.openFrames.length - 1), y: 32 * (frameContext.openFrames.length - 1) });
+                    setFramePosition({ x: 25 * (frameContext.openFrames.length - 1), y: 32 * (frameContext.openFrames.length - 1) })
+                    setPositionFlag(false);
+                    return
+                }
             }
         }
-    }, [layoutStyle?.width, layoutStyle?.height, frameStyle, centerFlag]);
+    }, [layoutStyle?.width, layoutStyle?.height, frameStyle, positionFlag, bounds]);
 
     // Called on resize, sends a bounds-request to the server and sets the new framestyle
     const doResize = useCallback((e, dir, ref) => {
@@ -250,7 +272,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         styleCopy.width = ref.offsetWidth - 8;
 
         clearTimeout(boundsTimer.current);
-        boundsTimer.current = setTimeout(() => sendBoundsRequest({ width: styleCopy.width as number, height: styleCopy.height as number }), 1500);
+        boundsTimer.current = setTimeout(() => sendBoundsRequest({ width: styleCopy.width as number, height: styleCopy.height as number, x: framePosition.x, y: framePosition.y }), 1500);
         setFrameStyle(styleCopy);
     }, [frameStyle]);
 
@@ -262,11 +284,11 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         background: window.getComputedStyle(document.documentElement).getPropertyValue("--screen-background"),
         overflow: "hidden",
         zIndex: props.modal ? 1005 : 1,
-        visibility: centerFlag ? "hidden" : undefined
+        visibility: positionFlag ? "hidden" : undefined
     };
 
     return (
-        (!frameContext.tabMode) ?
+        (!frameContext.tabMode || props.modal) ?
             <>
                 {props.modal && <div className="rc-glasspane" />}
                 {children.length && <Rnd
@@ -274,33 +296,10 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                     ref={rndRef}
                     style={style as CSSProperties}
                     onResize={handleResize}
-                    onDragStart={(event) => {
-                        if (rndRef.current) {
-                            console.log("dragstart")
-                            
-                            rndRef.current.setState({bounds: {
-                                top: 0,
-                                bottom: window.innerHeight,
-                                left: -100000,
-                                right: 100000
-                            }});
-                            event.stopPropagation();
-                        }
-
-
+                    onDragStop={(event) => {
+                        sendBoundsRequest({ width: frameStyle ? (frameStyle.width as number) : 0, height: frameStyle ? (frameStyle.height as number) : 0, x: rndRef.current?.draggable.state.x, y: rndRef.current?.draggable.state.y})
                     }}
-                    onDrag={(event) => {
-                        if (rndRef.current) {
-                            rndRef.current.setState({bounds: {
-                                top: 0,
-                                bottom: window.innerHeight,
-                                left: -100000,
-                                right: 100000
-                            }});
-                        }
-                        
-                    }}
-                    bounds={"body"}
+                    bounds={".xd"}
                     default={{
                         x: 0,
                         y: 0,

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, {FC, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from "react";
+import React, {FC, ReactElement, useCallback, useContext, useLayoutEffect, useMemo, useState} from "react";
 import { appContext } from "../../../main/AppProvider";
 import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
 import { DesktopPanelHandler } from "../../login";
@@ -50,7 +50,7 @@ const WorkScreen: FC = () => {
     }, [activeScreens]);
 
     // Subscribes the WorkScreen component to the active-screens to have the up to date active-screen state
-    useEffect(() => {
+    useLayoutEffect(() => {
         context.subscriptions.subscribeToActiveScreens("workscreen", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 
         return () => {
