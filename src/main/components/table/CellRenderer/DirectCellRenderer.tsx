@@ -14,8 +14,8 @@
  */
 
 import React, { FC } from "react";
-import { CellEditorWrapper } from "../../editors";
-import { ICellRender } from "../";
+import CellEditorWrapper from "../../editors/CellEditorWrapper";
+import { ICellRender } from "../CellEditor";
 
 const DirectCellRenderer: FC<ICellRender> = (props) => {
     return (

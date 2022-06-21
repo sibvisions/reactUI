@@ -14,16 +14,23 @@
  */
 
 import React, { FC, useCallback, useLayoutEffect, useMemo, useRef } from "react";
-import { useMouseListener, usePopupMenu } from "../../../hooks";
-import { ICellEditor } from "..";
-import { getAlignments } from "../../comp-props";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, handleEnterKey, concatClassnames, checkComponentName, getTabIndex } from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
-import { REQUEST_KEYWORDS } from "../../../request";
+import { ICellEditor } from "../IEditor";
+import { getAlignments } from "../../comp-props/GetAlignments";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import Dimension from "../../../util/types/Dimension";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
+import { getTabIndex } from "../../../util/component-util/GetTabIndex";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor {

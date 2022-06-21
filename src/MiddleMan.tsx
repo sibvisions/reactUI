@@ -13,13 +13,14 @@
  * the License.
  */
 
-import React, { createContext, CSSProperties, FC } from 'react';
+import React, { CSSProperties, FC } from 'react';
 import './index.scss';
 import { HashRouter } from 'react-router-dom';
 import ReactUI from './ReactUI';
-import AppProvider from "./main/AppProvider";
+import AppProvider from "./main/contexts/AppProvider";
 import { IUIManagerProps } from './application-frame/screen-management/ui-manager/UIManager';
 import ReactUIEmbedded from './ReactUIEmbedded';
+import EmbedProvider from './main/contexts/EmbedProvider';
 
 export interface ICustomContent {
     customAppWrapper?: IUIManagerProps["customAppWrapper"]
@@ -34,8 +35,6 @@ export interface ICustomContent {
     design?:string
 }
 
-export const EmbeddedContext = createContext<boolean>(false)
-
 /**
  * This component is used as a middleman between index.tsx and App.tsx before index.tsx looked like this, but because this needed to
  * be exported for the context to work and index couldn't be exported, this component was created.
@@ -47,9 +46,9 @@ const MiddleMan: FC<ICustomContent> = (props) => {
     return (
         <HashRouter>
             <AppProvider {...props}>
-                <EmbeddedContext.Provider value={props.embedOptions !== undefined ? true : false}>
+                <EmbedProvider embedOptions={props.embedOptions}>
                     {props.embedOptions !== undefined ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
-                </EmbeddedContext.Provider>
+                </EmbedProvider>
             </AppProvider>
         </HashRouter>
     )

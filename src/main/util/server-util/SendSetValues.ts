@@ -13,11 +13,12 @@
  * the License.
  */
 
-import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
 import Server from "../../server/Server";
 import { createSetValueRequest, createSetValuesRequest } from "../../factories/RequestFactory";
 import { showTopBar, TopBarContextType } from "../../components/topbar/TopBar";
 import ServerV2 from "../../server/ServerV2";
+import { SelectFilter } from "../../request/data/SelectRowRequest";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 
 /**
  * Builds a setValuesRequest and sends it to the server

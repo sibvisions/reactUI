@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { BaseRequest } from "..";
+import BaseRequest from "../BaseRequest";
 
 /** Interface for reload-request */
 interface ReloadRequest extends BaseRequest {

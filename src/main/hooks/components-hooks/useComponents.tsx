@@ -15,10 +15,10 @@
 
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import _ from "underscore";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
 import BaseComponent from "../../util/types/BaseComponent";
-import { Dimension } from "../../util";
+import Dimension from "../../util/types/Dimension";
 
 export type ComponentSizes = {
     preferredSize: Dimension,

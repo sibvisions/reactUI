@@ -16,7 +16,7 @@
 /** React imports */
 import { ReactElement, useContext } from "react";
 /** Other imports */
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 
 type ScreenAPIType = {
     sendScreenParameter: (parameter: {[key:string]: any}) => void,

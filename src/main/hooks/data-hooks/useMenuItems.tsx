@@ -16,16 +16,16 @@
 import { MenuItem } from "primereact/menuitem";
 import { useEffect, useState, useContext } from "react";
 import { MenuItemCustom } from "../../../application-frame/menu/Menu";
-import { ServerMenuButtons } from "../../response";
-import { appContext } from "../../AppProvider";
-import { parseIconData } from "../../components/comp-props";
+import { appContext } from "../../contexts/AppProvider";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import BaseComponent from "../../util/types/BaseComponent";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
 import { isFAIcon } from "../event-hooks/useButtonMouseImages";
-import { REQUEST_KEYWORDS } from "../../request";
-import { concatClassnames } from "../../util";
 import ContentStoreV2 from "../../contentstore/ContentStoreV2";
+import { ServerMenuButtons } from "../../response/data/MenuResponse";
+import { parseIconData } from "../../components/comp-props/ComponentProperties";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 
 const useMenuItems = (menus?:string[]) => {
     /** Use context to gain access for contentstore and server methods */

@@ -14,9 +14,9 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { appContext } from "../../AppProvider";
-import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
-import { getMetaData } from "../../util";
+import { appContext } from "../../contexts/AppProvider";
+import MetaDataResponse, { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
+import { getMetaData } from "../../util/data-util/GetMetaData";
 
 //T is the column which metadata is needed, if column is set it is looking for U which is whether the column is numeric or length.
 //If T is not set the whole metadata-response is returned

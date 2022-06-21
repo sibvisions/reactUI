@@ -14,7 +14,7 @@
  */
 
 import { createDALSaveRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import Server from "../../server/Server";
 import ServerV2 from "../../server/ServerV2";
 

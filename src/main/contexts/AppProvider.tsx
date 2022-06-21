@@ -15,20 +15,27 @@
 
 import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
-import Server from "./server/Server";
-import ContentStore from "./contentstore/ContentStore";
-import { SubscriptionManager } from "./SubscriptionManager";
-import API from "./API";
-import AppSettings, { appVersion } from "./AppSettings";
-import { addCSSDynamically, Timer } from "./util";
-import { ICustomContent } from "../MiddleMan";
-import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "./request";
-import { showTopBar, TopBarContext } from "./components/topbar/TopBar";
-import ContentStoreV2 from "./contentstore/ContentStoreV2";
-import ServerV2 from "./server/ServerV2";
-import { RESPONSE_NAMES } from "./response";
-import { createAliveRequest, createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId } from "./factories/RequestFactory";
-import useEventHandler from "./hooks/event-hooks/useEventHandler";
+import Server from "../server/Server";
+import ContentStore from "../contentstore/ContentStore";
+import { SubscriptionManager } from "../SubscriptionManager";
+import API from "../API";
+import AppSettings, { appVersion } from "../AppSettings";
+import { createAliveRequest,
+         createChangesRequest,
+         createOpenScreenRequest,
+         createStartupRequest,
+         createUIRefreshRequest,
+         getClientId } from "../factories/RequestFactory";
+import { ICustomContent } from "../../MiddleMan";
+import { showTopBar, TopBarContext } from "../components/topbar/TopBar";
+import ContentStoreV2 from "../contentstore/ContentStoreV2";
+import ServerV2 from "../server/ServerV2";
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import UIRefreshRequest from "../request/application-ui/UIRefreshRequest";
+import StartupRequest from "../request/application-ui/StartupRequest";
+import { addCSSDynamically } from "../util/html-util/AddCSSDynamically";
+import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
+import useEventHandler from "../hooks/event-hooks/useEventHandler";
 
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreV2): contentStore is ContentStore {
     return (contentStore as ContentStore).menuItems !== undefined;
@@ -53,7 +60,8 @@ export type AppContextType = {
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
-    appReady: boolean
+    appReady: boolean,
+    launcherReady: boolean
 }
 
 /** Contentstore instance */
@@ -197,7 +205,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let baseUrlToSet = "";
         let timeoutToSet = 10000;
         let aliveIntervalToSet:number|undefined = undefined;
-        let loadIntervalToSet:number|undefined = undefined;
+        let wsPingIntervalToSet:number|undefined = undefined;
 
         const initWS = (baseURL:string) => {
             const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
@@ -237,7 +245,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
             }
 
-            setInterval(() => ws.current?.send("PING"), contextState.server.loadInterval);
+            if (contextState.server.wsPingInterval >= 0) {
+                setInterval(() => ws.current?.send("PING"), contextState.server.wsPingInterval >= 10000 ? contextState.server.wsPingInterval : 10000);
+            }
         }
 
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, restartArgs?:any) => {
@@ -273,8 +283,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         aliveIntervalToSet = parseInt(data.aliveInterval);
                     }
 
-                    if (data.loadInterval) {
-                        loadIntervalToSet = parseInt(data.loadInterval);
+                    if (data.wsPingInterval) {
+                        wsPingIntervalToSet = parseInt(data.wsPingInterval);
                     }
                     resolve({});
                 })
@@ -447,7 +457,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (schemeToSet) {
                 contextState.appSettings.setApplicationColorSchemeByURL(schemeToSet);
-                addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", contextState.appSettings);
+                addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
             }
 
             if (convertedOptions.has("theme")) {
@@ -461,7 +471,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (themeToSet) {
                 contextState.appSettings.setApplicationThemeByURL(themeToSet);
-                addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", contextState.appSettings);
+                addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"));
                 contextState.subscriptions.emitThemeChanged(themeToSet);
             }
 
@@ -476,7 +486,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (designToSet) {
                 contextState.appSettings.setApplicationDesign(designToSet);
-                addCSSDynamically('design/' + designToSet + ".css", "designCSS", contextState.appSettings);
+                addCSSDynamically('design/' + designToSet + ".css", "designCSS", () => contextState.appSettings.setAppReadyParam("designCSS"));
             }
 
             if (convertedOptions.has("version")) {
@@ -510,13 +520,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("aliveInterval");
             }
 
-            if (convertedOptions.has("loadInterval")) {
-                const parsedValue = parseInt(convertedOptions.get("loadInterval"));
+            if (convertedOptions.has("wsPingInterval")) {
+                const parsedValue = parseInt(convertedOptions.get("wsPingInterval"));
                 if (!isNaN(parsedValue)) {
-                    loadIntervalToSet = parsedValue;
+                    wsPingIntervalToSet = parsedValue;
                 }
 
-                convertedOptions.delete("loadInterval");
+                convertedOptions.delete("wsPingInterval");
             }
 
             convertedOptions.forEach((v, k) => {
@@ -536,6 +546,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.server = new ServerV2(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);
+                contextState.launcherReady = false;
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
@@ -582,11 +593,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (response.applicationColorScheme && !schemeToSet) {
-                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", contextState.appSettings);
+                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
                     }
 
                     if (response.applicationTheme && !themeToSet) {
-                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", contextState.appSettings);
+                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"));
                     }
 
                     if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.version === 1) {
@@ -633,5 +644,4 @@ const AppProvider: FC<ICustomContent> = (props) => {
     )
 }
 export default AppProvider
-
 

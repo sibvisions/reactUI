@@ -17,14 +17,18 @@ import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayout
 import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelV2";
-import { concatClassnames, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
-import { checkSizes } from "../../util/server-util/SendOnLoadCallback";
-import { useComponentConstants, useComponents, useEventHandler } from "../../hooks";
+import { checkSizes, sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import UIFrame from "./UIFrame";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../hooks/components-hooks/useComponents";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import useEventHandler from "../../hooks/event-hooks/useEventHandler";
+import Dimension from "../../util/types/Dimension";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 
 export interface IInternalFrame extends IWindow {
     iconifiable?: boolean

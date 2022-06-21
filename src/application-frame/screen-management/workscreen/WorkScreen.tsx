@@ -14,10 +14,11 @@
  */
 
 import React, {FC, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from "react";
-import { appContext } from "../../../main/AppProvider";
+import { appContext } from "../../../main/contexts/AppProvider";
 import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
-import { DesktopPanelHandler } from "../../login";
 import ResizeHandler from "../ResizeHandler";
+import BaseComponent from "../../../main/util/types/BaseComponent";
+import { componentHandler } from "../../../main/factories/UIFactory";
 
 /** This component defines where the workscreen should be displayed */
 const WorkScreen: FC = () => {
@@ -61,7 +62,7 @@ const WorkScreen: FC = () => {
     return (
         <ResizeHandler>
             {renderedScreens.length ? 
-            renderedScreens : context.appSettings.desktopPanel ? <DesktopPanelHandler /> : <></>}
+            renderedScreens : context.appSettings.desktopPanel ? componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore) : <></>}
         </ResizeHandler>
 
     )

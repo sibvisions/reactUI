@@ -14,7 +14,7 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 
 /**
  * This hook returns the data of the dataprovider, it updates whenever the dataprovider gets updated

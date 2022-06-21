@@ -14,11 +14,10 @@
  */
 
 import React, { FC, useContext, useEffect, useMemo } from "react";
-import { appContext } from "../../../AppProvider";
-import { useDataProviderData } from "../../../hooks";
-import { ICellEditorLinked } from "../../editors";
-import { fetchLinkedRefDatabook } from "../../editors/linked/UIEditorLinked";
-import { ICellRender } from "../";
+import { appContext } from "../../../contexts/AppProvider";
+import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
+import { fetchLinkedRefDatabook, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
+import { ICellRender } from "../CellEditor";
 
 const LinkedCellRenderer: FC<ICellRender> = (props) => {
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorLinked

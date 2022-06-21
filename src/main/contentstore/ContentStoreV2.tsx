@@ -17,9 +17,9 @@ import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import { SubscriptionManager } from "../SubscriptionManager";
-import { isWorkScreen } from "../util";
 import BaseComponent from "../util/types/BaseComponent";
-import { IPanel } from "../components/panels";
+import { IPanel } from "../components/panels/panel/UIPanel";
+import { isWorkScreen } from "../util/component-util/IsWorkScreen";
 
 export default class ContentStoreV2 extends BaseContentStore {
     /** subscriptionManager instance */

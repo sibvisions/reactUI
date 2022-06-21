@@ -14,11 +14,18 @@
  */
 
 import React, { FC, useLayoutEffect, useRef } from "react";
-import { useComponentConstants, useFetchMissingData, useMouseListener, usePopupMenu } from "../../hooks";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, getTabIndex, concatClassnames } from "../../util";
 import BaseComponent from "../../util/types/BaseComponent";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
 import { Tooltip } from "primereact/tooltip";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
 /** Interface for Gauge properties sent by server */
 export interface IGauge extends BaseComponent {

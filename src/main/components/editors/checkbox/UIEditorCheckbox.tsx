@@ -15,12 +15,19 @@
 
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Checkbox } from 'primereact/checkbox';
-import { useMouseListener, usePopupMenu } from "../../../hooks";
-import { ICellEditor } from "..";
-import { sendSetValues, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, handleEnterKey, concatClassnames, getFocusComponent, getTabIndex } from "../../../util";
-import { getAlignments } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
+import { ICellEditor } from "../IEditor";
+import { getAlignments } from "../../comp-props/GetAlignments";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { sendSetValues } from "../../../util/server-util/SendSetValues";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
+import { getFocusComponent } from "../../../util/html-util/GetFocusComponent";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {

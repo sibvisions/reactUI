@@ -14,10 +14,14 @@
  */
 
 import React, { FC, useRef } from "react";
-import { useComponents, useMouseListener, useComponentConstants } from "../../../hooks";
-import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, concatClassnames } from "../../../util";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import BaseComponent from "../../../util/types/BaseComponent";
+import Layout from "../../layouts/Layout";
 import { panelGetStyle } from "../panel/UIPanel";
 
 export interface IDesktopPanel extends BaseComponent {

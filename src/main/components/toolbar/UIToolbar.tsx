@@ -14,9 +14,10 @@
  */
 
 import React, { FC } from "react";
-import { Layout } from "../layouts";
-import { concatClassnames, Dimension } from "../../util";
-import { useComponents } from "../../hooks";
+import useComponents from "../../hooks/components-hooks/useComponents";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import Dimension from "../../util/types/Dimension";
+import Layout from "../layouts/Layout";
 
 /**
  * This component displays a menubar for a frame

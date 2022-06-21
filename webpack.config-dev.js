@@ -34,13 +34,13 @@ module.exports = () => {
                 filename: '[name].css',
                 chunkFilename: '[id].css'
             }),
-            new CircularDependencyPlugin({
-                exclude: /a\.js|node_modules/,
-                include: /src/,
-                failOnError: true,
-                allowAsyncCycles: false,
-                cwd: process.cwd(),
-            }),
+            // new CircularDependencyPlugin({
+            //     exclude: /a\.js|node_modules/,
+            //     include: /src/,
+            //     failOnError: true,
+            //     allowAsyncCycles: false,
+            //     cwd: process.cwd(),
+            // }),
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
             }),

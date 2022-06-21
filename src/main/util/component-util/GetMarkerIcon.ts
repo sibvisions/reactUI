@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { parseIconData, IconProps } from "../../components/comp-props";
+import { parseIconData } from "../../components/comp-props/ComponentProperties";
+import IconProps from "../../components/comp-props/IconProps";
 
 /**
  * Returns the icon of the marker

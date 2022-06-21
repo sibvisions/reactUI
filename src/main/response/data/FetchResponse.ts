@@ -13,9 +13,9 @@
  * the License.
  */
 
-import { BaseResponse } from "..";
-import { SortDefinition } from "../../request";
-import { RecordFormat } from "../../request";
+import { SortDefinition } from "../../request/data/SortRequest"
+import RecordFormat from "../../util/types/RecordFormat"
+import BaseResponse from "../BaseResponse"
 
 /** Interface for FetchResponse */
 interface FetchResponse extends BaseResponse{

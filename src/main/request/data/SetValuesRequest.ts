@@ -13,7 +13,9 @@
  * the License.
  */
 
-import { ComponentRequest, SelectFilter, DataProviderRequest } from "..";
+import ComponentRequest from "../comp/ComponentRequest"
+import DataProviderRequest from "./DataProviderRequest"
+import { SelectFilter } from "./SelectRowRequest"
 
 /** Interface for SetValuesRequest */
 interface SetValuesRequest extends ComponentRequest, DataProviderRequest {

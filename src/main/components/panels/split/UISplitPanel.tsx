@@ -14,11 +14,18 @@
  */
 
 import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useRef, useState } from "react";
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
 import SplitPanel from "./SplitPanel";
 import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../../util/types/BaseComponent";
-import {ChildWithProps, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, checkComponentName} from "../../../util";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import Dimension from "../../../util/types/Dimension";
+import ChildWithProps from "../../../util/types/ChildWithProps";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 
 /** Interface for UISplitPanel */
 export interface ISplit extends BaseComponent{

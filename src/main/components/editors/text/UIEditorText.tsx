@@ -19,20 +19,19 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 import { Editor } from "primereact/editor";
 import Quill from "quill";
-import { useMouseListener, usePopupMenu } from "../../../hooks"
-import { ICellEditor } from "..";
-import { getTextAlignment } from "../../comp-props";
-import { sendSetValues, 
-         handleEnterKey, 
-         sendOnLoadCallback, 
-         parsePrefSize, 
-         parseMinSize, 
-         parseMaxSize, 
-         concatClassnames,
-         getTabIndex} from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
+import { ICellEditor } from "../IEditor";
+import { getTextAlignment } from "../../comp-props/GetAlignments";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
+import { sendSetValues } from "../../../util/server-util/SendSetValues";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {

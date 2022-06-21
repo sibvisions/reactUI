@@ -14,13 +14,13 @@
  */
 
 import React, { CSSProperties, FC, ReactElement } from "react";
-import { BorderLayout, 
-         FlowLayout, 
-         FormLayout, 
-         GridLayout, 
-         NullLayout } from './index';
-import { ComponentSizes } from "../../hooks";
-import { Dimension } from "../../util";
+import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
+import Dimension from "../../util/types/Dimension";
+import BorderLayout from "./BorderLayout";
+import FlowLayout from "./FlowLayout";
+import FormLayout from "./FormLayout";
+import GridLayout from "./GridLayout";
+import NullLayout from "./NullLayout";
 
 /**
  * General information for layouts:

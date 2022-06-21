@@ -15,12 +15,20 @@
 
 import React, { CSSProperties, FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
-import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, concatClassnames, checkComponentName, sendOnLoadCallback, LoadCallBack } from "../../../util";
 import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import { appVersion } from "../../../AppSettings";
+import Dimension from "../../../util/types/Dimension";
+import LoadCallBack from "../../../util/types/LoadCallBack";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import Layout from "../../layouts/Layout";
 
 /** Interface for Panels */
 export interface IPanel extends BaseComponent {

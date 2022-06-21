@@ -14,16 +14,22 @@
  */
 
 import React, { createContext, CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
-import { useComponents, useMouseListener, useComponentConstants, ComponentSizes, useConstants } from "../../../hooks";
-import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, Dimension, concatClassnames } from "../../../util";
 import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import TabsetPanelImpl from "../tabsetpanel/TabsetPanelImpl";
 import { createCloseFrameRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
-import { REQUEST_KEYWORDS } from "../../../request";
 import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import useComponents, { ComponentSizes } from "../../../hooks/components-hooks/useComponents";
+import useConstants from "../../../hooks/components-hooks/useConstants";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import Dimension from "../../../util/types/Dimension";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import Layout from "../../layouts/Layout";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,

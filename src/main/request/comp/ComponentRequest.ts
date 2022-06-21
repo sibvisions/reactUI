@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { BaseRequest } from "..";
+import BaseRequest from "../BaseRequest";
+
 
 /** Interface for Requests with componentId */
 interface ComponentRequest extends BaseRequest {

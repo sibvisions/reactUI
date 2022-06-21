@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { IPanel } from "../../components/panels";
+import { IPanel } from "../../components/panels/panel/UIPanel";
 
 export function isWorkScreen(panel:IPanel) {
     if (panel.screen_navigationName_ || panel.content_className_) {

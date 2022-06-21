@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { ParameterRequest } from "..";
+import ParameterRequest from "../comp/ParameterRequest";
 
 /** Interface for OpenScreenRequest */
 interface OpenScreenRequest extends ParameterRequest {

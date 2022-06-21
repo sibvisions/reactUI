@@ -13,10 +13,10 @@
  * the License.
  */
 
-import { ComponentRequest } from "..";
+import ComponentRequest from "../comp/ComponentRequest";
 
 /** Interface for PressButtonRequest */
-interface PressButtonRequest extends ComponentRequest{
+interface PressButtonRequest extends ComponentRequest {
     
 }
 export default PressButtonRequest

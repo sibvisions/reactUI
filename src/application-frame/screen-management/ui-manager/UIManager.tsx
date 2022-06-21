@@ -13,48 +13,27 @@
  * the License.
  */
 
-import React, { Children, createContext, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { Children, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Menu from "../../menu/Menu";
-import { useMenuCollapser, useResponsiveBreakpoints, useDeviceStatus } from "../../../main/hooks";
-import { ChildWithProps, concatClassnames, getScreenIdFromNavigation } from "../../../main/util";
-import { appContext } from "../../../main/AppProvider";
+import { appContext } from "../../../main/contexts/AppProvider";
 import ScreenManager from "../ScreenManager";
 import ChangePasswordDialog from "../../change-password/ChangePasswordDialog";
 import CorporateMenu from "../../menu/CorporateMenu";
 import { MenuOptions, VisibleButtons } from "../../../main/AppSettings";
 import { useParams } from "react-router";
 import ContentStore from "../../../main/contentstore/ContentStore";
+import { isCorporation } from "../../../main/util/server-util/IsCorporation";
+import ResizeProvider from "../../../main/contexts/ResizeProvider";
+import useMenuCollapser from "../../../main/hooks/event-hooks/useMenuCollapser";
+import useDeviceStatus from "../../../main/hooks/event-hooks/useDeviceStatus";
+import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useResponsiveBreakpoints";
+import ChildWithProps from "../../../main/util/types/ChildWithProps";
+import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
+import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
 
 // Interface for UIManager
 export interface IUIManagerProps {
     customAppWrapper?: React.ComponentType,
-}
-
-/** Interface for the ResizeContext. Contains information for the Resizehandler to calculate the screen-sizes */
-export interface IResizeContext {
-    menuSize?:number,
-    menuRef?: any,
-    login?:boolean,
-    menuCollapsed?:boolean,
-    mobileStandard?:boolean,
-    setMobileStandard?: Function
-}
-
-export const ResizeContext = createContext<IResizeContext>({});
-
-/**
- * Returns true, if the applayout is corporation, when window-width <= 530 and theme is basti mobile, it returns false because standard menu is displayed instead.
- * @param appLayout - the current layout sent by the server
- * @param theme - the current theme sent by the server
- */
-export function isCorporation(appLayout:string, theme:string) {
-    if (appLayout === "corporation") {
-        if (theme === "basti_mobile" && window.innerWidth <= 530) {
-            return false;
-        }
-        return true;
-    }
-    return false;
 }
 
 /**
@@ -152,9 +131,9 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.name} password="" />
                 <CustomWrapper>
                     <div id="reactUI-main" className="main">
-                        <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize }}>
+                        <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize}>
                             <ScreenManager />
-                        </ResizeContext.Provider>
+                        </ResizeProvider>
                     </div>
                 </CustomWrapper>
             </div>
@@ -181,9 +160,9 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     !menuOptions.menuBar ? "menu-not-visible" : "",
                     !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
-                    <ResizeContext.Provider value={{ login: false, menuRef: menuRef, menuSize: menuSize, menuCollapsed: menuCollapsed, mobileStandard: mobileStandard, setMobileStandard: (active:boolean) => setMobileStandard(active) }}>
+                    <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
                         <ScreenManager />
-                    </ResizeContext.Provider>
+                    </ResizeProvider>
                 </div>
             </div>
     )

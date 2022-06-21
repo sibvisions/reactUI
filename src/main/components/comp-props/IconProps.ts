@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { Dimension } from "../../util";
+import Dimension from "../../util/types/Dimension"
 
 /** Interface for iconproperties */
 interface IconProps {

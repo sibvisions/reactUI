@@ -14,7 +14,7 @@
  */
 
 import FilterCondition from "../../model/FilterCondition";
-import { DataProviderRequest } from "..";
+import DataProviderRequest from "./DataProviderRequest"
 
 
 /** Interface for FilterRequest */

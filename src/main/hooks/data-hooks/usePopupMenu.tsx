@@ -17,10 +17,10 @@ import React, { createContext, PropsWithChildren, FC, useContext, useCallback, u
 import { ContextMenu } from 'primereact/contextmenu';
 import BaseComponent from "../../util/types/BaseComponent";
 import { MenuItem } from "primereact/menuitem";
-import { parseIconData } from "../../components/comp-props";
 import { createComponentRequest, createDispatchActionRequest, getClientId } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
+import { parseIconData } from "../../components/comp-props/ComponentProperties";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 
 type ShowPopupFn = (id: string) => void;
 type HidePopupFn = () => void;

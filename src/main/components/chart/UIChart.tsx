@@ -19,10 +19,18 @@
 import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
 import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
-import { useDataProviderData, useRowSelect, useFetchMissingData, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
 import BaseComponent from "../../util/types/BaseComponent";
-import { sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, getTabIndex } from "../../util";
 import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
+import useRowSelect from "../../hooks/data-hooks/useRowSelect";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {

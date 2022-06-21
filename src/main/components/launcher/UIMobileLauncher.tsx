@@ -14,10 +14,12 @@
  */
 
 import React, { FC, useRef } from "react";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../hooks/components-hooks/useComponents";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import UIFrame from "../frame/UIFrame";
-import { IPanel } from "../panels";
-import { useComponentConstants, useComponents, useMouseListener } from "../../hooks";
-import { concatClassnames } from "../../util";
+import { IPanel } from "../panels/panel/UIPanel";
 
 export interface IWindow extends IPanel {
     title:string

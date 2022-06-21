@@ -14,10 +14,10 @@
  */
 
 import { useContext, useLayoutEffect } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 import { createFetchRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 
 /**
  * Fetches the missing dataprovider if it isn't in the contentstore

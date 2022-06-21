@@ -15,14 +15,21 @@
 
 import { TabPanel, TabView } from "primereact/tabview";
 import React, { CSSProperties, FC, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { appContext } from "../../../AppProvider";
+import { appContext } from "../../../contexts/AppProvider";
 import { LayoutContext } from "../../../LayoutContext";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
-import { IconProps, parseIconData } from "../../comp-props";
-import { checkComponentName, concatClassnames, Dimension, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../../util";
-import { ComponentSizes, useMouseListener, usePopupMenu } from "../../../hooks";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import { ITabsetPanel, TabProperties } from "./UITabsetPanel";
+import { parseIconData } from "../../comp-props/ComponentProperties";
+import { ComponentSizes } from "../../../hooks/components-hooks/useComponents";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import Dimension from "../../../util/types/Dimension";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import IconProps from "../../comp-props/IconProps";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 
 interface ITabsetImpl extends ITabsetPanel {
     components: React.ReactElement<any, string | React.JSXElementConstructor<any>>[]

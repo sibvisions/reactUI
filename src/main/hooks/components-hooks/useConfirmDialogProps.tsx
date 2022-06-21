@@ -17,12 +17,12 @@ import React, { CSSProperties, useEffect, useState } from "react";
 import { Button } from 'primereact/button';
 import { ConfirmDialogProps } from 'primereact/confirmdialog'
 import { showTopBar } from "../../components/topbar/TopBar";
-import { DialogResponse } from "../../response";
 import { createCloseFrameRequest, createDispatchActionRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
-import { concatClassnames } from "../../util";
 import tinycolor from "tinycolor2";
 import useConstants from "./useConstants";
+import DialogResponse from "../../response/ui/DialogResponse";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 
 /** Returns the ConfirmDialog properties and if the ConfirmDialog is visible */
 const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {

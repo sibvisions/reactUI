@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { MouseRequest } from "..";
+import MouseRequest from "./MouseRequest";
+
 
 /** Interface for MouseClickedRequest extends MouseRequest */
 interface MouseClickedRequest extends MouseRequest {

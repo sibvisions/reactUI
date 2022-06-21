@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { BaseResponse } from "..";
+import BaseResponse from "../BaseResponse"
 
 /** Interface for ApplicationMetaDataResponse */
 interface ApplicationMetaDataResponse extends BaseResponse {
@@ -29,7 +29,7 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     applicationColorScheme: string
     applicationDesign?:string
     aliveInterval?: number
-    loadInterval?: number
+    wsPingInterval?: number
     userRestart?:boolean
     foldMenuOnCollapse?:boolean
 }

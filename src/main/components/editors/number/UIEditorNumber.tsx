@@ -15,28 +15,22 @@
 
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { InputNumber } from "primereact/inputnumber";
-import { useEventHandler, useMouseListener, usePopupMenu } from "../../../hooks"
-import { ICellEditor } from "..";
-import { getDecimalLength, 
-         getGrouping,
-         getPrimePrefix, 
-         getScaleDigits, 
-         sendSetValues, 
-         sendOnLoadCallback, 
-         parsePrefSize, 
-         parseMinSize, 
-         parseMaxSize,
-         handleEnterKey,
-         concatClassnames,
-         checkComponentName,
-         getTabIndex} from "../../../util";
-import { getTextAlignment } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
-import { NumericColumnDescription } from "../../../response";
 import { IRCCellEditor } from "../CellEditorWrapper";
+import { ICellEditor } from "../IEditor";
+import { getTextAlignment } from "../../comp-props/GetAlignments";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { getDecimalLength, getGrouping, getPrimePrefix, getScaleDigits } from "../../../util/component-util/NumberProperties";
+import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
+import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
+import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { getTabIndex } from "../../../util/component-util/GetTabIndex";
+import { sendSetValues } from "../../../util/server-util/SendSetValues";
 
 /** Interface for cellEditor property of NumberCellEditor */
-export interface ICellEditorNumber extends ICellEditor{
+export interface ICellEditorNumber extends ICellEditor {
     numberFormat: string,
 }
 

@@ -17,16 +17,28 @@ import { History } from "history";
 import _ from "underscore";
 import API from "../API";
 import AppSettings, { appVersion } from "../AppSettings";
-import { IPanel } from "../components/panels";
 import BaseContentStore from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
 import ContentStoreV2 from "../contentstore/ContentStoreV2";
 import { createFetchRequest } from "../factories/RequestFactory";
 import TreePath from "../model/TreePath";
-import { REQUEST_KEYWORDS } from "../request";
-import { ApplicationMetaDataResponse, BaseResponse, CloseScreenResponse, DataProviderChangedResponse, DeviceStatusResponse, FetchResponse, MetaDataResponse, RESPONSE_NAMES, SessionExpiredResponse } from "../response";
-import { RequestQueueMode } from "./Server";
 import { SubscriptionManager } from "../SubscriptionManager";
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import CloseScreenResponse from "../response/ui/CloseScreenResponse";
+import BaseResponse from "../response/BaseResponse";
+import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
+import ApplicationMetaDataResponse from "../response/app/ApplicationMetaDataResponse";
+import FetchResponse from "../response/data/FetchResponse";
+import DataProviderChangedResponse from "../response/data/DataProviderChangedResponse";
+import { IPanel } from "../components/panels/panel/UIPanel";
+import MetaDataResponse from "../response/data/MetaDataResponse";
+import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
+import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
+
+export enum RequestQueueMode {
+    QUEUE = "queue",
+    IMMEDIATE = "immediate"
+}
 
 export default abstract class BaseServer {
     /** Contentstore instance */
@@ -80,7 +92,7 @@ export default abstract class BaseServer {
 
     aliveInterval:number = 30000;
 
-    loadInterval:number = 10000;
+    wsPingInterval:number = 10000;
 
     lastRequestTimeStamp: number = Date.now();
 

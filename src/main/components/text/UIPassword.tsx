@@ -15,10 +15,19 @@
 
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { Password } from "primereact/password";
-import { useComponentConstants, useMouseListener, usePopupMenu } from "../../hooks";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, handleEnterKey, sendSetValue, isCompDisabled, getTabIndex} from "../../util";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { ITextField } from "./UIText";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { isCompDisabled } from "../../util/component-util/IsCompDisabled";
+import { sendSetValue } from "../../util/server-util/SendSetValues";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
 /**
  * This component displays an input field of password type not linked to a databook

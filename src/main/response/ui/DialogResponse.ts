@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { ComponentResponse, MessageResponse } from "..";
+import ComponentResponse from "../ComponentResponse"
+import MessageResponse from "./MessageResponse"
 
 /** Interface for DialogResponse */
 interface DialogResponse extends MessageResponse, ComponentResponse {

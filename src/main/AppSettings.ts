@@ -14,13 +14,14 @@
  */
 
 import BaseComponent from "./util/types/BaseComponent";
-import { addCSSDynamically } from "./util";
+import { addCSSDynamically } from "./util/html-util/AddCSSDynamically";
 import ContentStore from "./contentstore/ContentStore";
-import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 import BaseContentStore from "./contentstore/BaseContentStore";
 import ContentStoreV2 from "./contentstore/ContentStoreV2";
+import { LoginModeType } from "./response/login/LoginResponse";
+import ApplicationMetaDataResponse from "./response/app/ApplicationMetaDataResponse";
 
 export const appVersion = { version: 1 }
 
@@ -227,27 +228,27 @@ export default class AppSettings {
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {
             if (appMetaData.applicationColorScheme) {
                 this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
-                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "schemeCSS", this);
+                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
             }
             else {
-                addCSSDynamically('color-schemes/default-scheme.css', "schemeCSS", this);
+                addCSSDynamically('color-schemes/default-scheme.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
             }
         }
         
         if (!this.applicationMetaData.applicationTheme.urlSet) {
             if (appMetaData.applicationTheme) {
                 this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
-                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "themeCSS", this);
+                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
             }
             else {
-                addCSSDynamically('themes/basti.css', "themeCSS", this);
+                addCSSDynamically('themes/basti.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
             }
             this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
         }
 
         if (!this.applicationMetaData.applicationDesign && appMetaData.applicationDesign) {
             this.applicationMetaData.applicationDesign = appMetaData.applicationDesign;
-            addCSSDynamically('design/' + appMetaData.applicationDesign + ".css", "designCSS", this)
+            addCSSDynamically('design/' + appMetaData.applicationDesign + ".css", "designCSS", () => this.setAppReadyParam("designCSS"))
         }
         else if (!this.applicationMetaData.applicationDesign) {
             this.appReadyParams.designCSSLoaded = true;

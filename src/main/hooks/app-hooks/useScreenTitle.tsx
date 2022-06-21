@@ -14,7 +14,7 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 
 /**
  * This Hook returns the screenTitle of either the application if no screen is active or the currently active screen.

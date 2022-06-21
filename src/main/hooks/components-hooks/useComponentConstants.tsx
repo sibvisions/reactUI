@@ -18,7 +18,7 @@ import useProperties from "../data-hooks/useProperties";
 import useLayoutValue from "../style-hooks/useLayoutValue";
 import useConstants from "../components-hooks/useConstants";
 import useComponentStyle from "../style-hooks/useComponentStyle";
-import { AppContextType } from "../../AppProvider";
+import { AppContextType } from "../../contexts/AppProvider";
 import BaseComponent from "../../util/types/BaseComponent";
 import { TopBarContextType } from "../../components/topbar/TopBar";
 

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { UserDataResponse } from "../response";
+import UserDataResponse from "../response/login/UserDataResponse";
 
 /**
  * Class for UserData

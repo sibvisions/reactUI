@@ -15,8 +15,8 @@
 
 import { CSSProperties } from "react";
 import BaseComponent from "../../util/types/BaseComponent";
-import { IEditor } from "../editors";
-import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts";
+import { IEditor } from "../editors/IEditor";
+import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIGNMENT";
 
 // Alignment interface with horizontal und vertical alignment
 export interface Alignments {

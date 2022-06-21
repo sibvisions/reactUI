@@ -14,7 +14,7 @@
  */
 
 import { useContext } from "react"
-import { appContext } from "../../AppProvider"
+import { appContext } from "../../contexts/AppProvider"
 
 /** This hook returns the appContext to library users */
 const useAppContext = () => {

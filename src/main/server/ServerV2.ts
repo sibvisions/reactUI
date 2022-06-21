@@ -14,14 +14,15 @@
  */
 
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
-import { IPanel } from "../components/panels";
-import { REQUEST_KEYWORDS } from "../request";
-import { CloseScreenResponse, RESPONSE_NAMES } from "../response";
+import { IPanel } from "../components/panels/panel/UIPanel";
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
+import CloseScreenResponse from "../response/ui/CloseScreenResponse";
 import UIResponse from "../response/ui/UIResponse";
 import BaseServer from "./BaseServer";
 
 /** Enum for server request endpoints version 2 */
-enum REQUEST_ENDPOINTS{
+enum REQUEST_ENDPOINTS {
     //application/UI
     STARTUP = "/v2/api/startup",
     EXIT = "/v2/api/exit",

@@ -15,14 +15,14 @@
 
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 import { LayoutContext } from "../../LayoutContext"
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 import { ILayout } from "./Layout";
-import { Margins } from ".";
-import { Dimension } from "../../util";
 import Gaps from "./models/Gaps";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import { appVersion } from "../../AppSettings";
+import Dimension from "../../util/types/Dimension";
+import Margins from "./models/Margins";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {

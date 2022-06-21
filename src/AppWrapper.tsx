@@ -20,15 +20,15 @@ import UIToast from './main/components/toast/UIToast';
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import ErrorBar from "./application-frame/error-bar/ErrorBar";
-import { addCSSDynamically } from "./main/util";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
-import { REQUEST_KEYWORDS } from "./main/request";
-import { appContext } from "./main/AppProvider";
+import { appContext } from "./main/contexts/AppProvider";
 import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
-import { useConfirmDialogProps } from "./main/hooks";
 import { createOpenScreenRequest } from "./main/factories/RequestFactory";
-import { IPanel } from "./main/components/panels";
+import useConfirmDialogProps from "./main/hooks/components-hooks/useConfirmDialogProps";
+import { addCSSDynamically } from "./main/util/html-util/AddCSSDynamically";
+import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
+import { IPanel } from "./main/components/panels/panel/UIPanel";
 interface IAppWrapper {
     embedOptions?: { [key:string]:any }
     theme?:string
@@ -62,7 +62,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         if (cssVersion) {
             path = path + "?version=" + cssVersion;
         }
-        addCSSDynamically(path, "appCSS", context.appSettings)
+        addCSSDynamically(path, "appCSS", () => context.appSettings.setAppReadyParam("appCSS"))
     }, [cssVersion, restart, context.appSettings]);
 
     /**

@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { ComponentRequest, DataProviderRequest } from "..";
+import ComponentRequest from "../comp/ComponentRequest"
+import DataProviderRequest from "./DataProviderRequest"
 
 /** Type for selecteRecord/selectTree Filters */
 export type SelectFilter = {

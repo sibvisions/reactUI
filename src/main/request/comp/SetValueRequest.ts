@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { ComponentRequest } from "..";
+import ComponentRequest from "../comp/ComponentRequest";
 
 /** Interface for SetValueRequest */
 interface SetValueRequest extends ComponentRequest{

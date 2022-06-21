@@ -15,8 +15,8 @@
 
 import React, { FC, useContext } from "react"
 import SignatureCanvas from 'react-signature-canvas'
-import { appContext } from "../../../AppProvider"
-import { concatClassnames } from "../../../util"
+import { appContext } from "../../../contexts/AppProvider"
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames"
 import BaseComponent from "../../../util/types/BaseComponent"
 
 const SignaturePad:FC<BaseComponent> = (props) => {

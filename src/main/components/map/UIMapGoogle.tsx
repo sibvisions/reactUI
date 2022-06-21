@@ -17,23 +17,23 @@
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
-import { useMouseListener, usePopupMenu, useComponentConstants, useDataProviderData } from "../../hooks";
-import { getMarkerIcon, 
-         parseMapLocation, 
-         parsePrefSize, 
-         parseMinSize, 
-         parseMaxSize, 
-         sendOnLoadCallback, 
-         sendSetValues, 
-         sortGroupDataGoogle, 
-         sendSaveRequest, 
-         checkComponentName,
-         getTabIndex} from "../../util";
-import { IMap } from ".";
-import { IconProps } from "../comp-props";
 import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
+import { IMap } from "./UIMapOSM";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import { parseMapLocation, parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import IconProps from "../comp-props/IconProps";
+import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
+import { sortGroupDataGoogle } from "../../util/component-util/SortGroupData";
+import { sendSetValues } from "../../util/server-util/SendSetValues";
+import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
 /**
  * This component displays a map view with Google Maps

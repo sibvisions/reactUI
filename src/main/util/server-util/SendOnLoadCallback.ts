@@ -13,9 +13,9 @@
  * the License.
  */
 
-import { Dimension } from "..";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import CELLEDITOR_CLASSNAMES from "../../components/editors/CELLEDITOR_CLASSNAMES";
+import Dimension from "../types/Dimension";
 //import { CELLEDITOR_CLASSNAMES } from "../../components/editors";
 
 /**

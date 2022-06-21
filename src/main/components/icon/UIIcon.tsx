@@ -14,12 +14,21 @@
  */
 
 import React, { FC, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useImageStyle, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
-import { getAlignments, parseIconData } from "../comp-props";
 import BaseComponent from "../../util/types/BaseComponent";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, checkComponentName, getTabIndex } from "../../util";
 import { Tooltip } from "primereact/tooltip";
 import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import { parseIconData } from "../comp-props/ComponentProperties";
+import useImageStyle from "../../hooks/style-hooks/useImageStyle";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import { getAlignments } from "../comp-props/GetAlignments";
+import Dimension from "../../util/types/Dimension";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server

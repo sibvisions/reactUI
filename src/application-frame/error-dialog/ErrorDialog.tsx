@@ -18,10 +18,10 @@ import { Dialog } from "primereact/dialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import { ListBox } from "primereact/listbox"
 import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
-import { useConstants } from "../../main/hooks";
 import tinycolor from "tinycolor2";
-import { ErrorResponse } from "../../main/response";
-import { concatClassnames } from "../../main/util";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import ErrorResponse from "../../main/response/error/ErrorResponse";
+import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 
 /** Displays an errr-message as dialog */
 const ErrorDialog:FC = () => {

@@ -19,18 +19,23 @@ import { Menubar } from 'primereact/menubar';
 import { useHistory } from "react-router";
 import { Button } from "primereact/button";
 import { MenuItem } from "primereact/menuitem";
-import { useMenuCollapser, useMenuItems, useProfileMenuItems, useEventHandler, useDeviceStatus, useScreenTitle, useConstants } from '../../main/hooks'
-import { appContext } from "../../main/AppProvider";
+import { appContext } from "../../main/contexts/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
-import { concatClassnames } from "../../main/util";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { MenuOptions, VisibleButtons } from "../../main/AppSettings";
-import { EmbeddedContext } from "../../MiddleMan";
-import { ApplicationSettingsResponse } from "../../main/response";
-import { REQUEST_KEYWORDS } from "../../main/request";
 import ContentStore from "../../main/contentstore/ContentStore";
 import Server from "../../main/server/Server";
+import { EmbeddedContext } from "../../main/contexts/EmbedProvider";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import useProfileMenuItems from "../../main/hooks/data-hooks/useProfileMenuItems";
+import useMenuCollapser from "../../main/hooks/event-hooks/useMenuCollapser";
+import useDeviceStatus from "../../main/hooks/event-hooks/useDeviceStatus";
+import useScreenTitle from "../../main/hooks/app-hooks/useScreenTitle";
+import useMenuItems from "../../main/hooks/data-hooks/useMenuItems";
+import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
+import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 
 
 /** Extends the PrimeReact MenuItem with componentId */

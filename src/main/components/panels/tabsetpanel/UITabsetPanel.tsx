@@ -14,13 +14,14 @@
  */
 
 import React, { FC, useCallback, useRef } from "react"
-import { useComponents, useComponentConstants } from "../../../hooks";
-import { IconProps } from "../../comp-props";
-import { IPanel } from "..";
 import { createTabRequest } from "../../../factories/RequestFactory";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import IconProps from "../../comp-props/IconProps";
 import { showTopBar } from "../../topbar/TopBar";
+import { IPanel } from "../panel/UIPanel";
 import TabsetPanelImpl from "./TabsetPanelImpl";
-import { REQUEST_KEYWORDS } from "../../../request";
 
 /** Interface for TabsetPanel */
 export interface ITabsetPanel extends IPanel {

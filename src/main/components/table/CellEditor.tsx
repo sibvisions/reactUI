@@ -15,29 +15,23 @@
 
 import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import _ from "underscore";
-import { 
-    useOutsideClick, 
-    useEventHandler,
-    useMetaData,
-} from "../../hooks";
-import { appContext } from "../../AppProvider";
-import { getFont, IconProps, parseIconData } from "../comp-props";
-import { 
-    CellEditorWrapper, 
-    //CELLEDITOR_CLASSNAMES 
-} from "../editors";
-import { checkComponentName } from "../../util";
-import { ColumnDescription, LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
-import { 
-    DateCellRenderer, 
-    DirectCellRenderer, 
-    ImageCellRenderer, 
-    LinkedCellRenderer, 
-    NumberCellRenderer, 
-    TextCellRenderer,
-    SelectedCellContext
-} from "./";
+import { appContext } from "../../contexts/AppProvider";
+import useMetaData from "../../hooks/data-hooks/useMetaData";
+import useEventHandler from "../../hooks/event-hooks/useEventHandler";
+import useOutsideClick from "../../hooks/event-hooks/useOutsideClick";
+import { ColumnDescription, LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import { getFont, parseIconData } from "../comp-props/ComponentProperties";
+import IconProps from "../comp-props/IconProps";
+import CellEditorWrapper from "../editors/CellEditorWrapper";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
+import DateCellRenderer from "./CellRenderer/DateCellRenderer";
+import DirectCellRenderer from "./CellRenderer/DirectCellRenderer";
+import ImageCellRenderer from "./CellRenderer/ImageCellRenderer";
+import LinkedCellRenderer from "./CellRenderer/LinkedCellRenderer";
+import NumberCellRenderer from "./CellRenderer/NumberCellRenderer";
+import TextCellRenderer from "./CellRenderer/TextCellRenderer";
+import { SelectedCellContext } from "./UITable";
 
 
 export interface IInTableEditor {

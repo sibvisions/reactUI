@@ -14,8 +14,8 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { appContext } from "../../AppProvider";
-import { getScreenSelectedRows } from "../../util";
+import { appContext } from "../../contexts/AppProvider";
+import { getScreenSelectedRows } from "../../util/data-util/GetDataProvidersOfComp";
 
 /**
  * This hook returns every currently selected Row of all dataproviders of a component as Map

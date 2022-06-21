@@ -17,12 +17,12 @@ import React, { FC, useContext } from 'react';
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
-import { Login } from "./application-frame/login/";
 import LoadingScreen from './application-frame/loading/Loadingscreen';
 import type { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';
 import UIManagerV2 from './application-frame/screen-management/ui-manager/UIManagerV2';
-import { appContext } from './main/AppProvider';
+import { appContext } from './main/contexts/AppProvider';
+import Login from './application-frame/login/Login';
 
 
 /**

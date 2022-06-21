@@ -15,11 +15,11 @@
 
 import React, { FC, ReactElement, useContext } from "react";
 import { Dialog } from 'primereact/dialog';
-import { IPanel } from "..";
-import { appContext } from "../../../AppProvider";
+import { appContext } from "../../../contexts/AppProvider";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../../request";
-import { concatClassnames } from "../../../util";
+import { IPanel } from "../panel/UIPanel";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {

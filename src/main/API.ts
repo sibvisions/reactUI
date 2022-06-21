@@ -17,18 +17,22 @@
 import Server from "./server/Server";
 import ContentStore from "./contentstore/ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
-import { ServerMenuButtons } from "./response";
 import AppSettings, { appVersion } from "./AppSettings";
-import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./util/types/custom-types";
 import { History } from "history";
 import React, { ReactElement } from "react";
 import BaseComponent from "./util/types/BaseComponent";
 import { SubscriptionManager } from "./SubscriptionManager";
-import { REQUEST_KEYWORDS } from "./request";
 import BaseServer from "./server/BaseServer";
 import ServerV2 from "./server/ServerV2";
 import BaseContentStore from "./contentstore/BaseContentStore";
 import ContentStoreV2 from "./contentstore/ContentStoreV2";
+import REQUEST_KEYWORDS from "./request/REQUEST_KEYWORDS";
+import { ScreenWrapperOptions } from "./util/types/custom-types/ScreenWrapperType";
+import CustomMenuItem from "./util/types/custom-types/CustomMenuItem";
+import { ServerMenuButtons } from "./response/data/MenuResponse";
+import EditableMenuItem from "./util/types/custom-types/EditableMenuItem";
+import CustomToolbarItem from "./util/types/custom-types/CustomToolbarItem";
+import CustomStartupProps from "./util/types/custom-types/CustomStartupProps";
 
 /** Contains the API functions */
 class API {

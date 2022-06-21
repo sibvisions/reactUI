@@ -17,11 +17,11 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import React, { CSSProperties, FC, useState } from "react";
 import { createResetPasswordRequest } from "../../main/factories/RequestFactory";
-import { useConstants } from "../../main/hooks";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { REQUEST_KEYWORDS } from "../../main/request";
 import { ILoginForm } from "./LoginForm";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 
 /**
  * Returns the reset-form to reset the password of a user.

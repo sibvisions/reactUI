@@ -13,37 +13,26 @@
  * the License.
  */
 
-import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
-import { appContext } from "../../main/AppProvider";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
+import { appContext } from "../../main/contexts/AppProvider";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../screen-management/ResizeHandler";
-import { ResizeContext } from "../screen-management/ui-manager/UIManager";
 import BaseComponent from "../../main/util/types/BaseComponent";
-import { LoginForm, ResetForm } from "./"
+import LoginForm from "./LoginForm"
+import ResetForm from "./ResetForm";
 import MFAText from "./MFAText";
-import { LoginModeType } from "../../main/response";
 import MFAWait from "./MFAWait";
 import MFAURL from "./MFAURL";
+import ILoginCredentials from "./ILoginCredentials";
+import ResizeProvider from "../../main/contexts/ResizeProvider";
+import { LoginModeType } from "../../main/response/login/LoginResponse";
 
 /** 
  * Properties which the dialog will receive when it's rendered
  */
-export interface ILoginCredentials {
-    username: string,
-    password: string
-}
+
 
 type LoginMode = "default"|"reset"|"mFTextInput"|"mFWait"|"mFURL"
-
-/**
- * Renders the DesktopPanel, casted as BaseComponent because we check in other components if the DesktopPanel exists.
- */
-export const DesktopPanelHandler:FC = () => {
-    const context = useContext(appContext);
-    return componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore);
-}
-
-export const LoginContext = createContext<ILoginCredentials>({ username: "", password: "" });
 
 /** Component which handles logging in */
 const Login: FC = () => {
@@ -57,7 +46,7 @@ const Login: FC = () => {
 
     const [loginError, setLoginError] = useState<string|undefined>(context.server.loginError);
 
-    const [loginData] = useState<ILoginCredentials>({ username: "", password: "" });
+    const [loginData, setLoginData] = useState<ILoginCredentials>({ username: "", password: "" });
 
     useEffect(() => {
         context.subscriptions.subscribeToLogin((mode?:LoginModeType, error?:string) => {
@@ -84,44 +73,43 @@ const Login: FC = () => {
     const getCorrectLoginForm = () => {
         const modeFunc = (mode:LoginMode) => setLoginMode(mode);
 
+        const loginDataCallback = (username: string, password: string) => setLoginData({ username: username, password: password })
+
         switch (loginMode) {
             case "default":
-                return <LoginForm changeLoginMode={modeFunc} errorMessage={loginError} />;
+                return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
             case "reset":
-                return <ResetForm changeLoginMode={modeFunc} />;
+                return <ResetForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
             case "mFTextInput":
-                return <MFAText changeLoginMode={modeFunc} />;
+                return <MFAText username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
             case "mFWait":
-                return <MFAWait changeLoginMode={modeFunc} />;
+                return <MFAWait username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
             case "mFURL":
-                return <MFAURL changeLoginMode={modeFunc} />;
+                return <MFAURL username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
             default:
-                return <LoginForm changeLoginMode={modeFunc} errorMessage={loginError} />;
+                return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
 
         }
     }
     
     // If there is a desktop-panel, render it and the login mask "above" it, if not, just display the login mask
     return (
-        <LoginContext.Provider value={loginData}>
-            {(context.appSettings.desktopPanel) ?
-                <ResizeContext.Provider value={{ login: true }}>
-                    <ResizeHandler>
-                        <div className="rc-glasspane login-glass" />
-                        <div className="login-container-with-desktop" ref={sizeRef}>
-                            <DesktopPanelHandler />
-                            <div className="login-form-position-wrapper">
-                                {getCorrectLoginForm()}
-                            </div>
+        (context.appSettings.desktopPanel) ?
+            <ResizeProvider login={true}>
+                <ResizeHandler>
+                    <div className="rc-glasspane login-glass" />
+                    <div className="login-container-with-desktop" ref={sizeRef}>
+                        {componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)}
+                        <div className="login-form-position-wrapper">
+                            {getCorrectLoginForm()}
                         </div>
-                    </ResizeHandler>
-                </ResizeContext.Provider>
-                :
-                <div className="login-container">
-                    {getCorrectLoginForm()}
-                </div>}
-        </LoginContext.Provider>
-
+                    </div>
+                </ResizeHandler>
+            </ResizeProvider>
+            :
+            <div className="login-container">
+                {getCorrectLoginForm()}
+            </div>
     )
 }
 export default Login;

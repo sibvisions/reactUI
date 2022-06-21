@@ -14,7 +14,7 @@
  */
 
 import { useContext } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 
 /**
  * This hook returns the value of a customStartup property set by the user 

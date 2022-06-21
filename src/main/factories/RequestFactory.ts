@@ -14,44 +14,44 @@
  */
 
 /** Request imports */
-import { StartupRequest,
-         LoginRequest,
-         PressButtonRequest,
-         OpenScreenRequest,
-         LogoutRequest,
-         DeviceStatusRequest,
-         SelectRowRequest,
-         FetchRequest,
-         SetValuesRequest,
-         FilterRequest,
-         SetValueRequest,
-         TabRequest,
-         DALSaveRequest,
-         CloseScreenRequest,
-         SelectTreeRequest, 
-         SortRequest,
-         InsertRecordRequest,
-         BaseRequest,
-         ComponentRequest,
-         DataProviderRequest,
-         ChangePasswordRequest,
-         ResetPasswordRequest,
-         SetScreenParameterRequest,
-         MouseRequest,
-         MouseClickedRequest,
-         SaveRequest,
-         ReloadRequest,
-         UIRefreshRequest,
-         RollbackRequest,
-         ChangesRequest,
-         FocusGainedRequest,
-         FocusLostRequest,
-         CloseFrameRequest,
-         CloseContentRequest,
-         DispatchActionRequest,
-         BoundsRequest,
-         AliveRequest} from "../request";
+import CloseContentRequest from "../request/application-ui/CloseContentRequest";
+import CloseFrameRequest from "../request/application-ui/CloseFrameRequest";
+import CloseScreenRequest from "../request/application-ui/CloseScreenRequest";
+import DeviceStatusRequest from "../request/application-ui/DeviceStatusRequest";
+import OpenScreenRequest from "../request/application-ui/OpenScreenRequest";
+import StartupRequest from "../request/application-ui/StartupRequest";
+import UIRefreshRequest from "../request/application-ui/UIRefreshRequest";
+import BaseRequest from "../request/BaseRequest";
+import BoundsRequest from "../request/comp/BoundsRequest";
+import ComponentRequest from "../request/comp/ComponentRequest";
+import SetValueRequest from "../request/comp/SetValueRequest";
+import TabRequest from "../request/comp/TabRequest";
+import DALSaveRequest from "../request/data/DALSaveRequest";
+import DataProviderRequest from "../request/data/DataProviderRequest";
+import FetchRequest from "../request/data/FetchRequest";
+import FilterRequest from "../request/data/FilterRequest";
+import InsertRecordRequest from "../request/data/InsertRecordRequest";
+import SelectRowRequest from "../request/data/SelectRowRequest";
+import SelectTreeRequest from "../request/data/SelectTreeRequest";
+import SetValuesRequest from "../request/data/SetValuesRequest";
+import SortRequest from "../request/data/SortRequest";
+import DispatchActionRequest from "../request/events/DispatchActionRequest";
+import FocusGainedRequest from "../request/events/FocusGainedRequest";
+import FocusLostRequest from "../request/events/FocusLostRequest";
+import MouseClickedRequest from "../request/events/MouseClickedRequest";
+import MouseRequest from "../request/events/MouseRequest";
+import PressButtonRequest from "../request/events/PressButtonRequest";
 import CancelLoginRequest from "../request/login/CancelLoginRequest";
+import ChangePasswordRequest from "../request/login/ChangePasswordRequest";
+import LoginRequest from "../request/login/LoginRequest";
+import LogoutRequest from "../request/login/LogoutRequest";
+import ResetPasswordRequest from "../request/login/ResetPasswordRequest";
+import AliveRequest from "../request/other/AliveRequest";
+import ChangesRequest from "../request/other/ChangesRequest";
+import ReloadRequest from "../request/other/ReloadRequest";
+import RollbackRequest from "../request/other/RollbackRequest";
+import SaveRequest from "../request/other/SaveRequest";
+import SetScreenParameterRequest from "../request/other/SetScreenParameterRequest";
 
 /**
  * Returns the ClientId from the local storage

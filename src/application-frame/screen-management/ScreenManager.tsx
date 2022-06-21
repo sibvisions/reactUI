@@ -15,9 +15,9 @@
 
 import React, { createContext, FC, ReactElement, useContext } from "react";
 import { useParams } from "react-router";
-import { appContext } from "../../main/AppProvider";
+import { appContext } from "../../main/contexts/AppProvider";
+import { getScreenIdFromNavigation } from "../../main/util/component-util/GetScreenNameFromNavigation";
 import WorkScreen from "./workscreen/WorkScreen";
-import { getScreenIdFromNavigation } from "../../main/util";
 
 export interface IScreenContext {
     screen?: ReactElement;

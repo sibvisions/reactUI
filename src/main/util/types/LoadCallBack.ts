@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { Dimension } from ".."
+import Dimension from "./Dimension"
 
 /** Type for the LoadCallBack function */
 type LoadCallBack = (id: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => void

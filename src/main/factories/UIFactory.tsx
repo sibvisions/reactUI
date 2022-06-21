@@ -15,35 +15,12 @@
 
 import React, { FC } from "react"
 import BaseComponent from "../util/types/BaseComponent";
-import { UIGroupPanel,
-        UIPanel,
-        UIPopupWrapper,
-        UIScrollPanel,
-        UISplitPanel,
-        UITabsetPanel } from '../components/panels'
-import { UIButton,
-        UICheckBox,
-        UIMenuButton,
-        UIToggleButton,
-        UIRadioButton } from "../components/buttons"
 import UILabel from "../components/label/UILabel";
 import Dummy from "../components/dummy";
-import { CellEditorWrapper, UIEditorCheckBox,
-        UIEditorChoice,
-        UIEditorDate,
-        //UIEditorImage,
-        UIEditorLinked,
-        UIEditorNumber,
-        UIEditorText,
-        //CELLEDITOR_CLASSNAMES 
-    } from "../components/editors"
-import { UITable } from "../components/table";
 import UIIcon from "../components/icon/UIIcon";
-import { UIPassword, UIText, UITextArea } from "../components/text"
 import UIChart from "../components/chart/UIChart";
 import UIGauge from "../components/gauge/UIGauge";
-import { UIMapGoogle, UIMapOSM } from "../components/map"
-import { UICustomComponentWrapper, ICustomComponentWrapper } from '../components/custom-comp/index'
+import UICustomComponentWrapper, { ICustomComponentWrapper } from '../components/custom-comp/UICustomComponentWrapper';
 import UITree from "../components/tree/UITree";
 import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
 import UIToolBarPanel from "../components/panels/toolbarPanel/UIToolBarPanel";
@@ -51,12 +28,35 @@ import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import UIMobileLauncher from "../components/launcher/UIMobileLauncher";
 import UIInternalFrame from "../components/frame/UIInternalFrame";
-import { IRCCellEditor } from "../components/editors/CellEditorWrapper";
+import CellEditorWrapper, { IRCCellEditor } from "../components/editors/CellEditorWrapper";
 import UIDesktopPanelV2 from "../components/panels/desktopPanel/UIDesktopPanelV2";
 import { appVersion } from "../AppSettings";
 import BaseContentStore from "../contentstore/BaseContentStore";
 import { UIEditorImage } from "../components/editors/image/UIEditorImage";
 import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
+import UIEditorText from "../components/editors/text/UIEditorText";
+import UIEditorNumber from "../components/editors/number/UIEditorNumber";
+import UIEditorDate from "../components/editors/date/UIEditorDate";
+import UIEditorChoice from "../components/editors/choice/UIEditorChoice";
+import UIEditorCheckBox from "../components/editors/checkbox/UIEditorCheckbox";
+import UIEditorLinked from "../components/editors/linked/UIEditorLinked";
+import UIPopupWrapper from "../components/panels/popup/UIPopupWrapper";
+import UISplitPanel from "../components/panels/split/UISplitPanel";
+import UIButton from "../components/buttons/button/UIButton";
+import UIToggleButton from "../components/buttons/togglebutton/UIToggleButton";
+import UIMenuButton from "../components/buttons/menubutton/UIMenuButton";
+import UIRadioButton from "../components/buttons/radiobutton/UIRadioButton";
+import UICheckBox from "../components/buttons/checkbox/UICheckBox";
+import UIText from "../components/text/UIText";
+import UITextArea from "../components/text/UITextArea";
+import UIPassword from "../components/text/UIPassword";
+import UIPanel from "../components/panels/panel/UIPanel";
+import UIMapGoogle from "../components/map/UIMapGoogle";
+import UIMapOSM from "../components/map/UIMapOSM";
+import UITable from "../components/table/UITable";
+import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
+import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
+import UITabsetPanel from "../components/panels/tabsetpanel/UITabsetPanel";
 
 
 /**

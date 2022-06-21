@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { DataProviderRequest } from "..";
+import DataProviderRequest from "./DataProviderRequest"
+
 
 /** Interface for FetchRequest */
 interface FetchRequest extends DataProviderRequest {

@@ -15,11 +15,16 @@
 
 import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
-import { useComponentConstants, useMouseListener } from "../../hooks";
 import BaseComponent from "../../util/types/BaseComponent";
-import {getAlignments, translateTextAlign} from "../comp-props";
-import {parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, concatClassnames, checkComponentName, getTabIndex} from "../../util";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import { getAlignments, translateTextAlign } from "../comp-props/GetAlignments";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
 /**
  * Displays a simple label

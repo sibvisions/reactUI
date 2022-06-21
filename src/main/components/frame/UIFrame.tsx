@@ -15,20 +15,23 @@
 
 import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
 import { createCloseFrameRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
 import BaseComponent from "../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import { parseIconData } from "../comp-props";
-import { Layout } from "../layouts";
 import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";
 import { showTopBar } from "../topbar/TopBar";
-import { concatClassnames, Dimension, parseMaxSize, parseMinSize, parsePrefSize } from "../../util";
-import { ComponentSizes, useConstants } from "../../hooks";
 import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
 import { IInternalFrame } from "./UIInternalFrame";
 import { panelGetStyle } from "../panels/panel/UIPanel";
 import ContentStoreV2 from "../../contentstore/ContentStoreV2";
+import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
+import useConstants from "../../hooks/components-hooks/useConstants";
+import Dimension from "../../util/types/Dimension";
+import { parseIconData } from "../comp-props/ComponentProperties";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import Layout from "../layouts/Layout";
 
 export interface IFrame extends IInternalFrame {
     frameStyle?: CSSProperties,

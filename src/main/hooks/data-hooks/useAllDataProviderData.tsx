@@ -14,8 +14,8 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { appContext } from "../../AppProvider";
-import { getScreensData } from "../../util";
+import { appContext } from "../../contexts/AppProvider";
+import { getScreensData } from "../../util/data-util/GetDataProvidersOfComp";
 
 /**
  * This hook returns the current data of all dataproviders of a component as Map

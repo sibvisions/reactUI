@@ -14,8 +14,8 @@
  */
 
 import React, { FC, useMemo } from "react";
-import { ICellEditor } from "../../editors";
-import { ICellRender } from "../";
+import { ICellEditor } from "../../editors/IEditor";
+import { ICellRender } from "../CellEditor";
 
 const TextCellRenderer: FC<ICellRender> = (props) => {
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditor;

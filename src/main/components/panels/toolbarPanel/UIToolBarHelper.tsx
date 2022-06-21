@@ -14,15 +14,20 @@
  */
 
 import React, { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef } from "react";
-import { useComponents, useMouseListener, useComponentConstants, useLayoutValue } from "../../../hooks";
-import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, concatClassnames, checkComponentName } from "../../../util";
-import { appContext } from "../../../AppProvider";
-import { IPanel } from "..";
+import { appContext } from "../../../contexts/AppProvider";
 import { Tooltip } from "primereact/tooltip";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import { appVersion } from "../../../AppSettings";
-import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import useLayoutValue from "../../../hooks/style-hooks/useLayoutValue";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import Dimension from "../../../util/types/Dimension";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import Layout from "../../layouts/Layout";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 
 /** Interface for ToolbarHelper */
 export interface IToolBarHelper extends IPanel {

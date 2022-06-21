@@ -14,15 +14,15 @@
  */
 
 import { CSSProperties, FC, useMemo } from "react";
-import { AppContextType } from "../../AppProvider";
+import { AppContextType } from "../../contexts/AppProvider";
 import { createEditor } from "../../factories/UIFactory";
-import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response";
-import { IInTableEditor } from "../table";
+import useEditorConstants from "../../hooks/components-hooks/useEditorConstants";
+import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
+import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
+import { CellFormatting, IInTableEditor } from "../table/CellEditor";
 import { TopBarContextType } from "../topbar/TopBar";
-import { useEditorConstants, useFetchMissingData } from "../../hooks";
 import { IEditor } from "./IEditor";
 import { isCellEditorReadOnly } from "./text/UIEditorText";
-import { CellFormatting } from "../table";
 
 /** Interface which contains values the CellEditorWrapper passes down to the CellEditor it renders */
 export interface ICellEditorWrapperProps {

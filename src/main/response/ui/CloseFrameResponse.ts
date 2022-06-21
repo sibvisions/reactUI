@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { ComponentResponse } from "..";
+import ComponentResponse from "../ComponentResponse";
 
 /** Interface for CloseFrameResponse */
 interface CloseFrameResponse extends ComponentResponse {

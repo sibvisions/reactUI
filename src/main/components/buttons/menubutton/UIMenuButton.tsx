@@ -16,16 +16,24 @@
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
-import { useButtonStyling, useComponentConstants, useEventHandler, useMouseListener } from "../../../hooks";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
-import { IButton } from "..";
-import { parseIconData } from "../../comp-props";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, getFocusComponent, checkComponentName, isCompDisabled } from "../../../util";
 import BaseComponent from "../../../util/types/BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { MenuItem } from "primereact/menuitem";
-import { REQUEST_KEYWORDS } from "../../../request";
+import { IButton } from "../IButton";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { parseIconData } from "../../comp-props/ComponentProperties";
+import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
+import { getFocusComponent } from "../../../util/html-util/GetFocusComponent";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {

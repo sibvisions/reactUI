@@ -13,8 +13,8 @@
  * the License.
  */
 
-import { Margins } from "../../components/layouts";
-import { LoadCallBack } from "..";
+import Margins from "../../components/layouts/models/Margins"
+import LoadCallBack from "./LoadCallBack"
 
 /** Interface for BaseComponent every components possible properties */
 interface BaseComponent {

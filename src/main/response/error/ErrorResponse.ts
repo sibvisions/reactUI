@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { MessageResponse } from "..";
+import MessageResponse from "../ui/MessageResponse"
+
 
 /** Interface for ErrorResponse */
 interface ErrorResponse extends MessageResponse {

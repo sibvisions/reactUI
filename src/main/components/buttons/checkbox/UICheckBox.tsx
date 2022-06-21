@@ -16,10 +16,17 @@
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { Checkbox } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
-import { useButtonStyling, useComponentConstants, useMouseListener } from "../../../hooks";
-import { IButtonSelectable } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, sendSetValue, isCompDisabled } from "../../../util";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { IButtonSelectable } from "../IButton";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { sendSetValue } from "../../../util/server-util/SendSetValues";
+import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 
 /**
  * This component displays a CheckBox and its label

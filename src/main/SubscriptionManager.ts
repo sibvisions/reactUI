@@ -17,12 +17,14 @@ import AppSettings from "./AppSettings";
 import BaseContentStore from "./contentstore/BaseContentStore";
 import ContentStore from "./contentstore/ContentStore"
 import ContentStoreV2 from "./contentstore/ContentStoreV2";
-import { DialogResponse, ErrorResponse, LoginModeType, MessageResponse } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
-import { MFAURLType } from "./response/login/LoginResponse";
+import { LoginModeType, MFAURLType } from "./response/login/LoginResponse";
 import Server from "./server/Server";
 import BaseServer from "./server/BaseServer";
 import ServerV2 from "./server/ServerV2";
+import ErrorResponse from "./response/error/ErrorResponse";
+import MessageResponse from "./response/ui/MessageResponse";
+import DialogResponse from "./response/ui/DialogResponse";
 
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {

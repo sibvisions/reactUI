@@ -14,13 +14,18 @@
  */
 
 import React, { CSSProperties, FC, useCallback, useContext, useMemo, useRef } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
-import { Anchor, Constraints, Gaps, Margins, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ILayout } from ".";
-import { ComponentSizes } from "../../hooks";
 import BaseComponent from "../../util/types/BaseComponent";
-import { Dimension } from "../../util";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
+import { ILayout } from "./Layout";
+import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
+import Anchor from "./models/Anchor";
+import Constraints from "./models/Constraints";
+import Margins from "./models/Margins";
+import Gaps from "./models/Gaps";
+import Dimension from "../../util/types/Dimension";
+import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.

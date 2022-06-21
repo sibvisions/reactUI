@@ -14,9 +14,10 @@
  */
 
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
-import { ILayout, Bounds } from ".";
+import { ILayout } from "./Layout";
+import Bounds from "./models/Bounds";
 
 /**
  * The NullLayout allows to layout the components in an absolute manner

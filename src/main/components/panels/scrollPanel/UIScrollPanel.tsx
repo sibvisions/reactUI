@@ -15,12 +15,17 @@
 
 import React, { CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
 import { Tooltip } from "primereact/tooltip";
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
-import { IPanel } from "..";
-import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, concatClassnames, checkComponentName } from "../../../util";
 import { appVersion } from "../../../AppSettings";
-import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import Dimension from "../../../util/types/Dimension";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import Layout from "../../layouts/Layout";
 
 /**
  * This component displays a panel in which you will be able to scroll
