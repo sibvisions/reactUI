@@ -247,8 +247,7 @@ export default abstract class BaseServer {
                         handleResponse
                     ).then(results => {
                         resolve(results)
-                    }).catch(() => resolve()))
-                    //.catch((error) => reject(error)))
+                    }).catch(() => resolve(null)))
                     this.advanceRequestQueue();
                 }
             }
