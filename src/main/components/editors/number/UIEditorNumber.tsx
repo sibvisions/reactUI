@@ -28,6 +28,9 @@ import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -121,7 +124,6 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
             return numberInput.current.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
         }
         else {
-            //@ts-ignore
             return false
         }
     }
@@ -129,7 +131,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && numberRef.current) {
-            // @ts-ignore
+            //@ts-ignore
             sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), numberRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);

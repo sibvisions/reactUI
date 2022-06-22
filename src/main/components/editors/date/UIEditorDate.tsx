@@ -29,6 +29,7 @@ import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {

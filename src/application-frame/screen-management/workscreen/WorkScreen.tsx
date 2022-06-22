@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, {FC, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from "react";
+import React, {FC, ReactElement, useCallback, useContext, useLayoutEffect, useMemo, useState} from "react";
 import { appContext } from "../../../main/contexts/AppProvider";
 import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
 import ResizeHandler from "../ResizeHandler";

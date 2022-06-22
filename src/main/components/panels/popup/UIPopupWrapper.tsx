@@ -64,7 +64,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
 
     return (
         <Dialog
-            className={concatClassnames("rc-popup", baseProps.style)}
+            className={concatClassnames("rc-popup", baseProps.style, "basti")}
             header={baseProps.screen_title_ || baseProps.content_title_}
             visible={baseProps.screen_modal_ || baseProps.content_modal_}
             onHide={handleOnHide} 

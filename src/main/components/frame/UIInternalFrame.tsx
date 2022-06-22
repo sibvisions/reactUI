@@ -17,7 +17,6 @@ import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayout
 import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
-import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { IWindow } from "../launcher/UIMobileLauncher";
 import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelV2";
 import { checkSizes, sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
@@ -29,6 +28,7 @@ import useEventHandler from "../../hooks/event-hooks/useEventHandler";
 import Dimension from "../../util/types/Dimension";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import Bounds from "../layouts/models/Bounds";
 
 export interface IInternalFrame extends IWindow {
     iconifiable?: boolean
