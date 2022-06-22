@@ -176,11 +176,11 @@ export default abstract class BaseServer {
                     if (endpoint === REQUEST_KEYWORDS.UI_REFRESH) {
                         this.uiRefreshInProgress = true;
                     }
-
+                    
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                         this.timeoutMs, 
-                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode, handleResponse)
+                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse)
                     )
                         .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                         .then(result => {
@@ -218,11 +218,11 @@ export default abstract class BaseServer {
                                     this.subManager.emitErrorBarProperties(false, true, splitErr[0], splitErr[1]);
                                 }
                                 else {
-                                    this.subManager.emitErrorBarProperties(false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                    this.subManager.emitErrorBarProperties(false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                                 }
                             }
                             else {
-                                this.subManager.emitErrorBarProperties(false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                this.subManager.emitErrorBarProperties(false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
                             if (error !== "no valid json") {
                                 this.subManager.emitErrorBarVisible(true);
@@ -247,7 +247,8 @@ export default abstract class BaseServer {
                         handleResponse
                     ).then(results => {
                         resolve(results)
-                    }).catch((error) => reject(error)))
+                    }).catch(() => resolve()))
+                    //.catch((error) => reject(error)))
                     this.advanceRequestQueue();
                 }
             }

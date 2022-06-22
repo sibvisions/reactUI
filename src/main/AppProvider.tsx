@@ -249,6 +249,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             contextState.server.sendRequest(req, (preserve && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
             .then(result => {
+                contextState.appSettings.setAppReadyParam("startup");
                 if (!preserve) {
                     sessionStorage.setItem("startup", JSON.stringify(result));
                 }
@@ -260,7 +261,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }, contextState.server.aliveInterval)
 
                 initWS(contextState.server.BASE_URL);
-            });
+            })
+            .catch(() => {});
         }
 
         const fetchAppConfig = () => {
