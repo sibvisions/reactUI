@@ -61,19 +61,37 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
     return (
-        <TabsetPanelImpl 
-            {...props} 
-            components={props.components}
-            compSizes={props.compSizes}
-            compStyle={props.compStyle}
-            layoutStyle={props.layoutStyle}
-            selectedIndex={selectedIndex}
-            onTabChange={(i:number) => setSelectedIndex(i)}
-            onTabClose={(i:number) => {
-                const closeReq = createCloseFrameRequest();
-                closeReq.componentId = props.components[i].props.name;
-                showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
-            }} />
+        <>
+            <TabsetPanelImpl 
+                {...props} 
+                //components={props.components}
+                components={props.components.filter(comp => comp.props.modal !== true)}
+                compSizes={props.compSizes}
+                compStyle={props.compStyle}
+                layoutStyle={props.layoutStyle}
+                selectedIndex={selectedIndex}
+                onTabChange={(i:number) => setSelectedIndex(i)}
+                onTabClose={(i:number) => {
+                    const closeReq = createCloseFrameRequest();
+                    closeReq.componentId = props.components[i].props.name;
+                    showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
+                }} />
+                <Layout
+                    id={props.id}
+                    className={props.className}
+                    layoutData={props.layoutData}
+                    layout={props.layout}
+                    preferredSize={parsePrefSize(props.preferredSize)}
+                    minimumSize={parseMinSize(props.minimumSize)}
+                    maximumSize={parseMaxSize(props.maximumSize)}
+                    compSizes={props.compSizes}
+                    components={props.components.filter(comp => comp.props.modal)}
+                    style={panelGetStyle(false, props.layoutStyle)}
+                    reportSize={() => {}}
+                    panelType="DesktopPanel"
+                    parent={props.parent} />
+        </>
+
     )
 }
 

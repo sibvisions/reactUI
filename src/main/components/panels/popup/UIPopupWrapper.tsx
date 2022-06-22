@@ -69,6 +69,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
             visible={baseProps.screen_modal_ || baseProps.content_modal_}
             onHide={handleOnHide} 
             resizable={false}
+            baseZIndex={1010}
             >
             {baseProps.render}
         </Dialog>

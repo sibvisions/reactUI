@@ -207,6 +207,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         if (props.isCellEditor) {
             filterReq.columnNames = [props.columnName]
         }
+        
         await props.context.server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => {
             if (!initialFilter) {
                 setInitialFilter(true);

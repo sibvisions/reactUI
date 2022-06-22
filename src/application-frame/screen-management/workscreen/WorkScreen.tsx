@@ -51,7 +51,7 @@ const WorkScreen: FC = () => {
     }, [activeScreens]);
 
     // Subscribes the WorkScreen component to the active-screens to have the up to date active-screen state
-    useEffect(() => {
+    useLayoutEffect(() => {
         context.subscriptions.subscribeToActiveScreens("workscreen", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 
         return () => {

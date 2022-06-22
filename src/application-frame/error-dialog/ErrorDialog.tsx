@@ -144,7 +144,7 @@ const ErrorDialog:FC = () => {
             footer={errorFooter} 
             visible={visible} 
             onHide={handleOnHide} 
-            baseZIndex={1005}
+            baseZIndex={1020}
             resizable >
             <i className="error-dialog-icon pi pi-times-circle" />
             <span style={{paddingTop: "4px"}}>{errorProps?.message}</span>

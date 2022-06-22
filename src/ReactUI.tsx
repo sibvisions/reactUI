@@ -34,7 +34,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
-    
+  
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     if (context.version === 2) {
         return (

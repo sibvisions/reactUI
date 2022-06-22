@@ -387,8 +387,6 @@ export default abstract class BaseContentStore {
             this.deleteChildren(child.id, child.className);
             this.flatContent.delete(child.id);
         });
-
-        this.subManager.parentSubscriber.get(id)?.apply(undefined, []);
     }
 
     /**

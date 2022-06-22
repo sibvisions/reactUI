@@ -128,12 +128,14 @@ export default class ContentStoreV2 extends BaseContentStore {
                             }
                             else {
                                 // Close screen and delete InternalFrame when first child of InternalFrame is a workscreen or login
-                                const foundWorkScreen = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id && 
-                                    (isWorkScreen(comp as IPanel) || comp.classNameEventSourceRef === "Login"));
-                                if (foundWorkScreen) {
+                                const foundChild = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id)
+                                if (foundChild) {
                                     this.flatContent.delete(newComponent.id);
-                                    this.closeScreen(foundWorkScreen.name);
-                                }   
+                                    this.removedContent.set(newComponent.id, existingComponent);
+                                    if (isWorkScreen(foundChild as IPanel)) {
+                                        this.closeScreen(foundChild.name);
+                                    }
+                                }
                             }
                         }
                         else {

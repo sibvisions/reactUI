@@ -57,7 +57,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
         if(onLoadCallback && passwordRef.current){
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), passwordRef.current, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
         <Password
@@ -75,7 +75,7 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             onChange={event => setPwValue(event.currentTarget.value)} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
             onBlur={() => {
-                if (isCompDisabled(props)) {
+                if (!isCompDisabled(props)) {
                     sendSetValue(props.name, pwValue, context.server, lastValue.current, topbar);
                     lastValue.current = pwValue;
     

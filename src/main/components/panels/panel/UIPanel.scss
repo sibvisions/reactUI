@@ -18,21 +18,30 @@
         padding: 0.5rem;
 
         .p-dialog-title {
-            padding-left: 0.5rem;
+            //padding-left: 0.5rem;
             font-weight: 600;
             font-size: 1.25rem;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .p-dialog-header-icon:focus {
-            box-shadow: none;
-            -webkit-box-shadow: none;
+
+        .p-dialog-header-icons {
+            margin-top: 3px;
+            margin-left: 0.5rem;
+
+            .p-dialog-header-icon {
+                width: 1.5rem;
+                height: 1.5rem;
+
+                &:focus {
+                    box-shadow: none;
+                    -webkit-box-shadow: none;
+                }
+            }
         }
-        .p-dialog-header-icon {
-            width: 1.5rem;
-            height: 1.5rem;
-        }
+
+
     }
     .p-dialog-content {
         padding: 0;

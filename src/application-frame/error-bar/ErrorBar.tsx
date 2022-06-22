@@ -71,6 +71,12 @@ const ErrorBar:FC = () => {
         }
     }, [context.subscriptions])
 
+    useEffect(() => {
+        if (alreadySent.current) {
+            alreadySent.current = false;
+        }
+    }, [errorProps])
+
     /**
      * Restarts the app when the session expires
      */
@@ -95,6 +101,7 @@ const ErrorBar:FC = () => {
             }
             else {
                 alreadySent.current = true;
+                context.subscriptions.emitErrorBarVisible(false);
                 showTopBar(errorProps.retry(), topbar);
             }
         }
