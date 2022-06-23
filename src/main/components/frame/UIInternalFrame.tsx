@@ -18,7 +18,7 @@ import { Rnd } from "react-rnd";
 import _ from "underscore";
 import { createBoundsRequest } from "../../factories/RequestFactory";
 import { IWindow } from "../launcher/UIMobileLauncher";
-import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelV2";
+import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelFull";
 import { checkSizes, sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import UIFrame from "./UIFrame";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
@@ -180,7 +180,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
 
     // Initially sets the framestyle and sends a boundsrquest to the server, also tells the frameContext the name of the opened frame
     useEffect(() => {
-        if (context.version === 2 && context.launcherReady && initFrame.current) {
+        if (context.transferType === "full" && context.launcherReady && initFrame.current) {
             if (rndRef.current) {
                 if (bounds && (bounds.height || bounds.width)) {
                     rndRef.current.updateSize({ width: bounds.width + 8, height: bounds.height + 35 });

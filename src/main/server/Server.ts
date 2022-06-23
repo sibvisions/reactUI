@@ -415,7 +415,7 @@ class Server extends BaseServer {
      * Opens a fileSelectDialog and sends the selected file to the server
      * @param uploadData - the uploadResponse
      */
-    upload(uploadData: UploadResponse){
+    upload(uploadData: UploadResponse) {
         const inputElem = document.createElement('input');
         inputElem.type = 'file';
         inputElem.click()

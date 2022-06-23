@@ -51,7 +51,7 @@ const UIMobileLauncher: FC<IWindow> = (baseProps) => {
                 children={children} 
                 components={components.filter(comp => comp.props["~additional"] !== true)} 
                 compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined}
-                sizeCallback={() => context.version === 2 ? context.launcherReady = true : undefined} />
+                sizeCallback={() => context.transferType === "full" ? context.launcherReady = true : undefined} />
         </div>
 
     )

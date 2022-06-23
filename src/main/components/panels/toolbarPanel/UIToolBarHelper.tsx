@@ -17,7 +17,6 @@ import React, { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef } 
 import { appContext } from "../../../contexts/AppProvider";
 import { Tooltip } from "primereact/tooltip";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
-import { appVersion } from "../../../AppSettings";
 import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
 import useLayoutValue from "../../../hooks/style-hooks/useLayoutValue";
 import useComponents from "../../../hooks/components-hooks/useComponents";
@@ -157,7 +156,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
                         props.screen_size_,
-                        appVersion.version
+                        context.transferType
                     )}
                     parent={props.parent} />
             </div>

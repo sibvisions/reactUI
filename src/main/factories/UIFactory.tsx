@@ -29,8 +29,7 @@ import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import UIMobileLauncher from "../components/launcher/UIMobileLauncher";
 import UIInternalFrame from "../components/frame/UIInternalFrame";
 import CellEditorWrapper, { IRCCellEditor } from "../components/editors/CellEditorWrapper";
-import UIDesktopPanelV2 from "../components/panels/desktopPanel/UIDesktopPanelV2";
-import { appVersion } from "../AppSettings";
+import UIDesktopPanelFull from "../components/panels/desktopPanel/UIDesktopPanelFull";
 import BaseContentStore from "../contentstore/BaseContentStore";
 import { UIEditorImage } from "../components/editors/image/UIEditorImage";
 import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
@@ -158,7 +157,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>([...baseComponen
 
 const componentsMapV2 = new Map<string, React.ComponentType<any>>([...baseComponentMap])
 .set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
-.set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanelV2 {...props} />)
+.set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanelFull {...props} />)
 .set(COMPONENT_CLASSNAMES.GROUPPANEL, props => <UIGroupPanel {...props} />)
 .set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => <UIScrollPanel {...props} />)
 .set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => <UIToolBarPanel {...props} />)
@@ -194,7 +193,7 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Base
         }
     }
     else {
-        Comp = appVersion.version === 2 ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
+        Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
 
         if (Comp) {
             return <Comp {...baseComponent} key={baseComponent.id} />;

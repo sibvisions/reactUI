@@ -22,7 +22,7 @@ import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusR
 import { IRCCellEditor } from "../CellEditorWrapper";
 import Server from "../../../server/Server";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
-import ServerV2 from "../../../server/ServerV2";
+import ServerFull from "../../../server/ServerFull";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import { ICellEditor } from "../IEditor";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
@@ -63,7 +63,7 @@ export interface IEditorLinked extends IRCCellEditor {
     cellEditor: ICellEditorLinked
 }
 
-export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server|ServerV2, contentStore: BaseContentStore) {
+export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server|ServerFull, contentStore: BaseContentStore) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook)
     if (currentData
         && displayCol

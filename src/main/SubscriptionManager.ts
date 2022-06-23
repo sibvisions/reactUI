@@ -16,12 +16,12 @@
 import AppSettings from "./AppSettings";
 import BaseContentStore from "./contentstore/BaseContentStore";
 import ContentStore from "./contentstore/ContentStore"
-import ContentStoreV2 from "./contentstore/ContentStoreV2";
+import ContentStoreFull from "./contentstore/ContentStoreFull";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { LoginModeType, MFAURLType } from "./response/login/LoginResponse";
 import Server from "./server/Server";
 import BaseServer from "./server/BaseServer";
-import ServerV2 from "./server/ServerV2";
+import ServerFull from "./server/ServerFull";
 import ErrorResponse from "./response/error/ErrorResponse";
 import MessageResponse from "./response/ui/MessageResponse";
 import DialogResponse from "./response/ui/DialogResponse";
@@ -29,12 +29,12 @@ import DialogResponse from "./response/ui/DialogResponse";
 /** Manages subscriptions and handles the subscriber eventss */
 export class SubscriptionManager {
     /** Contentstore instance */
-    contentStore: BaseContentStore|ContentStore|ContentStoreV2;
+    contentStore: BaseContentStore|ContentStore|ContentStoreFull;
 
     /** AppSettings instance */
     appSettings: AppSettings;
 
-    server: BaseServer|Server|ServerV2;
+    server: BaseServer|Server|ServerFull;
 
     /** 
      * A Map which stores components which want to subscribe to their properties, 
@@ -186,13 +186,13 @@ export class SubscriptionManager {
      * @constructor constructs submanager instance
      * @param store - contentstore instance
      */
-    constructor(store: BaseContentStore|ContentStore|ContentStoreV2) {
+    constructor(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.contentStore = store;
         this.appSettings = new AppSettings(store, this);
         this.server = new Server(store as ContentStore, this, this.appSettings);
     }
 
-    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.contentStore = store;
     }
 
@@ -200,7 +200,7 @@ export class SubscriptionManager {
         this.appSettings = appSettings;
     }
 
-    setServer(server:Server|ServerV2) {
+    setServer(server:Server|ServerFull) {
         this.server = server;
     }
 

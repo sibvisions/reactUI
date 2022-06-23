@@ -17,7 +17,6 @@ import React, { CSSProperties, FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
 import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
-import { appVersion } from "../../../AppSettings";
 import Dimension from "../../../util/types/Dimension";
 import LoadCallBack from "../../../util/types/LoadCallBack";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
@@ -108,10 +107,10 @@ export function panelReportSize(id: string,
  * @param modalSize - The size of the popup sent by the server
  * @returns the style of the panel/layout.
  */
-export function panelGetStyle(group: boolean, layoutStyle?: CSSProperties, prefSize?: Dimension, modal?: boolean, modalSize?: string, version?: number) {
+export function panelGetStyle(group: boolean, layoutStyle?: CSSProperties, prefSize?: Dimension, modal?: boolean, modalSize?: string, version?: "partial"|"full") {
     let s: CSSProperties = {};
     /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-    if (modal && version !== 2) {
+    if (modal && version !== "full") {
         const screenSize = parsePrefSize(modalSize);
         if (screenSize) {
             s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
@@ -219,7 +218,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
                         props.screen_size_,
-                        appVersion.version
+                        context.transferType
                     )}
                     isToolBar={props.className === COMPONENT_CLASSNAMES.TOOLBAR}
                     parent={props.parent} />

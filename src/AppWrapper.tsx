@@ -84,7 +84,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     }, [context.subscriptions]);
 
     useEffect(() => {
-        if (context.version !== 2) {
+        if (context.transferType !== "full") {
             history.listen(() => {
                 if (history.action === "POP") {
                     let currentlyOpening = false;

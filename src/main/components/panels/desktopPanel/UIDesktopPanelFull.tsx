@@ -95,7 +95,7 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
     )
 }
 
-const UIDesktopPanelV2: FC<IDesktopPanel> = (baseProps) => {
+const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
     const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
@@ -190,4 +190,4 @@ const UIDesktopPanelV2: FC<IDesktopPanel> = (baseProps) => {
         </OpenFrameContext.Provider>
     )
 }
-export default UIDesktopPanelV2
+export default UIDesktopPanelFull

@@ -36,6 +36,7 @@ export interface IEditor extends BaseComponent{
     cellEditor_foreground_?:string
     cellEditor_font_?:string
     cellEditor_placeholder_?:string
+    cellEditor_text_?:string
     columnName: string,
     dataRow: string,
     text:string,

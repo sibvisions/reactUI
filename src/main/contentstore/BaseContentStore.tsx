@@ -32,6 +32,7 @@ import Timer from "../util/other-util/Timer";
 import { IPanel } from "../components/panels/panel/UIPanel";
 import RecordFormat from "../util/types/RecordFormat";
 import { getMetaData } from "../util/data-util/GetMetaData";
+import AppSettings from "../AppSettings";
 
 export type ActiveScreen = {
     name: string,
@@ -59,6 +60,8 @@ export interface IDataBook {
 export default abstract class BaseContentStore {
     /** subscriptionManager instance */
     abstract subManager:SubscriptionManager
+
+    abstract appSettings: AppSettings;
 
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
@@ -125,8 +128,12 @@ export default abstract class BaseContentStore {
      * Sets the subscription-manager
      * @param subManager - the subscription-manager instance 
      */
-     setSubscriptionManager(subManager:SubscriptionManager) {
+    setSubscriptionManager(subManager:SubscriptionManager) {
         this.subManager = subManager;
+    }
+
+    setAppSettings(appSettings:AppSettings) {
+        this.appSettings = appSettings;
     }
 
     setStartupProperties(arr:CustomStartupProps[]) {

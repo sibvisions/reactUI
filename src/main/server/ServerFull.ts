@@ -78,7 +78,7 @@ enum REQUEST_ENDPOINTS {
     SAVE = "/api/save"
 }
 
-export default class ServerV2 extends BaseServer {
+export default class ServerFull extends BaseServer {
     componentExists(name:string) {
         for (let [, value] of this.contentStore.flatContent.entries()) {
             if (value.name === name) {

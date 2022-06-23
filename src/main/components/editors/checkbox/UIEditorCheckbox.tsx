@@ -188,7 +188,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                         fontSize: props.cellStyle?.fontSize
                     }}
                     htmlFor={id}>
-                    {props.cellEditor?.text}
+                    {props.cellEditor_text_ ? props.cellEditor_text_ : props.cellEditor?.text}
                 </label>
             }
 
