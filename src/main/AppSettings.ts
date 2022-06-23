@@ -23,8 +23,6 @@ import ContentStoreFull from "./contentstore/ContentStoreFull";
 import { LoginModeType } from "./response/login/LoginResponse";
 import ApplicationMetaDataResponse from "./response/app/ApplicationMetaDataResponse";
 
-export const appVersion = { version: 1 }
-
 type ApplicationMetaData = {
     clientId: string,
     langCode: string,
