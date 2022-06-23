@@ -20,7 +20,7 @@ import { concatClassnames } from "../../../main/util";
 import ScreenManager from "../ScreenManager";
 import { isCorporation, ResizeContext } from "./UIManager";
 
-const UIManagerV2: FC<any> = () => {
+const UIManagerFull: FC<any> = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -68,4 +68,4 @@ const UIManagerV2: FC<any> = () => {
         </div>
     )
 }
-export default UIManagerV2
+export default UIManagerFull

@@ -20,9 +20,7 @@ import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 import BaseContentStore from "./contentstore/BaseContentStore";
-import ContentStoreV2 from "./contentstore/ContentStoreV2";
-
-export const appVersion = { version: 1 }
+import ContentStoreFull from "./contentstore/ContentStoreFull";
 
 type ApplicationMetaData = {
     clientId: string,
@@ -78,7 +76,7 @@ export default class AppSettings {
         this.#subManager = subManager
     }
 
-    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.#contentStore = store;
     }
 
@@ -102,6 +100,8 @@ export default class AppSettings {
 
     /** The devicemode of the client */
     deviceMode:string = "desktop";
+
+    transferType:"partial"|"full" = "partial"
 
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,
@@ -382,7 +382,7 @@ export default class AppSettings {
                 break;
         }
 
-        if (appVersion.version === 2) {
+        if (this.transferType === "full") {
             if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded && this.appReadyParams.startupDone) {
                 this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
                 this.appReady = true;

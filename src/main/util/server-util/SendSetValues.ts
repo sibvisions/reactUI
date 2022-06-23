@@ -17,7 +17,7 @@ import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
 import Server from "../../server/Server";
 import { createSetValueRequest, createSetValuesRequest } from "../../factories/RequestFactory";
 import { showTopBar, TopBarContextType } from "../../components/topbar/TopBar";
-import ServerV2 from "../../server/ServerV2";
+import ServerFull from "../../server/ServerFull";
 
 /**
  * Builds a setValuesRequest and sends it to the server
@@ -32,7 +32,7 @@ export async function sendSetValues(
     name: string,
     columnName: string | string[],
     value: string | number | boolean | Array<any> | null,
-    server: Server|ServerV2,
+    server: Server|ServerFull,
     lastValue: string | number | boolean | Array<any> | null | undefined,
     topbar: TopBarContextType,
     rowIndex?: number,
@@ -78,7 +78,7 @@ export async function sendSetValues(
 export async function sendSetValue(
     name: string,
     value: string | number | boolean | Array<any> | null,
-    server: Server|ServerV2,
+    server: Server|ServerFull,
     lastValue: string | number | boolean | Array<any> | null | undefined,
     topbar:TopBarContextType) {
         const req = createSetValueRequest();

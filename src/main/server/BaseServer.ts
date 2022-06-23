@@ -16,11 +16,11 @@
 import { History } from "history";
 import _ from "underscore";
 import API from "../API";
-import AppSettings, { appVersion } from "../AppSettings";
+import AppSettings from "../AppSettings";
 import { IPanel } from "../components/panels";
 import BaseContentStore from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
-import ContentStoreV2 from "../contentstore/ContentStoreV2";
+import ContentStoreFull from "../contentstore/ContentStoreFull";
 import { createFetchRequest } from "../factories/RequestFactory";
 import TreePath from "../model/TreePath";
 import { REQUEST_KEYWORDS } from "../request";
@@ -30,7 +30,7 @@ import { SubscriptionManager } from "../SubscriptionManager";
 
 export default abstract class BaseServer {
     /** Contentstore instance */
-    contentStore: BaseContentStore|ContentStore|ContentStoreV2;
+    contentStore: BaseContentStore|ContentStore|ContentStoreFull;
 
     /** SubscriptionManager instance */
     subManager:SubscriptionManager;
@@ -90,7 +90,7 @@ export default abstract class BaseServer {
      * @param subManager - subscription-manager instance
      * @param history - the history
      */
-     constructor(store: ContentStore|ContentStoreV2, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
+     constructor(store: ContentStore|ContentStoreFull, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
         this.contentStore = store;
         this.subManager = subManager;
         this.appSettings = appSettings;
@@ -555,7 +555,7 @@ export default abstract class BaseServer {
      */
      sessionExpired(expData: SessionExpiredResponse) {
         if (this.uiRefreshInProgress) {
-            if (appVersion.version !== 2) {
+            if (this.appSettings.transferType !== "full") {
                 this.history?.push("/login");
             }
             this.appSettings.setAppReadyParamFalse();

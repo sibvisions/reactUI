@@ -18,7 +18,7 @@ import Server from "./server/Server";
 import ContentStore from "./contentstore/ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
 import { ServerMenuButtons } from "./response";
-import AppSettings, { appVersion } from "./AppSettings";
+import AppSettings from "./AppSettings";
 import { CustomMenuItem, CustomStartupProps, CustomToolbarItem, EditableMenuItem, ScreenWrapperOptions } from "./util/types/custom-types";
 import { History } from "history";
 import React, { ReactElement } from "react";
@@ -26,9 +26,9 @@ import BaseComponent from "./util/types/BaseComponent";
 import { SubscriptionManager } from "./SubscriptionManager";
 import { REQUEST_KEYWORDS } from "./request";
 import BaseServer from "./server/BaseServer";
-import ServerV2 from "./server/ServerV2";
+import ServerFull from "./server/ServerFull";
 import BaseContentStore from "./contentstore/BaseContentStore";
-import ContentStoreV2 from "./contentstore/ContentStoreV2";
+import ContentStoreFull from "./contentstore/ContentStoreFull";
 
 /** Contains the API functions */
 class API {
@@ -36,7 +36,7 @@ class API {
      * @constructor constructs api instance
      * @param server - server instance
      */
-    constructor (server: BaseServer|Server|ServerV2, store:BaseContentStore|ContentStore|ContentStoreV2, appSettings:AppSettings, sub:SubscriptionManager, history?:History<any>) {
+    constructor (server: BaseServer|Server|ServerFull, store:BaseContentStore|ContentStore|ContentStoreFull, appSettings:AppSettings, sub:SubscriptionManager, history?:History<any>) {
         this.#server = server;
         this.#contentStore = store;
         this.#appSettings = appSettings;
@@ -45,9 +45,9 @@ class API {
     }
 
     /** Server instance */
-    #server: BaseServer|Server|ServerV2;
+    #server: BaseServer|Server|ServerFull;
     /** Contentstore instance */
-    #contentStore: BaseContentStore|ContentStore|ContentStoreV2
+    #contentStore: BaseContentStore|ContentStore|ContentStoreFull
     /** AppSettings instance */
     #appSettings: AppSettings
     /** the react routers history object */
@@ -55,11 +55,11 @@ class API {
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager
 
-    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.#contentStore = store;
     }
 
-    setServer(server: BaseServer|Server|ServerV2) {
+    setServer(server: BaseServer|Server|ServerFull) {
         this.#server = server;
     }
 
@@ -111,7 +111,7 @@ class API {
      * @param screenName - the screen to be closed
      */
     sendCloseScreenRequest(id: string, parameter?: { [key: string]: any }, popup?:boolean) {
-        if (appVersion.version !== 2) {
+        if (this.#appSettings.transferType !== "full") {
             const csRequest = createCloseScreenRequest();
             csRequest.componentId = id;
             if (parameter) {

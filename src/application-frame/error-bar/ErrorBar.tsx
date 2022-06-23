@@ -15,7 +15,6 @@
 
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
-import { appVersion } from "../../main/AppSettings";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { concatClassnames } from "../../main/util";
 import { useConstants, useEventHandler } from "../../moduleIndex";
@@ -80,7 +79,7 @@ const ErrorBar:FC = () => {
      * Restarts the app when the session expires
      */
     const handleRestart = () => {
-        if (appVersion.version !== 2) {
+        if (context.transferType !== "full") {
             history.push("/login");
         }
         context.appSettings.setAppReadyParamFalse();

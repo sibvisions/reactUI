@@ -28,7 +28,7 @@ import { ComponentSizes, useConstants } from "../../hooks";
 import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
 import { IInternalFrame } from "./UIInternalFrame";
 import { panelGetStyle } from "../panels/panel/UIPanel";
-import ContentStoreV2 from "../../contentstore/ContentStoreV2";
+import ContentStoreFull from "../../contentstore/ContentStoreFull";
 
 export interface IFrame extends IInternalFrame {
     frameStyle?: CSSProperties,
@@ -43,7 +43,7 @@ export interface IFrame extends IInternalFrame {
 const UIFrame: FC<IFrame> = (props) => {
     const [context, topbar] = useConstants();
 
-    const castedContentStore = context.contentStore as ContentStoreV2
+    const castedContentStore = context.contentStore as ContentStoreFull
 
     const menuBarProps = useMemo(() => castedContentStore.getMenuBar(props.id), [props.children]);
 

@@ -20,12 +20,14 @@ import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel"
 import { SubscriptionManager } from "../SubscriptionManager";
 import { isWorkScreen } from "../util";
 import BaseComponent from "../util/types/BaseComponent";
-import { IFrame } from "../components/frame/UIFrame";
+import AppSettings from "../AppSettings";
 
-export default class ContentStoreV2 extends BaseContentStore {
+export default class ContentStoreFull extends BaseContentStore {
     /** subscriptionManager instance */
     subManager: SubscriptionManager = new SubscriptionManager(this);
 
+    /** AppSettings instance */
+    appSettings: AppSettings = new AppSettings(this, this.subManager);
     /**
      * Sets the currently active screens or clears the array
      * @param screenInfo - the screen-info of the newly opened screen or nothing to clear active screens

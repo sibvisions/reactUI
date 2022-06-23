@@ -21,7 +21,6 @@ import { appContext } from "../../../AppProvider";
 import { IPanel } from "..";
 import { Tooltip } from "primereact/tooltip";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
-import { appVersion } from "../../../AppSettings";
 import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /** Interface for ToolbarHelper */
@@ -152,7 +151,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
                         props.screen_size_,
-                        appVersion.version
+                        context.transferType
                     )}
                     parent={props.parent} />
             </div>

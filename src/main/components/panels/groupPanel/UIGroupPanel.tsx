@@ -19,7 +19,6 @@ import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } 
 import { Layout } from "../../layouts";
 import { IPanel } from "..";
 import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName, concatClassnames } from "../../../util";
-import { appVersion } from "../../../AppSettings";
 import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 
 /**
@@ -104,7 +103,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                             prefSize,
                             props.screen_modal_ || props.content_modal_,
                             props.screen_size_,
-                            appVersion.version
+                            context.transferType
                         )}
                         parent={props.parent} />
                 </div>

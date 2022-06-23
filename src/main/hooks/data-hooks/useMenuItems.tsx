@@ -25,7 +25,7 @@ import { createDispatchActionRequest } from "../../factories/RequestFactory";
 import { isFAIcon } from "../event-hooks/useButtonMouseImages";
 import { REQUEST_KEYWORDS } from "../../request";
 import { concatClassnames } from "../../util";
-import ContentStoreV2 from "../../contentstore/ContentStoreV2";
+import ContentStoreFull from "../../contentstore/ContentStoreFull";
 
 const useMenuItems = (menus?:string[]) => {
     /** Use context to gain access for contentstore and server methods */
@@ -125,7 +125,7 @@ const useMenuItems = (menus?:string[]) => {
 
             const menuGroup = context.contentStore.getComponentById(menuId);
             if (menuGroup) {
-                const menuItems = Array.from((context.contentStore as ContentStoreV2).getChildren(menuId).values()).filter(item => item.visible !== false);
+                const menuItems = Array.from((context.contentStore as ContentStoreFull).getChildren(menuId).values()).filter(item => item.visible !== false);
                 const iconData = parseIconData(undefined, menuGroup.image);
                 primeMenu = {
                     label: menuGroup.text,
@@ -136,7 +136,7 @@ const useMenuItems = (menus?:string[]) => {
             return primeMenu
         }
 
-        if (context.version === 2) {
+        if (context.transferType === "full") {
             if (menus) {
                 const tempMenuItems:MenuItem[] = []
                 menus.forEach((menu) => {

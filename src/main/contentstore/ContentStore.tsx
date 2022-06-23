@@ -22,11 +22,14 @@ import { ScreenWrapperOptions } from "../util/types/custom-types";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
+import AppSettings from "../AppSettings";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore extends BaseContentStore {
     /** subscriptionManager instance */
     subManager: SubscriptionManager = new SubscriptionManager(this);
+
+    appSettings: AppSettings = new AppSettings(this, this.subManager);
 
     menuItems = new Map<string, Array<ServerMenuButtons>>();
 

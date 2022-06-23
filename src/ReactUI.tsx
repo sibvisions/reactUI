@@ -21,7 +21,7 @@ import { Login } from "./application-frame/login/";
 import LoadingScreen from './application-frame/loading/Loadingscreen';
 import { ICustomContent } from "./MiddleMan";
 import AppWrapper from './AppWrapper';
-import UIManagerV2 from './application-frame/screen-management/ui-manager/UIManagerV2';
+import UIManagerFull from './application-frame/screen-management/ui-manager/UIManagerFull';
 import { appContext } from './main/AppProvider';
 
 
@@ -36,12 +36,12 @@ const ReactUI: FC<ICustomContent> = (props) => {
     PrimeReact.ripple = true;
   
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
-    if (context.version === 2) {
+    if (context.transferType === "full") {
         return (
             <AppWrapper>
                 {context.appReady ?
                     <Switch>
-                        <Route path={""} render={() => <UIManagerV2 />} />
+                        <Route path={""} render={() => <UIManagerFull />} />
                     </Switch>
                     :
                     <LoadingScreen />

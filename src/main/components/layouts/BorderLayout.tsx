@@ -22,7 +22,6 @@ import { Dimension } from "../../util";
 import Gaps from "./models/Gaps";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { appVersion } from "../../AppSettings";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -292,7 +291,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     else if (component.constraints === "East") {
                         sizeMap.set(component.id, eastCSS);
                     }
-                    else if (panelType === "DesktopPanel" && appVersion.version === 2) {
+                    else if (panelType === "DesktopPanel" && context.transferType === "full") {
                         sizeMap.set(component.id, { height: (style?.height as number) * 0.75, width: (style?.width as number) * 0.75 })
                     }
                 }
