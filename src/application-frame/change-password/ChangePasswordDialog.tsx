@@ -62,6 +62,17 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
         return () => context.subscriptions.unsubscribeFromChangePasswordVisible();
     }, [context.subscriptions]);
 
+    useEffect(() => {
+        setChangePWData(prevState => ({ ...prevState, username: props.username }));
+    }, [props.username])
+
+    useEffect(() => {
+        if (props.password) {
+            setChangePWData(prevState => ({ ...prevState, password: props.password as string }));
+        }
+        
+    }, [props.password])
+
     /**
      * Sends a login request to change the password of a user.
      * Checks if the new password is legitimate and sends the correct request based on logged in or not
@@ -104,7 +115,6 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 context.subscriptions.emitMenuUpdate();
             }
         }
-        
     }
 
     return (
