@@ -21,4 +21,3 @@ export type { default as CustomStartupProps } from './CustomStartupProps';
 export type { default as CustomScreenParameter } from './CustomScreenParameter';
 export type { default as CustomToolbarItem } from './CustomToolbarItem';
 export type { default as EditableMenuItem } from './EditableMenuItem';
-export type { default as ExtendableComponent } from './ExtendableComponent';
