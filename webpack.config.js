@@ -35,8 +35,8 @@ module.exports = () => {
             }),
             new CircularDependencyPlugin({
                 exclude: /a\.js|node_modules/,
-                include: /dir/,
-                failOnError: true,
+                include: /src/,
+                failOnError: false,
                 allowAsyncCycles: false,
                 cwd: process.cwd(),
             }),

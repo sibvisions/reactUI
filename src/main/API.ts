@@ -428,5 +428,17 @@ class API {
             this.#appSettings.cssToAddWhenReady.push(link);
         }
     }
+
+    extendComponent(name: string, component: ReactElement) {
+        const existingComp = this.#contentStore.getComponentByName(name);
+        if (existingComp) {
+            for (let newPropName in component.props) {
+                //@ts-ignore
+                existingComp[newPropName] = component.props[newPropName];
+            }
+            this.#subManager.propertiesSubscriber.get(existingComp.id)?.apply(undefined, [existingComp]);
+        }
+
+    }
 }
 export default API

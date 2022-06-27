@@ -69,7 +69,11 @@ const UIButton: FC<IButton> = (baseProps) => {
 
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
-    const onButtonPress = () => {
+    const onButtonPress = (event:any) => {
+        if (props.onClick) {
+            props.onClick(event)
+        }
+
         if (props.eventAction) {
             const req = createDispatchActionRequest();
             req.componentId = props.name;
@@ -118,7 +122,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnStyle.iconPos}
                 tabIndex={btnStyle.tabIndex}
-                onClick={onButtonPress}
+                onClick={(event) => onButtonPress(event)}
                 onFocus={(event) => {
                     if (props.eventFocusGained) {
                         onFocusGained(props.name, context.server);
