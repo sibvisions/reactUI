@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { BaseResponse } from "..";
+import BaseResponse from "../BaseResponse"
 
 export type DeviceStatus = "Full"|"Small"|"Mini";
 

@@ -14,11 +14,11 @@
  */
 
 import React, { FC, useContext, useMemo } from "react";
-import { appContext } from "../../../AppProvider";
-import { NumericColumnDescription } from "../../../response";
-import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../../../util";
-import { ICellEditorNumber } from "../../editors";
-import { ICellRender } from "../";
+import { appContext } from "../../../contexts/AppProvider";
+import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
+import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../../../util/component-util/NumberProperties";
+import { ICellEditorNumber } from "../../editors/number/UIEditorNumber";
+import { ICellRender } from "../CellEditor";
 
 const NumberCellRenderer: FC<ICellRender> = (props) => {
     /** Use context to gain access for contentstore and server methods */

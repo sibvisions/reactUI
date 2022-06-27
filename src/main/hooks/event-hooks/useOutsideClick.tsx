@@ -14,7 +14,7 @@
  */
 
 import { useEffect } from "react"
-import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response"
+import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
 
 /**
  * This hook adds a clickListener to the document, when a LinkedCellEditor or a DateCellEditor is opened while in-cell editing,

@@ -14,14 +14,15 @@
  */
 
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
-import { IPanel } from "../components/panels";
-import { REQUEST_KEYWORDS } from "../request";
-import { CloseScreenResponse, RESPONSE_NAMES } from "../response";
+import { IPanel } from "../components/panels/panel/UIPanel";
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
+import CloseScreenResponse from "../response/ui/CloseScreenResponse";
 import UIResponse from "../response/ui/UIResponse";
 import BaseServer from "./BaseServer";
 
 /** Enum for server request endpoints version 2 */
-enum REQUEST_ENDPOINTS{
+enum REQUEST_ENDPOINTS {
     //application/UI
     STARTUP = "/v2/api/startup",
     EXIT = "/v2/api/exit",
@@ -77,7 +78,7 @@ enum REQUEST_ENDPOINTS{
     SAVE = "/api/save"
 }
 
-export default class ServerV2 extends BaseServer {
+export default class ServerFull extends BaseServer {
     componentExists(name:string) {
         for (let [, value] of this.contentStore.flatContent.entries()) {
             if (value.name === name) {
@@ -135,6 +136,7 @@ export default class ServerV2 extends BaseServer {
     .set(REQUEST_KEYWORDS.SET_VALUE, REQUEST_ENDPOINTS.SET_VALUE)
     .set(REQUEST_KEYWORDS.SELECT_TAB, REQUEST_ENDPOINTS.SELECT_TAB)
     .set(REQUEST_KEYWORDS.CLOSE_TAB, REQUEST_ENDPOINTS.CLOSE_TAB)
+    .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
     .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
     .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE);
 

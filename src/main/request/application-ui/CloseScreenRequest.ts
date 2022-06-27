@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { ParameterRequest } from "..";
+import ParameterRequest from "../comp/ParameterRequest";
+
 /** Interface for CloseScreenRequest */
 interface CloseScreenRequest extends ParameterRequest {
     className?:string

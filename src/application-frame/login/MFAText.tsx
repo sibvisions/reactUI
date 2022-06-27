@@ -15,13 +15,13 @@
 
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, useContext, useState } from "react";
+import React, { CSSProperties, FC, useState } from "react";
+import { createCancelLoginRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { REQUEST_KEYWORDS } from "../../main/request";
-import { createCancelLoginRequest, createLoginRequest, useConstants } from "../../moduleIndex";
-import { LoginContext } from "./Login";
 import { ILoginForm } from "./LoginForm";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a TextInput authentication
@@ -30,8 +30,6 @@ import { ILoginForm } from "./LoginForm";
 const MFAText:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
     const [context, topbar, translations] = useConstants();
-
-    const loginContext = useContext(LoginContext);
 
     /** State of the email field */
     const [code, setCode] = useState<string>("");
@@ -45,8 +43,8 @@ const MFAText:FC<ILoginForm> = (props) => {
         }
         else {
             const codeReq = createLoginRequest();
-            codeReq.username = loginContext.username;
-            codeReq.password = loginContext.password;
+            codeReq.username = props.username;
+            codeReq.password = props.password;
             codeReq.mode = "mFTextInput";
             codeReq.confirmationCode = code;
             showTopBar(context.server.sendRequest(codeReq, REQUEST_KEYWORDS.LOGIN), topbar)

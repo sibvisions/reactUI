@@ -15,28 +15,25 @@
 
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { InputNumber } from "primereact/inputnumber";
-import { useEventHandler, useMouseListener, usePopupMenu } from "../../../hooks"
-import { ICellEditor } from "..";
-import { getDecimalLength, 
-         getGrouping,
-         getPrimePrefix, 
-         getScaleDigits, 
-         sendSetValues, 
-         sendOnLoadCallback, 
-         parsePrefSize, 
-         parseMinSize, 
-         parseMaxSize,
-         handleEnterKey,
-         concatClassnames,
-         checkComponentName,
-         getTabIndex} from "../../../util";
-import { getTextAlignment } from "../../comp-props";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
-import { NumericColumnDescription } from "../../../response";
 import { IRCCellEditor } from "../CellEditorWrapper";
+import { ICellEditor } from "../IEditor";
+import { getTextAlignment } from "../../comp-props/GetAlignments";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { getDecimalLength, getGrouping, getPrimePrefix, getScaleDigits } from "../../../util/component-util/NumberProperties";
+import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
+import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
+import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { getTabIndex } from "../../../util/component-util/GetTabIndex";
+import { sendSetValues } from "../../../util/server-util/SendSetValues";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 
 /** Interface for cellEditor property of NumberCellEditor */
-export interface ICellEditorNumber extends ICellEditor{
+export interface ICellEditorNumber extends ICellEditor {
     numberFormat: string,
 }
 
@@ -127,7 +124,6 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
             return numberInput.current.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
         }
         else {
-            //@ts-ignore
             return false
         }
     }
@@ -135,7 +131,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && numberRef.current) {
-            // @ts-ignore
+            //@ts-ignore
             sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), numberRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);

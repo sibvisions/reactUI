@@ -18,24 +18,25 @@ import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvent } from "r
 import 'leaflet/dist/leaflet.css';
 import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
-import { useProperties, useDataProviderData, useMouseListener, usePopupMenu, useLayoutValue } from "../../hooks";
-import { appContext } from "../../AppProvider";
-import { getMarkerIcon, 
-         parseMapLocation, 
-         parsePrefSize, 
-         parseMinSize, 
-         parseMaxSize, 
-         sendOnLoadCallback, 
-         sendSetValues, 
-         sendMapFetchRequests, 
-         sortGroupDataOSM, 
-         sendSaveRequest, 
-         MapLocation,
-         checkComponentName,
-         getTabIndex} from "../../util";
+import { appContext } from "../../contexts/AppProvider";
 import BaseComponent from "../../util/types/BaseComponent";
-import { IconProps } from "../comp-props";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import MapLocation from "../../util/types/MapLocation";
+import useLayoutValue from "../../hooks/style-hooks/useLayoutValue";
+import useProperties from "../../hooks/data-hooks/useProperties";
+import { parseMapLocation, parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
+import { sortGroupDataOSM } from "../../util/component-util/SortGroupData";
+import { sendMapFetchRequests } from "../../util/server-util/SendMapFetchRequests";
+import { sendSetValues } from "../../util/server-util/SendSetValues";
+import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
+import IconProps from "../comp-props/IconProps";
+import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
 
 /** Interface for Map components */
 export interface IMap extends BaseComponent {

@@ -14,13 +14,14 @@
  */
 
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
-import { appContext } from "../../../main/AppProvider";
+import { appContext } from "../../../main/contexts/AppProvider";
 import { MenuOptions, VisibleButtons } from "../../../main/AppSettings";
-import { concatClassnames } from "../../../main/util";
 import ScreenManager from "../ScreenManager";
-import { isCorporation, ResizeContext } from "./UIManager";
+import { isCorporation } from "../../../main/util/server-util/IsCorporation";
+import ResizeProvider from "../../../main/contexts/ResizeProvider";
+import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 
-const UIManagerV2: FC<any> = () => {
+const UIManagerFull: FC<any> = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -61,11 +62,11 @@ const UIManagerV2: FC<any> = () => {
                     menuOptions.toolBar ? "toolbar-visible" : "",
                     !menuOptions.menuBar ? "menu-not-visible" : "",
                 )}>
-                    <ResizeContext.Provider value={{ login: false, mobileStandard: mobileStandard, setMobileStandard: (active:boolean) => setMobileStandard(active) }}>
+                    <ResizeProvider login={false} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
                         <ScreenManager />
-                    </ResizeContext.Provider>
+                    </ResizeProvider>
                 </div>
         </div>
     )
 }
-export default UIManagerV2
+export default UIManagerFull

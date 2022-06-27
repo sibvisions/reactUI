@@ -14,14 +14,18 @@
  */
 
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-import {appContext} from "../../AppProvider";
+import {appContext} from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
-import { ILayout, Gaps, FlowGrid, HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT, ORIENTATION } from ".";
-import { Dimension } from "../../util";
 import Margins from "./models/Margins";
 import BaseComponent from "../../util/types/BaseComponent";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
+import { ILayout } from "./Layout";
+import Gaps from "./models/Gaps";
+import { ORIENTATION } from "./models/Anchor";
+import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
+import { FlowGrid } from "./models/FlowGrid";
+import Dimension from "../../util/types/Dimension";
 
 /**
  * A flow layout arranges components in a directional flow, muchlike lines of text in a paragraph.

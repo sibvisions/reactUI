@@ -14,7 +14,7 @@
  */
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import { IEditor } from "../../components/editors";
+import { IEditor } from "../../components/editors/IEditor";
 import { getColorProperties, getFontProperties } from "./useComponentStyle";
 
 /**

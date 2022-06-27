@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { firstCharToLower, firstCharToUpper } from "../util";
+import { firstCharToLower } from "../util/string-util/FirstCharToLower";
+import { firstCharToUpper } from "../util/string-util/FirstCharToUpper";
 
 /** the supported operator types. */
 export enum OperatorType

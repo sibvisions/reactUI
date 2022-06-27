@@ -14,10 +14,14 @@
  */
 
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-import {appContext} from "../../AppProvider";
+import {appContext} from "../../contexts/AppProvider";
 import {LayoutContext} from "../../LayoutContext";
-import { ILayout, Gaps, CellConstraints, Margins, GridSize } from ".";
-import { Dimension } from "../../util";
+import Dimension from "../../util/types/Dimension";
+import { ILayout } from "./Layout";
+import CellConstraints from "./models/CellConstraints";
+import Gaps from "./models/Gaps";
+import GridSize from "./models/GridSize";
+import Margins from "./models/Margins";
 
 /**
  * The GridLayout is a component that lays out a container's

@@ -16,12 +16,13 @@
 import React, { CSSProperties, FC, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
-import { createCancelLoginRequest, useConstants } from "../../moduleIndex";
 import { ILoginForm } from "./LoginForm";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { REQUEST_KEYWORDS } from "../../main/request";
 import { MFAURLType } from "../../main/response/login/LoginResponse";
 import UIGauge, { GAUGE_STYLES } from "../../main/components/gauge/UIGauge";
+import { createCancelLoginRequest } from "../../main/factories/RequestFactory";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a Code authentication

@@ -17,12 +17,13 @@ import React, { FC, FormEvent, useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dialog } from 'primereact/dialog';
-import { useConstants } from "../../main/hooks";
 import { createChangePasswordRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { BaseResponse, RESPONSE_NAMES } from "../../main/response";
-import { ILoginCredentials } from "../login";
-import { REQUEST_KEYWORDS } from "../../main/request";
+import ILoginCredentials from "../login/ILoginCredentials";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import BaseResponse from "../../main/response/BaseResponse";
+import RESPONSE_NAMES from "../../main/response/RESPONSE_NAMES";
 
 // Interface for the ChangePasswordDialog
 interface IChangePasswordDialog  {
@@ -60,6 +61,17 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     
         return () => context.subscriptions.unsubscribeFromChangePasswordVisible();
     }, [context.subscriptions]);
+
+    useEffect(() => {
+        setChangePWData(prevState => ({ ...prevState, username: props.username }));
+    }, [props.username])
+
+    useEffect(() => {
+        if (props.password) {
+            setChangePWData(prevState => ({ ...prevState, password: props.password as string }));
+        }
+        
+    }, [props.password])
 
     /**
      * Sends a login request to change the password of a user.
@@ -103,7 +115,6 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 context.subscriptions.emitMenuUpdate();
             }
         }
-        
     }
 
     return (

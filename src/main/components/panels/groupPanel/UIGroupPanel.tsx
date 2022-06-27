@@ -15,12 +15,16 @@
 
 import React, { CSSProperties, FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-import { useComponentConstants, useComponents, useMouseListener, usePopupMenu } from "../../../hooks";
-import { Layout } from "../../layouts";
-import { IPanel } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName, concatClassnames } from "../../../util";
-import { appVersion } from "../../../AppSettings";
-import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import Dimension from "../../../util/types/Dimension";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import Layout from "../../layouts/Layout";
 
 /**
  * This component is a panel with a header, useful to group components
@@ -104,7 +108,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                             prefSize,
                             props.screen_modal_ || props.content_modal_,
                             props.screen_size_,
-                            appVersion.version
+                            context.transferType
                         )}
                         parent={props.parent} />
                 </div>

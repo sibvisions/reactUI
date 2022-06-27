@@ -14,7 +14,7 @@
  */
 
 import { useContext, useEffect, useMemo, useState } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 
 /**
  * This hook returns the current state of either the entire selectedRow or the value of the column of the selectedRow 

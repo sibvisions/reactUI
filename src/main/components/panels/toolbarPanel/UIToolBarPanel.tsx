@@ -15,12 +15,15 @@
 
 import React, { FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
-import { useComponents, useMouseListener, usePopupMenu, useComponentConstants } from "../../../hooks";
-import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, checkComponentName } from "../../../util";
-import { IPanel } from "..";
-import { appVersion } from "../../../AppSettings";
-import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import Dimension from "../../../util/types/Dimension";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import Layout from "../../layouts/Layout";
 
 /** Interface for ToolbarPanels */
 export interface IToolBarPanel extends IPanel {
@@ -106,7 +109,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
                         props.screen_size_,
-                        appVersion.version
+                        context.transferType
                     )}
                     parent={props.parent}
                 />

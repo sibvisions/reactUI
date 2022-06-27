@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { ComponentResponse } from "..";
+import ComponentResponse from "../ComponentResponse"
 
 export interface BaseMenuButton {
     componentId: string,

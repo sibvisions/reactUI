@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { BaseRequest } from "..";
+import BaseRequest from "../BaseRequest";
 
 interface ResetPasswordRequest extends BaseRequest {
     identifier?: string

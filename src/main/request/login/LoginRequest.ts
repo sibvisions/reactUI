@@ -13,8 +13,8 @@
  * the License.
  */
 
-import { LoginModeType } from "../../response";
-import { BaseRequest } from "..";
+import { LoginModeType } from "../../response/login/LoginResponse";
+import BaseRequest from "../BaseRequest";
 
 /** Interface for LoginRequest */
 interface LoginRequest extends BaseRequest {

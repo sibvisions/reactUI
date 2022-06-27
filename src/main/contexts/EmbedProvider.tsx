@@ -13,7 +13,19 @@
  * the License.
  */
 
-export {default as ScreenWrapperManager} from "./ScreenWrapperManager";
-export {default as ScreenWrapper} from "./ScreenWrapper";
-export {default as UICustomComponentWrapper} from "./UICustomComponentWrapper";
-export type {ICustomComponentWrapper} from "./UICustomComponentWrapper";
+import React, { createContext, FC } from "react";
+
+export const EmbeddedContext = createContext<boolean>(false);
+
+interface IEmbedContext {
+    embedOptions?:{ [key:string]:any }
+}
+
+const EmbedProvider: FC<IEmbedContext> = (props) => {
+    return (
+        <EmbeddedContext.Provider value={props.embedOptions !== undefined ? true : false}>
+            {props.children}
+        </EmbeddedContext.Provider>
+    )
+}
+export default EmbedProvider

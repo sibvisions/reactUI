@@ -15,11 +15,11 @@
 
 import React, { FC, ReactElement, useContext } from "react";
 import { Dialog } from 'primereact/dialog';
-import { IPanel } from "..";
-import { appContext } from "../../../AppProvider";
+import { appContext } from "../../../contexts/AppProvider";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../../request";
-import { concatClassnames } from "../../../util";
+import { IPanel } from "../panel/UIPanel";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -41,7 +41,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
             csRequest.componentId = baseProps.name;
             context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
-                    if (context.version !== 2) {
+                    if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
                     }
                     context.contentStore.closeScreen(baseProps.name);
@@ -53,7 +53,7 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
             ccRequest.componentId = baseProps.name;
             context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
-                    if (context.version !== 2) {
+                    if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
                     }
                     context.contentStore.closeScreen(baseProps.name, true);
@@ -64,11 +64,12 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
 
     return (
         <Dialog
-            className={concatClassnames("rc-popup", baseProps.style)}
+            className={concatClassnames("rc-popup", baseProps.style, "basti")}
             header={baseProps.screen_title_ || baseProps.content_title_}
             visible={baseProps.screen_modal_ || baseProps.content_modal_}
             onHide={handleOnHide} 
             resizable={false}
+            baseZIndex={1010}
             >
             {baseProps.render}
         </Dialog>

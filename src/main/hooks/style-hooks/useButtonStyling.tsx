@@ -14,10 +14,12 @@
  */
 
 import { CSSProperties, useMemo } from "react";
-import { IButton } from "../../components/buttons";
+import { IButton } from "../../components/buttons/IButton";
+import { getMargins, parseIconData } from "../../components/comp-props/ComponentProperties";
+import { getAlignments } from "../../components/comp-props/GetAlignments";
+import IconProps from "../../components/comp-props/IconProps";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
-import { getAlignments, getMargins, IconProps, parseIconData } from "../../components/comp-props";
-import { getTabIndex } from "../../util";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
 interface IButtonStyle {
     style: CSSProperties,

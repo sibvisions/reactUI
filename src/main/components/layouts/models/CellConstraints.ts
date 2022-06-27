@@ -13,8 +13,7 @@
  * the License.
  */
 
-/** Other imports */
-import { Margins } from "..";
+import Margins from "./Margins"
 
 /** Class for the CellConstraints of GridLayout */
 class CellConstraints{

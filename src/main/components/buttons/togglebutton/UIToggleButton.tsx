@@ -16,13 +16,19 @@
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { ToggleButton, ToggleButtonIconPositionType } from 'primereact/togglebutton';
 import tinycolor from 'tinycolor2';
-import { useButtonMouseImages, useMouseListener, useComponentConstants, useButtonStyling } from "../../../hooks";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
-import { IButtonSelectable } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName } from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
-import { REQUEST_KEYWORDS } from "../../../request";
+import { IButtonSelectable } from "../IButton";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
+import useButtonMouseImages from "../../../hooks/event-hooks/useButtonMouseImages";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 
 /**
  * This component displays a Button which can be toggled on and off

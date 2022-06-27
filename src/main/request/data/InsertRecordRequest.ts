@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { DataProviderRequest } from "..";
+import DataProviderRequest from "./DataProviderRequest"
 
 /** Interface for InsertRecordRequest */
 interface InsertRecordRequest extends DataProviderRequest {

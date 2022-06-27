@@ -17,27 +17,35 @@ import React, { createContext, FC, useCallback, useEffect, useLayoutEffect, useM
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import _ from "underscore";
-import { useDataProviderData, 
-         useRowSelect, 
-         useMultipleEventHandler, 
-         useSortDefinitions, 
-         useFetchMissingData,
-         useMouseListener,
-         useMetaData,
-         usePopupMenu,
-         useComponentConstants} from "../../hooks";
 import BaseComponent from "../../util/types/BaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
-import { SortDefinition, SelectFilter, REQUEST_KEYWORDS } from "../../request";
-import { LengthBasedColumnDescription, MetaDataResponse, NumericColumnDescription } from "../../response";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, Dimension, concatClassnames, getFocusComponent, checkComponentName, getTabIndex } from "../../util";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
-import { CELLEDITOR_CLASSNAMES } from "../editors";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
-import { CellEditor } from "./";
+import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
+import MetaDataResponse, { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useMetaData from "../../hooks/data-hooks/useMetaData";
+import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
+import useSortDefinitions from "../../hooks/data-hooks/useSortDefinitions";
+import useRowSelect from "../../hooks/data-hooks/useRowSelect";
+import { SortDefinition } from "../../request/data/SortRequest";
+import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { SelectFilter } from "../../request/data/SelectRowRequest";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import { getFocusComponent } from "../../util/html-util/GetFocusComponent";
+import { CellEditor } from "./CellEditor";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import Dimension from "../../util/types/Dimension";
 
 
 /** Interface for Table */

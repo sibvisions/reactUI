@@ -14,7 +14,7 @@
  */
 
 import { useContext, useEffect, useRef, useState } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 import { DeviceStatus } from "../../response/event/DeviceStatusResponse";
 
 /**

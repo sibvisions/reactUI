@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { ScaleType } from "../../components/editors";
+import { ScaleType } from "../../components/editors/number/UIEditorNumber";
 
 /**
  * Returns true, if there is a ',' in the number format to enable grouping

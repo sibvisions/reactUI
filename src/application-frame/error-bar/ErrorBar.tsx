@@ -15,10 +15,10 @@
 
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
-import { appVersion } from "../../main/AppSettings";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { concatClassnames } from "../../main/util";
-import { useConstants, useEventHandler } from "../../moduleIndex";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
+import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 
 export type IServerFailMessage = {
     headerMessage:string,
@@ -70,11 +70,17 @@ const ErrorBar:FC = () => {
         }
     }, [context.subscriptions])
 
+    useEffect(() => {
+        if (alreadySent.current) {
+            alreadySent.current = false;
+        }
+    }, [errorProps])
+
     /**
      * Restarts the app when the session expires
      */
     const handleRestart = () => {
-        if (appVersion.version !== 2) {
+        if (context.transferType !== "full") {
             history.push("/login");
         }
         context.appSettings.setAppReadyParamFalse();
@@ -94,6 +100,7 @@ const ErrorBar:FC = () => {
             }
             else {
                 alreadySent.current = true;
+                context.subscriptions.emitErrorBarVisible(false);
                 showTopBar(errorProps.retry(), topbar);
             }
         }

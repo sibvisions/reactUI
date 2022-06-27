@@ -15,18 +15,21 @@
 
 import React, { ReactElement } from "react";
 import { SubscriptionManager } from "../SubscriptionManager";
-import { ServerMenuButtons, BaseMenuButton } from "../response";
 import BaseComponent from "../util/types/BaseComponent";
 import UserData from "../model/UserData";
-import { ScreenWrapperOptions } from "../util/types/custom-types";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
+import { BaseMenuButton, ServerMenuButtons } from "../response/data/MenuResponse";
+import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperType";
+import AppSettings from "../AppSettings";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore extends BaseContentStore {
     /** subscriptionManager instance */
     subManager: SubscriptionManager = new SubscriptionManager(this);
+
+    appSettings: AppSettings = new AppSettings(this, this.subManager);
 
     menuItems = new Map<string, Array<ServerMenuButtons>>();
 

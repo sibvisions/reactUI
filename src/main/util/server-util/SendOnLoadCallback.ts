@@ -13,9 +13,10 @@
  * the License.
  */
 
-import { Dimension } from "..";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
-import { CELLEDITOR_CLASSNAMES } from "../../components/editors";
+import CELLEDITOR_CLASSNAMES from "../../components/editors/CELLEDITOR_CLASSNAMES";
+import Dimension from "../types/Dimension";
+//import { CELLEDITOR_CLASSNAMES } from "../../components/editors";
 
 /**
  * Checks if the preferred size isn't to small or to big for its minimum/maximum size

@@ -13,13 +13,13 @@
  * the License.
  */
 
-import { BaseResponse } from "..";
-import { ICellEditorCheckBox, 
-         ICellEditorChoice, 
-         ICellEditorDate, 
-         ICellEditorImage, 
-         ICellEditorLinked, 
-         ICellEditorNumber } from "../../components/editors"
+import { ICellEditorCheckBox } from "../../components/editors/checkbox/UIEditorCheckbox"
+import { ICellEditorChoice } from "../../components/editors/choice/UIEditorChoice"
+import { ICellEditorDate } from "../../components/editors/date/UIEditorDate"
+import { ICellEditorImage } from "../../components/editors/image/UIEditorImage"
+import { ICellEditorLinked } from "../../components/editors/linked/UIEditorLinked"
+import { ICellEditorNumber } from "../../components/editors/number/UIEditorNumber"
+import BaseResponse from "../BaseResponse"
 
 /** Type for MetaData of dataprovider referencing other dataprovider */
 export type MetaDataReference = {

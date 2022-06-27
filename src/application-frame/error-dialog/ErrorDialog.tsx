@@ -19,9 +19,9 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { ListBox } from "primereact/listbox"
 import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
 import tinycolor from "tinycolor2";
-import { ErrorResponse } from "../../main/response";
-import { concatClassnames } from "../../main/util";
-import { useConstants } from "../../moduleIndex";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import ErrorResponse from "../../main/response/error/ErrorResponse";
+import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 
 /** Displays an errr-message as dialog */
 const ErrorDialog:FC = () => {
@@ -144,7 +144,7 @@ const ErrorDialog:FC = () => {
             footer={errorFooter} 
             visible={visible} 
             onHide={handleOnHide} 
-            baseZIndex={1005}
+            baseZIndex={1020}
             resizable >
             <i className="error-dialog-icon pi pi-times-circle" />
             <span style={{paddingTop: "4px"}}>{errorProps?.message}</span>

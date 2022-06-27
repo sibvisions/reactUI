@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { BaseResponse } from "..";
+import BaseResponse from "../BaseResponse"
 
 export type LoginModeType = "manual"|"changePassword"|"changeOneTimePassword"|"automatic"|"lostPassword"|"mFTextInput"|"mFWait"|"mFURL"|undefined
 

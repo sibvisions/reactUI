@@ -13,10 +13,10 @@
  * the License.
  */
 
-import { BaseResponse } from "..";
+import BaseResponse from "../BaseResponse"
 
 /** Interface for UserDataResponse */
-interface UserDataResponse extends BaseResponse{
+interface UserDataResponse extends BaseResponse {
     displayName: string,
     email: string,
     profileImage?: string,

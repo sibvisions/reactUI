@@ -14,8 +14,8 @@
  */
 
 import { useContext, useState, useEffect } from "react"
-import { appContext } from "../../AppProvider";
-import { SortDefinition } from "../../request";
+import { appContext } from "../../contexts/AppProvider";
+import { SortDefinition } from "../../request/data/SortRequest";
 
 /**
  * Returns the sort-definitions for the dataprovider of a screen

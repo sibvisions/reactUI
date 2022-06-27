@@ -14,7 +14,7 @@
  */
 
 import { useContext } from "react";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 
 /** This hook gives users access to the api functions */
 const useAPI = () => {

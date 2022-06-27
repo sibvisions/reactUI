@@ -17,18 +17,22 @@ import React, { ReactElement } from "react";
 import { History } from "history";
 import SignaturePad from "../components/custom-comp/custom-container-components/SignaturePad";
 import TreePath from "../model/TreePath";
-import { RecordFormat, SortDefinition } from "../request";
-import { MetaDataReference, MetaDataResponse } from "../response";
 import { SubscriptionManager } from "../SubscriptionManager";
 import BaseComponent from "../util/types/BaseComponent";
-import { CustomStartupProps, ScreenWrapperOptions } from "../util/types/custom-types";
-import { getMetaData, Timer } from "../util";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import { IToolBarHelper } from "../components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { componentHandler } from "../factories/UIFactory";
-import { IPanel } from "../../moduleIndex";
 import { IChangedColumns } from "../response/data/DataProviderChangedResponse";
+import MetaDataResponse, { MetaDataReference } from "../response/data/MetaDataResponse";
+import { SortDefinition } from "../request/data/SortRequest";
+import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperType";
+import CustomStartupProps from "../util/types/custom-types/CustomStartupProps";
+import Timer from "../util/other-util/Timer";
+import { IPanel } from "../components/panels/panel/UIPanel";
+import RecordFormat from "../util/types/RecordFormat";
+import { getMetaData } from "../util/data-util/GetMetaData";
+import AppSettings from "../AppSettings";
 
 export type ActiveScreen = {
     name: string,
@@ -56,6 +60,8 @@ export interface IDataBook {
 export default abstract class BaseContentStore {
     /** subscriptionManager instance */
     abstract subManager:SubscriptionManager
+
+    abstract appSettings: AppSettings;
 
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
@@ -122,8 +128,12 @@ export default abstract class BaseContentStore {
      * Sets the subscription-manager
      * @param subManager - the subscription-manager instance 
      */
-     setSubscriptionManager(subManager:SubscriptionManager) {
+    setSubscriptionManager(subManager:SubscriptionManager) {
         this.subManager = subManager;
+    }
+
+    setAppSettings(appSettings:AppSettings) {
+        this.appSettings = appSettings;
     }
 
     setStartupProperties(arr:CustomStartupProps[]) {

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { BaseResponse } from "..";
+import BaseResponse from "../BaseResponse"
 import BaseComponent from "../../util/types/BaseComponent";
 
 /** Interface for ApplicationSettingsResponse */

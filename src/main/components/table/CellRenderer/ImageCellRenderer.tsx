@@ -14,9 +14,9 @@
  */
 
 import React, { FC, useContext } from "react";
-import { appContext } from "../../../AppProvider";
-import { ICellEditorImage } from "../../editors";
-import { ICellRender } from "../";
+import { appContext } from "../../../contexts/AppProvider";
+import { ICellEditorImage } from "../../editors/image/UIEditorImage";
+import { ICellRender } from "../CellEditor";
 
 const ImageCellRenderer: FC<ICellRender> = (props) => {
     /** Use context to gain access for contentstore and server methods */

@@ -14,15 +14,22 @@
  */
 
 import React, { FC, useEffect, useRef } from "react";
-import { useImageStyle, useMouseListener, usePopupMenu } from "../../../hooks";
-import { ICellEditor } from "..";
-import { parsePrefSize, parseMinSize, parseMaxSize, Dimension, sendOnLoadCallback, concatClassnames, checkComponentName, getTabIndex } from "../../../util";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
+import { ICellEditor } from "../IEditor";
+import useImageStyle from "../../../hooks/style-hooks/useImageStyle";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import Dimension from "../../../util/types/Dimension";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { getTabIndex } from "../../../util/component-util/GetTabIndex";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 
 /** Interface for cellEditor property of ImageViewer */
-export interface ICellEditorImage extends ICellEditor{
+export interface ICellEditorImage extends ICellEditor {
     defaultImageName: string,
     preserveAspectRatio: boolean
 }
@@ -37,7 +44,7 @@ export interface IEditorImage extends IRCCellEditor {
  *  This component displays an image
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorImage: FC<IEditorImage> = (props) => {
+export const UIEditorImage: FC<IEditorImage> = (props) => {
     /** Reference for wrapper span */
     const wrapRef = useRef<HTMLSpanElement>(null);
 
@@ -128,4 +135,4 @@ const UIEditorImage: FC<IEditorImage> = (props) => {
 
     )
 }
-export default UIEditorImage
+//export default UIEditorImage

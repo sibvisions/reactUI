@@ -16,23 +16,33 @@
 import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AutoComplete } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
-import { useDataProviderData, useEventHandler, useMetaData, useMouseListener, usePopupMenu} from "../../../hooks"
-import { ICellEditor } from "..";
 import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
-import { getFont, getTextAlignment, parseIconData } from "../../comp-props";
-import { parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, sendSetValues, handleEnterKey, concatClassnames, getTabIndex} from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
-import { REQUEST_KEYWORDS } from "../../../request";
 import Server from "../../../server/Server";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
-import ServerV2 from "../../../server/ServerV2";
+import ServerFull from "../../../server/ServerFull";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
-import { MetaDataResponse } from "src/main/response";
+import { ICellEditor } from "../IEditor";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
+import { getTextAlignment } from "../../comp-props/GetAlignments";
+import MetaDataResponse from "../../../response/data/MetaDataResponse";
+import useMetaData from "../../../hooks/data-hooks/useMetaData";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
+import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
+import { sendSetValues } from "../../../util/server-util/SendSetValues";
+import { getFont, parseIconData } from "../../comp-props/ComponentProperties";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 
 /** Interface for cellEditor property of LinkedCellEditor */
-export interface ICellEditorLinked extends ICellEditor{
+export interface ICellEditorLinked extends ICellEditor {
     linkReference: {
         referencedDataBook: string
         columnNames: string[]
@@ -53,7 +63,7 @@ export interface IEditorLinked extends IRCCellEditor {
     cellEditor: ICellEditorLinked
 }
 
-export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server|ServerV2, contentStore: BaseContentStore) {
+export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server|ServerFull, contentStore: BaseContentStore) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook)
     if (currentData
         && displayCol
@@ -197,6 +207,7 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         if (props.isCellEditor) {
             filterReq.columnNames = [props.columnName]
         }
+        
         await props.context.server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => {
             if (!initialFilter) {
                 setInitialFilter(true);

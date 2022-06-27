@@ -15,27 +15,36 @@
 
 import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
-import Server from "./server/Server";
-import ContentStore from "./contentstore/ContentStore";
-import { SubscriptionManager } from "./SubscriptionManager";
-import API from "./API";
-import AppSettings, { appVersion } from "./AppSettings";
-import { createAliveRequest, createChangesRequest, createOpenScreenRequest, createStartupRequest, createUIRefreshRequest, getClientId, useEventHandler } from "../moduleIndex";
-import { addCSSDynamically, Timer } from "./util";
-import { ICustomContent } from "../MiddleMan";
-import { REQUEST_KEYWORDS, StartupRequest, UIRefreshRequest } from "./request";
-import { showTopBar, TopBarContext } from "./components/topbar/TopBar";
-import ContentStoreV2 from "./contentstore/ContentStoreV2";
-import ServerV2 from "./server/ServerV2";
-import { RESPONSE_NAMES } from "./response";
+import Server from "../server/Server";
+import ContentStore from "../contentstore/ContentStore";
+import { SubscriptionManager } from "../SubscriptionManager";
+import API from "../API";
+import AppSettings from "../AppSettings";
+import { createAliveRequest,
+         createChangesRequest,
+         createOpenScreenRequest,
+         createStartupRequest,
+         createUIRefreshRequest,
+         getClientId } from "../factories/RequestFactory";
+import { ICustomContent } from "../../MiddleMan";
+import { showTopBar, TopBarContext } from "../components/topbar/TopBar";
+import ContentStoreFull from "../contentstore/ContentStoreFull";
+import ServerFull from "../server/ServerFull";
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import UIRefreshRequest from "../request/application-ui/UIRefreshRequest";
+import StartupRequest from "../request/application-ui/StartupRequest";
+import { addCSSDynamically } from "../util/html-util/AddCSSDynamically";
+import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
+import useEventHandler from "../hooks/event-hooks/useEventHandler";
+import Timer from "../util/other-util/Timer";
 
-export function isV2ContentStore(contentStore: ContentStore | ContentStoreV2): contentStore is ContentStore {
+export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
     return (contentStore as ContentStore).menuItems !== undefined;
 }
 
 /** Type for AppContext */
 export type AppContextType = {
-    version: 1,
+    transferType: "partial",
     server: Server,
     contentStore: ContentStore,
     subscriptions: SubscriptionManager,
@@ -45,14 +54,15 @@ export type AppContextType = {
     appReady: boolean
 } |
 {
-    version: 2,
-    server: ServerV2,
-    contentStore: ContentStoreV2,
+    transferType: "full",
+    server: ServerFull,
+    contentStore: ContentStoreFull,
     subscriptions: SubscriptionManager,
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
-    appReady: boolean
+    appReady: boolean,
+    launcherReady: boolean
 }
 
 /** Contentstore instance */
@@ -76,7 +86,7 @@ subscriptions.setServer(server);
 
 /** Initial value for state */
 const initValue: AppContextType = {
-    version: 1,
+    transferType: "partial",
     contentStore: contentStore,
     server: server,
     api: api,
@@ -108,6 +118,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
     }
 
     const ws = useRef<WebSocket|null>(null);
+
+    const isReconnect = useRef<boolean>(false);
+
+    const wsIsConnected = useRef<boolean>(false);
 
     const relaunchArguments = useRef<any>(null);
 
@@ -196,50 +210,79 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let baseUrlToSet = "";
         let timeoutToSet = 10000;
         let aliveIntervalToSet:number|undefined = undefined;
-        let loadIntervalToSet:number|undefined = undefined;
+        let wsPingIntervalToSet:number|undefined = undefined;
 
         const initWS = (baseURL:string) => {
-            const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
-            
-            ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId());
-            ws.current.onopen = () => console.log("ws opened");
-            ws.current.onclose = () => console.log("ws closed");
-            ws.current.onerror = () => console.error("ws error");
-            ws.current.onmessage = (e) => {
-                if (e.data instanceof Blob) {
-                    const reader = new FileReader()
+            const connectWs = () => {
+                const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
 
-                    reader.onloadend = () => { 
-                        let jscmd = JSON.parse(String(reader.result)); 
-            
-                        if (jscmd.command === "relaunch") {
-                            contextState.contentStore.reset();
-                            relaunchArguments.current = jscmd.arguments;
-                            setRestart(prevState => !prevState);
-                        }
-                        else if (jscmd.command === "api/reopenScreen") {
-                            const openReq = createOpenScreenRequest();
-                            openReq.className = jscmd.arguments.className;
-                            contextState.server.lastOpenedScreen = jscmd.arguments.className;
-                            showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
-                        }
-                        else if (jscmd.command === "reloadCss") {
-                            contextState.subscriptions.emitCssVersion(jscmd.arguments.version);
-                        }
+                let pingInterval = new Timer(() => ws.current?.send("PING"), contextState.server.wsPingInterval >= 10000 ? contextState.server.wsPingInterval : 10000);
+
+                ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId() 
+                + (isReconnect.current ? "&reconnect" : ""));
+                ws.current.onopen = () => {
+                    if (isReconnect.current) {
+                        isReconnect.current = false;
+                        console.log("WebSocket reconnected.");
+                        wsIsConnected.current = true;
                     }
-                    reader.readAsText(e.data);
-                }
-                else {
-                    if (e.data === "api/changes") {
-                        contextState.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
+                    else {
+                        console.log("WebSocket opened.");
+                        wsIsConnected.current = true;
+                    }
+
+                    if (contextState.server.wsPingInterval >= 0) {
+                        pingInterval.start();
+                    }
+                };
+                ws.current.onclose = (event) => {
+                    pingInterval.stop();
+                    if (event.code !== 1006) {
+                        isReconnect.current = true;
+                        wsIsConnected.current = false;
+                        console.log("WebSocket has been closed, reconnecting in 1 second.");
+                        setTimeout(() => connectWs(), 1000);
+                    }
+                    else {
+                        console.log("WebSocket has been closed.")
+                    }
+                };
+
+                ws.current.onerror = (error) => console.error("WebSocket error", error);
+
+                ws.current.onmessage = (e) => {
+                    if (e.data instanceof Blob) {
+                        const reader = new FileReader()
+    
+                        reader.onloadend = () => { 
+                            let jscmd = JSON.parse(String(reader.result)); 
+                
+                            if (jscmd.command === "relaunch") {
+                                contextState.contentStore.reset();
+                                relaunchArguments.current = jscmd.arguments;
+                                setRestart(prevState => !prevState);
+                            }
+                            else if (jscmd.command === "api/reopenScreen") {
+                                const openReq = createOpenScreenRequest();
+                                openReq.className = jscmd.arguments.className;
+                                contextState.server.lastOpenedScreen = jscmd.arguments.className;
+                                showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
+                            }
+                            else if (jscmd.command === "reloadCss") {
+                                contextState.subscriptions.emitCssVersion(jscmd.arguments.version);
+                            }
+                        }
+                        reader.readAsText(e.data);
+                    }
+                    else {
+                        if (e.data === "api/changes") {
+                            contextState.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
+                        }
                     }
                 }
             }
 
-            if (contextState.server.wsPingInterval >= 0) {
-                setInterval(() => ws.current?.send("PING"), contextState.server.wsPingInterval >= 10000 ? contextState.server.wsPingInterval : 10000);
-            }
-            
+            connectWs()
         }
 
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, restartArgs?:any) => {
@@ -249,6 +292,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             contextState.server.sendRequest(req, (preserve && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
             .then(result => {
+                contextState.appSettings.setAppReadyParam("startup");
                 if (!preserve) {
                     sessionStorage.setItem("startup", JSON.stringify(result));
                 }
@@ -260,10 +304,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }, contextState.server.aliveInterval)
 
                 initWS(contextState.server.BASE_URL);
-            });
+            })
+            .catch(() => {});
         }
 
-        const fetchAppConfig = () => {
+        const fetchApp = () => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app.json').then((r) => r.json())
                 .then((data) => {
@@ -275,8 +320,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         aliveIntervalToSet = parseInt(data.aliveInterval);
                     }
 
-                    if (data.loadInterval) {
-                        loadIntervalToSet = parseInt(data.loadInterval);
+                    if (data.wsPingInterval) {
+                        wsPingIntervalToSet = parseInt(data.wsPingInterval);
                     }
                     resolve({});
                 })
@@ -284,18 +329,18 @@ const AppProvider: FC<ICustomContent> = (props) => {
             });
         }
 
-        const fetchVersionConfig = () => {
+        const fetchAppConfig = () => {
             return new Promise<any>((resolve, reject) => {
-                fetch('assets/config/app_version.json').then((r) => r.json())
+                fetch('assets/config/app_config.json').then((r) => r.json())
                 .then((data) => {
-                    if (data.version) {
-                        if (parseInt(data.version) === 2) {
-                            contextState.version = 2
-                            appVersion.version = 2
+                    if (data.transferType) {
+                        if (data.transferType === "full") {
+                            contextState.transferType = "full"
+                            contextState.appSettings.transferType = "full"
                         }
                         else {
-                            contextState.version = 1
-                            appVersion.version = 1
+                            contextState.transferType = "partial"
+                            contextState.appSettings.transferType = "partial"
                         }
 
                     }
@@ -449,7 +494,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (schemeToSet) {
                 contextState.appSettings.setApplicationColorSchemeByURL(schemeToSet);
-                addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", contextState.appSettings);
+                addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
             }
 
             if (convertedOptions.has("theme")) {
@@ -463,7 +508,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (themeToSet) {
                 contextState.appSettings.setApplicationThemeByURL(themeToSet);
-                addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", contextState.appSettings);
+                addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"));
                 contextState.subscriptions.emitThemeChanged(themeToSet);
             }
 
@@ -478,18 +523,17 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (designToSet) {
                 contextState.appSettings.setApplicationDesign(designToSet);
-                addCSSDynamically('design/' + designToSet + ".css", "designCSS", contextState.appSettings);
+                addCSSDynamically('design/' + designToSet + ".css", "designCSS", () => contextState.appSettings.setAppReadyParam("designCSS"));
             }
 
-            if (convertedOptions.has("version")) {
-                const parsedValue = parseInt(convertedOptions.get("version"));
-                if (parsedValue === 1 || parsedValue === 2) {
-                    contextState.version = parsedValue;
-                    appVersion.version = parsedValue;
+            if (convertedOptions.has("transferType")) {
+                if (convertedOptions.get("transferType") === "full") {
+                    contextState.transferType = convertedOptions.get("transferType");
+                    contextState.appSettings.transferType = "full";
                 }
                 else {
-                    contextState.version = 1;
-                    appVersion.version = 1;
+                    contextState.transferType = "partial";
+                    contextState.appSettings.transferType = "partial";
                 }
 
             }
@@ -512,13 +556,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("aliveInterval");
             }
 
-            if (convertedOptions.has("loadInterval")) {
-                const parsedValue = parseInt(convertedOptions.get("loadInterval"));
+            if (convertedOptions.has("wsPingInterval")) {
+                const parsedValue = parseInt(convertedOptions.get("wsPingInterval"));
                 if (!isNaN(parsedValue)) {
-                    loadIntervalToSet = parsedValue;
+                    wsPingIntervalToSet = parsedValue;
                 }
 
-                convertedOptions.delete("loadInterval");
+                convertedOptions.delete("wsPingInterval");
             }
 
             convertedOptions.forEach((v, k) => {
@@ -528,16 +572,18 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
         const afterConfigFetch = () => {
             checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams);
-            if (contextState.version === 2) {
-                contextState.contentStore = new ContentStoreV2(history);
+            if (contextState.transferType === "full") {
+                contextState.contentStore = new ContentStoreFull(history);
                 contextState.contentStore.setSubscriptionManager(contextState.subscriptions);
+                contextState.contentStore.setAppSettings(contextState.appSettings);
                 contextState.subscriptions.setContentStore(contextState.contentStore);
                 contextState.api.setContentStore(contextState.contentStore);
                 contextState.appSettings.setContentStore(contextState.contentStore);
 
-                contextState.server = new ServerV2(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+                contextState.server = new ServerFull(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);
+                contextState.launcherReady = false;
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
@@ -572,7 +618,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             
             const startupRequestCache = sessionStorage.getItem("startup");
-            if (startupRequestCache && !relaunchArguments.current) {
+            if (startupRequestCache && startupRequestCache !== "null" && !relaunchArguments.current) {
                 let preserveOnReload = false;
                 (JSON.parse(startupRequestCache) as Array<any>).forEach((response) => {
                     if (response.preserveOnReload) {
@@ -584,14 +630,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (response.applicationColorScheme && !schemeToSet) {
-                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", contextState.appSettings);
+                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
                     }
 
                     if (response.applicationTheme && !themeToSet) {
-                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", contextState.appSettings);
+                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"));
                     }
 
-                    if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.version === 1) {
+                    if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.transferType === "partial") {
                         contextState.server.language({ name: "", langCode: response.langCode, languageResource: response.languageResource });
                     }
                 });
@@ -613,12 +659,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
 
         if (process.env.NODE_ENV === "development") {
-            Promise.all([fetchConfig(), fetchAppConfig(), fetchVersionConfig()])
+            Promise.all([fetchConfig(), fetchApp(), fetchAppConfig()])
             .then(() => afterConfigFetch())
             .catch(() => afterConfigFetch())
         }
         else {
-            Promise.all([fetchAppConfig(), fetchVersionConfig()])
+            Promise.all([fetchApp(), fetchAppConfig()])
             .then(() => afterConfigFetch())
             .catch(() => afterConfigFetch())
         }
@@ -635,5 +681,4 @@ const AppProvider: FC<ICustomContent> = (props) => {
     )
 }
 export default AppProvider
-
 

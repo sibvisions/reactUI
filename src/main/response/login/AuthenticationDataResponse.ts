@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { BaseResponse } from "..";
+import BaseResponse from "../BaseResponse"
 
 /** Interface for AuthenticationDataResponse */
 interface AuthenticationDataResponse extends BaseResponse{

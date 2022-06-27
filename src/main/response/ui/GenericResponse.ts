@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { ComponentResponse } from "..";
+import ComponentResponse from "../ComponentResponse";
 import BaseComponent from "../../util/types/BaseComponent";
 
 /** Interface for GenericResponse */

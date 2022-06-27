@@ -15,13 +15,14 @@
 
 import React, { Children, CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import _ from "underscore";
-import { appContext } from "../../main/AppProvider";
-import { ChildWithProps } from "../../main/util";
-import { useEventHandler } from "../../main/hooks";
+import { appContext } from "../../main/contexts/AppProvider";
 import { createDeviceStatusRequest } from "../../main/factories/RequestFactory";
 import { LayoutContext } from "../../main/LayoutContext";
-import { REQUEST_KEYWORDS } from "../../main/request";
-import { isCorporation, ResizeContext } from "./ui-manager/UIManager";
+import { isCorporation } from "../../main/util/server-util/IsCorporation";
+import { ResizeContext } from "../../main/contexts/ResizeProvider";
+import ChildWithProps from "../../main/util/types/ChildWithProps";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 
 /**
  * This component handles the screen-size it measures the first container so the panels below can be calculated

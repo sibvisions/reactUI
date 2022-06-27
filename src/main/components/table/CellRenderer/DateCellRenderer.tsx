@@ -15,10 +15,10 @@
 
 import { isValid, format, formatISO } from "date-fns";
 import React, { FC, useContext, useMemo } from "react";
-import { appContext } from "../../../AppProvider";
-import { getDateLocale } from "../../../util";
-import { ICellEditorDate } from "../../editors";
-import { ICellRender } from "../";
+import { appContext } from "../../../contexts/AppProvider";
+import { getDateLocale } from "../../../util/other-util/GetDateLocale";
+import { ICellEditorDate } from "../../editors/date/UIEditorDate";
+import { ICellRender } from "../CellEditor";
 
 const DateCellRenderer: FC<ICellRender> = (props) => {
     /** Use context to gain access for contentstore and server methods */

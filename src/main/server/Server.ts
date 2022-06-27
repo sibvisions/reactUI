@@ -15,40 +15,34 @@
 
 import {parseString} from "xml2js"
 import ContentStore from "../contentstore/ContentStore"
-import { ApplicationMetaDataResponse,
-         BaseResponse,
-         MenuResponse,
-         GenericResponse,
-         CloseScreenResponse,
-         RESPONSE_NAMES,
-         AuthenticationDataResponse,
-         UserDataResponse,
-         ShowDocumentResponse,
-         UploadResponse,
-         DownloadResponse,
-         ErrorResponse,
-         RestartResponse,
-         ApplicationParametersResponse,
-         LanguageResponse, 
-         MessageResponse,
-         LoginResponse,
-         ApplicationSettingsResponse,
-         WelcomeDataResponse,
-         DialogResponse,
-         CloseFrameResponse,
-         ContentResponse,
-         CloseContentResponse} from "../response";
-import { IPanel } from "../components/panels"
-import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
-import { REQUEST_KEYWORDS } from "../request";
 import { IDataBook } from "../contentstore/BaseContentStore";
 import BaseServer from "./BaseServer";
-
-export enum RequestQueueMode {
-    QUEUE = "queue",
-    IMMEDIATE = "immediate"
-}
-
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
+import BaseResponse from "../response/BaseResponse";
+import ApplicationMetaDataResponse from "../response/app/ApplicationMetaDataResponse";
+import ApplicationParametersResponse from "../response/app/ApplicationParametersResponse";
+import UserDataResponse from "../response/login/UserDataResponse";
+import AuthenticationDataResponse from "../response/login/AuthenticationDataResponse";
+import LoginResponse from "../response/login/LoginResponse";
+import GenericResponse from "../response/ui/GenericResponse";
+import { IPanel } from "../components/panels/panel/UIPanel";
+import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
+import CloseScreenResponse from "../response/ui/CloseScreenResponse";
+import MenuResponse from "../response/data/MenuResponse";
+import UploadResponse from "../response/data/UploadResponse";
+import DownloadResponse from "../response/data/DownloadResponse";
+import ShowDocumentResponse from "../response/event/ShowDocumentResponse";
+import ErrorResponse from "../response/error/ErrorResponse";
+import MessageResponse from "../response/ui/MessageResponse";
+import DialogResponse from "../response/ui/DialogResponse";
+import RestartResponse from "../response/error/RestartResponse";
+import LanguageResponse from "../response/event/LanguageResponse";
+import ApplicationSettingsResponse from "../response/app/ApplicationSettingsResponse";
+import WelcomeDataResponse from "../response/ui/WelcomeDataResponse";
+import CloseFrameResponse from "../response/ui/CloseFrameResponse";
+import ContentResponse from "../response/ui/ContentResponse";
+import CloseContentResponse from "../response/ui/CloseContentResponse";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -421,7 +415,7 @@ class Server extends BaseServer {
      * Opens a fileSelectDialog and sends the selected file to the server
      * @param uploadData - the uploadResponse
      */
-    upload(uploadData: UploadResponse){
+    upload(uploadData: UploadResponse) {
         const inputElem = document.createElement('input');
         inputElem.type = 'file';
         inputElem.click()

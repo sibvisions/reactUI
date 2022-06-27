@@ -13,10 +13,11 @@
  * the License.
  */
 
-import { MapLocation, Dimension } from "..";
 import BaseComponent from "../types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
-import { ComponentSizes } from "../../hooks";
+import Dimension from "../types/Dimension";
+import MapLocation from "../types/MapLocation";
+import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
 
 /**
  * Splits up the given size and returns it as a Size object

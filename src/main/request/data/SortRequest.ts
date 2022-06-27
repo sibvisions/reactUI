@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { DataProviderRequest } from "..";
+import DataProviderRequest from "./DataProviderRequest"
 
 export type SortDefinition = {
     columnName: string,

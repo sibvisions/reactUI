@@ -14,16 +14,22 @@
  */
 
 import React, { createContext, CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
-import { useComponents, useMouseListener, useComponentConstants, ComponentSizes, useConstants } from "../../../hooks";
-import { Layout } from "../../layouts";
-import { parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, Dimension, concatClassnames } from "../../../util";
 import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import TabsetPanelImpl from "../tabsetpanel/TabsetPanelImpl";
 import { createCloseFrameRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
-import { REQUEST_KEYWORDS } from "../../../request";
 import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
+import useComponents, { ComponentSizes } from "../../../hooks/components-hooks/useComponents";
+import useConstants from "../../../hooks/components-hooks/useConstants";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import Dimension from "../../../util/types/Dimension";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import Layout from "../../layouts/Layout";
 
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,
@@ -55,23 +61,41 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
     return (
-        <TabsetPanelImpl 
-            {...props} 
-            components={props.components}
-            compSizes={props.compSizes}
-            compStyle={props.compStyle}
-            layoutStyle={props.layoutStyle}
-            selectedIndex={selectedIndex}
-            onTabChange={(i:number) => setSelectedIndex(i)}
-            onTabClose={(i:number) => {
-                const closeReq = createCloseFrameRequest();
-                closeReq.componentId = props.components[i].props.name;
-                showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
-            }} />
+        <>
+            <TabsetPanelImpl 
+                {...props} 
+                //components={props.components}
+                components={props.components.filter(comp => comp.props.modal !== true)}
+                compSizes={props.compSizes}
+                compStyle={props.compStyle}
+                layoutStyle={props.layoutStyle}
+                selectedIndex={selectedIndex}
+                onTabChange={(i:number) => setSelectedIndex(i)}
+                onTabClose={(i:number) => {
+                    const closeReq = createCloseFrameRequest();
+                    closeReq.componentId = props.components[i].props.name;
+                    showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
+                }} />
+                <Layout
+                    id={props.id}
+                    className={props.className}
+                    layoutData={props.layoutData}
+                    layout={props.layout}
+                    preferredSize={parsePrefSize(props.preferredSize)}
+                    minimumSize={parseMinSize(props.minimumSize)}
+                    maximumSize={parseMaxSize(props.maximumSize)}
+                    compSizes={props.compSizes}
+                    components={props.components.filter(comp => comp.props.modal)}
+                    style={panelGetStyle(false, props.layoutStyle)}
+                    reportSize={() => {}}
+                    panelType="DesktopPanel"
+                    parent={props.parent} />
+        </>
+
     )
 }
 
-const UIDesktopPanelV2: FC<IDesktopPanel> = (baseProps) => {
+const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
     const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
@@ -166,4 +190,4 @@ const UIDesktopPanelV2: FC<IDesktopPanel> = (baseProps) => {
         </OpenFrameContext.Provider>
     )
 }
-export default UIDesktopPanelV2
+export default UIDesktopPanelFull

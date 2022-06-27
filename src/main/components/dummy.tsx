@@ -14,9 +14,10 @@
  */
 
 import React, { FC, useLayoutEffect, useRef } from "react";
+import useLayoutValue from "../hooks/style-hooks/useLayoutValue";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../util/component-util/SizeUtil";
+import { sendOnLoadCallback } from "../util/server-util/SendOnLoadCallback";
 import BaseComponent from "../util/types/BaseComponent";
-import { parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../util";
-import { useLayoutValue } from "../hooks";
 
 /**
  * This component gets rendered when there is a component sent by the server which is not yet implemented on the client

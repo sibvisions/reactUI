@@ -15,15 +15,15 @@
 
 import { useEffect, useState, useContext, useCallback } from "react";
 import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 import { createLogoutRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
-import { useTranslation } from "..";
+import useTranslation from "../app-hooks/useTranslation";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
-import { ApplicationSettingsResponse } from "../../response";
-import { version } from "../../../../package.json";
+import { LIB_VERSION } from "../../../version";
 import ContentStore from "../../contentstore/ContentStore";
 import { MenuOptions, VisibleButtons } from "../../AppSettings";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import ApplicationSettingsResponse from "../../response/app/ApplicationSettingsResponse";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -109,7 +109,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             label: "Info",
             icon: "pi pi-info-circle",
             command(e: MenuItemCommandParams) {
-                context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + version }, "info");
+                context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
             }
         })
         setSlideOptions([

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { BaseRequest } from "..";
+import BaseRequest from "../BaseRequest";
 
 /** Interface for SaveRequest */
 interface SaveRequest extends BaseRequest {

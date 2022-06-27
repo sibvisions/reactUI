@@ -13,19 +13,21 @@
  * the License.
  */
 
-import { IPanel } from "../../moduleIndex";
 import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import { SubscriptionManager } from "../SubscriptionManager";
-import { isWorkScreen } from "../util";
 import BaseComponent from "../util/types/BaseComponent";
-import { IFrame } from "../components/frame/UIFrame";
+import { IPanel } from "../components/panels/panel/UIPanel";
+import { isWorkScreen } from "../util/component-util/IsWorkScreen";
+import AppSettings from "../AppSettings";
 
-export default class ContentStoreV2 extends BaseContentStore {
+export default class ContentStoreFull extends BaseContentStore {
     /** subscriptionManager instance */
     subManager: SubscriptionManager = new SubscriptionManager(this);
 
+    /** AppSettings instance */
+    appSettings: AppSettings = new AppSettings(this, this.subManager);
     /**
      * Sets the currently active screens or clears the array
      * @param screenInfo - the screen-info of the newly opened screen or nothing to clear active screens
@@ -82,6 +84,7 @@ export default class ContentStoreV2 extends BaseContentStore {
             /** Checks if the component is a custom component */
             const isCustom:boolean = this.customComponents.has(newComponent.name as string);
             existingComponent = this.getExistingComponent(newComponent.id);
+
             this.updateExistingComponent(existingComponent, newComponent);
 
             if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL && !isCustom) {
@@ -302,11 +305,5 @@ export default class ContentStoreV2 extends BaseContentStore {
             }
         }
         return children;
-    }
-
-    closeInternalFrame(props: IFrame) {
-        this.flatContent.delete(props.id)
-        this.removedContent.set(props.id, {...props})
-        this.subManager.parentSubscriber.get(props.parent as string)?.apply(undefined, []);
     }
 }

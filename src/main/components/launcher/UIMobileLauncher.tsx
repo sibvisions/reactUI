@@ -14,10 +14,12 @@
  */
 
 import React, { FC, useRef } from "react";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useComponents from "../../hooks/components-hooks/useComponents";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import UIFrame from "../frame/UIFrame";
-import { IPanel } from "../panels";
-import { useComponentConstants, useComponents, useMouseListener } from "../../hooks";
-import { concatClassnames } from "../../util";
+import { IPanel } from "../panels/panel/UIPanel";
 
 export interface IWindow extends IPanel {
     title:string
@@ -48,7 +50,8 @@ const UIMobileLauncher: FC<IWindow> = (baseProps) => {
                 frameStyle={layoutStyle} 
                 children={children} 
                 components={components.filter(comp => comp.props["~additional"] !== true)} 
-                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
+                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined}
+                sizeCallback={() => context.transferType === "full" ? context.launcherReady = true : undefined} />
         </div>
 
     )

@@ -16,13 +16,23 @@
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
-import { useButtonMouseImages, useMouseListener, usePopupMenu, useComponentConstants, useButtonStyling } from "../../../hooks";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
+import useButtonMouseImages from "../../../hooks/event-hooks/useButtonMouseImages";
+import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
-import { IButton } from "..";
-import { concatClassnames, sendOnLoadCallback, parsePrefSize, parseMinSize, parseMaxSize, checkComponentName, isCompDisabled } from "../../../util";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
-import { REQUEST_KEYWORDS } from "../../../request";
+import { IButton } from "../IButton";
+import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
+
+
 
 /**
  * This component displays a basic button

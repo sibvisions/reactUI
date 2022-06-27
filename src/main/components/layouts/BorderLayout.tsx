@@ -15,14 +15,13 @@
 
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 import { LayoutContext } from "../../LayoutContext"
-import { appContext } from "../../AppProvider";
+import { appContext } from "../../contexts/AppProvider";
 import { ILayout } from "./Layout";
-import { Margins } from ".";
-import { Dimension } from "../../util";
 import Gaps from "./models/Gaps";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { appVersion } from "../../AppSettings";
+import Dimension from "../../util/types/Dimension";
+import Margins from "./models/Margins";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -292,7 +291,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     else if (component.constraints === "East") {
                         sizeMap.set(component.id, eastCSS);
                     }
-                    else if (panelType === "DesktopPanel" && appVersion.version === 2) {
+                    else if (panelType === "DesktopPanel" && context.transferType === "full") {
                         sizeMap.set(component.id, { height: (style?.height as number) * 0.75, width: (style?.width as number) * 0.75 })
                     }
                 }

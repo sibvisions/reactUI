@@ -16,17 +16,19 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, FormEvent, useContext, useEffect, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useState } from "react";
+import { createLoginRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import { REQUEST_KEYWORDS } from "../../main/request";
-import { concatClassnames } from "../../main/util";
-import { createLoginRequest, useConstants } from "../../moduleIndex";
 import ChangePasswordDialog from "../change-password/ChangePasswordDialog";
-import { LoginContext } from "./Login";
+import ILoginCredentials from "./ILoginCredentials";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 
-export interface ILoginForm {
+export interface ILoginForm extends ILoginCredentials {
     changeLoginMode: Function
+    changeLoginData: Function
     errorMessage?: string
 }
 
@@ -37,8 +39,6 @@ export interface ILoginForm {
 const LoginForm:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
     const [context, topbar, translations] = useConstants();
-
-    const loginContext = useContext(LoginContext);
 
     /** State for username field */
     const [username, setUsername] = useState<string>("");
@@ -56,8 +56,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
      * Sends a loginrequest to the server when the loginform is submitted.
      */
      const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
-        loginContext.username = username;
-        loginContext.password = password;
+        props.changeLoginData(username, password)
         e.preventDefault()
         const loginReq = createLoginRequest();
         loginReq.username = username;

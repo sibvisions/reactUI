@@ -14,15 +14,14 @@
  */
 
 import BaseComponent from "./util/types/BaseComponent";
-import { addCSSDynamically } from "./util";
+import { addCSSDynamically } from "./util/html-util/AddCSSDynamically";
 import ContentStore from "./contentstore/ContentStore";
-import { ApplicationMetaDataResponse, LoginModeType } from "./response";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
 import { SubscriptionManager } from "./SubscriptionManager";
 import BaseContentStore from "./contentstore/BaseContentStore";
-import ContentStoreV2 from "./contentstore/ContentStoreV2";
-
-export const appVersion = { version: 1 }
+import ContentStoreFull from "./contentstore/ContentStoreFull";
+import { LoginModeType } from "./response/login/LoginResponse";
+import ApplicationMetaDataResponse from "./response/app/ApplicationMetaDataResponse";
 
 type ApplicationMetaData = {
     clientId: string,
@@ -60,7 +59,7 @@ type AppReadyType = {
     appCSSLoaded: boolean
     schemeCSSLoaded: boolean
     themeCSSLoaded: boolean
-    appMetaData: boolean
+    startupDone: boolean
     designCSSLoaded: boolean
     userOrLoginLoaded: boolean
     translationLoaded: boolean
@@ -78,7 +77,7 @@ export default class AppSettings {
         this.#subManager = subManager
     }
 
-    setContentStore(store: BaseContentStore|ContentStore|ContentStoreV2) {
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.#contentStore = store;
     }
 
@@ -102,6 +101,8 @@ export default class AppSettings {
 
     /** The devicemode of the client */
     deviceMode:string = "desktop";
+
+    transferType:"partial"|"full" = "partial"
 
     /**
      * If true the menu will collapse/expand based on window size, if false the menus position will be locked while resizing,
@@ -163,7 +164,7 @@ export default class AppSettings {
         appCSSLoaded: false, 
         schemeCSSLoaded: false, 
         themeCSSLoaded: false,
-        appMetaData: false,
+        startupDone: false,
         designCSSLoaded: false,
         userOrLoginLoaded: false,
         translationLoaded: false
@@ -227,33 +228,31 @@ export default class AppSettings {
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {
             if (appMetaData.applicationColorScheme) {
                 this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
-                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "schemeCSS", this);
+                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
             }
             else {
-                addCSSDynamically('color-schemes/default-scheme.css', "schemeCSS", this);
+                addCSSDynamically('color-schemes/default-scheme.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
             }
         }
         
         if (!this.applicationMetaData.applicationTheme.urlSet) {
             if (appMetaData.applicationTheme) {
                 this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
-                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "themeCSS", this);
+                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
             }
             else {
-                addCSSDynamically('themes/basti.css', "themeCSS", this);
+                addCSSDynamically('themes/basti.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
             }
             this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
         }
 
         if (!this.applicationMetaData.applicationDesign && appMetaData.applicationDesign) {
             this.applicationMetaData.applicationDesign = appMetaData.applicationDesign;
-            addCSSDynamically('design/' + appMetaData.applicationDesign + ".css", "designCSS", this)
+            addCSSDynamically('design/' + appMetaData.applicationDesign + ".css", "designCSS", () => this.setAppReadyParam("designCSS"))
         }
         else if (!this.applicationMetaData.applicationDesign) {
             this.appReadyParams.designCSSLoaded = true;
         }
-
-        this.setAppReadyParam("appMetaData");
     }
 
     setApplicationThemeByURL(pTheme:string) {
@@ -357,7 +356,7 @@ export default class AppSettings {
         }
     }
 
-    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"appMetaData"|"designCSS"|"userOrLogin"|"translation") {
+    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"startup"|"designCSS"|"userOrLogin"|"translation") {
         switch (param) {
             case "appCSS":
                 this.appReadyParams.appCSSLoaded = true;
@@ -368,8 +367,8 @@ export default class AppSettings {
             case "themeCSS":
                 this.appReadyParams.themeCSSLoaded = true;
                 break;
-            case "appMetaData":
-                this.appReadyParams.appMetaData = true;
+            case "startup":
+                this.appReadyParams.startupDone = true;
                 break;
             case "designCSS":
                 this.appReadyParams.designCSSLoaded = true;
@@ -384,8 +383,8 @@ export default class AppSettings {
                 break;
         }
 
-        if (appVersion.version === 2) {
-            if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded && this.appReadyParams.appMetaData) {
+        if (this.transferType === "full") {
+            if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded && this.appReadyParams.startupDone) {
                 this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
                 this.appReady = true;
                 this.#subManager.emitAppReady(true);
@@ -407,7 +406,7 @@ export default class AppSettings {
             appCSSLoaded: false,
             schemeCSSLoaded: false, 
             themeCSSLoaded: false,
-            appMetaData: false,
+            startupDone: false,
             designCSSLoaded: false,
             userOrLoginLoaded: false,
             translationLoaded: false

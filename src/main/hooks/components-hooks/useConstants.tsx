@@ -14,8 +14,8 @@
  */
 
 import { useContext } from "react"
-import { useTranslation } from "..";
-import { appContext, AppContextType } from "../../AppProvider"
+import useTranslation from "../app-hooks/useTranslation";
+import { appContext, AppContextType } from "../../contexts/AppProvider"
 import { TopBarContext, TopBarContextType } from "../../components/topbar/TopBar";
 
 /**

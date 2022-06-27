@@ -16,16 +16,16 @@
 import { MenuItem } from "primereact/menuitem";
 import { useEffect, useState, useContext } from "react";
 import { MenuItemCustom } from "../../../application-frame/menu/Menu";
-import { ServerMenuButtons } from "../../response";
-import { appContext } from "../../AppProvider";
-import { parseIconData } from "../../components/comp-props";
+import { appContext } from "../../contexts/AppProvider";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import BaseComponent from "../../util/types/BaseComponent";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
 import { isFAIcon } from "../event-hooks/useButtonMouseImages";
-import { REQUEST_KEYWORDS } from "../../request";
-import { concatClassnames } from "../../util";
-import ContentStoreV2 from "../../contentstore/ContentStoreV2";
+import ContentStoreFull from "../../contentstore/ContentStoreFull";
+import { ServerMenuButtons } from "../../response/data/MenuResponse";
+import { parseIconData } from "../../components/comp-props/ComponentProperties";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 
 const useMenuItems = (menus?:string[]) => {
     /** Use context to gain access for contentstore and server methods */
@@ -125,7 +125,7 @@ const useMenuItems = (menus?:string[]) => {
 
             const menuGroup = context.contentStore.getComponentById(menuId);
             if (menuGroup) {
-                const menuItems = Array.from((context.contentStore as ContentStoreV2).getChildren(menuId).values()).filter(item => item.visible !== false);
+                const menuItems = Array.from((context.contentStore as ContentStoreFull).getChildren(menuId).values()).filter(item => item.visible !== false);
                 const iconData = parseIconData(undefined, menuGroup.image);
                 primeMenu = {
                     label: menuGroup.text,
@@ -136,7 +136,7 @@ const useMenuItems = (menus?:string[]) => {
             return primeMenu
         }
 
-        if (context.version === 2) {
+        if (context.transferType === "full") {
             if (menus) {
                 const tempMenuItems:MenuItem[] = []
                 menus.forEach((menu) => {

@@ -14,12 +14,13 @@
  */
 
 import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useTranslation } from '../../hooks';
+import useTranslation from '../../hooks/app-hooks/useTranslation';
 import { Toast, ToastMessage } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { appContext } from '../../AppProvider';
-import { ErrorResponse, MessageResponse } from '../../response';
-import { concatClassnames } from '../../util';
+import { appContext } from '../../contexts/AppProvider';
+import MessageResponse from '../../response/ui/MessageResponse';
+import ErrorResponse from '../../response/error/ErrorResponse';
+import { concatClassnames } from '../../util/string-util/ConcatClassnames';
 
 type IToast = {
     dialog:MessageResponse|ErrorResponse,

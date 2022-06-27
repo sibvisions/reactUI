@@ -15,10 +15,16 @@
 
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
-import { useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import BaseComponent from "../../util/types/BaseComponent";
-import { checkComponentName, concatClassnames, getTabIndex, parseMaxSize, parseMinSize, parsePrefSize, sendOnLoadCallback } from "../../util";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
 // Interface for the browser component
 export interface IBrowser extends BaseComponent {

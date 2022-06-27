@@ -15,18 +15,28 @@
 
 /** React imports */
 import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Tree, TreeEventNodeParams, TreeExpandedKeysType, TreeSelectionParams } from 'primereact/tree';
+import { Tree, TreeExpandedKeysType, TreeSelectionParams } from 'primereact/tree';
 import * as _ from 'underscore'
-import { useAllDataProviderData, useAllRowSelect, useMouseListener, usePopupMenu, useComponentConstants } from "../../hooks";
 import BaseComponent from "../../util/types/BaseComponent";
-import {getMetaData, getSelfJoinedRootReference, parsePrefSize, parseMinSize, parseMaxSize, sendOnLoadCallback, checkComponentName, concatClassnames} from "../../util";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS, SelectFilter } from "../../request";
-import { FetchResponse } from "../../response";
 import TreePath from "../../model/TreePath";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import TreeNode from "primereact/treenode";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import useAllDataProviderData from "../../hooks/data-hooks/useAllDataProviderData";
+import useAllRowSelect from "../../hooks/data-hooks/useAllRowSelect";
+import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import { getMetaData } from "../../util/data-util/GetMetaData";
+import { getSelfJoinedRootReference } from "../../util/data-util/GetSelfJoinedRootReference";
+import FetchResponse from "../../response/data/FetchResponse";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import { SelectFilter } from "../../request/data/SelectRowRequest";
+import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
+import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import { checkComponentName } from "../../util/component-util/CheckComponentName";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {

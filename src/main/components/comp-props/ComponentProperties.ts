@@ -14,9 +14,11 @@
  */
 
 import tinycolor from 'tinycolor2';
-import { Margins } from '../layouts';
-import { convertIcon, Dimension } from '../../util';
-import { UIFont, IconProps } from '.';
+import { convertIcon } from '../../util/component-util/FontAwesomeConverter';
+import Dimension from '../../util/types/Dimension';
+import Margins from '../layouts/models/Margins';
+import IconProps from './IconProps';
+import UIFont from './UIFont';
 
 /**
  * Returns margins of component

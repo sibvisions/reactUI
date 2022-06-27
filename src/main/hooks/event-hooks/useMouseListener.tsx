@@ -14,11 +14,11 @@
  */
 
 import { useContext, useRef } from "react";
-import { useEventHandler } from "..";
-import { appContext } from "../../AppProvider";
+import useEventHandler from "../event-hooks/useEventHandler";
+import { appContext } from "../../contexts/AppProvider";
 import { createMouseClickedRequest, createMouseRequest } from "../../factories/RequestFactory";
-import { REQUEST_KEYWORDS } from "../../request";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 
 /** Returns which mouse-button was pressed */
 const getMouseButton = (button:number): "Left"|"Middle"|"Right" => {

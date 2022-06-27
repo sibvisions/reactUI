@@ -16,21 +16,33 @@
 import { History } from "history";
 import _ from "underscore";
 import API from "../API";
-import AppSettings, { appVersion } from "../AppSettings";
-import { IPanel } from "../components/panels";
+import AppSettings from "../AppSettings";
 import BaseContentStore from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
-import ContentStoreV2 from "../contentstore/ContentStoreV2";
+import ContentStoreFull from "../contentstore/ContentStoreFull";
 import { createFetchRequest } from "../factories/RequestFactory";
 import TreePath from "../model/TreePath";
-import { REQUEST_KEYWORDS } from "../request";
-import { ApplicationMetaDataResponse, BaseResponse, CloseScreenResponse, DataProviderChangedResponse, DeviceStatusResponse, FetchResponse, MetaDataResponse, RESPONSE_NAMES, SessionExpiredResponse } from "../response";
-import { RequestQueueMode } from "./Server";
 import { SubscriptionManager } from "../SubscriptionManager";
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import CloseScreenResponse from "../response/ui/CloseScreenResponse";
+import BaseResponse from "../response/BaseResponse";
+import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
+import ApplicationMetaDataResponse from "../response/app/ApplicationMetaDataResponse";
+import FetchResponse from "../response/data/FetchResponse";
+import DataProviderChangedResponse from "../response/data/DataProviderChangedResponse";
+import { IPanel } from "../components/panels/panel/UIPanel";
+import MetaDataResponse from "../response/data/MetaDataResponse";
+import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
+import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
+
+export enum RequestQueueMode {
+    QUEUE = "queue",
+    IMMEDIATE = "immediate"
+}
 
 export default abstract class BaseServer {
     /** Contentstore instance */
-    contentStore: BaseContentStore|ContentStore|ContentStoreV2;
+    contentStore: BaseContentStore|ContentStore|ContentStoreFull;
 
     /** SubscriptionManager instance */
     subManager:SubscriptionManager;
@@ -90,7 +102,7 @@ export default abstract class BaseServer {
      * @param subManager - subscription-manager instance
      * @param history - the history
      */
-     constructor(store: ContentStore|ContentStoreV2, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
+     constructor(store: ContentStore|ContentStoreFull, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
         this.contentStore = store;
         this.subManager = subManager;
         this.appSettings = appSettings;
@@ -176,11 +188,11 @@ export default abstract class BaseServer {
                     if (endpoint === REQUEST_KEYWORDS.UI_REFRESH) {
                         this.uiRefreshInProgress = true;
                     }
-
+                    
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                         this.timeoutMs, 
-                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, queueMode, handleResponse)
+                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse)
                     )
                         .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                         .then(result => {
@@ -218,11 +230,11 @@ export default abstract class BaseServer {
                                     this.subManager.emitErrorBarProperties(false, true, splitErr[0], splitErr[1]);
                                 }
                                 else {
-                                    this.subManager.emitErrorBarProperties(false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                    this.subManager.emitErrorBarProperties(false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                                 }
                             }
                             else {
-                                this.subManager.emitErrorBarProperties(false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests));
+                                this.subManager.emitErrorBarProperties(false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
                             if (error !== "no valid json") {
                                 this.subManager.emitErrorBarVisible(true);
@@ -247,7 +259,7 @@ export default abstract class BaseServer {
                         handleResponse
                     ).then(results => {
                         resolve(results)
-                    }).catch((error) => reject(error)))
+                    }).catch(() => resolve(null)))
                     this.advanceRequestQueue();
                 }
             }
@@ -555,7 +567,7 @@ export default abstract class BaseServer {
      */
      sessionExpired(expData: SessionExpiredResponse) {
         if (this.uiRefreshInProgress) {
-            if (appVersion.version !== 2) {
+            if (this.appSettings.transferType !== "full") {
                 this.history?.push("/login");
             }
             this.appSettings.setAppReadyParamFalse();
