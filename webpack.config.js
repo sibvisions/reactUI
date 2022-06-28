@@ -17,6 +17,7 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = () => {
     return {
@@ -40,7 +41,21 @@ module.exports = () => {
                 allowAsyncCycles: false,
                 cwd: process.cwd(),
             }),
-            new CleanWebpackPlugin()
+            new CleanWebpackPlugin(),
+            new CopyPlugin({
+                patterns: [
+                    {
+                        from: "*.scss",
+                        context: path.resolve(__dirname, "src", "application-frame", "styling", "color-schemes"),
+                        to: "./resources/color-schemes",
+                    },
+                    {
+                        from: "*.scss",
+                        context: path.resolve(__dirname, "src", "application-frame", "styling", "themes"),
+                        to: "./resources/themes",
+                    },
+                ]
+            })
         ],
         module: {
             rules: [

@@ -1,13 +1,13 @@
 import React, { FC, MouseEventHandler } from "react";
 
-interface ExtendableComponent {
+interface ExtendableButton {
     onClick?: MouseEventHandler
 }
 
-const ButtonExtend: FC<ExtendableComponent> = (props) => {
+const ExtendButton: FC<ExtendableButton> = () => {
     return (
         <>
         </>
     )
 }
-export default ButtonExtend
+export default ExtendButton

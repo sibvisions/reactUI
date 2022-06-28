@@ -36,6 +36,6 @@ export { default as useAllRowSelect } from './main/hooks/data-hooks/useAllRowSel
 export * from './main/factories/RequestFactory';
 
 // Extendable Components
-export { default as UIButton } from './main/components/buttons/extend-test/ButtonExtend';
+export * from './main/extend-components'
 
 //export { appContext } from './main/contexts/AppProvider';
