@@ -248,7 +248,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                 };
 
-                ws.current.onerror = (error) => console.error("WebSocket error", error);
+                ws.current.onerror = () => console.error("WebSocket error");
 
                 ws.current.onmessage = (e) => {
                     if (e.data instanceof Blob) {

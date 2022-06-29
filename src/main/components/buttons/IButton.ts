@@ -12,7 +12,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 import BaseComponent from "../../util/types/BaseComponent";
 
 /** Interface for Buttons contains properties which are sent by the server */

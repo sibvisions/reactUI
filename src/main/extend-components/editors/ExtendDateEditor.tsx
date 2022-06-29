@@ -1,6 +1,12 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
-const ExtendDateEditor: FC<any> = () => {
+export interface IExtendableDateEditor {
+    onBlur?(e:React.FocusEvent): void,
+    onInput?(e:KeyboardEvent): void,
+    onChange?(value: Date | undefined): void
+}
+
+const ExtendDateEditor: FC<IExtendableDateEditor> = () => {
     return (
         <>
         </>

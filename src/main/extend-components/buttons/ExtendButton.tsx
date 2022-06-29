@@ -1,10 +1,10 @@
-import React, { FC, MouseEventHandler } from "react";
+import React, { FC } from "react";
 
-interface ExtendableButton {
-    onClick?: MouseEventHandler
+export interface IExtendableButton {
+    onClick?(e: MouseEvent): void
 }
 
-const ExtendButton: FC<ExtendableButton> = () => {
+const ExtendButton: FC<IExtendableButton> = () => {
     return (
         <>
         </>

@@ -40,6 +40,7 @@ import { getFont, parseIconData } from "../../comp-props/ComponentProperties";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
+import { IExtendableLinkedEditor } from "../../../extend-components/editors/ExtendLinkedEditor";
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor {
@@ -84,7 +85,7 @@ export function fetchLinkedRefDatabook(screenName:string, databook: string, curr
  * when text is entered into the inputfield, the dropdownlist gets filtered
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorLinked: FC<IEditorLinked> = (props) => {
+const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
 
@@ -183,6 +184,21 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
         lastValue.current = props.selectedRow;
     }, [props.selectedRow, linkRefFetchFlag]);
 
+    useEffect(() => {
+        if (props.onChange) {
+            if (props.cellEditor.displayReferencedColumnName) {
+                if (displayValueMap.has(props.selectedRow)) {
+                    props.onChange(displayValueMap.get(props.selectedRow))
+                    setText(displayValueMap.get(props.selectedRow));
+                    lastDisplayValue.current = displayValueMap.get(props.selectedRow)
+                }
+            }
+            else {
+                props.onChange(props.selectedRow)
+            }
+        }
+    }, [props.selectedRow, linkRefFetchFlag, props.onChange])
+
     const unpackValue = (value: string | string[]) => {
         if (Array.isArray(value)) {
             const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
@@ -206,6 +222,10 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
 
         if (props.isCellEditor) {
             filterReq.columnNames = [props.columnName]
+        }
+
+        if (props.onFilter) {
+            props.onFilter(value);
         }
         
         await props.context.server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => {
@@ -425,6 +445,11 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
             fetchReq.fromRow = providedData.length;
             fetchReq.rowCount = 400;
             showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar)
+            .then(result => {
+                if (props.onLazyLoadFetch && result[0]) {
+                    props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))
+                }
+            })
         }
     }
 
@@ -538,6 +563,10 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                 }}
                 onBlur={event => {
                     if (!props.isReadOnly) {
+                        if (props.onBlur) {
+                            props.onBlur(event);
+                        }
+
                         handleInput();
                         const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
                         // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
@@ -558,7 +587,13 @@ const UIEditorLinked: FC<IEditorLinked> = (props) => {
                     }
                 }}
                 virtualScrollerOptions={{ itemSize: 38, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
-                onSelect={(event) => handleInput(event.value)}
+                onSelect={(event) => { 
+                    if (props.onSelect) {
+                        props.onSelect(event);
+                    }
+
+                    handleInput(event.value)
+                }}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
                 itemTemplate={itemTemplate}

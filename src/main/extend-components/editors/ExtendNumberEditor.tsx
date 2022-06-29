@@ -1,6 +1,12 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
-const ExtendNumberEditor: FC<any> = () => {
+export interface IExtendableNumberEditor {
+    onBlur?(e:React.FocusEvent): void,
+    onInput?(e: { originalEvent: SyntheticEvent, value: number | null }):void
+    onChange?(value:number|null|undefined):void
+}
+
+const ExtendNumberEditor: FC<IExtendableNumberEditor> = () => {
     return (
         <>
         </>

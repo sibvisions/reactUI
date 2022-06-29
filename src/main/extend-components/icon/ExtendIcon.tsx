@@ -1,6 +1,10 @@
 import React, { FC } from "react";
 
-const ExtendIcon: FC<any> = () => {
+export interface IExtendableIcon {
+    onChange?(url: string|undefined): void
+}
+
+const ExtendIcon: FC<IExtendableIcon> = () => {
     return (
         <>
         </>

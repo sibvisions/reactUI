@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useCallback, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
@@ -31,6 +31,7 @@ import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import { IExtendableChoiceEditor } from "../../../extend-components/editors/ExtendChoiceEditor";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor {
@@ -49,7 +50,7 @@ export interface IEditorChoice extends IRCCellEditor {
  * being clicked different images then will be displayed and the value in the databook will be changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorChoice: FC<IEditorChoice> = (props) => {
+const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
 
@@ -177,6 +178,12 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             showTopBar(props.context.server.sendRequest(setValReq, REQUEST_KEYWORDS.SET_VALUES), props.topbar);
         }
     }
+
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange({ value: currentImageValue, allowedValues: props.cellEditor.allowedValues })
+        }
+    }, [currentImageValue, props.onChange]);
     
     return (
         <span
@@ -230,7 +237,13 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
                     props.style
                 )}
                 alt=""
-                onClick={setNextValue}
+                onClick={(event) => {
+                    if (props.onClick) {
+                        props.onClick(event);
+                    }
+
+                    setNextValue()
+                }}
                 src={currentImageValue !== "invalid" ?
                     props.context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
                         currentImageValue

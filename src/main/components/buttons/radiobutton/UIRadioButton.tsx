@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useLayoutEffect, useRef } from "react";
-import { RadioButton } from 'primereact/radiobutton';
+import { RadioButton, RadioButtonChangeParams } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IButtonSelectable } from "../IButton";
@@ -27,12 +27,13 @@ import { checkComponentName } from "../../../util/component-util/CheckComponentN
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { sendSetValue } from "../../../util/server-util/SendSetValues";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
+import { IExtendableSelectable } from "../../../extend-components/buttons/ExtendCheckbox";
 
 /**
  * This component displays a RadioButton and its label
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
+const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) => {
     /** Reference for the RadioButton element */
     const rbRef = useRef<any>(null)
 
@@ -43,7 +44,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButtonSelectable & IExtendableSelectable>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current ? rbRef.current.element : undefined);
@@ -61,6 +62,14 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle]);
+
+    const onChange = (event:RadioButtonChangeParams) => {
+        if (props.onChange) {
+            props.onChange(props.selected === undefined ? true : !props.selected, event.originalEvent);
+        }
+
+        sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)
+    }
 
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
@@ -95,7 +104,7 @@ const UIRadioButton: FC<IButtonSelectable> = (baseProps) => {
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected}
-                    onChange={() => sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)}
+                    onChange={onChange}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
                     disabled={isCompDisabled(props)}

@@ -1,6 +1,10 @@
 import React, { FC } from "react";
 
-const ExtendImageEditor: FC<any> = () => {
+export interface IExtendableImageEditor {
+    onChange?(): void
+}
+
+const ExtendImageEditor: FC<IExtendableImageEditor> = () => {
     return (
         <>
         </>

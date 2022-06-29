@@ -1,6 +1,15 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
-const ExtendCheckboxEditor: FC<any> = () => {
+export interface IExtendableCheckboxEditor {
+    onClick?(e: SyntheticEvent|React.KeyboardEvent<HTMLSpanElement>): void
+    onChange?(e: {
+        value: string | number | boolean | undefined,
+        selectedValue: string | number | boolean | undefined,
+        deselectedValue: string | number | boolean | undefined
+    }): void
+}
+
+const ExtendCheckboxEditor: FC<IExtendableCheckboxEditor> = () => {
     return (
         <>
         </>

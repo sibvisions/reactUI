@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
 import BaseComponent from "../../util/types/BaseComponent";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
@@ -25,17 +25,18 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-
 import { checkComponentName } from "../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { IExtendableLabel } from "../../extend-components/label/ExtendLabel";
 
 /**
  * Displays a simple label
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UILabel: FC<BaseComponent> = (baseProps) => {
+const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     /** Reference for label element */
     const labelRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [,, [props], layoutStyle,, compStyle] = useComponentConstants<BaseComponent>(baseProps);
+    const [,, [props], layoutStyle,, compStyle] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -58,6 +59,12 @@ const UILabel: FC<BaseComponent> = (baseProps) => {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
+
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.text)
+        }
+    }, [props.text])
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(

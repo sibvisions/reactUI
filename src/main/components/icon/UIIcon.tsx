@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import BaseComponent from "../../util/types/BaseComponent";
 import { Tooltip } from "primereact/tooltip";
 import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
@@ -29,20 +29,21 @@ import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { checkComponentName } from "../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { IExtendableIcon } from "../../extend-components/icon/ExtendIcon";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIIcon: FC<BaseComponent> = (baseProps) => {
+const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
     /** Reference for the span that is wrapping the icon containing layout information */
     const iconRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<BaseComponent>(baseProps);
+    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<BaseComponent & IExtendableIcon>(baseProps);
 
     /** Properties for icon */
-    const iconProps = parseIconData(props.foreground, props.image);
+    const iconProps = useMemo(() => parseIconData(props.foreground, props.image), [props.foreground, props.image]);
 
     /** Extracting onLoadCallback, id and alignments from baseProps */
     const {onLoadCallback, id, horizontalAlignment, verticalAlignment} = props;
@@ -93,6 +94,12 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             }
         }
     },[onLoadCallback, id, props.image, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.image)
+        }
+    }, [props.image])
 
     /** 
     * Returns wether the icon is a FontAwesome icon or an image sent by the server 

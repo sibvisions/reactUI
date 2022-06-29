@@ -1,6 +1,14 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
-const ExtendChoiceEditor: FC<any> = () => {
+export interface IExtendableChoiceEditor {
+    onClick?(e: SyntheticEvent|React.KeyboardEvent<HTMLSpanElement>): void,
+    onChange?(e: {
+        value: any,
+        allowedValues: any[]
+    }): void
+}
+
+const ExtendChoiceEditor: FC<IExtendableChoiceEditor> = () => {
     return (
         <>
         </>

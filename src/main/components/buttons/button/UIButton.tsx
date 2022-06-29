@@ -31,14 +31,13 @@ import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
-
-
+import { IExtendableButton } from "../../../extend-components/buttons/ExtendButton";
 
 /**
  * This component displays a basic button
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIButton: FC<IButton> = (baseProps) => {
+const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
@@ -46,7 +45,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButton>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButton & IExtendableButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)

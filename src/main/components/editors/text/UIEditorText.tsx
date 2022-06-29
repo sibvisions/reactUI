@@ -32,6 +32,7 @@ import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
+import { IExtendableTextEditor } from "../../../extend-components/editors/ExtendTextEditor";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {
@@ -201,7 +202,7 @@ export function isCellEditorReadOnly(props:IRCCellEditor) {
  * the CellEditor becomes a normal texteditor, a textarea or a passwor field, when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorText: FC<IEditorText> = (props) => {
+const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     /** Reference for the TextCellEditor element */
     const textRef = useRef<any>();
 
@@ -283,6 +284,12 @@ const UIEditorText: FC<IEditorText> = (props) => {
         setText(props.selectedRow);
         lastValue.current = props.selectedRow;
     },[props.selectedRow]);
+
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.selectedRow);
+        }
+    }, [props.selectedRow, props.onChange])
 
     // If the CellEditor is in a table and a button was pressed to open it, set "" as value
     useEffect(() => {
@@ -440,10 +447,19 @@ const UIEditorText: FC<IEditorText> = (props) => {
             autoFocus: props.autoFocus ? true : props.isCellEditor ? true : false,
             value: text || "",
             "aria-label": props.ariaLabel,
-            onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setText(event.currentTarget.value),
+            onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+                if (props.onInput) {
+                    props.onInput({originalEvent: event, value: event.currentTarget.value})
+                }
+                setText(event.currentTarget.value)
+            },
             onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
-            onBlur: () => {
+            onBlur: (event:React.FocusEvent) => {
                 if (!props.isReadOnly) {
+                    if (props.onBlur) {
+                        props.onBlur(event)
+                    }
+
                     if (!escapePressed.current) {
                         sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
                     }

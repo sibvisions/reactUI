@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Checkbox } from 'primereact/checkbox';
+import { Checkbox, CheckboxChangeParams } from 'primereact/checkbox';
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
@@ -28,6 +28,7 @@ import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import { getFocusComponent } from "../../../util/html-util/GetFocusComponent";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
+import { IExtendableCheckboxEditor } from "../../../extend-components/editors/ExtendCheckboxEditor";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -45,7 +46,7 @@ export interface IEditorCheckBox extends IRCCellEditor {
  * The CheckBoxCellEditor displays a CheckBox and its label and edits its value in its databook
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
+const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props) => {
     /** Reference for the span that is wrapping the button containing layout information */
     const wrapRef = useRef<any>(null);
 
@@ -80,11 +81,30 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
 
     // Sets the checked value based on the selectedRow data
     useEffect(() => {
-        setChecked(props.selectedRow ? props.selectedRow.data : undefined)
+        setChecked(props.selectedRow ? props.selectedRow.data : undefined);
     }, [props.selectedRow]);
 
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange({ 
+                value: props.selectedRow.data, 
+                selectedValue: props.cellEditor.selectedValue,
+                deselectedValue: props.cellEditor.deselectedValue 
+            });
+        }
+    }, [props.selectedRow, props.onChange])
+
     // Sends a setValues Request to the server when the checkbox is clicked
-    const handleOnChange = () => {
+    const handleOnChange = (e: CheckboxChangeParams | React.KeyboardEvent<HTMLSpanElement>) => {
+        if (props.onClick) {
+            if ((e as CheckboxChangeParams).originalEvent !== undefined) {
+                props.onClick((e as CheckboxChangeParams).originalEvent);
+            }
+            else {
+                props.onClick(e as React.KeyboardEvent<HTMLSpanElement>);
+            }
+        }
+
         sendSetValues(
             props.dataRow,
             props.name,
@@ -143,7 +163,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 event.preventDefault();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
                 if (event.key === " ") {
-                    handleOnChange()
+                    handleOnChange(event)
                 }
                 if (event.key === "Tab") {
                     if (props.isCellEditor && props.stopCellEditing) {
@@ -165,7 +185,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox> = (props) => {
                 trueValue={props.cellEditor.selectedValue}
                 falseValue={props.cellEditor.deselectedValue}
                 checked={checked}
-                onChange={() => handleOnChange()}
+                onChange={(event) => handleOnChange(event)}
                 disabled={props.isReadOnly}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 tooltip={props.toolTipText}

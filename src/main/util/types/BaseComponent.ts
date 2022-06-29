@@ -55,7 +55,6 @@ interface BaseComponent {
     popupMenu?: any,
     toolTipText?: string,
     classNameEventSourceRef?:string,
-    enabled?: boolean,
-    onClick?: Function
+    enabled?: boolean
 }
 export default BaseComponent

@@ -1,6 +1,11 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
-const ExtendToggleButton: FC<any> = () => {
+export interface IExtendableToggleButton {
+    onClick?(e: SyntheticEvent): void
+    onChange?(selected: boolean|undefined): void
+}
+
+const ExtendToggleButton: FC<IExtendableToggleButton> = () => {
     return (
         <>
         </>

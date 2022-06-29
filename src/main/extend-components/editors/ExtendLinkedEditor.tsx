@@ -1,6 +1,14 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
-const ExtendLinkedEditor: FC<any> = () => {
+export interface IExtendableLinkedEditor {
+    onBlur?(e:React.FocusEvent): void,
+    onChange?(value: any): void,
+    onFilter?(filterValue: string): void,
+    onSelect?(e: { originalEvent: SyntheticEvent, value: any }): void,
+    onLazyLoadFetch?(records: any[]):void
+}
+
+const ExtendLinkedEditor: FC<IExtendableLinkedEditor> = () => {
     return (
         <>
         </>

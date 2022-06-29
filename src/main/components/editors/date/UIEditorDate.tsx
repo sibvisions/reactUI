@@ -30,6 +30,7 @@ import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { IExtendableDateEditor } from "../../../extend-components/editors/ExtendDateEditor";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {
@@ -88,7 +89,7 @@ const parseMultiple = (
  * which opens a datepicker to choose a date and change the value in its databook
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorDate: FC<IEditorDate> = (props) => {
+const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
 
@@ -189,6 +190,12 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         
     },[props.selectedRow]);
 
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.selectedRow ? new Date(props.selectedRow) : undefined)
+        }
+    }, [props.selectedRow, props.onChange])
+
     const timeChanged = (newDate: Date, oldDate: Date) => {
         if (!oldDate || newDate.getHours() !== oldDate.getHours() || newDate.getMinutes() !== oldDate.getMinutes() || newDate.getSeconds() !== oldDate.getSeconds()) {
             return true;
@@ -245,6 +252,11 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         //@ts-ignore
         [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event:Event) => {
         event.stopPropagation();
+
+        if (props.onInput) {
+            props.onInput(event as KeyboardEvent)
+        }
+
         if ((event as KeyboardEvent).key === "Enter") {
             handleDateInput();
             alreadySaved.current = true;
@@ -342,6 +354,10 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 }}
                 onBlur={event => {
                     if (!props.isReadOnly) {
+                        if (props.onBlur) {
+                            props.onBlur(event);
+                        }
+
                         // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
                         //@ts-ignore
                         if (!visible && !calendar.current.container.contains(event.relatedTarget)) {

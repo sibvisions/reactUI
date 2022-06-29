@@ -1,6 +1,12 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
-const ExtendMenuButton: FC<any> = () => {
+export interface IExtendableMenuButton {
+    onDefaultBtnClick?(e: MouseEvent): void,
+    onMenuBtnClick?(e: MouseEvent): void,
+    onMenuItemClick?(clickedItem: string|undefined, originalEvent: SyntheticEvent): any
+}
+
+const ExtendMenuButton: FC<IExtendableMenuButton> = () => {
     return (
         <>
         </>

@@ -34,6 +34,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import { IExtendableMenuButton } from "../../../extend-components/buttons/ExtendMenuButton";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -44,7 +45,7 @@ export interface IMenuButton extends IButton {
  * This component displays a Button which contains a dropdown menu
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIMenuButton: FC<IMenuButton> = (baseProps) => {
+const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
@@ -52,7 +53,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IMenuButton>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IMenuButton & IExtendableMenuButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle);
@@ -104,7 +105,11 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                     } : undefined,
                     color: iconProps.color,
                     /** When a menubuttonitem is clicked send a pressButtonRequest to the server */
-                    command: () => {
+                    command: (event) => {
+                        if (props.onMenuItemClick) {
+                            props.onMenuItemClick(event.item.label, event.originalEvent);
+                        }
+
                         const req = createDispatchActionRequest();
                         req.componentId = item.name;
                         showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
@@ -119,14 +124,39 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
     }, [context.contentStore, context.server, props]);
 
     // Focus handling, so that always the entire button is focused and not only one of the parts of the button
-    useEventHandler(buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined, "click", (e) => (e.target as HTMLElement).focus());
-    useEventHandler(buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined, "click", (e) => (e.target as HTMLElement).focus());
-    useEventHandler(buttonRef.current ? buttonRef.current.defaultButton : undefined, "blur", (e) => {
-        const castedEvent = e as FocusEvent;
-        if (castedEvent.relatedTarget === buttonWrapperRef.current) {
-            getFocusComponent(props.name + "-wrapper", false)?.focus();
+    useEventHandler(
+        buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined,
+        "click",
+        (event) => {
+            (event.target as HTMLElement).focus();
+
+            if (props.onDefaultBtnClick) {
+                props.onDefaultBtnClick(event as MouseEvent);
+            }
         }
-    })
+    );
+
+    useEventHandler(
+        buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined,
+        "click",
+        (event) => {
+            (event.target as HTMLElement).focus();
+
+            if (props.onMenuBtnClick) {
+                props.onMenuBtnClick(event as MouseEvent);
+            }
+        }
+    );
+
+    useEventHandler(
+        buttonRef.current ? buttonRef.current.defaultButton : undefined,
+        "blur",
+        (event) => {
+            if ((event as FocusEvent).relatedTarget === buttonWrapperRef.current) {
+                getFocusComponent(props.name + "-wrapper", false)?.focus();
+            }
+        }
+    )
 
     return (
         <span
@@ -180,7 +210,7 @@ const UIMenuButton: FC<IMenuButton> = (baseProps) => {
                 disabled={isCompDisabled(props)}
                 tabIndex={-1}
                 model={items}
-                onClick={() => buttonRef.current.show()}
+                onClick={(e) => {console.log(e); buttonRef.current.show()}}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }} />
         </span>

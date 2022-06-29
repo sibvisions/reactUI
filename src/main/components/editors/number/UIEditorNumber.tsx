@@ -31,6 +31,7 @@ import { sendSetValues } from "../../../util/server-util/SendSetValues";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { IExtendableNumberEditor } from "../../../extend-components/editors/ExtendNumberEditor";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -56,7 +57,7 @@ export interface ScaleType {
  * when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorNumber: FC<IEditorNumber> = (props) => {
+const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     /** Reference for the NumberCellEditor element */
     const numberRef = useRef<InputNumber>(null);
 
@@ -142,6 +143,12 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         lastValue.current = props.selectedRow;
     },[props.selectedRow]);
 
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.selectedRow)
+        }
+    }, [props.selectedRow, props.onChange])
+
     // When the cell-editor is in a table and the passed-key is not a number set null as value. On unmount of the in-table cell-editor blur.
     useEffect(() => {
         if (props.isCellEditor && props.passedKey) {
@@ -223,13 +230,24 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                         ...textAlignment, 
                         ...props.cellStyle
                     }}
-                    onChange={event => setValue(event.value) }
+                    onChange={event => {
+                        if (props.onInput) {
+                            props.onInput(event);
+                        }
+
+                        setValue(event.value)
+                    }}
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
-                    onBlur={() => {
+                    onBlur={(event) => {
                         if (!props.isReadOnly) {
                             if (props.eventFocusLost) {
                                 onFocusLost(props.name, props.context.server);
                             }
+
+                            if (props.onBlur) {
+                                props.onBlur(event)
+                            }
+
                             sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                         }
                     }}
