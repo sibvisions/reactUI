@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, ReactNode, SyntheticEvent, useLayoutEffect, useRef, useState } from "react";
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
 import { Tooltip } from "primereact/tooltip";
@@ -41,6 +41,8 @@ interface ISplitPanel extends IForwardRef {
     onResizeStart?: onResizeEvent
     onResize?: onResizeEvent
     onResizeEnd?: onResizeEvent
+    onResizeExtend?(e: MouseEvent|TouchEvent): void
+    onResizeEndExtend?(e: { originalEvent: MouseEvent, delta: number }): void
     trigger?: any
     onTrigger?: onResizeEvent
     style?: CSSProperties
@@ -57,10 +59,15 @@ interface ISplitPanel extends IForwardRef {
 const SplitPanel: FC<ISplitPanel> = (props) => {
     /** State of the position of the first component in the splitPanel */
     const [firstPosition, setFirstPosition] = useState<number | undefined>(props.dividerPosition !== -1 ? props.dividerPosition : undefined);
+
     /** Reference for the first component */
     const firstRef = useRef<HTMLDivElement>(null);
+
     /** Reference for the second component */
     const secondRef = useRef<HTMLDivElement>(null);
+
+    const deltaRef = useRef<number>(0);
+
     /** The absolute position */
     let absolutePosition = 0;
 
@@ -95,6 +102,10 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     /** When dragging, calcuate the new separator position based on mouseposition and set it, resize is also called throttled while dragging */
     const dragging = (event: MouseEvent) => {
+        if (props.onResizeExtend) {
+            props.onResizeExtend(event);
+        }
+
         let newSeparatorPosition
         if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL)
             newSeparatorPosition = event.clientX - 20 - absolutePosition;
@@ -107,7 +118,16 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     }
 
     /** Removes the dragging eventListeners */
-    const stopDrag = () => {
+    const stopDrag = (event:any) => {
+        if (props.onResizeEndExtend) {
+            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
+                props.onResizeEndExtend({ originalEvent: event, delta: event.clientX - deltaRef.current });
+            }
+            else {
+                props.onResizeEndExtend({ originalEvent: event, delta: event.clientY - deltaRef.current });
+            }
+        }
+        deltaRef.current = 0;
         document.removeEventListener("mouseup", stopDrag);
         document.removeEventListener("mousemove", dragging);
     }
@@ -116,10 +136,15 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     const dragStart = (event: React.MouseEvent<HTMLDivElement>) => {
         if(props.forwardedRef.current){
             const size:DOMRect = props.forwardedRef.current.getBoundingClientRect();
-            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL)
+            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
                 absolutePosition = size.x;
-            else
+                deltaRef.current = event.clientX;
+            }   
+            else {
                 absolutePosition = size.y;
+                deltaRef.current = event.clientY;
+            }
+                
         }
         document.addEventListener("mouseup", stopDrag);
         document.addEventListener("mousemove", dragging);
@@ -128,14 +153,27 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     //Touch ----------------------
 
     /** Removes touch eventlisteners */
-    const stopTouchDrag = () => {
+    const stopTouchDrag = (event:any) => {
+        if (props.onResizeEndExtend) {
+            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
+                props.onResizeEndExtend({ originalEvent: event, delta: event.targetTouches[0].clientX - deltaRef.current });
+            }
+            else {
+                props.onResizeEndExtend({ originalEvent: event, delta: event.targetTouches[0].clientY - deltaRef.current });
+            }
+        }
+        deltaRef.current = 0;
         document.removeEventListener("touchend", stopTouchDrag);
         document.removeEventListener("touchmove", touchDragging);
     }
 
     /** When touch-dragging, calcuate the new separator position based on mouseposition and set it, resize is also called throttled while dragging */
     const touchDragging = (event: TouchEvent) => {
-         const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absolutePosition;
+        if (props.onResizeExtend) {
+            props.onResizeExtend(event);
+        }
+
+        const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
             _.throttle(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
@@ -146,10 +184,15 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     const dragTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
         if(props.forwardedRef.current){
             const size:DOMRect = props.forwardedRef.current.getBoundingClientRect();
-            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL)
+            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
                 absolutePosition = size.x;
-            else
+                deltaRef.current = event.targetTouches[0].clientX;
+            }
+            else {
                 absolutePosition = size.y;
+                deltaRef.current = event.targetTouches[0].clientY;
+            }
+                
         }
         document.addEventListener("touchend", stopTouchDrag);
         document.addEventListener("touchmove", touchDragging);

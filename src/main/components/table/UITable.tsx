@@ -15,7 +15,7 @@
 
 import React, { createContext, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Column } from "primereact/column";
-import { DataTable } from "primereact/datatable";
+import { DataTable, DataTableColumnResizeEndParams, DataTableSelectionChangeParams } from "primereact/datatable";
 import _ from "underscore";
 import BaseComponent from "../../util/types/BaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
@@ -46,6 +46,8 @@ import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { checkComponentName } from "../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import Dimension from "../../util/types/Dimension";
+import { IExtendableTable } from "../../extend-components/table/ExtendTable";
+import { ENETUNREACH } from "constants";
 
 
 /** Interface for Table */
@@ -157,7 +159,7 @@ function isVisible(ele:HTMLElement, container:HTMLElement, cell:any) {
  * This component displays a DataTable
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UITable: FC<TableProps> = (baseProps) => {
+const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** Reference for the div wrapping the Table */
     const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -165,7 +167,7 @@ const UITable: FC<TableProps> = (baseProps) => {
     const tableRef = useRef<DataTable>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<TableProps>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<TableProps & IExtendableTable>(baseProps);
 
     /** Name of the screen */
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id]);
@@ -538,6 +540,10 @@ const UITable: FC<TableProps> = (baseProps) => {
     /** Adds the sort classnames to the headers for styling */
     useEffect(() => {
         if (tableRef.current) {
+            if (props.onSort) {
+                props.onSort(sortDefinitions);
+            }
+
             const table = tableRef.current as any;
             const allTableColumns = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
             if (sortDefinitions && sortDefinitions.length) {
@@ -904,9 +910,14 @@ const UITable: FC<TableProps> = (baseProps) => {
     ])
 
     /** When a row is selected send a selectRow request to the server */
-    const handleRowSelection = async (event: {originalEvent: any, value: any}) => {
+    const handleRowSelection = async (event: DataTableSelectionChangeParams) => {
         if(event.value && event.originalEvent.type === 'click') {
             const isNewRow = selectedRow ? event.value.rowIndex !== selectedRow.index : true;
+
+            if (props.onRowSelect && isNewRow) {
+                props.onRowSelect({ originalEvent: event, selectedRow: event.value.props.rowData })
+            }
+
             let filter:SelectFilter|undefined = undefined
             if (isNewRow) {
                 filter = {
@@ -935,7 +946,11 @@ const UITable: FC<TableProps> = (baseProps) => {
                 fetchReq.dataProvider = props.dataBook;
                 fetchReq.fromRow = providerData.length;
                 fetchReq.rowCount = length * 4;
-                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar).then(() => {
+                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar).then((result) => {
+                    if (props.onLazyLoadFetch && result[0]) {
+                        props.onLazyLoadFetch(context.server.buildDatasets(result[0]))
+                    }
+
                     setListLoading(false);
                 });
             } else {
@@ -952,8 +967,12 @@ const UITable: FC<TableProps> = (baseProps) => {
      *  When column-resizing stops, adjust the width of resize
      *  @param e - the event
      */
-    const handleColResizeEnd = (e:any) => {
+    const handleColResizeEnd = (e:DataTableColumnResizeEndParams) => {
         if (tableRef.current) {
+            if (props.onColResizeEnd) {
+                props.onColResizeEnd(e);
+            }
+
             const table = tableRef.current as any;
             const container = table.el;
 
@@ -961,7 +980,7 @@ const UITable: FC<TableProps> = (baseProps) => {
             if (props.autoResize === false) {
                 //reverse prime fit sizing
                 let newColumnWidth = e.element.offsetWidth - e.delta;
-                let nextColumn = e.element.nextElementSibling;
+                let nextColumn = e.element.nextElementSibling as HTMLElement | undefined;
                 let nextColumnWidth = nextColumn ? nextColumn.offsetWidth + e.delta : e.delta;
 
                 if (newColumnWidth > 15 && nextColumnWidth > 15) {
@@ -1026,6 +1045,10 @@ const UITable: FC<TableProps> = (baseProps) => {
                 colWidthCSS = colWidthCSS.replace(toRegex,     to[1] + from[2] +   to[3]);
                 (tableRef.current as any).styleElement.innerHTML = colWidthCSS;
             }
+        }
+
+        if (props.onColOrderChange) {
+            props.onColOrderChange(e.columns.map((column:any) => column.props.field));
         }
 
         setColumnOrder(e.columns.map((column:any) => column.props.field));

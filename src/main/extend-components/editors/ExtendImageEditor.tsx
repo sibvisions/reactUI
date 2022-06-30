@@ -1,6 +1,7 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
 export interface IExtendableImageEditor {
+    onClick?(e: SyntheticEvent): void
     onChange?(): void
 }
 

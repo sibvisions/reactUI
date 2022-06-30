@@ -14,6 +14,7 @@
  */
 
 import React, { FC, useCallback, useRef } from "react"
+import { IExtendableTabsetPanel } from "../../../extend-components/panels/ExtendTabsetPanel";
 import { createTabRequest } from "../../../factories/RequestFactory";
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../../hooks/components-hooks/useComponents";
@@ -40,9 +41,9 @@ export type TabProperties = {
  * This component displays multiple Panels which are navigated by tabs
  * @param baseProps - the properties sent by the Layout component
  */
-const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
+const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITabsetPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITabsetPanel & IExtendableTabsetPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, compSizes] = useComponents(baseProps.id, props.className);
@@ -61,6 +62,10 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
     /** When a Tab is not closing and the user clicks on another Tab which is not disabled, send a selectTabRequest to the server */
     const handleSelect = (tabId:number) => {
         if(!closing.current) {
+            if (props.onTabChange) {
+                props.onTabChange(tabId);
+            } 
+
             showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.SELECT_TAB), topbar);
         }
         closing.current = false;
@@ -68,6 +73,10 @@ const UITabsetPanel: FC<ITabsetPanel> = (baseProps) => {
 
     /** When a tab is closed send a tabCloseRequest to the server */
     const handleClose = (tabId:number) => {
+        if (props.onTabClose) {
+            props.onTabClose(tabId);
+        }
+        
         showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.CLOSE_TAB), topbar);
         closing.current = true
     }

@@ -1,6 +1,7 @@
 import React, { FC } from "react";
+import { IExtendableText } from "./ExtendText";
 
-const ExtendPassword: FC<any> = () => {
+const ExtendPassword: FC<IExtendableText> = () => {
     return (
         <>
         </>

@@ -1,6 +1,11 @@
 import React, { FC } from "react";
 
-const ExtendSplitPanel: FC<any> = () => {
+export interface IExtendableSplitPanel {
+    onResize?(e: MouseEvent): void
+    onResizeEnd?(): void
+}
+
+const ExtendSplitPanel: FC<IExtendableSplitPanel> = () => {
     return (
         <>
         </>

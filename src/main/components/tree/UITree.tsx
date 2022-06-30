@@ -37,6 +37,7 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { checkComponentName } from "../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {
@@ -63,12 +64,12 @@ function getNode(nodes: TreeNode[], path: TreePath) {
  * This component displays a Tree based on server sent databooks
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UITree: FC<ITree> = (baseProps) => {
+const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     /** Reference for the span that is wrapping the tree containing layout information */
     const treeWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree>(baseProps);
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree & IExtendableTree>(baseProps);
 
     /** Name of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBooks[0]) as string;
@@ -264,6 +265,11 @@ const UITree: FC<ITree> = (baseProps) => {
             const selectedFilters:Array<SelectFilter|null> = []
             const selectedDatabooks = props.dataBooks;
             let path = new TreePath(JSON.parse(event.value));
+            
+            if (props.onRowSelect) {
+                props.onRowSelect({ originalEvent: event,  selectedRow: getDataRow(path, treeData.current.get(path.toString()))});
+            }
+
             //filters are build parth upwards
             while (path.length()) {
                 const dataBook = getDataBookName(path.length() -1)
@@ -399,7 +405,11 @@ const UITree: FC<ITree> = (baseProps) => {
     /**
      * Check if we have all the data for the tree we need if the expanded keys change
      */
-     useEffect(() => {        
+     useEffect(() => {
+        if (props.onTreeChange) {
+            props.onTreeChange(expandedKeys);
+        }
+        
         async function growTree(){
             const newNodes = [...nodes];
             let tempTreeData = new Map(treeData.current);

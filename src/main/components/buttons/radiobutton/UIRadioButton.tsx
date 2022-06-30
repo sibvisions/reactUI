@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
 import { RadioButton, RadioButtonChangeParams } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
@@ -63,9 +63,15 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle]);
 
-    const onChange = (event:RadioButtonChangeParams) => {
+    useEffect(() => {
         if (props.onChange) {
-            props.onChange(props.selected === undefined ? true : !props.selected, event.originalEvent);
+            props.onChange(props.selected === undefined ? true : !props.selected);
+        }
+    }, [props.selected])
+
+    const onChange = (event:RadioButtonChangeParams) => {
+        if (props.onClick) {
+            props.onClick(event.originalEvent);
         }
 
         sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)

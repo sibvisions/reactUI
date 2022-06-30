@@ -136,6 +136,11 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
                     onError={e => (e.target as HTMLImageElement).style.display = 'none'}
                     data-pr-tooltip={props.toolTipText}
                     data-pr-position="left"
+                    onClick={(e) => {
+                        if (props.onClick) {
+                            props.onClick(e)
+                        }
+                    }}
                 {...popupMenu}
                 />}
         </span>

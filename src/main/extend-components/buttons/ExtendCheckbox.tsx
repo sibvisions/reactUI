@@ -1,7 +1,8 @@
-import React, { FC } from "react";
+import React, { FC, SyntheticEvent } from "react";
 
 export interface IExtendableSelectable {
-    onChange?(checked:boolean, originalEvent: React.SyntheticEvent): void;
+    onClick?(e: SyntheticEvent): void
+    onChange?(checked: boolean): void;
 }
 
 const ExtendCheckbox: FC<IExtendableSelectable> = () => {

@@ -1,6 +1,11 @@
 import React, { FC } from "react";
 
-const ExtendTabsetPanel: FC<any> = () => {
+export interface IExtendableTabsetPanel {
+    onTabChange?(selectedIndex: number): void
+    onTabClose?(closedIndex: number): void
+}
+
+const ExtendTabsetPanel: FC<IExtendableTabsetPanel> = () => {
     return (
         <>
         </>

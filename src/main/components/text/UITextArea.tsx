@@ -28,6 +28,7 @@ import { sendSetValue } from "../../util/server-util/SendSetValues";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { IExtendableText } from "../../extend-components/text/ExtendText";
 
 interface ITextArea extends ITextField {
     rows?:number
@@ -37,12 +38,12 @@ interface ITextArea extends ITextField {
  * This component displays a textarea not linked to a databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UITextArea: FC<ITextArea> = (baseProps) => {
+const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
     /** Reference for the textarea */
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextArea>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextArea & IExtendableText>(baseProps);
 
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text || "");
@@ -76,10 +77,20 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
             )}
             value={text||""}
             style={{...layoutStyle, ...compStyle, resize: 'none'}} 
-            onChange={event => setText(event.currentTarget.value)} 
+            onChange={event => {
+                if (props.onChange) {
+                    props.onChange({ originalEvent: event, value: event.currentTarget.value });
+                }
+
+                setText(event.currentTarget.value)
+            }} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={() => {
+            onBlur={(event) => {
                 if (!isCompDisabled(props)) {
+                    if (props.onBlur) {
+                        props.onBlur(event);
+                    }
+
                     sendSetValue(props.name, text, context.server, lastValue.current, topbar);
                     lastValue.current = text;
     

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
 import { Checkbox, CheckboxChangeParams } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
@@ -28,6 +28,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { sendSetValue } from "../../../util/server-util/SendSetValues";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableSelectable } from "../../../extend-components/buttons/ExtendCheckbox";
+import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 
 /**
  * This component displays a CheckBox and its label
@@ -63,13 +64,23 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle]);
 
-    const onChange = (event:CheckboxChangeParams) => {
+    useEffect(() => {
         if (props.onChange) {
-            props.onChange(props.selected === undefined ? true : !props.selected, event.originalEvent);
+            props.onChange(props.selected === undefined ? true : !props.selected);
+        }
+    }, [props.selected])
+
+    const onChange = (event:CheckboxChangeParams) => {
+        if (props.onClick) {
+            props.onClick(event.originalEvent);
         }
 
         sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)
     }
+
+    useEventHandler(cbRef.current ? cbRef.current.box : undefined, "click", (e) => console.log(e))
+
+    console.log(cbRef.current)
 
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>

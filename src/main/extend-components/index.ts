@@ -29,7 +29,7 @@ export { default as UIMenubar } from './menubar/ExtendMenubar';
 
 export { default as UIPanel } from './panels/ExtendPanel';
 export { default as UIDesktopPanel } from './panels/ExtendDesktopPanel';
-export { default as UIPopupWrapper } from './panels/ExtendPopupWrapper';
+export { default as UIPopup } from './panels/ExtendPopupWrapper';
 export { default as UIScrollPanel } from './panels/ExtendScrollPanel';
 export { default as UISplitPanel } from './panels/ExtendSplitPanel';
 export { default as UITabsetPanel } from './panels/ExtendTabsetPanel';

@@ -28,17 +28,18 @@ import { sendSetValue } from "../../util/server-util/SendSetValues";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { IExtendableText } from "../../extend-components/text/ExtendText";
 
 /**
  * This component displays an input field of password type not linked to a databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIPassword: FC<ITextField> = (baseProps) => {
+const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
     /** Reference for the password field */
     const passwordRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextField>(baseProps);
+    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextField & IExtendableText>(baseProps);
 
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text || "");
@@ -72,10 +73,20 @@ const UIPassword: FC<ITextField> = (baseProps) => {
             value={pwValue||""} 
             feedback={false} 
             style={{...layoutStyle, ...compStyle}} 
-            onChange={event => setPwValue(event.currentTarget.value)} 
+            onChange={event => {
+                if (props.onChange) {
+                    props.onChange({ originalEvent: event, value: event.currentTarget.value });
+                }
+                
+                setPwValue(event.currentTarget.value)
+            }} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={() => {
+            onBlur={(event) => {
                 if (!isCompDisabled(props)) {
+                    if (props.onBlur) {
+                        props.onBlur(event);
+                    }
+
                     sendSetValue(props.name, pwValue, context.server, lastValue.current, topbar);
                     lastValue.current = pwValue;
     
