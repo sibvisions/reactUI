@@ -58,6 +58,11 @@ module.exports = () => {
                         context: path.resolve(__dirname, "src", "application-frame", "styling", "themes"),
                         to: "./resources/themes",
                     },
+                    {
+                        from: "SetupPackage.js",
+                        context: path.resolve(__dirname, "src"),
+                        to: "./"
+                    }
                 ]
             })
         ],

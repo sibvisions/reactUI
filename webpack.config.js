@@ -54,6 +54,11 @@ module.exports = () => {
                         context: path.resolve(__dirname, "src", "application-frame", "styling", "themes"),
                         to: "./resources/themes",
                     },
+                    {
+                        from: "SetupPackage.js",
+                        context: path.resolve(__dirname, "src"),
+                        to: "./"
+                    }
                 ]
             })
         ],
@@ -87,6 +92,9 @@ module.exports = () => {
                 {
                     test: /\.(png|svg|jpg|gif|webP)$/,
                     type: 'asset/resource',
+                    generator: {
+                        filename: 'resources/assets/[name][ext]'
+                    }
                     // use: {
                     //     loader: 'file-loader',
                     //     options: {
@@ -98,12 +106,12 @@ module.exports = () => {
                     test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                     type: 'asset/resource',
                     generator: {
-                        filename: 'resources/fonts/[name].[ext]'
+                        filename: 'resources/fonts/[name][ext]'
                     },
                     // use: {
                     //     loader: 'file-loader',
                     //     options: {
-                    //         name: 'resources/fonts/[name].[ext]',
+                    //         name: 'resources/fonts/[name][ext]',
                     //     }
                     // },
                 },
