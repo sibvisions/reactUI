@@ -24,7 +24,7 @@ module.exports = () => {
         mode: 'production',
         entry: './src/moduleIndex.ts',
         output: {
-            filename: 'index.js',
+            filename: 'moduleIndex.js',
             library: '@sibvisions/reactui',
             libraryTarget: 'umd'
         },
