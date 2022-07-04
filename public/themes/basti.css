@@ -120,20 +120,6 @@ body {
   width: var(--std-topbar-buttons);
   height: var(--std-topbar-buttons); }
 
-.basti .std-menu .profile-menu {
-  height: var(--std-profile-height); }
-  .basti .std-menu .profile-menu .p-menubar {
-    height: 100%; }
-    .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-      height: var(--std-profile-height);
-      padding: var(--std-profile-padding); }
-    .basti .std-menu .profile-menu .p-menubar .p-submenu-list {
-      width: calc(100% - var(--std-profile-separator-margin));
-      margin-left: var(--std-profile-separator-margin); }
-
-.basti .std-menu .vl {
-  height: var(--std-profile-height); }
-
 .basti .std-menu .profile-image, .basti .std-menu .profile-image-null {
   width: var(--std-profile-pic);
   height: var(--std-profile-pic); }
@@ -169,6 +155,20 @@ body {
   left: var(--std-fadeout-left);
   width: var(--std-fadeout-width);
   margin-top: var(--std-header-height); }
+
+.basti .profile-menu {
+  height: var(--std-profile-height); }
+  .basti .profile-menu .p-menubar {
+    height: 100%; }
+    .basti .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+      height: var(--std-profile-height);
+      padding: var(--std-profile-padding); }
+    .basti .profile-menu .p-menubar .p-submenu-list {
+      width: calc(100% - var(--std-profile-separator-margin));
+      margin-left: var(--std-profile-separator-margin); }
+
+.basti .vl {
+  height: var(--std-profile-height); }
 
 .basti .corp-menu .corp-menu-header {
   height: var(--corp-header-height); }

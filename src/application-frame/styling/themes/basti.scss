@@ -257,27 +257,6 @@ body {
             height: var(--std-topbar-buttons);
         }
 
-        .profile-menu {
-            height: var(--std-profile-height);
-
-            .p-menubar {
-                height: 100%;
-                .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-                    height: var(--std-profile-height);
-                    padding: var(--std-profile-padding);
-                }
-    
-                .p-submenu-list {
-                    width: calc(100% - var(--std-profile-separator-margin));
-                    margin-left: var(--std-profile-separator-margin);
-                }
-            }
-        }
-
-        .vl {
-            height: var(--std-profile-height);
-        }
-
         .profile-image, .profile-image-null {
             width: var(--std-profile-pic);
             height: var(--std-profile-pic);
@@ -325,6 +304,27 @@ body {
             width: var(--std-fadeout-width);
             margin-top: var(--std-header-height);
         }
+    }
+
+    .profile-menu {
+        height: var(--std-profile-height);
+
+        .p-menubar {
+            height: 100%;
+            .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
+                height: var(--std-profile-height);
+                padding: var(--std-profile-padding);
+            }
+
+            .p-submenu-list {
+                width: calc(100% - var(--std-profile-separator-margin));
+                margin-left: var(--std-profile-separator-margin);
+            }
+        }
+    }
+
+    .vl {
+        height: var(--std-profile-height);
     }
 
     .corp-menu {

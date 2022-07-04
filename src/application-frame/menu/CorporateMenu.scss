@@ -48,16 +48,21 @@
     transition: max-width 0.5s ease-out;
 }
 
-.p-menubar {
-    .p-menubar-root-list {
-        @include styledScrollbarCorp();
-        overflow-y: auto;
-        overflow-x: hidden;
-        height: inherit;
-
-        >.p-menuitem {
-            float: left;
-            position: unset;
+.corp-menu-menubar {
+    display: flex;
+    align-items: center;
+    
+    .p-menubar {
+        .p-menubar-root-list {
+            @include styledScrollbarCorp();
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: inherit;
+    
+            >.p-menuitem {
+                float: left;
+                position: unset;
+            }
         }
     }
 }
