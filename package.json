@@ -2,8 +2,8 @@
   "name": "@sibvisions/reactui",
   "homepage": ".",
   "version": "1.0.28",
-  "main": "dist/moduleIndex.js",
-  "types": "dist/src/moduleIndex.d.ts",
+  "main": "moduleIndex.js",
+  "types": "src/moduleIndex.d.ts",
   "license": "Apache-2.0 license",
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
