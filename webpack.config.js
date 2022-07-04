@@ -24,8 +24,8 @@ module.exports = () => {
         mode: 'production',
         entry: './src/moduleIndex.ts',
         output: {
-            filename: 'moduleIndex.js',
-            library: 'JVxReactUI',
+            filename: 'index.js',
+            library: '@sibvisions/reactui',
             libraryTarget: 'umd'
         },
         devtool: 'inline-source-map',
