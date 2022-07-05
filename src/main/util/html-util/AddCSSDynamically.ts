@@ -19,7 +19,7 @@
  * @param type - the type of stylesheet that is added
  * @param appSettings - the settings of the application
  */
-export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeCSS"|"designCSS", appReadyCallback:Function) {
+export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeCSS"|"designCSS", appReadyCallback:Function, setReady?:boolean) {
     let before = undefined
     for (let link of document.head.getElementsByTagName('link')) {
         if (link.href.includes("application.css")) {
@@ -41,11 +41,12 @@ export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeC
             document.head.removeChild(link);
         }
     }
+    
     const link:HTMLLinkElement = document.createElement('link');
     link.rel = 'stylesheet'; 
     link.type = 'text/css';
     link.href = path;
-    link.addEventListener("load", () => appReadyCallback(type));
+    link.addEventListener("load", () => setReady === false ? {} : appReadyCallback(type));
 
     if (before && type !== "appCSS") {
         document.head.insertBefore(link, before);

@@ -630,11 +630,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (response.applicationColorScheme && !schemeToSet) {
-                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
+                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"), false);
                     }
 
                     if (response.applicationTheme && !themeToSet) {
-                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"));
+                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"), false);
                     }
 
                     if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.transferType === "partial") {
