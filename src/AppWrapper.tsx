@@ -92,8 +92,8 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                         const pathName = history.location.pathname;
                         const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
                         if (navName) {
-                            const openId = context.contentStore.navOpenScreenMap.get(navName)
-                            if (openId) {
+                            const openId = context.contentStore.navOpenScreenMap.get(navName);
+                            if (openId && context.server.lastOpenedScreen !== context.contentStore.navOpenScreenMap.get(navName)) {
                                 const openReq = createOpenScreenRequest();
                                 openReq.componentId = openId;
 

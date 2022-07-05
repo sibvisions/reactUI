@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 import { useHistory } from "react-router";
@@ -36,6 +36,7 @@ import useMenuItems from "../../main/hooks/data-hooks/useMenuItems";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import { ActiveScreen } from "../../main/contentstore/BaseContentStore";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -199,12 +200,49 @@ const Menu: FC<IMenu> = (props) => {
     /** True, if the menu should close on collapse */
     const foldMenuOnCollapse = useMemo(() => context.appSettings.menuOptions.foldMenuOnCollapse, [context.appSettings.menuOptions]);
 
-    /** The currently selected-menuitem */
-    const [selectedMenuItem, setSelectedMenuItem] = useState<string>((context.contentStore as ContentStore).activeScreens.length ? 
-    (context.contentStore as ContentStore).activeScreens.slice(-1).pop()!.className as string : "");
+    /** State of the active-screens */
+    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);    
 
     /** get menu items */
-    const menuItems = useMenuItems()
+    const menuItems = useMenuItems();
+
+    useLayoutEffect(() => {
+        context.subscriptions.subscribeToActiveScreens("menu", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
+
+        return () => {
+            context.subscriptions.unsubscribeFromActiveScreens("menu");
+        }
+    },[context.subscriptions])
+
+    const selectedMenuItem = useMemo(() => {
+        let foundMenuItem: string|undefined = undefined;
+        if (activeScreens.length) {
+            if (context.transferType === "partial") {
+                for (let i = activeScreens.length - 1; i >= 0; i--) {
+                    if (foundMenuItem) {
+                        break;
+                    }
+                    else {
+                        context.contentStore.menuItems.forEach(items => {
+                            if (items.length) {
+                                items.forEach(item => {
+                                    if (item.componentId.split(":")[0] === activeScreens[i].className) {
+                                        foundMenuItem = activeScreens[i].className;
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }
+            }
+
+            if (!foundMenuItem) {
+                foundMenuItem = activeScreens.slice(-1).pop()!.className as string
+            }
+        }
+
+        return foundMenuItem
+    }, [activeScreens])
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -218,17 +256,6 @@ const Menu: FC<IMenu> = (props) => {
             }
         }
     },[props.forwardedRef])
-
-    /** 
-     * The standard-menu subscribes to the screen name, selectedMenuItem and app-settings, so everytime these properties change the state
-     * will get updated.
-     *  @returns unsubscribing from the screen name on unmounting
-     */
-    useEffect(() => {
-        context.subscriptions.subscribeToSelectedMenuItem((menuItem: string) => setSelectedMenuItem(menuItem));
-
-        return () => context.subscriptions.unsubscribeFromSelectedMenuItem();
-    }, [context.subscriptions]);
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
@@ -273,7 +300,7 @@ const Menu: FC<IMenu> = (props) => {
 
     //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
     useEffect(() => {
-        if (props.menuOptions.menuBar) {
+        if (props.menuOptions.menuBar && selectedMenuItem) {
             Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
             const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
             if (menuElem) {
@@ -337,7 +364,7 @@ const Menu: FC<IMenu> = (props) => {
     /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
         if (props.menuOptions.menuBar) {
-            if ((event as any).propertyName === "max-height") {
+            if ((event as any).propertyName === "max-height" && selectedMenuItem) {
                 const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
                 if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
                     menuElem.classList.add("p-menuitem--active")

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, ReactElement, useContext } from "react";
+import React, { FC, ReactElement, useContext, useEffect, useState } from "react";
 import { Dialog } from 'primereact/dialog';
 import { appContext } from "../../../contexts/AppProvider";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
@@ -34,6 +34,18 @@ export interface IPopup extends IPanel {
 const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** The current app-theme e.g. "basti" */
+    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
+
+    /** Subscribes the resize-handler to the theme */
+    useEffect(() => {
+        context.subscriptions.subscribeToTheme("popup", (theme:string) => setAppTheme(theme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromTheme("popup");
+        }
+    }, [context.subscriptions]);
 
     /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen */
     const handleOnHide = () => {
@@ -69,7 +81,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
 
     return (
         <Dialog
-            className={concatClassnames("rc-popup", baseProps.style, "basti")}
+            className={concatClassnames("rc-popup", baseProps.style, appTheme)}
             header={baseProps.screen_title_ || baseProps.content_title_}
             visible={baseProps.screen_modal_ || baseProps.content_modal_}
             onDrag={(e) => baseProps.onDrag ? baseProps.onDrag(e) : undefined}

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
+import React, { FC, SyntheticEvent, useEffect, useLayoutEffect, useRef } from "react";
 import { Checkbox, CheckboxChangeParams } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
@@ -77,10 +77,6 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
 
         sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)
     }
-
-    useEventHandler(cbRef.current ? cbRef.current.box : undefined, "click", (e) => console.log(e))
-
-    console.log(cbRef.current)
 
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>

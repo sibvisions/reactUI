@@ -133,9 +133,6 @@ export class SubscriptionManager {
     /** A function to update the properties of the error-dialog */
     errorDialogPropsSubscriber:Function = () => {};
 
-    /** A function to update the selectedMenuItem */
-    selectedMenuItemSubscriber:Function = () => {};
-
     /** A function to update which menubuttons should be visible */
     appSettingsSubscriber = new Array<Function>();
 
@@ -415,15 +412,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes the login to change-dialog, to change the change-dialog state, to show the
-     * change-password-dialog
-     * @param fn - the function to change the change-dialog state
-     */
-    subscribeToSelectedMenuItem(fn:Function) {
-        this.selectedMenuItemSubscriber = fn;
-    }
-
-    /**
      * Subscribes the menu to app-settings, to change the app-settings state, to show the menu-buttons or not
      * @param fn - the function to change the app-settings state
      */
@@ -656,13 +644,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes login from change-dialog
-     */
-    unsubscribeFromSelectedMenuItem() {
-        this.selectedMenuItemSubscriber = () => {};
-    }
-
-    /**
      * Unsubscribes from app-settings
      */
      unsubscribeFromAppSettings(fn:Function) {
@@ -875,11 +856,6 @@ export class SubscriptionManager {
 
     emitErrorDialogProperties(errData: ErrorResponse) {
         this.errorDialogPropsSubscriber(errData)
-    }
-
-    /** Tell the subscribers to change their selectedmenuitem */
-    emitSelectedMenuItem(menuItem:string) {
-        this.selectedMenuItemSubscriber.apply(undefined, [menuItem]);
     }
 
     /** Tell the subscribers to update their app-settings */

@@ -41,12 +41,6 @@ const WorkScreen: FC = () => {
 
     /** The screens which need to be rendered */
     const renderedScreens = useMemo(() => {
-        if (activeScreens.length) {
-            context.subscriptions.emitSelectedMenuItem(activeScreens.slice(-1).pop()!.className as string);
-        }
-        else {
-            context.subscriptions.emitSelectedMenuItem("");
-        }
         return buildWindow(activeScreens)
     }, [activeScreens]);
 
