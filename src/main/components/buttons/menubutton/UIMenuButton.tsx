@@ -107,7 +107,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                     /** When a menubuttonitem is clicked send a pressButtonRequest to the server */
                     command: (event) => {
                         if (props.onMenuItemClick) {
-                            props.onMenuItemClick(event.item.label, event.originalEvent);
+                            props.onMenuItemClick({ clickedItem: event.item.label, originalEvent: event.originalEvent });
                         }
 
                         const req = createDispatchActionRequest();

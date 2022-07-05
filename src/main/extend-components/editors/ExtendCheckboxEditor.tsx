@@ -1,7 +1,7 @@
 import React, { FC, SyntheticEvent } from "react";
 
 export interface IExtendableCheckboxEditor {
-    onClick?(e: SyntheticEvent|React.KeyboardEvent<HTMLSpanElement>): void
+    onClick?(e: SyntheticEvent): void
     onChange?(e: {
         value: string | number | boolean | undefined,
         selectedValue: string | number | boolean | undefined,

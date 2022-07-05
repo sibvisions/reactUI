@@ -95,16 +95,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
     }, [props.selectedRow, props.onChange])
 
     // Sends a setValues Request to the server when the checkbox is clicked
-    const handleOnChange = (e: CheckboxChangeParams | React.KeyboardEvent<HTMLSpanElement>) => {
-        if (props.onClick) {
-            if ((e as CheckboxChangeParams).originalEvent !== undefined) {
-                props.onClick((e as CheckboxChangeParams).originalEvent);
-            }
-            else {
-                props.onClick(e as React.KeyboardEvent<HTMLSpanElement>);
-            }
-        }
-
+    const handleOnChange = () => {
         sendSetValues(
             props.dataRow,
             props.name,
@@ -163,7 +154,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
                 event.preventDefault();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
                 if (event.key === " ") {
-                    handleOnChange(event)
+                    handleOnChange()
                 }
                 if (event.key === "Tab") {
                     if (props.isCellEditor && props.stopCellEditing) {
@@ -185,7 +176,13 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
                 trueValue={props.cellEditor.selectedValue}
                 falseValue={props.cellEditor.deselectedValue}
                 checked={checked}
-                onChange={(event) => handleOnChange(event)}
+                onChange={(event) => {
+                    if (props.onClick) {
+                        props.onClick(event.originalEvent);
+                    }
+
+                    handleOnChange()
+                }}
                 disabled={props.isReadOnly}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 tooltip={props.toolTipText}

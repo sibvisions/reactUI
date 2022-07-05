@@ -3,7 +3,7 @@ import React, { FC, SyntheticEvent } from "react";
 export interface IExtendableMenuButton {
     onDefaultBtnClick?(e: MouseEvent): void,
     onMenuBtnClick?(e: MouseEvent): void,
-    onMenuItemClick?(clickedItem: string|undefined, originalEvent: SyntheticEvent): any
+    onMenuItemClick?(e: { clickedItem: string|undefined, originalEvent: SyntheticEvent }): any
 }
 
 const ExtendMenuButton: FC<IExtendableMenuButton> = () => {

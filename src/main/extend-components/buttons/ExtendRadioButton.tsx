@@ -1,6 +1,7 @@
 import React, { FC } from "react";
+import { IExtendableSelectable } from "./ExtendCheckbox";
 
-const ExtendRadioButton: FC<any> = () => {
+const ExtendRadioButton: FC<IExtendableSelectable> = () => {
     return (
         <>
         </>
