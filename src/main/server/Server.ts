@@ -596,6 +596,7 @@ class Server extends BaseServer {
             if (response.name === RESPONSE_NAMES.USER_DATA) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
+                    // What if url contains home in project name or in workscreen name!!!
                     const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home")))?.componentId;
                     if (pathName.includes("home") && screenToOpen) {
                         const req = createOpenScreenRequest();
