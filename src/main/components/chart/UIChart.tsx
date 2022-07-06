@@ -28,7 +28,6 @@ import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 
@@ -588,7 +587,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     return (
         <span ref={chartRef} className={props.style} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
-                id={checkComponentName(props.name)}
+                id={props.name}
                 type={chartType}
                 data={chartData}
                 options={options}

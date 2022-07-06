@@ -13,12 +13,11 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, ReactNode, SyntheticEvent, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
 import { Tooltip } from "primereact/tooltip";
 import Dimension from "../../../util/types/Dimension";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 
 /** Type for ResizeEvent */
@@ -213,7 +212,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     return (
         <>
-            <Tooltip target={"#" + checkComponentName(props.id)}  />
+            <Tooltip target={"#" + props.id}  />
             <div
                 id={props.id}
                 className={concatClassnames(

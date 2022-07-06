@@ -20,7 +20,7 @@ import useMetaData from "../../hooks/data-hooks/useMetaData";
 import useEventHandler from "../../hooks/event-hooks/useEventHandler";
 import useOutsideClick from "../../hooks/event-hooks/useOutsideClick";
 import { ColumnDescription, LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { getFont, parseIconData } from "../comp-props/ComponentProperties";
 import IconProps from "../comp-props/IconProps";
 import CellEditorWrapper from "../editors/CellEditorWrapper";
@@ -286,7 +286,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                 return <i className={cellIcon.icon} style={{ fontSize: cellIcon.size?.height, color: cellIcon.color}}/>
             else {
                 return <img
-                    id={checkComponentName(props.name)}
+                    id={props.name}
                     alt="icon"
                     src={context.server.RESOURCE_URL + cellIcon.icon}
                     style={{width: `${cellIcon.size?.width}px`, height: `${cellIcon.size?.height}px` }}

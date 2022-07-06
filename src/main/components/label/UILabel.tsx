@@ -22,7 +22,7 @@ import { getAlignments, translateTextAlign } from "../comp-props/GetAlignments";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableLabel } from "../../extend-components/label/ExtendLabel";
@@ -69,10 +69,10 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
         <>
-        <Tooltip target={"#" + checkComponentName(props.name) + "-text"} />
+        <Tooltip target={"#" + props.name + "-text"} />
         <span
             {...usePopupMenu(props)}
-            id={checkComponentName(props.name)}
+            id={props.name}
             className={concatClassnames(
                 "rc-label",
                 isHTML ? " rc-label-html" : "",

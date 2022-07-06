@@ -43,7 +43,7 @@ import { CellEditor } from "./CellEditor";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import Dimension from "../../util/types/Dimension";
 import { IExtendableTable } from "../../extend-components/table/ExtendTable";
@@ -1245,7 +1245,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             >
                 <DataTable
                     key="table"
-                    id={checkComponentName(props.name)}
+                    id={props.name}
                     ref={tableRef}
                     className={concatClassnames(
                         "rc-table",

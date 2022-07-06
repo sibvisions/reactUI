@@ -28,7 +28,6 @@ import { IButton } from "../IButton";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableButton } from "../../../extend-components/buttons/ExtendButton";
@@ -83,7 +82,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <Button
-                id={checkComponentName(props.name)}
+                id={props.name}
                 ref={buttonRef}
                 className={concatClassnames(
                     "rc-button",

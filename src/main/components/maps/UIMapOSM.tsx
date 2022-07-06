@@ -29,7 +29,7 @@ import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
 import { sortGroupDataOSM } from "../../util/component-util/SortGroupData";
 import { sendMapFetchRequests } from "../../util/server-util/SendMapFetchRequests";
@@ -105,7 +105,7 @@ const UIMapOSM: FC<IMap & IExtendableMap> = (baseProps) => {
     if (layoutStyle) {
         return (
             <div ref={mapRef} {...popupMenu} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
-                <MapContainer id={checkComponentName(props.name)} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
+                <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
                     <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition}/>
                 </MapContainer>
             </div>

@@ -26,7 +26,6 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/compone
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { IExtendableImageEditor } from "../../../extend-components/editors/ExtendImageEditor";
 
 /** Interface for cellEditor property of ImageViewer */
@@ -122,10 +121,10 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
         >
-            <Tooltip target={!props.isCellEditor ? "#" + checkComponentName(props.name) : undefined} />
+            <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
             {(props.selectedRow || props.cellEditor.defaultImageName) &&
                 <img
-                    id={!props.isCellEditor ? checkComponentName(props.name) : undefined}
+                    id={!props.isCellEditor ? props.name : undefined}
                     className={concatClassnames(imageStyle, props.style)}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}

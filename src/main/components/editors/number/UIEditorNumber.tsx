@@ -25,7 +25,6 @@ import { getDecimalLength, getGrouping, getPrimePrefix, getScaleDigits } from ".
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
@@ -215,7 +214,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             <span aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
                     ref={numberRef}
-                    id={checkComponentName(props.name)}
+                    id={props.name}
                     inputRef={numberInput}
                     className={numberClassNames}
                     useGrouping={useGrouping}

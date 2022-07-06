@@ -27,7 +27,6 @@ import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { IExtendableToggleButton } from "../../../extend-components/buttons/ExtendToggleButton";
 
@@ -91,7 +90,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
         >
             <ToggleButton
                 ref={buttonRef}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 className={concatClassnames(
                     "rc-togglebutton",
                     !btnStyle.borderPainted ? "border-notpainted" : '',

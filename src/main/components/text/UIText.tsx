@@ -21,7 +21,7 @@ import useComponentConstants from "../../hooks/components-hooks/useComponentCons
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../util/component-util/IsCompDisabled";
 import { sendSetValue } from "../../util/server-util/SendSetValues";
@@ -68,7 +68,7 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
     return (
         <InputText 
             ref={inputRef} 
-            id={checkComponentName(props.name)}
+            id={props.name}
             className={concatClassnames(
                 "rc-input", 
                 props.focusable === false ? "no-focus-rect" : "",

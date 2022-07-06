@@ -32,7 +32,7 @@ import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
 import { sortGroupDataGoogle } from "../../util/component-util/SortGroupData";
 import { sendSetValues } from "../../util/server-util/SendSetValues";
 import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableMapGoogle } from "../../extend-components/maps/ExtendMapGoogle";
 
@@ -285,9 +285,9 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
 
     /** If the map is not ready, return just a div width set size so it can report its size and initialize */
     if (mapReady === false)
-        return <div ref={mapWrapperRef} id={checkComponentName(props.name)} style={{width: '100px', height: '100px'}}/>
+        return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} {...popupMenu} id={checkComponentName(props.name)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <div ref={mapWrapperRef} {...popupMenu} id={props.name} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <GMap ref={mapInnerRef} className={props.style} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )

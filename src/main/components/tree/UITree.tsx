@@ -35,7 +35,7 @@ import { SelectFilter } from "../../request/data/SelectRowRequest";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
 
@@ -489,7 +489,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             {...usePopupMenu(props)}
         >  
             <Tree
-                id={checkComponentName(props.name)}
+                id={props.name}
                 className={concatClassnames("rc-tree", props.style)}
                 value={nodes}
                 selectionMode="single"

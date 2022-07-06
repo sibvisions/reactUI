@@ -27,7 +27,6 @@ import Dimension from "../../../util/types/Dimension";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import IconProps from "../../comp-props/IconProps";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 
@@ -181,7 +180,7 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
                 style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...props.layoutStyle, ...props.compStyle }}>
                 <TabView
                     ref={panelRef}
-                    id={checkComponentName(props.name)}
+                    id={props.name}
                     style={{"--nav-background": props.compStyle.background}}
                     activeIndex={props.selectedIndex}
                     onTabChange={event => props.onTabChange(event.index)}

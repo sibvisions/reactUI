@@ -22,7 +22,6 @@ import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
@@ -156,9 +155,9 @@ const UIGauge: FC<IGauge> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             <span 
-                id={checkComponentName(props.name)} 
+                id={props.name} 
                 {...usePopupMenu(props)} 
                 ref={wrapperRef} 
                 className={concatClassnames("ui-gauge", props.style)}

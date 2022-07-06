@@ -24,7 +24,6 @@ import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Dimension from "../../../util/types/Dimension";
 import ChildWithProps from "../../../util/types/ChildWithProps";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { IExtendableSplitPanel } from "../../../extend-components/panels/ExtendSplitPanel";
 
@@ -122,7 +121,7 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
     return(
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
-                id={checkComponentName(props.name)}
+                id={props.name}
                 style={layoutStyle}
                 forwardedRef={splitRef}
                 trigger={layoutStyle}

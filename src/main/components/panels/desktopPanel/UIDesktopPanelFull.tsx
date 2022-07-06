@@ -27,7 +27,6 @@ import useComponentConstants from "../../../hooks/components-hooks/useComponentC
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import Dimension from "../../../util/types/Dimension";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Layout from "../../layouts/Layout";
 
@@ -161,7 +160,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
             <div
                 className={concatClassnames("rc-desktop-panel", props.style)}
                 ref={panelRef}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 style={{ ...layoutStyle, backgroundColor: props.background }} >
                 {displayTabMode ? 
                         <DesktopTabPanel 

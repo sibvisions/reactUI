@@ -48,10 +48,7 @@
     transition: max-width 0.5s ease-out;
 }
 
-.corp-menu-menubar {
-    display: flex;
-    align-items: center;
-    
+.corp-menu-menubar, .mobile-launcher-menu {
     .p-menubar {
         .p-menubar-root-list {
             @include styledScrollbarCorp();
@@ -65,6 +62,11 @@
             }
         }
     }
+}
+
+.corp-menu-menubar {
+    display: flex;
+    align-items: center;
 }
 
 .p-speeddial {

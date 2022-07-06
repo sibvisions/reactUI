@@ -29,7 +29,6 @@ import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { IExtendableChoiceEditor } from "../../../extend-components/editors/ExtendChoiceEditor";
 
@@ -227,10 +226,10 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
              >
-            <Tooltip target={!props.isCellEditor ? "#" + checkComponentName(props.name) : undefined} />
+            <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
             <img
                 ref={imgRef}
-                id={!props.isCellEditor ? checkComponentName(props.name) : undefined}
+                id={!props.isCellEditor ? props.name : undefined}
                 className={concatClassnames(
                     "rc-editor-choice-img", 
                     props.isReadOnly ? "choice-read-only" : "",

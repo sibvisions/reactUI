@@ -21,7 +21,6 @@ import useComponentConstants from "../../hooks/components-hooks/useComponentCons
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
@@ -58,9 +57,9 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
 
     return (
         <span ref={browserRef} style={layoutStyle}>
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             <iframe
-                id={checkComponentName(props.name)} 
+                id={props.name} 
                 className={concatClassnames("rc-mobile-browser", props.style)}
                 style={{...compStyle}}
                 src={props.url}

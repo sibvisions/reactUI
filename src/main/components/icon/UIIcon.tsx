@@ -26,7 +26,7 @@ import { getAlignments } from "../comp-props/GetAlignments";
 import Dimension from "../../util/types/Dimension";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableIcon } from "../../extend-components/icon/ExtendIcon";
@@ -108,11 +108,11 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
             if(isFAIcon(icon))
-                return <i id={checkComponentName(props.name)} {...popupMenu} className={icon} style={{ color: iconProps.color, fontSize: iconProps.size?.height }} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
+                return <i id={props.name} {...popupMenu} className={icon} style={{ color: iconProps.color, fontSize: iconProps.size?.height }} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
             else {
                 return (
                 <img
-                    id={checkComponentName(props.name)}
+                    id={props.name}
                     {...popupMenu}
                     alt="icon"
                     src={context.server.RESOURCE_URL + icon}
@@ -142,7 +142,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
             style={{...layoutStyle, ...compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         >
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             {iconOrImage(iconProps.icon)}
         </span>
     )

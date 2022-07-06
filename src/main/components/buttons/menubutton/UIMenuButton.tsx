@@ -31,7 +31,6 @@ import { parseIconData } from "../../comp-props/ComponentProperties";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { getFocusComponent } from "../../../util/html-util/GetFocusComponent";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { IExtendableMenuButton } from "../../../extend-components/buttons/ExtendMenuButton";
@@ -179,7 +178,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
         >
             <SplitButton
                 ref={buttonRef}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 className={concatClassnames(
                     "rc-popupmenubutton",
                     props.borderPainted === false ? "border-notpainted" : '',

@@ -21,7 +21,6 @@ import useComponents from "../../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Dimension from "../../../util/types/Dimension";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
@@ -122,10 +121,10 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 className={concatClassnames(
                     "rc-scrollpanel",
                     props.style
