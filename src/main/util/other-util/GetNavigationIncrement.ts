@@ -13,12 +13,14 @@
  * the License.
  */
 
-/** Interface for CustomScreens */
-type CustomMenuItem = {
-    id: string,
-    text: string,
-    menuGroup: string,
-    navigationName: string,
-    icon?: string,
+export function getNavigationIncrement(navName: string, map:Map<string, { screenId: string, componentId: string }>) {
+    let increment: number | string = 0;
+    for (let key of map.keys()) {
+        if (key.replace(/\s\d+$/, '') === navName)
+            increment++
+    }
+    if (increment === 0 || (increment === 1 && map.has(navName))) {
+        increment = '';
+    }
+    return increment
 }
-export default CustomMenuItem;

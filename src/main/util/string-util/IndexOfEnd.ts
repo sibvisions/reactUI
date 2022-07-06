@@ -13,12 +13,11 @@
  * the License.
  */
 
-/** Interface for CustomScreens */
-type CustomMenuItem = {
-    id: string,
-    text: string,
-    menuGroup: string,
-    navigationName: string,
-    icon?: string,
+export function indexOfEnd(string: string|undefined, searchString: string|undefined) {
+    if (string && searchString) {
+        var io = string.indexOf(searchString);
+        return io == -1 ? -1 : io + searchString.length;
+    }
+    return -1
+
 }
-export default CustomMenuItem;

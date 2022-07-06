@@ -89,8 +89,8 @@ export default abstract class BaseContentStore {
     /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
     replacedContent = new Map<string, BaseComponent>();
 
-    /** A Map which stores the navigation names for screens to route, the key is the componentId of the screen and the value is the navigation name */
-    navigationNames = new Map<string, string>();
+    /** A Map which stores the navigation names for screens to route, the key is the navigation name of the screen and the value is an object containing the screenId and the componentId */
+    navigationNames = new Map<string, { screenId: string, componentId: string}>();
 
     /** A Map which stores the translation values, the key is the original text and the value is the translated text */
     translation = new Map<string, string>();
@@ -435,15 +435,17 @@ export default abstract class BaseContentStore {
 
     /**
      * Sets or updates the navigation-name for a screen
-     * @param screenName - the name of a screen
      * @param navName - the navigation name of a screen
+     * @param componentId - the componentId to add a screen
      */
-     setNavigationName(screenName:string, navName:string) {
-        let existingMap = this.navigationNames.get(screenName);
-        if (existingMap)
-            existingMap = navName;
+     setNavigationName(navName:string, componentId: string) {
+        let existingNav = this.navigationNames.get(navName);
+        if (existingNav) {
+            existingNav.componentId = componentId;
+        }
+            
         else
-            this.navigationNames.set(screenName, navName);
+            this.navigationNames.set(navName, { componentId: componentId, screenId: "" });
     }
 
     /**

@@ -84,16 +84,12 @@ class API {
             openReq.parameter = parameter;
         }
 
-        this.#server.lastOpenedScreen = id;
-
         return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
 
     sendOpenScreenIntern(id:string) {
         const openReq = createOpenScreenRequest();
         openReq.componentId = id;
-
-        this.#server.lastOpenedScreen = id;
 
         return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
@@ -207,6 +203,7 @@ class API {
             const newItem: ServerMenuButtons = {
                 componentId: menuItem.id,
                 text: menuItem.text,
+                navigationName: menuItem.navigationName,
                 group: menuItem.menuGroup,
                 image: menuItem.icon ? menuItem.icon.substring(0, 2) + " " + menuItem.icon : "",
                 action: itemAction
@@ -285,6 +282,7 @@ class API {
             }
         }
         (this.#contentStore as ContentStore).addToolbarItem({ 
+            navigationName: toolbarItem.navigationName,
             componentId: toolbarItem.id, 
             text: toolbarItem.title, 
             image: toolbarItem.icon.substring(0, 2) + " " + toolbarItem.icon, 

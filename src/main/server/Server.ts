@@ -43,6 +43,10 @@ import WelcomeDataResponse from "../response/ui/WelcomeDataResponse";
 import CloseFrameResponse from "../response/ui/CloseFrameResponse";
 import ContentResponse from "../response/ui/ContentResponse";
 import CloseContentResponse from "../response/ui/CloseContentResponse";
+import { indexOfEnd } from "../util/string-util/IndexOfEnd";
+import { History } from "history";
+import { createOpenScreenRequest } from "../factories/RequestFactory";
+import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -112,6 +116,8 @@ class Server extends BaseServer {
     onLoginFunction:Function = () => {};
 
     lastClosedWasPopUp = false;
+
+    openAfterLogin = "";
 
     setOnMenuFunction(fn:Function) {
         this.onMenuFunction = fn;
@@ -330,16 +336,11 @@ class Server extends BaseServer {
                      * to the navigation-name, if not, don't add anything, and call setNavigationName
                      */
                     if (workScreen.screen_navigationName_) {
-                        let increment: number | string = 0;
-                        for (let value of this.contentStore.navigationNames.values()) {
-                            if (value.replace(/\s\d+$/, '') === workScreen.screen_navigationName_)
-                                increment++
+                        const increment = getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames)
+                        if (this.contentStore.navigationNames.has(workScreen.screen_navigationName_ + increment)) {
+                            const foundNavName = this.contentStore.navigationNames.get(workScreen.screen_navigationName_ + increment) as { screenId: string, componentId: string };
+                            foundNavName.screenId = workScreen.name;
                         }
-                        if (increment === 0 || (increment === 1 && this.contentStore.navigationNames.has(workScreen.name))) {
-                            increment = '';
-                        }
-                        (this.contentStore as ContentStore).navOpenScreenMap.set(workScreen.screen_navigationName_ + increment.toString(), this.lastOpenedScreen);
-                        this.contentStore.setNavigationName(workScreen.name, workScreen.screen_navigationName_ + increment.toString())
                     }
                     this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
 
@@ -591,10 +592,25 @@ class Server extends BaseServer {
         let highestPriority = 0;
 
         responses.forEach(response => {
+            const pathName = (this.history as History).location.pathname as string
             if (response.name === RESPONSE_NAMES.USER_DATA) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
-                    routeTo = "home";
+                    const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home")))?.componentId;
+                    if (pathName.includes("home") && screenToOpen) {
+                        const req = createOpenScreenRequest();
+                        req.componentId = screenToOpen;
+                        this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
+                    }
+                    else if (pathName === "/login" && this.openAfterLogin && this.contentStore.navigationNames.has(this.openAfterLogin)) {
+                        const req = createOpenScreenRequest();
+                        req.componentId = this.contentStore.navigationNames.get(this.openAfterLogin)!.componentId;
+                        this.openAfterLogin = "";
+                        this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
+                    }
+                    else {
+                        routeTo = "home";
+                    }
                 }
                 this.appSettings.setAppReadyParam("userOrLogin");
             }
@@ -604,10 +620,13 @@ class Server extends BaseServer {
                 if (GResponse.changedComponents && GResponse.changedComponents.length) {
                     firstComp = GResponse.changedComponents[0] as IPanel
                 }
-                if (!GResponse.update && firstComp && !firstComp.screen_modal_) {
-                    if (highestPriority < 2) {
+                
+                if (!GResponse.update && firstComp && firstComp.screen_navigationName_ && !firstComp.screen_modal_) {
+                    const increment = getNavigationIncrement(firstComp.screen_navigationName_, this.contentStore.navigationNames)
+                    console.log(this.contentStore.navigationNames)
+                    if (highestPriority < 2 && this.contentStore.navigationNames.has(firstComp.screen_navigationName_ + increment)) {
                         highestPriority = 2;
-                        routeTo = "home/" + this.contentStore.navigationNames.get(GResponse.componentId);
+                        routeTo = "home/" + firstComp.screen_navigationName_ + increment;
                     }
                 }
             }
@@ -642,6 +661,11 @@ class Server extends BaseServer {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "login";
+
+                    if (!this.appSettings.appReady && pathName.substring(indexOfEnd(pathName, "home/"))) {
+                        this.openAfterLogin = pathName.substring(indexOfEnd(pathName, "home/"));
+                    } 
+
                     this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }

@@ -71,9 +71,6 @@ export default abstract class BaseServer {
     /** flag if a request is in progress */
     requestInProgress = false;
 
-    /** The string to open the screen of the last opened screen */
-    lastOpenedScreen = "";
-
     /** An array of dataproviders on which dataproviders data is missing and needs to be fetched */
     missingDataFetches:string[] = [];
 

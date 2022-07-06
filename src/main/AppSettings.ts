@@ -22,6 +22,7 @@ import BaseContentStore from "./contentstore/BaseContentStore";
 import ContentStoreFull from "./contentstore/ContentStoreFull";
 import { LoginModeType } from "./response/login/LoginResponse";
 import ApplicationMetaDataResponse from "./response/app/ApplicationMetaDataResponse";
+import { locale } from "primereact/api";
 
 type ApplicationMetaData = {
     clientId: string,
@@ -176,6 +177,8 @@ export default class AppSettings {
 
     loginConfCode:string = "";
 
+    availableLanguages = ["en", "de"]
+
     /**
      * Sets the menu-mode
      * @param value - the menu-mode
@@ -210,6 +213,13 @@ export default class AppSettings {
      setApplicationMetaData(appMetaData:ApplicationMetaDataResponse) {
         this.applicationMetaData.clientId = appMetaData.clientId;
         this.applicationMetaData.langCode = appMetaData.langCode;
+        this.locale = appMetaData.langCode;
+        if (this.availableLanguages.includes(appMetaData.langCode)) {
+            locale(appMetaData.langCode);
+        }
+        else {
+            locale("en")
+        }
         this.applicationMetaData.languageResource = appMetaData.languageResource;
         this.applicationMetaData.lostPasswordEnabled = appMetaData.lostPasswordEnabled;
         this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;

@@ -117,7 +117,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             const screenName = context.contentStore.activeScreens[0].name;
                             const closeReq = createCloseScreenRequest();
                             closeReq.componentId = screenName;
-                            context.contentStore.setActiveScreen();
+                            //context.contentStore.setActiveScreen();
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
                                     (context.server as Server).lastClosedWasPopUp = false;
@@ -215,7 +215,7 @@ const Menu: FC<IMenu> = (props) => {
     },[context.subscriptions])
 
     const selectedMenuItem = useMemo(() => {
-        let foundMenuItem: string|undefined = undefined;
+        let foundMenuItem: string = "";
         if (activeScreens.length) {
             if (context.transferType === "partial") {
                 for (let i = activeScreens.length - 1; i >= 0; i--) {
@@ -227,7 +227,7 @@ const Menu: FC<IMenu> = (props) => {
                             if (items.length) {
                                 items.forEach(item => {
                                     if (item.componentId.split(":")[0] === activeScreens[i].className) {
-                                        foundMenuItem = activeScreens[i].className;
+                                        foundMenuItem = activeScreens[i].className as string;
                                     }
                                 })
                             }
@@ -300,7 +300,7 @@ const Menu: FC<IMenu> = (props) => {
 
     //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
     useEffect(() => {
-        if (props.menuOptions.menuBar && selectedMenuItem) {
+        if (props.menuOptions.menuBar) {
             Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
             const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
             if (menuElem) {

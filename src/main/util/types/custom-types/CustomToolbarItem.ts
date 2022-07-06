@@ -17,6 +17,7 @@
 interface CustomToolbarItem {
     id: string,
     title: string,
-    icon:string
+    icon:string,
+    navigationName: string
 }
 export default CustomToolbarItem;

@@ -13,8 +13,8 @@
  * the License.
  */
 
-import React, { FC, useContext } from 'react';
-import PrimeReact from 'primereact/api';
+import React, { FC, useContext, useLayoutEffect } from 'react';
+import PrimeReact, { addLocale, locale } from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
 import LoadingScreen from './application-frame/loading/Loadingscreen';
@@ -31,6 +31,30 @@ import Login from './application-frame/login/Login';
  */
 const ReactUI: FC<ICustomContent> = (props) => {
     const context = useContext(appContext);
+
+    useLayoutEffect(() => {
+        addLocale('de', {
+            accept: 'Ja',
+            reject: 'Nein',
+            choose: 'Auswählen',
+            upload: 'Hochladen',
+            cancel: 'Abbrechen',
+            dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+            dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+            dayNamesMin: ['So','Mo','Di','Mi','Do','Fr','Sa'],
+            monthNames: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+            monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun','Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+            today: 'Heute',
+            clear: 'Löschen',
+            weekHeader: 'Wo',
+            firstDayOfWeek: 1,
+            dateFormat: 'dd.mm.yyyy',
+            weak: 'Schwach',
+            medium: 'Mittel',
+            strong: 'Stark',
+            passwordPrompt: 'Passwort eingeben'
+         });
+    }, [])
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;

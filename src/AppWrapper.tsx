@@ -92,12 +92,11 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                         const pathName = history.location.pathname;
                         const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
                         if (navName) {
-                            const openId = context.contentStore.navOpenScreenMap.get(navName);
-                            if (openId && context.server.lastOpenedScreen !== context.contentStore.navOpenScreenMap.get(navName)) {
+                            const navValue = context.contentStore.navigationNames.get(navName);
+                            if (navValue && navValue.componentId && context.contentStore.activeScreens && context.contentStore.activeScreens[0].name !== navValue.screenId) {
                                 const openReq = createOpenScreenRequest();
-                                openReq.componentId = openId;
+                                openReq.componentId = navValue.componentId;
 
-                                context.server.lastOpenedScreen = context.contentStore.navOpenScreenMap.get(navName) as string;
                                 showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
 
                                 currentlyOpening = true;

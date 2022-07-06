@@ -265,7 +265,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             else if (jscmd.command === "api/reopenScreen") {
                                 const openReq = createOpenScreenRequest();
                                 openReq.className = jscmd.arguments.className;
-                                contextState.server.lastOpenedScreen = jscmd.arguments.className;
                                 showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
                             }
                             else if (jscmd.command === "reloadCss") {
@@ -386,6 +385,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
     
                     if (data.langCode) {
                         contextState.appSettings.language = data.langCode;
+                        contextState.appSettings.locale = data.langCode;
                     }
     
                     if (data.timezone) {
@@ -467,6 +467,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (convertedOptions.has("langCode")) {
                 contextState.appSettings.language = convertedOptions.get("langCode");
+                contextState.appSettings.locale = convertedOptions.get("langCode");
                 startUpRequest.langCode = convertedOptions.get("langCode");
                 convertedOptions.delete("langCode");
             }
