@@ -96,7 +96,7 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
 
 const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

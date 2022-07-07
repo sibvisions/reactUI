@@ -93,6 +93,8 @@ export default abstract class BaseServer {
 
     lastRequestTimeStamp: number = Date.now();
 
+    linkOpen = "";
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
@@ -176,6 +178,9 @@ export default abstract class BaseServer {
             ) {
                 reject("Component doesn't exist");
             }
+            else if (request.dataProvider && !this.contentStore.dataBooks.get(this.getScreenName(request.dataProvider))?.has(request.dataProvider)) {
+                reject("Dataprovider doesn't exist")
+            }
             else if (this.errorIsDisplayed) {
                 reject("Not sending request while an error is active");
             } else {
@@ -185,7 +190,6 @@ export default abstract class BaseServer {
                     if (endpoint === REQUEST_KEYWORDS.UI_REFRESH) {
                         this.uiRefreshInProgress = true;
                     }
-                    
                     this.timeoutRequest(
                         fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                         this.timeoutMs, 

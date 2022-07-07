@@ -39,7 +39,7 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
     const passwordRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextField & IExtendableText>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<ITextField & IExtendableText>(baseProps);
 
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text || "");

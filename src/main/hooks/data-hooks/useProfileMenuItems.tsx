@@ -17,13 +17,13 @@ import { useEffect, useState, useContext, useCallback } from "react";
 import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../contexts/AppProvider";
 import { createLogoutRequest } from "../../factories/RequestFactory";
-import useTranslation from "../app-hooks/useTranslation";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import { LIB_VERSION } from "../../../version";
 import ContentStore from "../../contentstore/ContentStore";
 import { MenuOptions, VisibleButtons } from "../../AppSettings";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import ApplicationSettingsResponse from "../../response/app/ApplicationSettingsResponse";
+import { translation } from "../../util/other-util/Translation";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -31,8 +31,7 @@ import ApplicationSettingsResponse from "../../response/app/ApplicationSettingsR
 const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Current state of translations */
-    const translations = useTranslation();
+
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
@@ -65,7 +64,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         if (changePwEnabled) {
             profileMenuItems.push(
                 {
-                    label: translations.get("Change password"),
+                    label: translation.get("Change password"),
                     icon: "pi pi-lock-open",
                     command(e: MenuItemCommandParams) {
                         context.subscriptions.emitChangePasswordVisible()
@@ -76,7 +75,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
 
         if (logoutVisible !== false) {
             profileMenuItems.push({
-                label: translations.get("Logout"),
+                label: translation.get("Logout"),
                 icon: "pi pi-power-off",
                 command(e: MenuItemCommandParams) {
                     sendLogout()
@@ -86,7 +85,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
 
         if (restartVisible && context.server.preserveOnReload) {
             profileMenuItems.push({
-                label: translations.get("Restart"),
+                label: translation.get("Restart"),
                 icon: "pi pi-refresh",
                 command(e: MenuItemCommandParams) {
                     const startupRequestCache = sessionStorage.getItem("startup");
@@ -119,7 +118,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
                 items: profileMenuItems
             }
         ])
-    }, [(context.contentStore as ContentStore).currentUser, translations, changePwEnabled])
+    }, [(context.contentStore as ContentStore).currentUser, translation, changePwEnabled])
 
     return slideOptions;
 }

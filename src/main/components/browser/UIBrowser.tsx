@@ -39,7 +39,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
     const browserRef = useRef<any>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IBrowser>(baseProps);
+    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IBrowser>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

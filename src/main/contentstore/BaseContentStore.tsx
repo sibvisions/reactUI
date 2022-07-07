@@ -33,6 +33,7 @@ import { IPanel } from "../components/panels/panel/UIPanel";
 import RecordFormat from "../util/types/RecordFormat";
 import { getMetaData } from "../util/data-util/GetMetaData";
 import AppSettings from "../AppSettings";
+import BaseServer from "../server/BaseServer";
 
 export type ActiveScreen = {
     name: string,
@@ -62,6 +63,8 @@ export default abstract class BaseContentStore {
     abstract subManager:SubscriptionManager
 
     abstract appSettings: AppSettings;
+
+    abstract server: BaseServer;
 
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
@@ -135,6 +138,10 @@ export default abstract class BaseContentStore {
     setAppSettings(appSettings:AppSettings) {
         this.appSettings = appSettings;
     }
+
+    setServer(server:BaseServer) {
+        this.server = server
+    } 
 
     setStartupProperties(arr:CustomStartupProps[]) {
         this.customStartUpProperties = [...this.customStartUpProperties, ...arr];
@@ -373,15 +380,17 @@ export default abstract class BaseContentStore {
      * When a screen closes cleanUp the data for the window 
      * @param windowName - the name of the window to close
      */
-     closeScreen(windowName: string, closeContent?:boolean) {
+     closeScreen(windowName: string, closeContent?:boolean, opensWelcome?:boolean) {
         let window = this.getComponentByName(windowName);
 
         if (window && !closeContent) {
             this.cleanUp(window.id, window.name, window.className);
         }
 
-        this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
-        this.subManager.emitActiveScreens();
+        if (!opensWelcome) {
+            this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+            this.subManager.emitActiveScreens();
+        }
     }
 
     /**

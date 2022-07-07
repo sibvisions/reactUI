@@ -37,6 +37,7 @@ import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { ActiveScreen } from "../../main/contentstore/BaseContentStore";
+import { translation } from "../../main/util/other-util/Translation";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -63,7 +64,7 @@ interface IProfileMenu {
  */
 export const ProfileMenu:FC<IProfileMenu> = (props) => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
@@ -105,6 +106,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen);
                         }
                         else {
+                            context.contentStore.setActiveScreen();
                             history.push('/home');
                             return Promise.resolve(true);
                         }
@@ -117,17 +119,15 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             const screenName = context.contentStore.activeScreens[0].name;
                             const closeReq = createCloseScreenRequest();
                             closeReq.componentId = screenName;
-                            //context.contentStore.setActiveScreen();
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
                                     (context.server as Server).lastClosedWasPopUp = false;
-                                    context.contentStore.closeScreen(screenName, context.appSettings.welcomeScreen ? true : false);
+                                    context.contentStore.closeScreen(screenName, undefined, context.appSettings.welcomeScreen ? true : false);
                                     showTopBar(openWelcomeOrHome(), topbar);
                                 }
                             });
                         }
                         else {
-                            context.contentStore.setActiveScreen();
                             showTopBar(openWelcomeOrHome(), topbar);
                         }
                     }
@@ -139,7 +139,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 icon="fas fa-save"
                 className="menu-topbar-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_KEYWORDS.SAVE), topbar)}
-                tooltip={translations.get("Save")}
+                tooltip={translation.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
             {(!visibleButtons || (visibleButtons.reload || visibleButtons.rollback) && props.showButtons) &&
                 <Button
@@ -153,7 +153,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_KEYWORDS.ROLLBACK), topbar)
                         }
                     }}
-                    tooltip={translations.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
+                    tooltip={translation.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
                     tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
             {props.showButtons && menuOptions.userSettings && <div className="vl" />}
             {menuOptions.userSettings && <div className="profile-menu">

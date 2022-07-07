@@ -30,6 +30,7 @@ import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
+import { translation } from "../../util/other-util/Translation";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -143,7 +144,7 @@ function someNaN(values:any[]) {
  * If the given values are all numbers a list of numbers from the minimum to maximum value is generated
  * If some of the values are non numeric a list of unique values is returned
  * @param values - A list of values
- * @param translation - A list of possible translations for non numeric values
+ * @param translation - A list of possible translation for non numeric values
  * @returns A list of axis labels for a chart
  */
 function getLabels(values:any[], translation?: Map<string,string>, onlyIfNaN: boolean = false) {
@@ -179,7 +180,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     const chartRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle, translations] = useComponentConstants<IChart>(baseProps);
+    const [context,, [props], layoutStyle] = useComponentConstants<IChart>(baseProps);
 
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
@@ -367,7 +368,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         //get the actual x-values from the provided data
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
         //if pie chart & multiple y-Axes use the y column labels otherwise generate labels based on x-values
-        //const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translations);
+        //const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const hasStringLabels = someNaN(rows);
         const {colors, points, overlapOpacity} = getSettingsFromCSSVar({
             colors: {
@@ -472,7 +473,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         const aspectRatio = preferredSize.width / preferredSize.height;
 
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
-        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translations);
+        const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
         const tooltip = {

@@ -43,7 +43,7 @@ export type TabProperties = {
  */
 const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITabsetPanel & IExtendableTabsetPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<ITabsetPanel & IExtendableTabsetPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, compSizes] = useComponents(baseProps.id, props.className);

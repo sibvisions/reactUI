@@ -14,13 +14,13 @@
  */
 
 import React, { FC, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import useTranslation from '../../hooks/app-hooks/useTranslation';
 import { Toast, ToastMessage } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { appContext } from '../../contexts/AppProvider';
 import MessageResponse from '../../response/ui/MessageResponse';
 import ErrorResponse from '../../response/error/ErrorResponse';
 import { concatClassnames } from '../../util/string-util/ConcatClassnames';
+import { translation } from '../../util/other-util/Translation';
 
 type IToast = {
     dialog:MessageResponse|ErrorResponse,
@@ -43,9 +43,6 @@ const UIToast: FC = () => {
 
     /** State of the toast properties (content, if it is an error or a message) */
     const [toastProps, setToastProps] = useState<IToast>();
-
-    /** The translation */
-    const translation = useTranslation();
 
     //TODO: Maybe in the future PrimeReact will release a "proper" way to close a single toast message.
     //Currently they only allow us to use the clear function which clears every toast message.

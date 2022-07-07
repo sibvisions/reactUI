@@ -47,6 +47,7 @@ import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { History } from "history";
 import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
+import { translation } from "../util/other-util/Translation";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -116,8 +117,6 @@ class Server extends BaseServer {
     onLoginFunction:Function = () => {};
 
     lastClosedWasPopUp = false;
-
-    openAfterLogin = "";
 
     setOnMenuFunction(fn:Function) {
         this.onMenuFunction = fn;
@@ -322,7 +321,7 @@ class Server extends BaseServer {
      * @param genericData - the genericResponse
      */
     generic(genericData: GenericResponse) {
-        if (genericData.changedComponents && genericData.changedComponents.length) {
+        if (genericData.changedComponents && genericData.changedComponents.length && (!this.linkOpen || !genericData.home)) {
             this.contentStore.updateContent(genericData.changedComponents, false);
         }
         if (!genericData.update) {
@@ -340,6 +339,10 @@ class Server extends BaseServer {
                         if (this.contentStore.navigationNames.has(workScreen.screen_navigationName_ + increment)) {
                             const foundNavName = this.contentStore.navigationNames.get(workScreen.screen_navigationName_ + increment) as { screenId: string, componentId: string };
                             foundNavName.screenId = workScreen.name;
+
+                            if (workScreen.screen_navigationName_ + increment === this.linkOpen) {
+                                this.linkOpen = "";
+                            }
                         }
                     }
                     this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
@@ -369,7 +372,7 @@ class Server extends BaseServer {
                 break;
             }
         }
-        this.contentStore.closeScreen(closeScreenData.componentId);
+        //this.contentStore.closeScreen(closeScreenData.componentId);
     }
 
     /**
@@ -508,7 +511,7 @@ class Server extends BaseServer {
                 .then((response:any) => response.text())
                 .then(value => parseString(value, (err, result) => { 
                     if (result) {
-                        result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
+                        result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._));
                         this.appSettings.setAppReadyParam("translation");
                         this.translationFetched = true;
                         this.subManager.emitTranslation();
@@ -590,23 +593,22 @@ class Server extends BaseServer {
     routingDecider(responses: Array<BaseResponse>) {
         let routeTo: string | undefined;
         let highestPriority = 0;
+        const pathName = (this.history as History).location.pathname as string
 
         responses.forEach(response => {
-            const pathName = (this.history as History).location.pathname as string
+
             if (response.name === RESPONSE_NAMES.USER_DATA) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
-                    // What if url contains home in project name or in workscreen name!!!
-                    const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home")))?.componentId;
+                    const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
                     if (pathName.includes("home") && screenToOpen) {
                         const req = createOpenScreenRequest();
                         req.componentId = screenToOpen;
                         this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
                     }
-                    else if (pathName === "/login" && this.openAfterLogin && this.contentStore.navigationNames.has(this.openAfterLogin)) {
+                    else if (pathName === "/login" && this.linkOpen && this.contentStore.navigationNames.has(this.linkOpen)) {
                         const req = createOpenScreenRequest();
-                        req.componentId = this.contentStore.navigationNames.get(this.openAfterLogin)!.componentId;
-                        this.openAfterLogin = "";
+                        req.componentId = this.contentStore.navigationNames.get(this.linkOpen)!.componentId;
                         this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
                     }
                     else {
@@ -624,8 +626,9 @@ class Server extends BaseServer {
                 
                 if (!GResponse.update && firstComp && firstComp.screen_navigationName_ && !firstComp.screen_modal_) {
                     const increment = getNavigationIncrement(firstComp.screen_navigationName_, this.contentStore.navigationNames)
-                    console.log(this.contentStore.navigationNames)
-                    if (highestPriority < 2 && this.contentStore.navigationNames.has(firstComp.screen_navigationName_ + increment)) {
+                    if (highestPriority < 2 
+                        && this.contentStore.navigationNames.has(firstComp.screen_navigationName_ + increment)
+                        && (!this.linkOpen || this.linkOpen === firstComp.screen_navigationName_ + increment)) {
                         highestPriority = 2;
                         routeTo = "home/" + firstComp.screen_navigationName_ + increment;
                     }
@@ -662,10 +665,6 @@ class Server extends BaseServer {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "login";
-
-                    if (!this.appSettings.appReady && pathName.substring(indexOfEnd(pathName, "home/"))) {
-                        this.openAfterLogin = pathName.substring(indexOfEnd(pathName, "home/"));
-                    } 
 
                     this.appSettings.setAppReadyParam("userOrLogin");
                 }

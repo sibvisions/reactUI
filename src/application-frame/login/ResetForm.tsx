@@ -22,6 +22,7 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import { ILoginForm } from "./LoginForm";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import { translation } from "../../main/util/other-util/Translation";
 
 /**
  * Returns the reset-form to reset the password of a user.
@@ -29,7 +30,7 @@ import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
  */
 const ResetForm:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** State of the email field */
     const [email, setEmail] = useState<string>("");
@@ -42,7 +43,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
      */
      const sendResetPassword = () => {
         if (!email) {
-            context.subscriptions.emitToast({ message: translations.get("The email is required"), name: "" });
+            context.subscriptions.emitToast({ message: translation.get("The email is required"), name: "" });
         }
         else {
             const resetReq = createResetPasswordRequest();
@@ -58,7 +59,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
             </div>
             <div className="p-fluid">
                 <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }} >
-                    {translations.get("Please enter your e-mail address.")}
+                    {translation.get("Please enter your e-mail address.")}
                 </div>
                 <div className="p-field p-float-label p-input-icon-left">
                     <i className="pi pi-inbox" />
@@ -68,7 +69,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
                         type="text"
                         autoComplete="email"
                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)} />
-                    <label htmlFor="email">{translations.get("Email")} </label>
+                    <label htmlFor="email">{translation.get("Email")} </label>
                 </div>
                 <div className="change-password-button-wrapper">
                     <Button 
@@ -78,7 +79,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("Cancel")} 
+                        label={translation.get("Cancel")} 
                         icon="pi pi-times" 
                         onClick={() => props.changeLoginMode("default")} />
                     <Button 
@@ -88,7 +89,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("Request")} 
+                        label={translation.get("Request")} 
                         icon="pi pi-send" />
                 </div>
             </div>

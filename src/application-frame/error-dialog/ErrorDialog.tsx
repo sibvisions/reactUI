@@ -21,12 +21,13 @@ import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } f
 import tinycolor from "tinycolor2";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import ErrorResponse from "../../main/response/error/ErrorResponse";
+import { translation } from "../../main/util/other-util/Translation";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 
 /** Displays an errr-message as dialog */
 const ErrorDialog:FC = () => {
     /** Returns utility variables */
-    const [context,, translations] = useConstants();
+    const [context] = useConstants();
 
     /** True, if the error-dialog is visible */
     const [visible, setVisible] = useState<boolean>(false);
@@ -46,14 +47,14 @@ const ErrorDialog:FC = () => {
     const errorItems = useMemo(() => {
         if (errorProps && errorProps.exceptions) {
             return [{
-                label: translations.get("Cause(s) of failure") as string,
+                label: translation.get("Cause(s) of failure") as string,
                 items: errorProps.exceptions.map(ex => {
                     return { label: ex.message, exception: ex.exception }
                 })
             }]
         }
         return [{
-            label: translations.get("Cause(s) of failure") as string,
+            label: translation.get("Cause(s) of failure") as string,
             items: []
         }]
     }, [errorProps]);
@@ -91,7 +92,7 @@ const ErrorDialog:FC = () => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("Details")}
+                        label={translation.get("Details")}
                         onClick={() => {
                             setSelectedError(errorItems.length ? errorItems[0].items[0] : null);
                             setShowDetails(prevState => !prevState)
@@ -103,7 +104,7 @@ const ErrorDialog:FC = () => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("OK")}
+                        label={translation.get("OK")}
                         onClick={() => handleOnHide()} />
                 </div>
                 {showDetails &&
@@ -140,7 +141,7 @@ const ErrorDialog:FC = () => {
         <Dialog
             id="error-dialog"
             className={concatClassnames("error-dialog", showDetails ? "error-details-enabled" : "") }
-            header={translations.get(errorProps?.title as string) || translations.get("Error")} 
+            header={translation.get(errorProps?.title as string) || translation.get("Error")} 
             footer={errorFooter} 
             visible={visible} 
             onHide={handleOnHide} 

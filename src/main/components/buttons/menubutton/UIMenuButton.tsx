@@ -52,7 +52,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IMenuButton & IExtendableMenuButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IMenuButton & IExtendableMenuButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle);

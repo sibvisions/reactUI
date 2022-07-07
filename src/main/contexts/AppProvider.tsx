@@ -37,6 +37,7 @@ import { addCSSDynamically } from "../util/html-util/AddCSSDynamically";
 import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
 import useEventHandler from "../hooks/event-hooks/useEventHandler";
 import Timer from "../util/other-util/Timer";
+import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
     return (contentStore as ContentStore).menuItems !== undefined;
@@ -77,6 +78,7 @@ const server = new Server(contentStore, subscriptions, appSettings);
 const api = new API(server, contentStore, appSettings, subscriptions);
 
 contentStore.setSubscriptionManager(subscriptions);
+contentStore.setServer(server);
 
 server.setAPI(api);
 
@@ -577,6 +579,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.contentStore = new ContentStoreFull(history);
                 contextState.contentStore.setSubscriptionManager(contextState.subscriptions);
                 contextState.contentStore.setAppSettings(contextState.appSettings);
+                contextState.contentStore.setServer(contextState.server);
                 contextState.subscriptions.setContentStore(contextState.contentStore);
                 contextState.api.setContentStore(contextState.contentStore);
                 contextState.appSettings.setContentStore(contextState.contentStore);
@@ -588,6 +591,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+                contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "home") - 1);
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);
 

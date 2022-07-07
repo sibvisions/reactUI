@@ -19,6 +19,7 @@ import { createEditor } from "../../factories/UIFactory";
 import useEditorConstants from "../../hooks/components-hooks/useEditorConstants";
 import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
+import { translation } from "../../util/other-util/Translation";
 import { CellFormatting, IInTableEditor } from "../table/CellEditor";
 import { TopBarContextType } from "../topbar/TopBar";
 import { IEditor } from "./IEditor";
@@ -29,7 +30,7 @@ export interface ICellEditorWrapperProps {
     context: AppContextType,
     topbar: TopBarContextType,
     layoutStyle?: CSSProperties,
-    translations: Map<string, string>,
+    translation: Map<string, string>,
     screenName: string,
     columnMetaData: NumericColumnDescription | LengthBasedColumnDescription | undefined,
     selectedRow: any,
@@ -53,7 +54,7 @@ export interface IRCCellEditor extends IEditor, ICellEditorWrapperProps, IInTabl
  */
 const CellEditorWrapper:FC<any> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
-    const [context, topbar, [props], layoutStyle, translations, screenName, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
 
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataRow);
@@ -67,7 +68,7 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
             context: context,
             topbar: topbar,
             layoutStyle: layoutStyle,
-            translations: translations,
+            translation: translation,
             screenName: screenName,
             columnMetaData: columnMetaData,
             selectedRow: selectedRow,

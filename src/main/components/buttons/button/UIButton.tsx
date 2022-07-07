@@ -44,7 +44,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButton & IExtendableButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButton & IExtendableButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)

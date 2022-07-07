@@ -43,7 +43,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextArea & IExtendableText>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<ITextArea & IExtendableText>(baseProps);
 
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text || "");

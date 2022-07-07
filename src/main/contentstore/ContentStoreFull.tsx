@@ -21,6 +21,7 @@ import BaseComponent from "../util/types/BaseComponent";
 import { IPanel } from "../components/panels/panel/UIPanel";
 import { isWorkScreen } from "../util/component-util/IsWorkScreen";
 import AppSettings from "../AppSettings";
+import ServerFull from "../server/ServerFull";
 
 export default class ContentStoreFull extends BaseContentStore {
     /** subscriptionManager instance */
@@ -28,6 +29,9 @@ export default class ContentStoreFull extends BaseContentStore {
 
     /** AppSettings instance */
     appSettings: AppSettings = new AppSettings(this, this.subManager);
+
+    server: ServerFull = new ServerFull(this, this.subManager, this.appSettings, this.history);
+
     /**
      * Sets the currently active screens or clears the array
      * @param screenInfo - the screen-info of the newly opened screen or nothing to clear active screens

@@ -22,6 +22,7 @@ import UIGauge, { GAUGE_STYLES } from "../../main/components/gauge/UIGauge";
 import { createCancelLoginRequest } from "../../main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
+import { translation } from "../../main/util/other-util/Translation";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a Code authentication
@@ -29,7 +30,7 @@ import useConstants from "../../main/hooks/components-hooks/useConstants";
  */
 const MFAWait:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** State of the email field */
     const [code, setCode] = useState<string>("");
@@ -70,7 +71,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
             </div>
             <div className="p-fluid">
                 <div className="p-field" style={{ fontSize: "1.125rem", fontWeight: "bold" }} >
-                    {translations.get("Waiting for verification.")}
+                    {translation.get("Waiting for verification.")}
                 </div>
                 <div className="p-field wait-code-container" >
                     <UIGauge
@@ -90,7 +91,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
                         columnLabel="" />
                     <div className="wait-code-display">
                         <div className="p-field" style={{ textAlign: "center" }} >
-                            {translations.get("Matching code")}
+                            {translation.get("Matching code")}
                         </div>
                         <div style={{ fontSize: "1rem", fontWeight: "bold", textAlign: "center" }} >
                             {code}
@@ -106,7 +107,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("Cancel")} 
+                        label={translation.get("Cancel")} 
                         icon="pi pi-times" 
                         onClick={() => {
                             showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), topbar);

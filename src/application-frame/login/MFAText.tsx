@@ -22,6 +22,7 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import { ILoginForm } from "./LoginForm";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import { translation } from "../../main/util/other-util/Translation";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a TextInput authentication
@@ -29,7 +30,7 @@ import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
  */
 const MFAText:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** State of the email field */
     const [code, setCode] = useState<string>("");
@@ -39,7 +40,7 @@ const MFAText:FC<ILoginForm> = (props) => {
 
     const sendAuthCode = () => {
         if (!code) {
-            context.subscriptions.emitToast({ message: translations.get("The authentication code is required"), name: "" });
+            context.subscriptions.emitToast({ message: translation.get("The authentication code is required"), name: "" });
         }
         else {
             const codeReq = createLoginRequest();
@@ -58,10 +59,10 @@ const MFAText:FC<ILoginForm> = (props) => {
             </div>
             <div className="p-fluid">
                 <div className="p-field" style={{ fontSize: "1.5rem", fontWeight: "bold" }} >
-                    {translations.get("Verification")}
+                    {translation.get("Verification")}
                 </div>
                 <div className="p-field" style={{ marginBottom: "1rem" }}>
-                    {translations.get("Please enter your confirmation code.")}
+                    {translation.get("Please enter your confirmation code.")}
                 </div>
                 <div className="p-field p-float-label p-input-icon-left" style={{ marginBottom: "2rem" }}>
                     <i className="pi pi-key" />
@@ -71,7 +72,7 @@ const MFAText:FC<ILoginForm> = (props) => {
                         type="text"
                         autoComplete="code"
                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => setCode(event.target.value)} />
-                    <label htmlFor="code">{translations.get("Code")} </label>
+                    <label htmlFor="code">{translation.get("Code")} </label>
                 </div>
                 <div className="change-password-button-wrapper">
                     <Button 
@@ -81,7 +82,7 @@ const MFAText:FC<ILoginForm> = (props) => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("Cancel")} 
+                        label={translation.get("Cancel")} 
                         icon="pi pi-times" 
                         onClick={() => {
                             showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), topbar);
@@ -94,7 +95,7 @@ const MFAText:FC<ILoginForm> = (props) => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("Confirm")} 
+                        label={translation.get("Confirm")} 
                         icon="pi pi-send" />
                 </div>
             </div>

@@ -24,6 +24,7 @@ import { BaseMenuButton, ServerMenuButtons } from "../response/data/MenuResponse
 import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperType";
 import AppSettings from "../AppSettings";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
+import Server from "../server/Server";
 
 /** The ContentStore stores active content like user, components and data*/
 export default class ContentStore extends BaseContentStore {
@@ -31,6 +32,8 @@ export default class ContentStore extends BaseContentStore {
     subManager: SubscriptionManager = new SubscriptionManager(this);
 
     appSettings: AppSettings = new AppSettings(this, this.subManager);
+
+    server: Server = new Server(this, this.subManager, this.appSettings, this.history);
 
     menuItems = new Map<string, Array<ServerMenuButtons>>();
 

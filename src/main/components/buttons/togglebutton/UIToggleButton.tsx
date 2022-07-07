@@ -42,7 +42,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current ? buttonRef.current.container : undefined)

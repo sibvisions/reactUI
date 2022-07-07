@@ -24,6 +24,7 @@ import useConstants from "../../main/hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import BaseResponse from "../../main/response/BaseResponse";
 import RESPONSE_NAMES from "../../main/response/RESPONSE_NAMES";
+import { translation } from "../../main/util/other-util/Translation";
 
 // Interface for the ChangePasswordDialog
 interface IChangePasswordDialog  {
@@ -44,7 +45,7 @@ interface IChangePasswordType extends ILoginCredentials {
  */
 const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** Contains data of the change-password mask */
     const [changePWData, setChangePWData] = useState<IChangePasswordType>({username: props.username, password: props.password || "", newPassword: "", confirmPassword: ""});
@@ -81,13 +82,13 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const sendChangedPassword = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!changePWData.newPassword) {
-            context.subscriptions.emitToast({ message: translations.get("The new password is empty"), name: "" });
+            context.subscriptions.emitToast({ message: translation.get("The new password is empty"), name: "" });
         }
         else if (changePWData.newPassword !== changePWData.confirmPassword) {
-            context.subscriptions.emitToast({ message: translations.get("The passwords are different!"), name: "" });
+            context.subscriptions.emitToast({ message: translation.get("The passwords are different!"), name: "" });
         }
         else if (changePWData.newPassword === props.password) {
-            context.subscriptions.emitToast({ message: translations.get("The old and new password are the same"), name: "" });
+            context.subscriptions.emitToast({ message: translation.get("The old and new password are the same"), name: "" });
         }
         else {
             if (props.loggedIn) {
@@ -120,7 +121,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     return (
         <Dialog
             className="rc-popup change-dialog"
-            header={isReset ? translations.get("Reset password") : translations.get("Change password")}
+            header={isReset ? translation.get("Reset password") : translation.get("Change password")}
             visible={visible} 
             onHide={() => setVisible(false)}
             draggable={false}
@@ -128,7 +129,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
             <div className="change-dialog-container">
                 <form onSubmit={sendChangedPassword} className="change-password-form">
                     <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }}>
-                        {isReset ? translations.get("Please enter your one-time password and set a new password") : translations.get("Please enter and confirm the new password.")}
+                        {isReset ? translation.get("Please enter your one-time password and set a new password") : translation.get("Please enter and confirm the new password.")}
                     </div>
                     <div className="p-field p-float-label p-input-icon-left">
                         <i className="pi pi-user" />
@@ -139,7 +140,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                             autoComplete="change-username"
                             onChange={isReset ? (event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, username: event.target.value})) : undefined}
                             disabled={!isReset} />
-                        <label className="change-password-label" htmlFor="change-username">{translations.get("Username")} </label>
+                        <label className="change-password-label" htmlFor="change-username">{translation.get("Username")} </label>
                     </div>
                     <div className="p-field p-float-label p-input-icon-left">
                         <i className="pi pi-key" />
@@ -151,7 +152,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, password: event.target.value}))}
                             disabled={!isReset && !props.loggedIn} />
                         <label className="change-password-label" htmlFor="change-password">
-                            {isReset ? translations.get("One-time password") : translations.get("Password")}
+                            {isReset ? translation.get("One-time password") : translation.get("Password")}
                         </label>
                     </div>
                     <div className="p-field p-float-label p-input-icon-left">
@@ -162,7 +163,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                             type="password"
                             autoComplete="change-password-new"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, newPassword: event.target.value}))} />
-                        <label className="change-password-label" htmlFor="change-password-new">{translations.get("New Password")} </label>
+                        <label className="change-password-label" htmlFor="change-password-new">{translation.get("New Password")} </label>
                     </div>
                     <div className="p-field p-float-label p-input-icon-left change-password-confirm">
                         <i className="pi pi-check" />
@@ -172,11 +173,11 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                             type="password"
                             autoComplete="change-password-new"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, confirmPassword: event.target.value}))} />
-                        <label className="change-password-label" htmlFor="change-password-confirm">{translations.get("Confirm Password")} </label>
+                        <label className="change-password-label" htmlFor="change-password-confirm">{translation.get("Confirm Password")} </label>
                     </div>
                     <div className="change-password-button-wrapper">
-                        <Button type="button" label={translations.get("Cancel")} icon="pi pi-times" onClick={() => setVisible(false)} />
-                        <Button type="submit" label={translations.get(!isReset ? "Change" : "Login")} icon="pi pi-lock-open" />
+                        <Button type="button" label={translation.get("Cancel")} icon="pi pi-times" onClick={() => setVisible(false)} />
+                        <Button type="submit" label={translation.get(!isReset ? "Change" : "Login")} icon="pi pi-lock-open" />
                     </div>
                 </form>
             </div>

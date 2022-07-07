@@ -36,7 +36,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [,, [props], layoutStyle,, compStyle] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
+    const [,, [props], layoutStyle, compStyle] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
