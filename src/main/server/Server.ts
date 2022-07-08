@@ -48,6 +48,7 @@ import { History } from "history";
 import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import { translation } from "../util/other-util/Translation";
+import { overwriteLocaleValues } from "../util/other-util/GetDateLocale";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -514,6 +515,7 @@ class Server extends BaseServer {
                         result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._));
                         this.appSettings.setAppReadyParam("translation");
                         this.translationFetched = true;
+                        overwriteLocaleValues();
                         this.subManager.emitTranslation();
                     }
                 }));

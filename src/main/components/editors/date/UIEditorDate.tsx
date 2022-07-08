@@ -135,7 +135,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
-    setDateLocale(props.context.appSettings.locale);
+    //setDateLocale(props.context.appSettings.locale);
 
     /**
      * Returns true, if the given date is a valid date
@@ -402,11 +402,7 @@ class CustomCalendar extends Calendar {
     formatDateTime(date: Date) {
         let formattedValue = null;
         if (date) {
-            if (this.props.timeOnly) {
-                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
-            } else {
-                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
-            }
+            formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
         }
 
         return formattedValue;
