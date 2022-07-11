@@ -63,10 +63,12 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
         return () => context.subscriptions.unsubscribeFromChangePasswordVisible();
     }, [context.subscriptions]);
 
+    // Changes the username when the username prop changes
     useEffect(() => {
         setChangePWData(prevState => ({ ...prevState, username: props.username }));
     }, [props.username])
 
+    // Changes the password when the password prop changes
     useEffect(() => {
         if (props.password) {
             setChangePWData(prevState => ({ ...prevState, password: props.password as string }));

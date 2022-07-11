@@ -38,6 +38,7 @@ const MFAText:FC<ILoginForm> = (props) => {
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
+    // Sends a login-request with the confirmation-code to the server
     const sendAuthCode = () => {
         if (!code) {
             context.subscriptions.emitToast({ message: translation.get("The authentication code is required"), name: "" });

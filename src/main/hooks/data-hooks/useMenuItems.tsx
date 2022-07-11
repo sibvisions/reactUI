@@ -99,7 +99,8 @@ const useMenuItems = (menus?:string[]) => {
                             label: nameSplit[i],
                             icon: undefined,
                             items: i === nameSplit.length - 1 ?
-                            getSubItems(value) : []
+                            getSubItems(value) : [],
+                            className: i !== 0 ? "is-submenu " + nameSplit[i] : ""
                         };
                         menuIterator.push(newMainMenuGroup)
                         menuIterator = newMainMenuGroup.items;

@@ -28,10 +28,8 @@ import ResizeProvider from "../../main/contexts/ResizeProvider";
 import { LoginModeType } from "../../main/response/login/LoginResponse";
 
 /** 
- * Properties which the dialog will receive when it's rendered
+ * Type for the different login-modes
  */
-
-
 type LoginMode = "default"|"reset"|"mFTextInput"|"mFWait"|"mFURL"
 
 /** Component which handles logging in */
@@ -42,12 +40,16 @@ const Login: FC = () => {
     /** Reference for the screen-container */
     const sizeRef = useRef<any>(null);
 
+    /** State of the current login-mode to display */
     const [loginMode, setLoginMode] = useState<LoginMode>("default");
 
+    /** State of the login error, undefined unless there is an error to display */
     const [loginError, setLoginError] = useState<string|undefined>(context.server.loginError);
 
+    /** State of the login-data entered */
     const [loginData, setLoginData] = useState<ILoginCredentials>({ username: "", password: "" });
 
+    // Subscribes to the login-mode and login-error
     useEffect(() => {
         context.subscriptions.subscribeToLogin((mode?:LoginModeType, error?:string) => {
             if (mode) {
@@ -70,6 +72,7 @@ const Login: FC = () => {
         }
     }, []);
 
+    // Renders the correct login-form and passes a function to change the login-mode and to change login-data
     const getCorrectLoginForm = () => {
         const modeFunc = (mode:LoginMode) => setLoginMode(mode);
 

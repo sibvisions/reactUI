@@ -32,7 +32,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();
 
-    /** State of the email field */
+    /** State of the code field */
     const [code, setCode] = useState<string>("");
 
     /** State of the timeout until the wait is invalid */
@@ -44,6 +44,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
+    // Subscribes to the code and the timeout. And starts the timer
     useLayoutEffect(() => {
         context.subscriptions.subscribeToMFAWait((code:string, timeout:number) => {
             setCode(code);

@@ -69,6 +69,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
+    /** State of the menuOptions, eg. foldOnCollapse */
     const [menuOptions, setMenuOptions] = useState<MenuOptions>(context.appSettings.menuOptions);
 
     /** The profile-menu options */
@@ -79,14 +80,14 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
 
     // Subscribes to the menu-visibility and the visible-buttons displayed in the profile-menu
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
             setMenuOptions(menuOptions)
 
             setVisibleButtons(visibleButtons);
         });
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
                 setMenuOptions(menuOptions)
 
                 setVisibleButtons(visibleButtons);
@@ -176,7 +177,7 @@ const Menu: FC<IMenu> = (props) => {
     /** True, if the application is embedded, then don't display the menu */
     const embeddedContext = useContext(EmbeddedContext);
 
-    /** Flag if the manu is collpased or expanded */
+    /** Flag if the menu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
 
     /** The current state of device-status */
@@ -206,6 +207,7 @@ const Menu: FC<IMenu> = (props) => {
     /** get menu items */
     const menuItems = useMenuItems();
 
+    // Subscribes to the active-screens
     useLayoutEffect(() => {
         context.subscriptions.subscribeToActiveScreens("menu", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 
@@ -214,10 +216,12 @@ const Menu: FC<IMenu> = (props) => {
         }
     },[context.subscriptions])
 
+    // The current selected menu-item based on the active-screen
     const selectedMenuItem = useMemo(() => {
         let foundMenuItem: string = "";
         if (activeScreens.length) {
             if (context.transferType === "partial") {
+                // Go through the activescreens from the back and check if the active-screen has a menu-item if yes make it the selected-item
                 for (let i = activeScreens.length - 1; i >= 0; i--) {
                     if (foundMenuItem) {
                         break;
@@ -236,6 +240,7 @@ const Menu: FC<IMenu> = (props) => {
                 }
             }
 
+            // If there was no menu-item found through the loop, just take the last active-screen
             if (!foundMenuItem) {
                 foundMenuItem = activeScreens.slice(-1).pop()!.className as string
             }
@@ -277,6 +282,7 @@ const Menu: FC<IMenu> = (props) => {
         }
     }, [context.contentStore, context.subscriptions, deviceStatus])
 
+    // Extends the panel-menu based on the selected menu-item
     useEffect(() => {
         if (props.menuOptions.menuBar) {
             if (menuItems) {

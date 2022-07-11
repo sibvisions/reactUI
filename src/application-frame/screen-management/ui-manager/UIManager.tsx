@@ -91,18 +91,13 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-width')),
     menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-collapsed-width')) : 0), menuCollapsed);
 
-    // Subscribes to the menu-visibility, error-dialog and theme
+    // Subscribes to the menu-visibility and theme
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-            setMenuOptions(menuOptions);
-        });
-
+        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions) => setMenuOptions(menuOptions));
         context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
-                setMenuOptions(menuOptions);
-            });
+            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions) => setMenuOptions(menuOptions));
             context.subscriptions.unsubscribeFromTheme("uimanager");
         }
     }, [context.subscriptions])

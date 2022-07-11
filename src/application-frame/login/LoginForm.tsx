@@ -27,6 +27,7 @@ import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import { translation } from "../../main/util/other-util/Translation";
 
+/** Interface for the default-login form */
 export interface ILoginForm extends ILoginCredentials {
     changeLoginMode: Function
     changeLoginData: Function

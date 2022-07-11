@@ -21,6 +21,9 @@ import { isCorporation } from "../../../main/util/server-util/IsCorporation";
 import ResizeProvider from "../../../main/contexts/ResizeProvider";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 
+/**
+ * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating. For full transferType
+ */
 const UIManagerFull: FC<any> = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

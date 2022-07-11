@@ -33,7 +33,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();
 
-    /** State of the email field */
+    /** State of the link object */
     const [link, setLink] = useState<MFAURLType | string>({ width: 500, height: 300, url: "", target: "_self" });
 
     /** State of the timeout until the wait is invalid */
@@ -42,6 +42,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
     /** State of the lapsed time during the wait */
     const [remainingTime, setRemainingTime] = useState<number>(loginTimeout);
 
+    /** Sets the style for the iFrame, default or based on the link state */
     const iFrameStyle: CSSProperties = useMemo(() => {
         const style:CSSProperties = { border: "1px solid" };
         if (typeof link === "object") {
@@ -69,6 +70,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
+    // Subscribes to the link object and timeout sent by the server. And starts the MFA timer
     useLayoutEffect(() => {
         context.subscriptions.subscribeToMFAURL((pLink: string | MFAURLType, timeout: number) => {
             if (typeof link === "object") {
