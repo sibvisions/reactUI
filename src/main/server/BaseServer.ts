@@ -34,6 +34,7 @@ import { IPanel } from "../components/panels/panel/UIPanel";
 import MetaDataResponse from "../response/data/MetaDataResponse";
 import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
 import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
+import { translation } from "../util/other-util/Translation";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -576,7 +577,7 @@ export default abstract class BaseServer {
             this.subManager.emitRestart();
         }
         else {
-            this.subManager.emitErrorBarProperties(true, false, this.contentStore.translation.get("Session expired!"));
+            this.subManager.emitErrorBarProperties(true, false, translation.get("Session expired!"));
             this.subManager.emitErrorBarVisible(true);
         }
         this.contentStore.reset();

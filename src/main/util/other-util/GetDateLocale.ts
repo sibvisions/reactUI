@@ -13,7 +13,8 @@
  * the License.
  */
 
-import { de, enUS } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale'
+import { addLocale, locale } from 'primereact/api';
 import { translation } from './Translation';
 
 let globalLocale:any = 'en';
@@ -45,7 +46,7 @@ export function overwriteLocaleValues() {
     const eraValues = {
         narrow: [
             translation.get("era-narrow-BC"), 
-            translation.get("era-narrow-AC")
+            translation.get("era-narrow-AD")
         ] as const,
         abbreviated: [
             translation.get("era-abbreviated-BC"), 
@@ -291,6 +292,81 @@ export function overwriteLocaleValues() {
         ...enUS,
         localize: localize
     }
+}
+
+export function setPrimeReactLocale() {
+    addLocale('custom', {
+        accept: translation.get('Yes'),
+        reject: translation.get('No'),
+        choose: translation.get('Choose'),
+        upload: translation.get('Upload'),
+        cancel: translation.get('Cancel'),
+        dayNames: [
+            translation.get('day-wide-Sunday'), 
+            translation.get('day-wide-Monday'), 
+            translation.get('day-wide-Tuesday'), 
+            translation.get('day-wide-Wednesday'), 
+            translation.get('day-wide-Thursday'), 
+            translation.get('day-wide-Friday'), 
+            translation.get('day-wide-Saturday')
+        ],
+        dayNamesShort: [
+            translation.get('day-abbreviated-Sunday'), 
+            translation.get('day-abbreviated-Monday'), 
+            translation.get('day-abbreviated-Tuesday'), 
+            translation.get('day-abbreviated-Wednesday'), 
+            translation.get('day-abbreviated-Thursday'), 
+            translation.get('day-abbreviated-Friday'), 
+            translation.get('day-abbreviated-Saturday')
+        ],
+        dayNamesMin: [
+            translation.get('day-short-Sunday'), 
+            translation.get('day-short-Monday'), 
+            translation.get('day-short-Tuesday'), 
+            translation.get('day-short-Wednesday'), 
+            translation.get('day-short-Thursday'), 
+            translation.get('day-short-Friday'), 
+            translation.get('day-short-Saturday')
+        ],
+        monthNames: [
+            translation.get("month-wide-January"),
+            translation.get("month-wide-February"),
+            translation.get("month-wide-March"),
+            translation.get("month-wide-April"),
+            translation.get("month-wide-May"),
+            translation.get("month-wide-June"),
+            translation.get("month-wide-July"),
+            translation.get("month-wide-August"),
+            translation.get("month-wide-September"),
+            translation.get("month-wide-October"),
+            translation.get("month-wide-November"),
+            translation.get("month-wide-December")
+        ],
+        monthNamesShort: [
+            translation.get("month-abbreviated-January"),
+            translation.get("month-abbreviated-February"),
+            translation.get("month-abbreviated-March"),
+            translation.get("month-abbreviated-April"),
+            translation.get("month-abbreviated-May"),
+            translation.get("month-abbreviated-June"),
+            translation.get("month-abbreviated-July"),
+            translation.get("month-abbreviated-August"),
+            translation.get("month-abbreviated-September"),
+            translation.get("month-abbreviated-October"),
+            translation.get("month-abbreviated-November"),
+            translation.get("month-abbreviated-December")
+        ],
+        today: translation.get("Today"),
+        clear: translation.get('Delete'),
+        weekHeader: translation.get("Weekheader"),
+        firstDayOfWeek: parseInt(translation.get("FirstDayOfWeek")),
+        dateFormat: 'dd.mm.yyyy',
+        weak: translation.get("Weak"),
+        medium: translation.get("Medium"),
+        strong: translation.get("Strong"),
+        passwordPrompt: translation.get("Enter a password")
+     });
+     locale('custom');
 }
 
 export function setDateLocale(locale: string) {

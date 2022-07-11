@@ -112,9 +112,6 @@ export class SubscriptionManager {
     /** An array of functions to update the menuitem states of its subscribers */
     menuSubscriber = new Array<Function>();
 
-    /** An array of functions to update the translationLoaded state of components which use the useTranslationLoaded hook */
-    translationLoadedSubscriber = new Array<Function>();
-
     /** A function to change the appReady state to true */
     appReadySubscriber:Function = () => {};
 
@@ -346,14 +343,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes components to translationLoaded , to change the translation-loaded state
-     * @param fn - the function to update the translation-loaded state
-     */
-    subscribeToTranslation(fn: Function) {
-        this.translationLoadedSubscriber.push(fn);
-    }
-
-    /**
      * Subscribes the app to app-ready, to change the app-ready state
      * @param fn  - the function to change the app-ready state
      */
@@ -495,14 +484,6 @@ export class SubscriptionManager {
      */
     unsubscribeFromMenuChange(fn: Function){
         this.menuSubscriber.splice(this.menuSubscriber.findIndex(subFunction => subFunction === fn), 1);
-    }
-
-    /**
-     * Unsubscribes components from translationLoaded
-     * @param fn - the function to update the translation-loaded state
-     */
-    unsubscribeFromTranslation(fn: Function) {
-        this.translationLoadedSubscriber.splice(this.translationLoadedSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /**
@@ -821,11 +802,6 @@ export class SubscriptionManager {
             this.appSettings.menuCollapsed = false;
         else if (collapseVal === 2)
             this.appSettings.menuCollapsed = !this.appSettings.menuCollapsed;
-    }
-
-    /** When the translation is loaded, notify the subscribers */
-    emitTranslation() {
-        this.translationLoadedSubscriber.forEach(subFunction => subFunction.apply(undefined, [this.contentStore.translation]));
     }
 
     /** When the app is ready call the app-ready function */

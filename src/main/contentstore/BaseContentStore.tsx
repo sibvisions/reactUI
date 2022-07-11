@@ -95,9 +95,6 @@ export default abstract class BaseContentStore {
     /** A Map which stores the navigation names for screens to route, the key is the navigation name of the screen and the value is an object containing the screenId and the componentId */
     navigationNames = new Map<string, { screenId: string, componentId: string}>();
 
-    /** A Map which stores the translation values, the key is the original text and the value is the translated text */
-    translation = new Map<string, string>();
-
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
 

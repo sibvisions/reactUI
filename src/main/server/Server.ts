@@ -48,7 +48,7 @@ import { History } from "history";
 import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import { translation } from "../util/other-util/Translation";
-import { overwriteLocaleValues } from "../util/other-util/GetDateLocale";
+import { overwriteLocaleValues, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -512,11 +512,11 @@ class Server extends BaseServer {
                 .then((response:any) => response.text())
                 .then(value => parseString(value, (err, result) => { 
                     if (result) {
-                        result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._));
+                        result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._))
+                        overwriteLocaleValues();
+                        setPrimeReactLocale();
                         this.appSettings.setAppReadyParam("translation");
                         this.translationFetched = true;
-                        overwriteLocaleValues();
-                        this.subManager.emitTranslation();
                     }
                 }));
             }

@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useContext, useLayoutEffect } from "react";
-import PrimeReact from 'primereact/api';
+import PrimeReact, { addLocale, locale } from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from "./application-frame/screen-management/ui-manager/UIManager";
 import LoadingScreen from './application-frame/loading/Loadingscreen';
@@ -22,6 +22,7 @@ import { ICustomContent } from "./MiddleMan";
 import AppWrapper from "./AppWrapper";
 import { appContext } from "./main/contexts/AppProvider";
 import Login from "./application-frame/login/Login";
+import { translation } from "./main/util/other-util/Translation";
 
 /**
  * This component manages the start and routing of the application, if the application is started embedded.
