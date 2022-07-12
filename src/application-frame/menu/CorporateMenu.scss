@@ -37,6 +37,13 @@
 .p-menubar {
     border-radius: 0;
 
+    &.profile-menubar .p-submenu-list {
+        max-height: 600px;
+        overflow: auto;
+    }
+}
+
+.p-menubar:not(.profile-menubar) {
     .wrapper {
         position: relative;
     }
@@ -66,7 +73,7 @@
     }
 }
 
-.p-menubar .p-menubar-root-list > .p-menuitem-active > .wrapper {
+.p-menubar:not(.profile-menubar) .p-menubar-root-list > .p-menuitem-active > .wrapper {
     display: block
 }
 

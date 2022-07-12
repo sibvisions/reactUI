@@ -159,6 +159,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
             {props.showButtons && menuOptions.userSettings && <div className="vl" />}
             {menuOptions.userSettings && <div className="profile-menu">
                 <Menubar
+                    className="profile-menubar"
                     style={(context.contentStore as ContentStore).currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${(context.contentStore as ContentStore).currentUser.profileImage})` } : {}}
                     model={profileMenu} />
             </div>}

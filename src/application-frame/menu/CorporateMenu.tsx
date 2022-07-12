@@ -69,17 +69,21 @@ const CorporateMenu:FC<IMenu> = (props) => {
     /** State of the toolbar-items */
     const [toolbarItems, setToolbarItems] = useState<Array<MenuItem>>(handleNewToolbarItems((context.contentStore as ContentStore).toolbarItems));
 
+    // Adds a wrapper div to all submenu-lists, for the submenus to be correctly displayed when there are sub-submenus
     useLayoutEffect(() => {
         if (menuItems) {
             const submenus = document.getElementsByClassName("p-submenu-list");
             for (let submenu of submenus) {
-                const parent = submenu.parentElement;
-                const wrapper = document.createElement('div');
-                wrapper.classList.add("wrapper")
-
-                if (parent && !parent.classList.contains("wrapper")) {
-                    parent.replaceChild(wrapper, submenu);
-                    wrapper.appendChild(submenu);
+                console.log(submenu.closest(".p-menubar"))
+                if (submenu.closest(".p-menubar") && !submenu.closest(".p-menubar")!.classList.contains("profile-menubar")) {
+                    const parent = submenu.parentElement;
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add("wrapper")
+    
+                    if (parent && !parent.classList.contains("wrapper")) {
+                        parent.replaceChild(wrapper, submenu);
+                        wrapper.appendChild(submenu);
+                    }
                 }
             }
         }
@@ -96,7 +100,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
         return () => context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
     }, [context.subscriptions]);
 
-    //@ts-ignore
+    //@ts-ignore Event handling for sub-submenus, to absolutely position them next to their parent submenu
     useMultipleEventHandler(DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu").length ? 
     //@ts-ignore
     DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu") : undefined, "mouseover",
