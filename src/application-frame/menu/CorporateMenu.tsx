@@ -101,7 +101,6 @@ const CorporateMenu:FC<IMenu> = (props) => {
     //@ts-ignore
     DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu") : undefined, "mouseover",
     (event:any) => {
-        console.log(event.currentTarget)
         const menuItem = event.currentTarget
         const submenuWrapper = menuItem.querySelector(".wrapper");
         const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
