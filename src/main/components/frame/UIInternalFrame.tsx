@@ -68,6 +68,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     /** Flag, true, if framestyle needs to be initially set */
     const initFrame = useRef<boolean>(true);
 
+    /** The bounds of the InternalFrame */
     const bounds = useMemo(() => props.bounds ? new Bounds(props.bounds.split(",")) : null, [props.bounds]);
 
     /** Returns the Element which this InternalFrame is centered to, or undefined if it wasn't found */
@@ -89,11 +90,13 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     /** Flag, true, if the InternalFrame still needs to be centered */
     const [positionFlag, setPositionFlag] = useState<boolean>(true);
 
+    /** The current position of the InternalFrame on the screen */
     const [framePosition, setFramePosition] = useState<{x: number, y: number}>({ x: bounds ? bounds.left : 0, y: bounds ? bounds.top : 0 });
 
     /** Reference for the Rnd element */
     const rndRef = useRef<Rnd>(null);
 
+    /** A timer to send bounds after dragging the InternalFrame */
     const boundsTimer = useRef<any>(null);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -128,6 +131,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         }
     }
 
+    /** Sets the RnD bounds (drag limitations for RnD). You can't drag it over tge menubar, but you can drag it out of the sides and bottom of the browser-window */
     useLayoutEffect(() => {
         if (rndRef.current) {
             rndRef.current.setState({bounds: {
@@ -207,11 +211,12 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     //@ts-ignore
     }, [layoutStyle?.width, layoutStyle?.height, packSize, context.launcherReady, bounds]);
 
-    useEffect(() => {
-        if (!initFrame.current && !positionFlag && frameStyle && framePosition) {
-            sendBoundsRequest({ width: (frameStyle.width as number), height: (frameStyle.height as number), x: framePosition.x, y: framePosition.y });
-        }
-    }, [frameStyle, framePosition])
+    // useEffect(() => {
+    //     console.log(!initFrame.current && !positionFlag && frameStyle && framePosition)
+    //     if (!initFrame.current && !positionFlag && frameStyle && framePosition) {
+    //         sendBoundsRequest({ width: (frameStyle.width as number), height: (frameStyle.height as number), x: framePosition.x, y: framePosition.y });
+    //     }
+    // }, [frameStyle, framePosition])
 
     // When the server sends a dispose, call closeScreen
     useEffect(() => {

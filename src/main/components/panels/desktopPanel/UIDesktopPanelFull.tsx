@@ -29,22 +29,19 @@ import Dimension from "../../../util/types/Dimension";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Layout from "../../layouts/Layout";
+import { IDesktopPanel } from "./UIDesktopPanel";
 
-export interface IDesktopPanel extends BaseComponent {
-    navigationKeysEnabled?: boolean,
-    tabMode?: boolean,
-    layout: string,
-    layoutData: string,
-}
-
+// Interface for the opened-frame-context
 interface IOpenedFrameContext {
     openFrames: string[],
     openFramesCallback: Function,
     tabMode: boolean
 }
 
+// Creates a context, which manages the open-frames, has a callback to put frames in front or back and a flag if the frames are in tabmode
 export const OpenFrameContext = createContext<IOpenedFrameContext>({ openFrames: [], openFramesCallback: () => {}, tabMode: false });
 
+// Interface for a desktop-panel in tab-mode
 interface IDesktopTabPanel extends IDesktopPanel {
     components: React.ReactElement<any, string | React.JSXElementConstructor<any>>[]
     compSizes: Map<string, ComponentSizes> | undefined
@@ -52,6 +49,11 @@ interface IDesktopTabPanel extends IDesktopPanel {
     layoutStyle: CSSProperties|undefined
 }
 
+/**
+ * This component displays the desktop-panel in tab-mode if the tab-mode is active
+ * @param props 
+ * @returns 
+ */
 const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
     /** Returns utility variables */
     const [context, topbar] = useConstants()
@@ -94,6 +96,12 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
     )
 }
 
+/**
+ * In full transfertype the desktop-panel is always present "below" the screens, 
+ * it is either the "core" panel of the Mobile-Launcher and always visible or 
+ * "below" the tab-mode
+ * @param baseProps - the base propertie sent by the server
+ */
 const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
     const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
@@ -104,6 +112,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
 
+    /** State of the currently opened frames */
     const [openFrames, setOpenedFrames] = useState<string[]>(() => {
         const foundIF = children.filter(child => child.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME).map(frame => frame.name);
         if (foundIF) {
@@ -114,6 +123,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
         }
     });
 
+    /** State if the tab-mode should be displayed */
     const displayTabMode = useMemo(() => props.tabMode && children.find(child => child.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) !== undefined, [props.tabMode, children]);
 
     /** Reference for the DesktopPanel element */

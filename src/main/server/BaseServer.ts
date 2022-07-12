@@ -473,9 +473,7 @@ export default abstract class BaseServer {
             builtData, 
             fetchData.to, 
             fetchData.from, 
-            fetchData.treePath,
             detailMapKey,
-            fetchData.recordFormat,
             fetchData.clear
         );
 

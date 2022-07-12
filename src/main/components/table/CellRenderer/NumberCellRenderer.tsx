@@ -20,14 +20,21 @@ import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../../../util/
 import { ICellEditorNumber } from "../../editors/number/UIEditorNumber";
 import { ICellRender } from "../CellEditor";
 
+/**
+ * Renders the number-cell when the column is a number-cell
+ * @param props - the properties received from the table
+ */
 const NumberCellRenderer: FC<ICellRender> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    // Casts the metadata to NumericColumnDescription
     const castedMetaData = props.columnMetaData as NumericColumnDescription
 
+    /** Casts the cell-editor property to ICellEditorDate because we can be sure it is a date-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorNumber;
 
+    // Formats the number value to the correct format
     const displayNumberValue = useMemo(() => {
         if (props.cellData !== null) {
             return Intl.NumberFormat(context.appSettings.locale,

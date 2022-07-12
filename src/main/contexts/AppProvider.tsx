@@ -119,12 +119,16 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
     }
 
+    /** Reference for the websocket */
     const ws = useRef<WebSocket|null>(null);
 
+    /** Flag, if the websocket needs to be reconnected */
     const isReconnect = useRef<boolean>(false);
 
+    /** Flag if the websocket is connected */
     const wsIsConnected = useRef<boolean>(false);
 
+    /** Reference for the relauncharguments sent by the server */
     const relaunchArguments = useRef<any>(null);
 
     /** Current State of the context */
@@ -150,6 +154,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
     },[contextState.subscriptions]);
 
+    // Creates the startup-request and sends it to the server, inits the websocket
     useEffect(() => {
         const startUpRequest = createStartupRequest();
         const urlParams = new URLSearchParams(window.location.search);
@@ -162,6 +167,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let aliveIntervalToSet:number|undefined = undefined;
         let wsPingIntervalToSet:number|undefined = undefined;
 
+        /** Initialises the websocket and handles the messages the server sends and sets the ping interval. also handles reconnect */
         const initWS = (baseURL:string) => {
             const connectWs = () => {
                 const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
@@ -234,6 +240,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             connectWs()
         }
 
+        /** Sends the startup-request to the server and initialises the alive interval */
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, restartArgs?:any) => {
             if (restartArgs) {
                 (req as StartupRequest).arguments = restartArgs;
@@ -257,6 +264,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             .catch(() => {});
         }
 
+        // Fetches the app file which contains intervals
         const fetchApp = () => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app.json').then((r) => r.json())
@@ -278,6 +286,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             });
         }
 
+        // Fetches the app-config file which contains the transfertype
         const fetchAppConfig = () => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app_config.json').then((r) => r.json())
@@ -299,6 +308,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             });
         }
 
+        // Fetches the config.json file which contains various application settings
         const fetchConfig = () => {
             return new Promise<any>((resolve, reject) => {
                 fetch('config.json')
@@ -507,6 +517,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("aliveInterval");
             }
 
+            if (aliveIntervalToSet) {
+                contextState.server.aliveInterval = aliveIntervalToSet;
+            }
+
             if (convertedOptions.has("wsPingInterval")) {
                 const parsedValue = parseInt(convertedOptions.get("wsPingInterval"));
                 if (!isNaN(parsedValue)) {
@@ -516,11 +530,16 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("wsPingInterval");
             }
 
+            if (wsPingIntervalToSet) {
+                contextState.server.wsPingInterval = wsPingIntervalToSet;
+            }
+
             convertedOptions.forEach((v, k) => {
                 startUpRequest["custom_" + k] = v;
             });
         }
 
+        // Initialises contentstore and server after config fetches. based on transfertype
         const afterConfigFetch = () => {
             checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams);
             if (contextState.transferType === "full") {

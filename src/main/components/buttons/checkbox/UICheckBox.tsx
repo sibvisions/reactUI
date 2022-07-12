@@ -62,13 +62,15 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle]);
 
+    // If lib-user extends Checkbox with onChange, call it when selected changes
     useEffect(() => {
         if (props.onChange) {
             props.onChange(props.selected === undefined ? true : !props.selected);
         }
     }, [props.selected])
 
-    const onChange = (event:CheckboxChangeParams) => {
+    // If lib-user extends Checkbox with onClick, call it when the Checkbox has been clicked
+    const onClick = (event:CheckboxChangeParams) => {
         if (props.onClick) {
             props.onClick(event.originalEvent);
         }
@@ -109,7 +111,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected}
-                    onChange={onChange}
+                    onChange={onClick}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
                     disabled={isCompDisabled(props)}

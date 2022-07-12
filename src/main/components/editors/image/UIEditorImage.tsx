@@ -101,6 +101,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
         }   
     }
 
+    // If the lib user extends the ImageCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange();

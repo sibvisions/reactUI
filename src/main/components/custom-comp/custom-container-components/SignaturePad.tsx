@@ -19,6 +19,11 @@ import { appContext } from "../../../contexts/AppProvider"
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames"
 import BaseComponent from "../../../util/types/BaseComponent"
 
+/**
+ * Displays a signature pad which can be used to draw or sign.
+ * @param props - the properties sent by the server
+ * @returns 
+ */
 const SignaturePad:FC<BaseComponent> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

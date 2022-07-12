@@ -79,6 +79,13 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                 }
             }
     
+            /**
+             * Builds the footer content based on the button type
+             * @param buttonType - the button type
+             * @param okCompId - the component id of the ok button
+             * @param cancelCompId - the component id of the cancel button
+             * @param notOkCompId - the component id of the not ok button
+             */
             const footerContent = (buttonType: 4 | 5 | 6 | 7 | 8 | -1, okCompId?: string, cancelCompId?: string, notOkCompId?: string) => {
                 const sendPressButton = (compId?:string) => {
                     if (compId) {
@@ -88,6 +95,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                     }
                 }
 
+                // Returns the button background of the current color scheme
                 const getButtonBackground = ():string => {
                     return window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
                 }
@@ -183,6 +191,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                 }
             }
     
+            // Returns the correct header type
             const getHeaderType = (iconType: 0 | 1 | 2 | 3 | 9 | -1) => {
                 if (iconType === 0) {
                     return "info";
@@ -226,6 +235,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                     }
                 </>
 
+            // Sends a close-frame request to the server when the dialog is being closed
             const handleOnHide = () => {
                 const closeFrameReq = createCloseFrameRequest();
                 closeFrameReq.componentId = messageProps.componentId;

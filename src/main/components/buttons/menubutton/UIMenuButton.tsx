@@ -135,6 +135,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
         }
     );
 
+    // If lib-user extends MenuButton with onMenuBtnClick, call it when the MenuButton is clicked (right side of SplitButton)
     useEventHandler(
         buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined,
         "click",
@@ -147,15 +148,16 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
         }
     );
 
-    useEventHandler(
-        buttonRef.current ? buttonRef.current.defaultButton : undefined,
-        "blur",
-        (event) => {
-            if ((event as FocusEvent).relatedTarget === buttonWrapperRef.current) {
-                getFocusComponent(props.name + "-wrapper", false)?.focus();
-            }
-        }
-    )
+    // useEventHandler(
+    //     buttonRef.current ? buttonRef.current.defaultButton : undefined,
+    //     "blur",
+    //     (event) => {
+    //         console.log(event)
+    //         if ((event as FocusEvent).relatedTarget === buttonWrapperRef.current) {
+    //             getFocusComponent(props.name + "-wrapper", false)?.focus();
+    //         }
+    //     }
+    // )
 
     return (
         <span
@@ -167,10 +169,6 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
             onFocus={(e) => {
                 if (props.eventFocusGained) {
                     onFocusGained(props.name, context.server)
-                }
-                const defaultButton = (e.target.querySelector(".p-splitbutton-defaultbutton") as HTMLElement)
-                if (defaultButton) {
-                    (e.target.querySelector(".p-splitbutton-defaultbutton") as HTMLElement).focus();
                 }
             }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
@@ -207,7 +205,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                 label={props.text}
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 disabled={isCompDisabled(props)}
-                tabIndex={-1}
+                //tabIndex={-1}
                 model={items}
                 onClick={(e) => buttonRef.current.show()}
                 tooltip={props.toolTipText}

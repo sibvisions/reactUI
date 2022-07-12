@@ -64,9 +64,18 @@ export interface IEditorLinked extends IRCCellEditor {
     cellEditor: ICellEditorLinked
 }
 
-export function fetchLinkedRefDatabook(screenName:string, databook: string, currentData:any, displayCol: string|null|undefined, server: Server|ServerFull, contentStore: BaseContentStore) {
+/**
+ * Sends a fetch-request to the server to fetch a LinkedCellEditors referenced databook
+ * @param screenName - the name of the screen
+ * @param databook - the databook to fetch
+ * @param selectedRecord - the currently selected record (only send request if there is a value to display)
+ * @param displayCol - the column which should be displayed
+ * @param server - the server instance
+ * @param contentStore - the contentStore instance
+ */
+export function fetchLinkedRefDatabook(screenName:string, databook: string, selectedRecord:any, displayCol: string|null|undefined, server: Server|ServerFull, contentStore: BaseContentStore) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook)
-    if (currentData
+    if (selectedRecord
         && displayCol
         && !refDataBookInfo?.data
         && !server.missingDataFetches.includes(databook)) {
@@ -98,6 +107,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
+    /** The last displayed-value in the cell-editor (displayRefernecedColumnName) */
     const lastDisplayValue = useRef<any>();
 
     /** Current state of text value of input element */
@@ -184,13 +194,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         lastValue.current = props.selectedRow;
     }, [props.selectedRow, linkRefFetchFlag]);
 
+    // If the lib user extends the LinkedCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
             if (props.cellEditor.displayReferencedColumnName) {
                 if (displayValueMap.has(props.selectedRow)) {
                     props.onChange(displayValueMap.get(props.selectedRow))
-                    setText(displayValueMap.get(props.selectedRow));
-                    lastDisplayValue.current = displayValueMap.get(props.selectedRow)
                 }
             }
             else {
@@ -199,10 +208,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
     }, [props.selectedRow, linkRefFetchFlag, props.onChange])
 
+    /**
+     * Either returns the unpacked value out of an array based on the columnView which should be shown in the input , or just returns the value if there is no array
+     * @param value - the selected value of the linked-cell-editor
+     */
     const unpackValue = (value: string | string[]) => {
+        // If the value is an array, get the index of the link-cell-editor column in the linkReference.
+        // Then use this index with the referencedColumnNames to find the column in the columnView and return the correct value.
         if (Array.isArray(value)) {
             const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
             const valIndex = props.cellEditor.columnView.columnNames.indexOf(props.cellEditor.linkReference.referencedColumnNames[colNameIndex]);
+            console.log(value[valIndex])
             return value[valIndex];
         } else {
             return value;
@@ -246,6 +262,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     }, [props.cellEditor.autoOpenPopup, props.cellEditor.preferredEditorMode, props.isCellEditor, sendFilter]);
 
+    // Sends an focus-gained event to the server
     useEffect(() => {
         if (focused.current && initialFilter && props.eventFocusGained) {
             //setTimeout 0ms so the transition is playing
@@ -317,6 +334,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     return data[refColNames[index]] === inputVal
                 }
             }) :
+            // If there is no exact value try to filter the providedData, if there is only one result it can still be used!
             providedData.filter((data: any) => {
                 if (props.cellEditor) {
                     if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1 && props.cellEditor.displayReferencedColumnName) {

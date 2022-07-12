@@ -20,12 +20,18 @@ import { getDateLocale } from "../../../util/other-util/GetDateLocale";
 import { ICellEditorDate } from "../../editors/date/UIEditorDate";
 import { ICellRender } from "../CellEditor";
 
+/**
+ * Renders the date-cell when the column is a date-cell
+ * @param props - the properties received from the table
+ */
 const DateCellRenderer: FC<ICellRender> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** Casts the cell-editor property to ICellEditorDate because we can be sure it is a date-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorDate;
 
+    /** Returns the date to display if the date is valid or null */
     const displayDateValue = useMemo(() => {
         if (isValid(props.cellData) && castedCellEditor) {
             return castedCellEditor.dateFormat ? format(props.cellData, castedCellEditor.dateFormat, { locale: getDateLocale(context.appSettings.locale) }) : formatISO(props.cellData);

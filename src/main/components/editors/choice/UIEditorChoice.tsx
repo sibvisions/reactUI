@@ -71,6 +71,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     /** Check if the ChoiceCellEditor only accepts two values */
     const viableAriaPressed = props.cellEditor.allowedValues.length === 2 && props.cellEditor.allowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
 
+    // Sets the background-color if cellFormatting is set in a cell-editor
     useLayoutEffect(() => {
         if (props.isCellEditor && wrapRef.current) {
             if (props.cellFormatting && props.colIndex !== undefined && props.cellFormatting[props.colIndex]) {
@@ -178,6 +179,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
         }
     }
 
+    // If the lib user extends the ChoiceCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange({ value: currentImageValue, allowedValues: props.cellEditor.allowedValues })

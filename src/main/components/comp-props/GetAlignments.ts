@@ -63,6 +63,10 @@ function translateAlignments(pha:number|undefined, pva:number|undefined):Alignme
     return {ha, va};
 }
 
+/**
+ * Returns true, if the component is an editor
+ * @param props - the properties of the component
+ */
 function isEditor(props:IEditor|BaseComponent): props is IEditor {
     return (props as IEditor).cellEditor !== undefined;
 }
@@ -70,7 +74,7 @@ function isEditor(props:IEditor|BaseComponent): props is IEditor {
 /**
  * Returns alignments for CellEditors. cellEditor_ has priority over cellEditor.
  * if there are no Alignments set undefined is returned
- * @param props - Properties of CellEditor
+ * @param props - Properties of the component
  * @returns Horizontal- and verticalalignment of CellEditor or undefined if none are set
  */
 export function getAlignments(props: IEditor|BaseComponent):Alignments {

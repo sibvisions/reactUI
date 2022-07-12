@@ -64,6 +64,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    //If lib-user extends Togglebutton with onChange, call it when selected changes
     useEffect(() => {
         if (props.onChange) {
             props.onChange(props.selected);

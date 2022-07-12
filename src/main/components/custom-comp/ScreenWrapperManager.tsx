@@ -23,8 +23,10 @@ import { getScreenIdFromNavigation } from "../../util/component-util/GetScreenNa
 const ScreenWrapperManager:FC = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** ComponentId of Screen extracted by useParams hook */
     const {componentId} = useParams<any>();
+    
     /** The ID of the screen based on the navigation-name */
     const screenId = getScreenIdFromNavigation(componentId, context.contentStore)
 

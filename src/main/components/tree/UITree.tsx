@@ -258,6 +258,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
     /**
      * This event is called when a node is selected, it builds the select tree request and sends it to the server
+     * If the lib user extends the Tree with onRowSelect, call it when a row is selected.
      * @param event 
      */
     const handleRowSelection = (event:TreeSelectionParams) => {
@@ -404,6 +405,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
     /**
      * Check if we have all the data for the tree we need if the expanded keys change
+     * If the lib user extends the Tree with onTreeChange, call it when the Tree is expanded/shrinks or changes.
      */
      useEffect(() => {
         if (props.onTreeChange) {

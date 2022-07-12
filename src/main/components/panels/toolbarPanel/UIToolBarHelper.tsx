@@ -33,10 +33,17 @@ export interface IToolBarHelper extends IPanel {
     toolBarVisible?:boolean
 }
 
+/**
+ * Renders the toolbarhelper
+ * additional components when toolbarhelper is main
+ * not additional components when toolbarhelper is center
+ * @param props the properties received by the parent
+ */
 const ToolBarHelper:FC<IToolBarHelper> = (props) => {
-    
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext)
 
+    /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, { visibility: "hidden" });
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
@@ -163,6 +170,12 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
     )
 }
 
+/**
+ * The ToolBarHelper component is a helper component for toolbarpanels, 
+ * it either contains the "main" part of the toolbar (contains the components of the toolbar eg. buttons)
+ * or the "center" part of the toolbar (contains the screen/layout).
+ * @param baseProps the properties received by the server
+ */
 const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     /** Component constants */
     const [context,, [props]] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});

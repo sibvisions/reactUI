@@ -54,6 +54,7 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
+    // Set the layoutStyle style properties when layoutStyle changes
     useLayoutEffect(() => {
         if (wrapperRef.current) {
             const ref = wrapperRef.current

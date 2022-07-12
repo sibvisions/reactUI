@@ -69,6 +69,7 @@ const dateFormats = [
     "dd/MMMM/yyyyy"
 ]
 
+// Parses a date-string through multiple formats
 const parseMultiple = (
     dateString: string,
     formatString: string[],
@@ -164,6 +165,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    // When the cell-editor is opened focus the input and forward the pressed key when opening, on unmount save the date-input if the screen is still opened
     useEffect(() => {
         setTimeout(() => {
             if (calendarInput.current && props.isCellEditor) {
@@ -190,12 +192,14 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
         
     },[props.selectedRow]);
 
+    // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange(props.selectedRow ? new Date(props.selectedRow) : undefined)
         }
     }, [props.selectedRow, props.onChange])
 
+    // Checks if the time has changed to hide the overlay if the date has been selected directly
     const timeChanged = (newDate: Date, oldDate: Date) => {
         if (!oldDate || newDate.getHours() !== oldDate.getHours() || newDate.getMinutes() !== oldDate.getMinutes() || newDate.getSeconds() !== oldDate.getSeconds()) {
             return true;

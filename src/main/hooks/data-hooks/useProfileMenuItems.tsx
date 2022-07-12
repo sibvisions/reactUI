@@ -35,11 +35,13 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    const [slideOptions, setSlideOptions] = useState<Array<MenuItem>>();
+    /** The model of the profile-menu */
+    const [model, setModel] = useState<Array<MenuItem>>();
 
+    /** True, if change-password is enabled */
     const [changePwEnabled, setChangePwEnabled] = useState<boolean>(context.appSettings.changePasswordEnabled);
 
-    /** removes authKey from local storage, resets contentstore and sends logoutRequest to server */
+    /** removes authKey from local storage, resets contentstore and sends logout-request to server */
     const sendLogout = useCallback(() => {
         const logoutRequest = createLogoutRequest();
         localStorage.removeItem("authKey")
@@ -47,16 +49,14 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         showTopBar(context.server.sendRequest(logoutRequest, REQUEST_KEYWORDS.LOGOUT), topbar)
     }, [context.server, context.contentStore]);
 
+    // Subscribes to appsettings
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((menuOptions: MenuOptions, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
 
-        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-            if (appSettings.changePassword !== undefined) {
-                setChangePwEnabled(appSettings.changePassword)
-            }
-        });
+        return () => context.subscriptions.unsubscribeFromAppSettings((menuOptions: MenuOptions, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
     }, [])
 
+    // Building the profile-menu-model
     useEffect(() => {
         const currUser = (context.contentStore as ContentStore).currentUser;
         const profileMenuItems: MenuItem[] = []
@@ -111,7 +111,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
                 context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
             }
         })
-        setSlideOptions([
+        setModel([
             {
                 label: currUser.displayName,
                 icon: currUser.profileImage ? 'profile-image' : 'profile-image-null fas fa-user',
@@ -120,7 +120,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         ])
     }, [(context.contentStore as ContentStore).currentUser, translation, changePwEnabled])
 
-    return slideOptions;
+    return model;
 }
 
 export default useProfileMenuItems;

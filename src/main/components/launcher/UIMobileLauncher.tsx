@@ -21,6 +21,7 @@ import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import UIFrame from "../frame/UIFrame";
 import { IPanel } from "../panels/panel/UIPanel";
 
+// Interface for Windows
 export interface IWindow extends IPanel {
     title:string
     layout:string,

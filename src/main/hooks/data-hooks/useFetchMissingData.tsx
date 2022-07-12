@@ -31,6 +31,9 @@ const useFetchMissingData = (screenName:string, dataProvider:string) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
+    // Checks if the dataProvider already exists in the contentstore, if no a fetchrequest is created
+    // Then if the dataprovider has been already been pushed into an array, it is not fetched to prevent multiple fetches
+    // If it isn't already added, it is then added and a fetch request is sent
     useLayoutEffect(() => {
         if (dataProvider && !context.contentStore.getDataBook(screenName, dataProvider)?.data) {
             const fetchReq = createFetchRequest();

@@ -33,7 +33,7 @@ import NumberCellRenderer from "./CellRenderer/NumberCellRenderer";
 import TextCellRenderer from "./CellRenderer/TextCellRenderer";
 import { SelectedCellContext } from "./UITable";
 
-
+// Interface for in-table-editors
 export interface IInTableEditor {
     stopCellEditing?: Function
     passedKey?: string,
@@ -42,6 +42,7 @@ export interface IInTableEditor {
     editorStyle?: CSSProperties
 }
 
+// Interface for cell-style-formatting
 export interface CellFormatting {
     foreground?: string;
     background?: string;
@@ -49,6 +50,7 @@ export interface CellFormatting {
     image?: string;
 }
 
+// Interface for cell-renderer
 export interface ICellRender extends ICellEditor {
     columnMetaData: ColumnDescription,
     icon: JSX.Element|null,
@@ -149,8 +151,10 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
 
+    // Calculates the minus margin-left to display no gap when opening the cell-editor
     const calcMarginLeft = "calc(0rem - calc(" + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-left-right') + " / 2) - 0.05rem)";
 
+    // Calculates the minus margin-top to display no gap when opening the cell-editor
     const calcMarginTop = "calc(0rem - calc(" + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)";
 
     /** State if the CellEditor is currently waiting for the selectedRow */
@@ -179,6 +183,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [cellContext.selectedCellId]);
 
+    // If the selected-cell id is this cell-editors id and startEditing is true, set the edit-state to true
     useEffect(() => {
         if (cellContext.selectedCellId === props.cellId().selectedCellId && props.startEditing) {
             setEdit(true);
@@ -241,6 +246,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Adds Keylistener to the tableContainer */
     useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
 
+    // Returns true if the cell is editable
     const isEditable = useMemo(() => {
         if (!props.colReadonly
             && !props.dataProviderReadOnly 
@@ -257,6 +263,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     const cellClassNames:string[] = ['cell-data', typeof props.cellData === "string" && (props.cellData as string).includes("<html>") ? "html-cell" : ""];
     let cellIcon: IconProps | null = null;
 
+    // Fills cell-classnames and cell-style based on the server-sent properties
     if (props.cellFormatting && props.cellFormatting[props.colIndex]) {
         if(props.cellFormatting[props.colIndex].background) {
             cellStyle.backgroundColor = props.cellFormatting[props.colIndex].background;
@@ -280,6 +287,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }
 
+    // Returns the cell-icon or null
     const icon = useMemo(() => {
         if (cellIcon?.icon) {
             if(cellIcon.icon.includes('fas fa-') || cellIcon.icon.includes('far fa-') || cellIcon.icon.includes('fab fa-'))
@@ -297,6 +305,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [cellIcon?.icon, context.server.RESOURCE_URL]);
 
+    // Returns the correct cell-renderer based on the celleditor-classname
     const getRenderer = () => {
         switch (columnMetaData?.cellEditor.className) {
             case CELLEDITOR_CLASSNAMES.CHECKBOX:

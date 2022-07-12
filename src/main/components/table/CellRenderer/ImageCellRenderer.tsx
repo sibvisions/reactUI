@@ -18,10 +18,15 @@ import { appContext } from "../../../contexts/AppProvider";
 import { ICellEditorImage } from "../../editors/image/UIEditorImage";
 import { ICellRender } from "../CellEditor";
 
+/**
+ * Renders the image-cell when the column is an image-cell
+ * @param props - the properties received from the table
+ */
 const ImageCellRenderer: FC<ICellRender> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** Casts the cell-editor property to ICellEditorImage because we can be sure it is a image-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorImage;
 
     return (

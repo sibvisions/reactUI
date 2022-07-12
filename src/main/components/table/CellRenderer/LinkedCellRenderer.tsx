@@ -19,7 +19,12 @@ import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
 import { fetchLinkedRefDatabook, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
 
+/**
+ * Renders the linked-cell when the column is a linked-cell
+ * @param props - the properties received from the table
+ */
 const LinkedCellRenderer: FC<ICellRender> = (props) => {
+    /** Casts the cell-editor property to ICellEditorLinked because we can be sure it is a linked-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorLinked
 
     /** The data provided by the databook */
@@ -31,6 +36,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     /** True if the linkRef has already been fetched */
     const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
 
+    // If there is a cell-data fetch the linkedReference Databook so the correct value can be displayed
     useEffect(() => {
         if (props.cellData) {
             fetchLinkedRefDatabook(
@@ -56,6 +62,8 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
         return map;
     }, [linkRefFetchFlag]);
 
+    // If there is a displayReferencedColumnName return the cell-data value from the map if not return the cell-data
+    // If there is a displayReferencedColumnName but the value is not in the map show no text.
     const linkedDisplayValue = useMemo(() => {
         if (castedCellEditor.displayReferencedColumnName) {
             if (displayValueMap.has(props.cellData)) {

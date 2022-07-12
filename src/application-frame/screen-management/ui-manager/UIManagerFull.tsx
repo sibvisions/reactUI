@@ -37,10 +37,12 @@ const UIManagerFull: FC<any> = () => {
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
+    /** The currently used app-theme */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
+    // Subscribes to the menu-options and to the theme
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions) => {
             setMenuOptions(menuOptions);
         });
 

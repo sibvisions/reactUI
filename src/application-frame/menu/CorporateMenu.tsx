@@ -74,7 +74,6 @@ const CorporateMenu:FC<IMenu> = (props) => {
         if (menuItems) {
             const submenus = document.getElementsByClassName("p-submenu-list");
             for (let submenu of submenus) {
-                console.log(submenu.closest(".p-menubar"))
                 if (submenu.closest(".p-menubar") && !submenu.closest(".p-menubar")!.classList.contains("profile-menubar")) {
                     const parent = submenu.parentElement;
                     const wrapper = document.createElement('div');
@@ -110,7 +109,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
         const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
         submenuWrapper.style.top = menuItemPos.top + 'px';
         submenuWrapper.style.left = menuItemPos.left + Math.round(menuItem.offsetWidth) + 'px'
-    })
+    });
 
     return (
         <>

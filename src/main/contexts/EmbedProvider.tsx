@@ -15,12 +15,15 @@
 
 import React, { createContext, FC } from "react";
 
+// Creates a context to know if the app is embedded
 export const EmbeddedContext = createContext<boolean>(false);
 
+// Interface for EmbedContext
 interface IEmbedContext {
     embedOptions?:{ [key:string]:any }
 }
 
+/** This component provides an embeddedcontext to know if the app is embedded */
 const EmbedProvider: FC<IEmbedContext> = (props) => {
     return (
         <EmbeddedContext.Provider value={props.embedOptions !== undefined ? true : false}>

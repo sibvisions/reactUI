@@ -209,7 +209,8 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
         }
     }, [selectedMarker, map, props.center, props.zoomLevel, props.pointSelectionLockedOnCenter]);
 
-    /** When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center */
+    // When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center
+    // If the lib user extends the Map with onDrag, call it when the Map is being dragged.
     const onMove = useCallback((e) => {
         if (props.onDrag) {
             props.onDrag(map.getCenter().lat, map.getCenter().lng);
@@ -223,7 +224,8 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
         }
     },[map, selectedMarker, props.pointSelectionLockedOnCenter, props.onDrag, props.onSelectedMarkerChanged]);
 
-    /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
+    // When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without
+    // If the lib user extends the Map with onDragEnd, call it when the map dragging has ended.
     const onMoveEnd = useCallback((e) => {
         if (props.onDragEnd) {
             props.onDragEnd(map.getCenter().lat, map.getCenter().lng);
@@ -236,7 +238,9 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
     },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, 
        props.longitudeColumnName, props.name, props.pointsDataBook, props.onDragEnd])
 
-    /** If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server */
+    // If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server
+    // If the lib user extends the Icon with onClick, call it when the Map is clicked.
+    // If the lib user extends the Map with onSelectedMarkerChanged, call it when the selected-marker changes.
     const onClick = useCallback((e) => {
         if (props.onClick) {
             props.onClick({ originalEvent: e.originalEvent, lat: e.latlng.lat, lng: e.latlng.lng })

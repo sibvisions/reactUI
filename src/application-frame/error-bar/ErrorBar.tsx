@@ -42,7 +42,7 @@ const ErrorBar:FC = () => {
     /** True, if the error-bar is visible */
     const [visible, setVisible] = useState<boolean>(false);
 
-    /** Reference for the dialog which shows the timeout error message */
+    /** Reference for the dialog which shows the error message */
     const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {} });
 
     /** History of react-router-dom */
@@ -112,7 +112,7 @@ const ErrorBar:FC = () => {
     }
 
     /**
-     * Either starts the session restart or retries the last failed request
+     * Either starts the session restart or retries the last failed request, with escape or space key
      */
     useEventHandler(errorProps.sessionExpired || errorProps.gone || errorProps.retry ? document.body : undefined, "keydown", (event) => {
         if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {

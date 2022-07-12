@@ -95,6 +95,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
         }
     },[onLoadCallback, id, props.image, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    // If the lib user extends the Icon with onChange, call it when the image changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange(props.image)

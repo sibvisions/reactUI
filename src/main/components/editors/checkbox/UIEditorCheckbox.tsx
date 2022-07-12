@@ -69,6 +69,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    // Sets the background-color if cellFormatting is set in a cell-editor
     useLayoutEffect(() => {
         if (props.isCellEditor && wrapRef.current) {
             if (props.cellFormatting && props.colIndex !== undefined && props.cellFormatting[props.colIndex]) {
@@ -84,6 +85,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
         setChecked(props.selectedRow ? props.selectedRow.data : undefined);
     }, [props.selectedRow]);
 
+    // If the lib user extends the CheckboxCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange({ 

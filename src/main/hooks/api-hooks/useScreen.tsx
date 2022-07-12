@@ -13,9 +13,7 @@
  * the License.
  */
 
-/** React imports */
 import { ReactElement, useContext } from "react";
-/** Other imports */
 import { appContext } from "../../contexts/AppProvider";
 
 type ScreenAPIType = {

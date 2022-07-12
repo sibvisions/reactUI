@@ -14,10 +14,12 @@
  */
 
 import { Menubar } from "primereact/menubar";
-import React, { FC, useEffect, useMemo, useRef } from "react";
+import { DomHandler } from "primereact/utils";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import useComponents from "../../hooks/components-hooks/useComponents";
 import useMenuItems from "../../hooks/data-hooks/useMenuItems";
 import useProperties from "../../hooks/data-hooks/useProperties";
+import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 
 /**
@@ -25,25 +27,62 @@ import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
  * @param baseProps - the base properties received from the frame
  */
 const UIMenuBar: FC<any> = (baseProps) => {
+    /** The current state of the properties sent by the server */
     const [props] = useProperties<any>(baseProps.id, baseProps);
 
+    /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children] = useComponents(props.id, props.className);
 
+    /** Reference of the menu-wrapper */
     const menuRef = useRef<HTMLDivElement>(null);
 
+    /** The menu-item component children sent by the server */
     const menuChildren = useMemo(() => children.filter(component => component.className === COMPONENT_CLASSNAMES.MENU).map(menu => menu.id), [children]);
 
+    /** The menu-items sent by the server changed into objects which PrimeReact's MenuModel-API can use */
     const menuItems = useMenuItems(menuChildren);
 
+    // Adds a wrapper div to all submenu-lists, for the submenus to be correctly displayed when there are sub-submenus
+    useLayoutEffect(() => {
+        if (menuItems) {
+            const submenus = document.getElementsByClassName("p-submenu-list");
+            for (let submenu of submenus) {
+                if (submenu.closest(".p-menubar") && !submenu.closest(".p-menubar")!.classList.contains("profile-menubar")) {
+                    const parent = submenu.parentElement;
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add("wrapper")
+    
+                    if (parent && !parent.classList.contains("wrapper")) {
+                        parent.replaceChild(wrapper, submenu);
+                        wrapper.appendChild(submenu);
+                    }
+                }
+            }
+        }
+    }, [menuItems])
+
+    // When the menu-items are loded, call the size-callback to tell the frame the size of the menu.
     useEffect(() => {
         if (menuRef.current) {
             baseProps.sizeCallback({ height: menuRef.current.offsetHeight, width: menuRef.current.offsetWidth});
         }
     }, [menuItems]);
 
+    //@ts-ignore Event handling for sub-submenus, to absolutely position them next to their parent submenu
+    useMultipleEventHandler(DomHandler.find(document.getElementById(baseProps.parent + "-frame"), ".is-submenu").length ? 
+    //@ts-ignore
+    DomHandler.find(document.getElementById(baseProps.parent + "-frame"), ".is-submenu") : undefined, "mouseover",
+    (event:any) => {
+        const menuItem = event.currentTarget
+        const submenuWrapper = menuItem.querySelector(".wrapper");
+        const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
+        submenuWrapper.style.top = menuItemPos.top + 'px';
+        submenuWrapper.style.left = menuItemPos.left + Math.round(menuItem.offsetWidth) + 'px'
+    });
+
     return (
         <div ref={menuRef} className={props.style} id={props.name}>
-            <Menubar  model={menuItems} />
+            <Menubar model={menuItems} />
         </div>
     )
 }

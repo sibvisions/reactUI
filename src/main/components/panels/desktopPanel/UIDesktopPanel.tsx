@@ -23,6 +23,7 @@ import BaseComponent from "../../../util/types/BaseComponent";
 import Layout from "../../layouts/Layout";
 import { panelGetStyle } from "../panel/UIPanel";
 
+// Interface for DesktopPanels
 export interface IDesktopPanel extends BaseComponent {
     navigationKeysEnabled?: boolean,
     tabMode?: boolean,

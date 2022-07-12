@@ -42,6 +42,7 @@ const useEditorConstants = <T extends IRCCellEditor>(baseProps: T, fb?: CSSPrope
     /** Component constants for contexts, properties and style */
     const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<T>(baseProps, fb);
 
+    /** gets the cellstyle of a cell-editor */
     const cellStyle = useCellEditorStyle(props, compStyle);
 
     /** The component id of the screen */

@@ -32,7 +32,7 @@ const ResizeHandler:FC = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Contains menu-size, if the menu is collapsed and the login page is active and a reference to the menu element */
+    /** Contains menu-size, if the menu is collapsed, the login page is active and a reference to the menu element */
     const resizeContext = useContext(ResizeContext);
 
     /** Reference for the screen-container */
@@ -107,6 +107,7 @@ const ResizeHandler:FC = (props) => {
                     sizeMap.set(childWithProps.props.id, { width: width, height: height });
                 }
             });
+            // If the component doesn't have a parent eg. mobilelauncher use the save the height and width as root
             sizeMap.set("root", { width: width, height: height });
             if (context.appSettings.desktopPanel) {
                 let desktopHeight = getDesktopHeight(resizeContext.login);

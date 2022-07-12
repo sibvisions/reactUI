@@ -60,6 +60,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
 
+    // If the lib user extends the label with onChange, call it when the label-text changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange(props.text)

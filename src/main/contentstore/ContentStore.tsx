@@ -26,15 +26,18 @@ import AppSettings from "../AppSettings";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import Server from "../server/Server";
 
-/** The ContentStore stores active content like user, components and data*/
+/** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: partial*/
 export default class ContentStore extends BaseContentStore {
-    /** subscriptionManager instance */
+    /** SubscriptionManager instance */
     subManager: SubscriptionManager = new SubscriptionManager(this);
 
+    /** AppSettings instance */
     appSettings: AppSettings = new AppSettings(this, this.subManager);
 
+    /** Server instance */
     server: Server = new Server(this, this.subManager, this.appSettings, this.history);
 
+    /** A Map which stores the menugroup as key and an array of the menu-item objects usable by PrimeReact as values */
     menuItems = new Map<string, Array<ServerMenuButtons>>();
 
     /** The toolbar-entries sent by the server */
@@ -43,6 +46,7 @@ export default class ContentStore extends BaseContentStore {
     /** The current logged in user */
     currentUser: UserData = new UserData();
 
+    /** A cache for the dialog-buttons to know which component-id to send to the server */
     dialogButtons:Array<string> = new Array<string>();
 
     /**
@@ -325,7 +329,7 @@ export default class ContentStore extends BaseContentStore {
     }
 
     /**
-     * Adds a menuItem to the contentStor
+     * Adds a menuItem to the contentStore
      * @param menuItem - the menuItem
      */
      addMenuItem(menuItem: ServerMenuButtons){

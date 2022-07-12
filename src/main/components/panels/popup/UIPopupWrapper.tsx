@@ -79,6 +79,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         }
     }
 
+    // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any
     return (
         <Dialog
             className={concatClassnames("rc-popup", baseProps.style, appTheme)}

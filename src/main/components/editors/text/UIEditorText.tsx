@@ -285,6 +285,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
         lastValue.current = props.selectedRow;
     },[props.selectedRow]);
 
+    // If the lib user extends the TextCellEditor with onChange, call it when selectedRow changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange(props.selectedRow);

@@ -38,7 +38,7 @@ export type TabProperties = {
 }
 
 /**
- * This component displays multiple Panels which are navigated by tabs
+ * This component handles the selection and closure of tabs and calls the TabsetImpl component to render the TabsetPanel
  * @param baseProps - the properties sent by the Layout component
  */
 const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => {
@@ -59,7 +59,8 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => 
         return req
     },[props.name])
 
-    /** When a Tab is not closing and the user clicks on another Tab which is not disabled, send a selectTabRequest to the server */
+    // When a Tab is not closing and the user clicks on another Tab which is not disabled, send a selectTabRequest to the server
+    // If the lib user extends the TabsetPanel with onTabChange, call it when the selected-tab changes.
     const handleSelect = (tabId:number) => {
         if(!closing.current) {
             if (props.onTabChange) {
@@ -71,7 +72,8 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => 
         closing.current = false;
     }
 
-    /** When a tab is closed send a tabCloseRequest to the server */
+    // When a tab is closed send a tabCloseRequest to the server
+    // If the lib user extends the TabsetPanel with onTabClose, call it when a tab closes.
     const handleClose = (tabId:number) => {
         if (props.onTabClose) {
             props.onTabClose(tabId);

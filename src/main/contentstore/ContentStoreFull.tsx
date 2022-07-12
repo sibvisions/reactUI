@@ -23,13 +23,15 @@ import { isWorkScreen } from "../util/component-util/IsWorkScreen";
 import AppSettings from "../AppSettings";
 import ServerFull from "../server/ServerFull";
 
+/** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: full*/
 export default class ContentStoreFull extends BaseContentStore {
-    /** subscriptionManager instance */
+    /** SubscriptionManager instance */
     subManager: SubscriptionManager = new SubscriptionManager(this);
 
     /** AppSettings instance */
     appSettings: AppSettings = new AppSettings(this, this.subManager);
 
+    /** Server instance */
     server: ServerFull = new ServerFull(this, this.subManager, this.appSettings, this.history);
 
     /**

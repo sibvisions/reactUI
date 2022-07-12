@@ -30,6 +30,7 @@ import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableText } from "../../extend-components/text/ExtendText";
 
+/** Interface for Textfields */
 export interface ITextField extends BaseComponent {
     columns?:number
     editable?:boolean

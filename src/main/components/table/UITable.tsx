@@ -211,7 +211,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         return out;
     })());
 
-
     /** the list row height */
     const [itemSize, setItemSize] = useState(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
 
@@ -238,6 +237,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** True, if virtualscrolling is loading */
     const [listLoading, setListLoading] = useState(false);
 
+    // Cache for the sort-definitions
     const sortDefinitionCache = useRef<SortDefinition[]>();
 
     /** The primary keys of a table */
@@ -476,6 +476,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         }
                         cellDataWidthList.push(newCellWidth);
                     }
+                    // adding "read-size" sets the table to table-layout auto and the td's to display inline block to correctly measure the width
                     (tableRef.current as any).el.classList.add("read-size");
                     for (let i = 0; i < Math.min(trows.length, 10); i++) {
                         goThroughCellData(trows, i);
@@ -537,7 +538,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         })());
     }, [providerData, rows]);
 
-    /** Adds the sort classnames to the headers for styling */
+    // Adds and removes the sort classnames to the headers for styling
+    // If the lib user extends the Table with onSort, call it when the user sorts.
     useEffect(() => {
         if (tableRef.current) {
             if (props.onSort) {
@@ -909,7 +911,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         props.startEditing
     ])
 
-    /** When a row is selected send a selectRow request to the server */
+    // When a row is selected send a selectRow request to the server
+    // If the lib user extends the Table with onRowSelect, call it when a new row is selected.
     const handleRowSelection = async (event: DataTableSelectionChangeParams) => {
         if(event.value && event.originalEvent.type === 'click') {
             const isNewRow = selectedRow ? event.value.rowIndex !== selectedRow.index : true;
@@ -932,6 +935,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** 
      * When the virtual scroll occurs, set the firstRow index to the current first row of the virtual scroll and check if more data needs to be loaded,
      * if yes, fetch data, no set virtual rows to the next bunch of datarows
+     * If the lib user extends the Table with onLazyLoadFetch, call it when the table fetches.
      * @param event - the scroll event
      */
     const handleLazyLoad = useCallback((e: VirtualScrollerLazyParams) => {
@@ -965,6 +969,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     /**
      *  When column-resizing stops, adjust the width of resize
+     *  If the lib user extends the Table with onColResizeEnd, call it when the column-resizing ends.
      *  @param e - the event
      */
     const handleColResizeEnd = (e:DataTableColumnResizeEndParams) => {
@@ -1028,6 +1033,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     /**
      * When columns are reordered, set the column order and fix the table css
+     * If the lib user extends the Table with onColOrderChange, call it when the column-order changes.
      * @param e - the event
      */
     const handleColReorder = (e:any) => {

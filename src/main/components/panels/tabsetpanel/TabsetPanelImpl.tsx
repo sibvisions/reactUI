@@ -56,6 +56,10 @@ interface ITabsetImpl extends ITabsetPanel {
     return newTab;
 }
 
+/**
+ * This component renders its children as a TabsetPanel
+ * @param props - the properties provided by the parent
+ */
 const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
