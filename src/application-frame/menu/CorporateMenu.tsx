@@ -72,18 +72,15 @@ const CorporateMenu:FC<IMenu> = (props) => {
     useLayoutEffect(() => {
         if (menuItems) {
             const submenus = document.getElementsByClassName("p-submenu-list");
-            let i = 0;
             for (let submenu of submenus) {
                 const parent = submenu.parentElement;
                 const wrapper = document.createElement('div');
                 wrapper.classList.add("wrapper")
-                wrapper.classList.add(i.toString())
 
                 if (parent && !parent.classList.contains("wrapper")) {
                     parent.replaceChild(wrapper, submenu);
                     wrapper.appendChild(submenu);
                 }
-                i++
             }
         }
     }, [menuItems])
@@ -100,29 +97,16 @@ const CorporateMenu:FC<IMenu> = (props) => {
     }, [context.subscriptions]);
 
     //@ts-ignore
-    console.log(DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu"), document.getElementsByClassName("corp-menu-menubar")[0], menuItems)
-
-    //@ts-ignore
     useMultipleEventHandler(DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu").length ? 
     //@ts-ignore
     DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu") : undefined, "mouseover",
     (event:any) => {
-        if (event.target.tagName === "A" || event.target.tagName === "SPAN") {
-            const menuItem = event.target.closest(".is-submenu");
-            const submenuWrapper = menuItem.querySelector(".wrapper");
-            const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
-            submenuWrapper.style.top = menuItemPos.top + 'px';
-            submenuWrapper.style.left = menuItemPos.left + Math.round(menuItem.offsetWidth) + 'px'
-        }
-        else {
-            const menuItem = event.target.querySelector(".p-menuitem-active.is-submenu");
-            if (menuItem) {
-                const submenuWrapper = menuItem.querySelector(".wrapper");
-                const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
-                submenuWrapper.style.top = menuItemPos.top + 'px';
-                submenuWrapper.style.left = menuItemPos.left + Math.round(menuItem.offsetWidth) + 'px'
-            }
-        }
+        console.log(event.currentTarget)
+        const menuItem = event.currentTarget
+        const submenuWrapper = menuItem.querySelector(".wrapper");
+        const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
+        submenuWrapper.style.top = menuItemPos.top + 'px';
+        submenuWrapper.style.left = menuItemPos.left + Math.round(menuItem.offsetWidth) + 'px'
     })
 
     return (
