@@ -69,6 +69,7 @@ type AppReadyType = {
 export default class AppSettings {
     /** Contentstore instance */
     #contentStore:BaseContentStore
+
     /** SubscriptionManager instance */
     #subManager:SubscriptionManager
 
@@ -77,6 +78,7 @@ export default class AppSettings {
         this.#subManager = subManager
     }
 
+    /** Sets the ContentStore */
     setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.#contentStore = store;
     }
@@ -151,15 +153,19 @@ export default class AppSettings {
     /** True, if change password enabled */
     changePasswordEnabled = false;
 
+    /** The current devicestatus of the app */
     deviceStatus:DeviceStatus = "Full";
 
     /** True, if the menu is collapsed, default value based on window width */
     menuCollapsed:boolean = ["Small", "Mini"].indexOf(this.deviceStatus) !== -1;
 
+    /** The welcome screen of the app */
     welcomeScreen:string = "";
 
+    /** The desktop-panel of the app, undefined if there is no desktop-screen */
     desktopPanel:BaseComponent|undefined;
 
+    /** An object which contains properties that indicate if the app is ready or not */
     appReadyParams:AppReadyType = { 
         appCSSLoaded: false, 
         schemeCSSLoaded: false, 
@@ -170,13 +176,11 @@ export default class AppSettings {
         translationLoaded: false
     }
     
+    /** True, if the app is ready */
     appReady:boolean = false;
 
+    /** CSS files to add when the app is ready */
     cssToAddWhenReady:Array<any> = [];
-
-    loginConfCode:string = "";
-
-    availableLanguages = ["en", "de"]
 
     /**
      * Sets the menu-mode
@@ -186,6 +190,7 @@ export default class AppSettings {
         this.menuModeAuto = value;
     }
 
+    /** Sets if the menu is collapsed */
     setMenuCollapsed(collapsedVal:boolean) {
         this.menuCollapsed = collapsedVal;
     }
@@ -258,18 +263,22 @@ export default class AppSettings {
         }
     }
 
+    /** Sets the application-theme and that it is being set by url */
     setApplicationThemeByURL(pTheme:string) {
         this.applicationMetaData.applicationTheme = { value: pTheme, urlSet: true };
     }
 
+    /** Sets the application-color-scheme and that it is being set by url */
     setApplicationColorSchemeByURL(pScheme:string) {
         this.applicationMetaData.applicationColorScheme = { value: pScheme, urlSet: true };
     }
 
+    /** Sets the application-layout and that it is being set by url */
     setApplicationLayoutByURL(pLayout:"standard"|"corporation"|"modern") {
         this.applicationMetaData.applicationLayout = { layout: pLayout, urlSet: true };
     }
 
+    /** Sets the application-design and that it is being set by url */
     setApplicationDesign(pDesign:string) {
         this.applicationMetaData.applicationDesign = pDesign;
     }
@@ -339,14 +348,17 @@ export default class AppSettings {
         }
     }
 
+    /** Sets the devicestatus */
     setDeviceStatus(deviceStatus:DeviceStatus) {
         this.deviceStatus = deviceStatus;
     }
 
+    /** Sets the welcome-screen */
     setWelcomeScreen(welcomeScreen:string) {
         this.welcomeScreen = welcomeScreen;
     }
 
+    /** Sets the desktop-panel */
     setDesktopPanel(desktopPanel:BaseComponent) {
         if (this.desktopPanel !== undefined) {
             for (let newProp in desktopPanel) {
@@ -359,6 +371,7 @@ export default class AppSettings {
         }
     }
 
+    /** Sets one of the app-ready parameters, if all of the needed parameters are true, set appReady to true */
     setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"startup"|"designCSS"|"userOrLogin"|"translation") {
         switch (param) {
             case "appCSS":
@@ -403,6 +416,7 @@ export default class AppSettings {
         }
     }
 
+    /** Sets all app-ready-parameters to false */
     setAppReadyParamFalse() {
         this.appReady = false;
         this.appReadyParams = { 

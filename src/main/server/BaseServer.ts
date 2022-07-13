@@ -78,22 +78,31 @@ export default abstract class BaseServer {
     /** How long before a timeout occurs */
     timeoutMs = 10000;
 
+    /** True, if an error is currently displayed */
     errorIsDisplayed: boolean = false;
 
+    /** True, if the translation has been fetched */
     translationFetched: boolean = false;
 
+    /** True, if UIRefresh is currently in progress */
     uiRefreshInProgress: boolean = false;
 
+    /** A login-error message or undefined if there is no error */
     loginError:string|undefined = undefined
 
+    /** True, if preserve on reload is activated */
     preserveOnReload:boolean = false;
 
+    /** The interval of sending alive-requests to the server in ms */
     aliveInterval:number = 30000;
 
+    /** The interval of sending "ping" to the server via the websocket in ms */
     wsPingInterval:number = 10000;
 
+    /** A Timestamp to know when the last request was sent (helper for alive interval) */
     lastRequestTimeStamp: number = Date.now();
 
+    /** The navigation-name of a screen if the app was directly launched by a link */
     linkOpen = "";
 
     /**
@@ -151,7 +160,8 @@ export default abstract class BaseServer {
 
     /**
      * Sends a request to the server and handles its response, if there are jobs in the
-     * SubscriptionManagers JobQueue, call them after the response handling is complete
+     * SubscriptionManagers JobQueue, call them after the response handling is complete.
+     * Handles requests in a queue system
      * @param request - the request to send
      * @param endpoint - the endpoint to send the request to
      * @param fn - a function called after the request is completed
@@ -171,6 +181,7 @@ export default abstract class BaseServer {
         handleResponse: boolean = true,
     ) {
         let promise = new Promise<any>((resolve, reject) => {
+            // If the component/dataproviders don't exist or an error is displayed, don't send the request
             if (
                 request.componentId 
                 && endpoint !== REQUEST_KEYWORDS.OPEN_SCREEN 
@@ -251,6 +262,7 @@ export default abstract class BaseServer {
                             this.openRequests.delete(request);
                         });
                 } else {
+                    // If the RequestMode is Queue, add the request to the queue and advance the queue
                     this.requestQueue.push(() => this.sendRequest(
                         request, 
                         endpoint,
@@ -280,6 +292,7 @@ export default abstract class BaseServer {
         return promise;
     }
 
+    /** Advances the request queue if there is no request in progress */
     advanceRequestQueue() {
         if(!this.requestInProgress) {
             const request = this.requestQueue.shift();
@@ -320,13 +333,16 @@ export default abstract class BaseServer {
 
     /** ----------HANDLING-RESPONSES---------- */
 
+    /** Handles a closeScreen response sent by the server */
     abstract closeScreen(closeScreenData: CloseScreenResponse):void
 
+    /** A Map which checks which function needs to be called when a data response is received (before regular response map) */
     abstract dataResponseMap: Map<string, Function>;
 
     /** A Map which checks which function needs to be called when a response is received */
     abstract responseMap: Map<string, Function>;
 
+    /** Calls the correct function based on the responses */
     async responseHandler(responses: Array<BaseResponse>) {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
@@ -365,7 +381,7 @@ export default abstract class BaseServer {
     }
 
     /**
-     * Sets the clientId in the sessionStorage
+     * Sets the clientId in the sessionStorage and sets application-settings
      * @param metaData - the applicationMetaDataResponse
      */
      applicationMetaData(metaData: ApplicationMetaDataResponse) {
@@ -389,11 +405,13 @@ export default abstract class BaseServer {
      */
      processRowSelection(selectedRowIndex: number|undefined, dataProvider: string, treePath?:TreePath, selectedColumn?:string) {
         const screenName = this.getScreenName(dataProvider);
+        // If there is a selectedRow index, set it
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(screenName, dataProvider, selectedRowIndex);
             this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
-        } 
+        }
+        // If there is no selected row, check if there is a treepath and set the last index of it or deselect the current selected row
         else if(selectedRowIndex === -1) {
             if (treePath !== undefined && treePath.length() > 0) {
                 const selectedRow = this.contentStore.getDataRow(screenName, dataProvider, treePath.getLast());
@@ -404,6 +422,7 @@ export default abstract class BaseServer {
                 this.contentStore.setSelectedRow(screenName, dataProvider, {}, -1, undefined, selectedColumn)
             }
         }
+        // If there is no new selectedRowIndex but a column is selected, get the old selectedRowIndex and add the selectedColumn
         else if (selectedRowIndex === undefined && selectedColumn !== undefined) {
             if(this.contentStore.getDataBook(screenName, dataProvider)?.selectedRow) {
                 const selectedRow = this.contentStore.getDataBook(screenName, dataProvider)!.selectedRow!.dataRow;
@@ -461,7 +480,7 @@ export default abstract class BaseServer {
      * Builds the data and then tells contentStore to update its dataProviderData
      * Also checks if all data of the dataprovider is fetched and sets contentStores dataProviderFetched
      * @param fetchData - the fetchResponse
-     * @param referenceKey - the referenced key which should be added to the map
+     * @param detailMapKey - the referenced key which should be added to the map
      */
      processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData);
@@ -486,6 +505,7 @@ export default abstract class BaseServer {
         const selectedColumn = this.contentStore.getDataBook(screenName, fetchData.dataProvider)?.selectedRow?.selectedColumn;
         this.processRowSelection(fetchData.selectedRow, fetchData.dataProvider, fetchData.treePath ? new TreePath(fetchData.treePath) : undefined, fetchData.selectedColumn ? fetchData.selectedColumn : selectedColumn);
 
+        // If the dataprovider is in fetch-missing-data, remove it
         if (this.missingDataFetches.includes(fetchData.dataProvider)) {
             this.missingDataFetches.splice(this.missingDataFetches.indexOf(fetchData.dataProvider), 1);
         }
@@ -500,6 +520,7 @@ export default abstract class BaseServer {
      async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const screenName = this.getScreenName(changedProvider.dataProvider);
 
+        // If the crud operations changed, update the metadata
         if (changedProvider.insertEnabled !== undefined 
             || changedProvider.updateEnabled !== undefined 
             || changedProvider.deleteEnabled !== undefined 
@@ -515,6 +536,8 @@ export default abstract class BaseServer {
                 changedProvider.changedColumns
             );
         }
+
+        // If there is a deletedRow, delete it and notify the screens
         if (changedProvider.deletedRow !== undefined) {
             const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
             this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
@@ -526,12 +549,14 @@ export default abstract class BaseServer {
             }
         }
 
+        // Combine changedColumnNames and changedValues and update the dataprovider-data
         if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
             const changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
             this.contentStore.updateDataProviderData(screenName, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
             const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn
             this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
         }
+        // Fetch based on reload
         else {
             if(changedProvider.reload === -1) {
                 this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);

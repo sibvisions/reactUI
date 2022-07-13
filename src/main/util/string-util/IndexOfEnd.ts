@@ -13,6 +13,11 @@
  * the License.
  */
 
+/**
+ * Returns the index of the end of a string
+ * @param string - the string you want to search in
+ * @param searchString - the string you want to search
+ */
 export function indexOfEnd(string: string|undefined, searchString: string|undefined) {
     if (string && searchString) {
         var io = string.indexOf(searchString);

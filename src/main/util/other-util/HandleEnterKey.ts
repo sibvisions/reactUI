@@ -17,8 +17,10 @@ import { getFocusComponent } from "../html-util/GetFocusComponent";
 
 /**
  * When enter is pressed call the given setValues function to send new values to the server
- * @param event - keyboardevent
- * @param sendSetValues - function to send values to the server
+ * @param event - the event that fired
+ * @param elem - the element that fired the event
+ * @param name - the name of the component
+ * @param stopEditing - a function to stop cell-editing
  */
 export function handleEnterKey(event:any, elem:any, name:string, stopEditing?:Function) {
     if (event.key === "Enter") {

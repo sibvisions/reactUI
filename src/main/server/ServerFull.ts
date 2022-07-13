@@ -79,6 +79,10 @@ enum REQUEST_ENDPOINTS {
 }
 
 export default class ServerFull extends BaseServer {
+    /**
+     * Returns true if the component exists
+     * @param name - the name of the component
+     */
     componentExists(name:string) {
         for (let [, value] of this.contentStore.flatContent.entries()) {
             if (value.name === name) {
@@ -95,6 +99,7 @@ export default class ServerFull extends BaseServer {
         return false;
     }
 
+    // A Map which contains the request-keyword as key and the server endpoint as value
     endpointMap: Map<string, string> = new Map<string, string>()
     .set(REQUEST_KEYWORDS.OPEN_SCREEN, REQUEST_ENDPOINTS.OPEN_SCREEN)
     .set(REQUEST_KEYWORDS.CLOSE_SCREEN, REQUEST_ENDPOINTS.CLOSE_SCREEN)
@@ -140,6 +145,7 @@ export default class ServerFull extends BaseServer {
     .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
     .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE);
 
+    /** A Map which checks which function needs to be called when a response is received, for data responses */
     dataResponseMap: Map<string, Function> = new Map()
     .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
     .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
@@ -163,10 +169,17 @@ export default class ServerFull extends BaseServer {
     //.set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
     .set(RESPONSE_NAMES.UI, this.handleUIResponse.bind(this));
 
+
+    /**
+     * Returns the current screen-name
+     * @param dataProvider 
+     * @returns 
+     */
     getScreenName(dataProvider: string): string {
         return dataProvider.split("/")[1];
     }
 
+    /** Handles the UI Response sent by the server and initialises the UI changes */
     handleUIResponse(uiData:UIResponse) {
         let firstComp:IPanel|undefined
         if(uiData.changedComponents && uiData.changedComponents.length) {

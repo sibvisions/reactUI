@@ -40,10 +40,13 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** If the confirm-dialog is visible and the message-properties */
     const [messageVisible, messageProps] = useConfirmDialogProps();
 
+    /** The state of the app-name */
     const [appName, setAppName] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
+    /** The state of the css-version */
     const [cssVersion, setCssVersion] = useState<string>("");
 
     /** Flag to retrigger Startup if session expires */
@@ -57,6 +60,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** True if a screen was opened by clicking browser back or forward button (prevents openscreen loop) */
     const openedWithHistory = useRef<boolean>(false);
 
+    /** Adds the application.css to the head */
     useLayoutEffect(() => {
         let path = 'application.css'
         if (cssVersion) {
@@ -66,8 +70,8 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     }, [cssVersion, restart, context.appSettings]);
 
     /**
-     * Subscribes to session-expired notification and app-ready
-     * @returns unsubscribes from session and app-ready
+     * Subscribes to app-name, css-version and restart
+     * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
         context.subscriptions.subscribeToAppName((newAppName: string) => setAppName(newAppName));
@@ -83,6 +87,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         }
     }, [context.subscriptions]);
 
+    // Open screens on refresh or on browser navigation forward and back buttons
     useEffect(() => {
         if (context.transferType !== "full") {
             history.listen(() => {

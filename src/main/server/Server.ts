@@ -111,26 +111,37 @@ enum REQUEST_ENDPOINTS {
 
 /** Server class sends requests and handles responses */
 class Server extends BaseServer {
+    // Function which can be set by lib users, gets executed when the menu response is received
     onMenuFunction:Function = () => {};
 
+    // Function which can be set by lib users, gets executed screens are opened
     onOpenScreenFunction:Function = () => {};
 
+    // Function which can be set by lib users, gets executed when the login response is received
     onLoginFunction:Function = () => {};
 
+    // True, if the last closed screen was a popup
     lastClosedWasPopUp = false;
 
+    // Sets the onMenu Function
     setOnMenuFunction(fn:Function) {
         this.onMenuFunction = fn;
     }
 
+    // Sets the onOpenScreen Function
     setOnOpenScreenFunction(fn:Function) {
         this.onOpenScreenFunction = fn;
     }
 
+    // Sets the onLoginFunction
     setOnLoginFunction(fn:Function) {
         this.onLoginFunction = fn;
     }
 
+    /**
+     * Returns true if the component exists
+     * @param name - the name of the component
+     */
     componentExists(name:string) {
         for (let [, value] of this.contentStore.flatContent.entries()) {
             if (value.name === name) {
@@ -153,6 +164,7 @@ class Server extends BaseServer {
 
     /** ----------SENDING-REQUESTS---------- */
 
+    // A Map which contains the request-keyword as key and the server endpoint as value
     endpointMap = new Map<string, string>()
     .set(REQUEST_KEYWORDS.OPEN_SCREEN, REQUEST_ENDPOINTS.OPEN_SCREEN)
     .set(REQUEST_KEYWORDS.CLOSE_SCREEN, REQUEST_ENDPOINTS.CLOSE_SCREEN)
@@ -199,6 +211,7 @@ class Server extends BaseServer {
 
     /** ----------HANDLING-RESPONSES---------- */
 
+    /** A Map which checks which function needs to be called when a response is received, for data responses */
     dataResponseMap = new Map<string, Function>()
     .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
     .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
@@ -404,6 +417,11 @@ class Server extends BaseServer {
 
     //Dal
 
+    /**
+     * Returns the current screen-name
+     * @param dataProvider 
+     * @returns 
+     */
     getScreenName(dataProvider:string) {
         if (this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1]) {
             const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
@@ -471,10 +489,12 @@ class Server extends BaseServer {
         console.error(errData.details)
     }
 
+    /** Shows an info toast */
     showInfo(infoData: MessageResponse) {
         this.subManager.emitToast(infoData, "error");
     }
 
+    /** Sets the dialogbutton-component-ids and shows the dialog */
     showMessageDialog(dialogData:DialogResponse) {
         (this.contentStore as ContentStore).dialogButtons = [];
         if (dialogData.okComponentId) {
@@ -512,6 +532,7 @@ class Server extends BaseServer {
                 .then((response:any) => response.text())
                 .then(value => parseString(value, (err, result) => { 
                     if (result) {
+                        // After fetching the translation, fill the translation map, overwrite and set the locals and set translation appready param true
                         result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._))
                         overwriteLocaleValues();
                         setPrimeReactLocale();
@@ -553,6 +574,7 @@ class Server extends BaseServer {
         this.appSettings.setWelcomeScreen(welcomeData.homeScreen);
     }
 
+    // Closes a frame
     closeFrame(closeFrameData:CloseFrameResponse) {
         // TODO: change dialogButtons to map with key as componentId of dialog and values buttons
         // then delete the componentId key of closeFrameData
@@ -560,6 +582,7 @@ class Server extends BaseServer {
         this.subManager.emitCloseFrame();
     }
 
+    // Opens a content by calling the contentstores updatecontent method to add it to the flatcontent and updating the active-screens
     content(contentData:ContentResponse) {
         let workScreen:IPanel|undefined
         if (contentData.changedComponents && contentData.changedComponents.length) {
@@ -579,6 +602,7 @@ class Server extends BaseServer {
         }
     }
 
+    // Closes a content
     closeContent(closeContentData:CloseContentResponse) {
         if (closeContentData.componentId) {
             this.contentStore.closeScreen(closeContentData.componentId, true);
@@ -602,6 +626,7 @@ class Server extends BaseServer {
             if (response.name === RESPONSE_NAMES.USER_DATA) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
+                    // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
                     const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
                     if (pathName.includes("home") && screenToOpen) {
                         const req = createOpenScreenRequest();

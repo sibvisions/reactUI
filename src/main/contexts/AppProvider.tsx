@@ -602,11 +602,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (response.applicationColorScheme && !schemeToSet) {
-                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"), false);
+                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => {});
                     }
 
                     if (response.applicationTheme && !themeToSet) {
-                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"), false);
+                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => {});
                     }
 
                     if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.transferType === "partial") {

@@ -54,12 +54,25 @@ export enum CompareType {
 }
 
 class FilterCondition {
+    /** The columnName of the filter condition */
     columnName: string;
+
+    /** The filter value */
     value: any;
+
+    /** The filter compare-type */
     compareType: string|null = null;
+
+    /** The filter operator type */
     operatorType: string|null = null;
+
+    /** True, if the operation contains a "not" */
     not: boolean = false;
+
+    /** The filtercondition */
     condition?: FilterCondition;
+
+    /** multiple filterconditions */
     conditions?: FilterCondition[];
 
     constructor(columnName:string, value:any) {
@@ -67,26 +80,32 @@ class FilterCondition {
         this.value = value;
     }
 
+    /** Sets the columnName */
     setColumnName(columnName:string) {
         this.columnName = columnName;
     }
 
+    /** Returns the columnName */
     getColumnName() {
         return this.columnName;
     }
 
+    /** Sets the value */
     setValue(value:any) {
         this.value = value;
     }
 
+    /** Returns the value */
     getValue() {
         return this.value;
     }
 
+    /** Sets the compareType */
     setCompareType(compareType:CompareType) {
         this.compareType = compareType === null ? null : firstCharToLower(compareType.toString());
     }
 
+    /** Returns the compareType */
     getCompareType() {
         if (this.compareType === null)
             return null
@@ -94,10 +113,12 @@ class FilterCondition {
             return CompareType[firstCharToUpper(this.compareType) as keyof typeof CompareType];
     }
 
+    /** Sets the operatorType */
     setOperatorType(operatorType:OperatorType) {
         this.operatorType = operatorType === null ? null : firstCharToLower(operatorType.toString());
     }
 
+    /** Returns the operatorType */
     getOperatorType() {
         if (this.operatorType === null)
             return null
@@ -105,26 +126,32 @@ class FilterCondition {
             return OperatorType[firstCharToUpper(this.operatorType) as keyof typeof OperatorType];
     }
 
+    /** Sets "not" */
     setNot(not:boolean) {
         this.not = not;
     }
 
+    /** Returns "not" */
     getNot() {
         return this.not;
     }
 
+    /** Sets the condition */
     setCondition(condition:FilterCondition) {
         this.condition = condition;
     }
 
+    /** Returns the condition */
     getCondition() {
         return this.condition;
     }
 
+    /** Sets the multiple conditions */
     setConditions(conditions:FilterCondition[]) {
         this.conditions = conditions
     }
 
+    /** Returns the multiple conditions */
     getConditions() {
         return this.conditions;
     }

@@ -15,6 +15,10 @@
 
 import { IPanel } from "../../components/panels/panel/UIPanel";
 
+/**
+ * Returns true, if the given panel is a workscreen
+ * @param panel - the panel component
+ */
 export function isWorkScreen(panel:IPanel) {
     if (panel.screen_navigationName_ || panel.content_className_) {
         return true;

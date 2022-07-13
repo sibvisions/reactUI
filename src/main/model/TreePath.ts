@@ -150,6 +150,10 @@ class TreePath {
         return [...this.array]
     }
 
+    /**
+     * Returns the last index of the parent
+     * @returns 
+     */
     getLastOfParent() {
         return this.getParentPath().getLast();
     }

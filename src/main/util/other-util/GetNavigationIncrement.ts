@@ -13,6 +13,11 @@
  * the License.
  */
 
+/**
+ * Returns the increment to add to a navigation when there are multiple screens with the same navigation-name
+ * @param navName - the navigation-name of a screen
+ * @param map - the navigation-name-map
+ */
 export function getNavigationIncrement(navName: string, map:Map<string, { screenId: string, componentId: string }>) {
     let increment: number | string = 0;
     for (let key of map.keys()) {

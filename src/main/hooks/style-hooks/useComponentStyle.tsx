@@ -16,8 +16,10 @@
 import { CSSProperties, useLayoutEffect, useState } from "react"
 import BaseComponent from "../../util/types/BaseComponent";
 
+// map to quickly get to the syscolor css variables
 const sysColorMap = new Map<string, string>([["mandatorybackground", "--mandatory-background"], ["readonlybackground", "--readonly-background"], ["invalideditorbackground", "invalid-background"]])
 
+// Checks if the className contains a syscolor
 export function isSysColor(className:string):string {
     if (["mandatorybackground", "readonlybackground", "invalideditorbackground"].indexOf(className) !== -1) {
         return className
@@ -107,6 +109,7 @@ const useComponentStyle = (props: BaseComponent):CSSProperties => {
     /** The componentstyle state */
     const [componentStyle, setComponentStyle] = useState<CSSProperties>({});
 
+    // Everytime the font, background or foreground changes, check the componentstyle
     useLayoutEffect(() => {
             const fontProps = getFontProperties(props.font);
             const bgdProps = getColorProperties(props.background, true);

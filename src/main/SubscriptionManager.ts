@@ -34,6 +34,7 @@ export class SubscriptionManager {
     /** AppSettings instance */
     appSettings: AppSettings;
 
+    /** Server instance */
     server: BaseServer|Server|ServerFull;
 
     /** 
@@ -156,18 +157,28 @@ export class SubscriptionManager {
     /** An array of functions to update the active-screen subscriber */
     activeScreenSubscriber = new Map<string, Function>();
 
+    /** An array of function to subscribe components to app restart */
     restartSubscriber = new Array<Function>();
 
+    /** An array of functions to subscribes components to the app-name */
     appNameSubscriber = new Array<Function>();
 
+    /** A function that subscribes the AppWrapper to the css-version of application.css */
     cssVersionSubscriber:Function = () => {};
 
+    /** 
+     * A Map which stores a function to update the theme state of the subscribers, the key is the name of the subscribers
+     * and the value is the function to update the theme state
+     */
     themeSubscriber = new Map<string, Function>();
 
+    /** A function to update the Login-component to the login-mode */
     loginSubscriber:Function = () => {};
 
+    /** A function to update the mfa-wait-component to its properties */
     MFAWaitSubscriber: Function = () => {};
 
+    /** A function to update the mfa-url-component to its properties */
     MFAURLSubscriber: Function = () => {};
 
     /** 
@@ -186,18 +197,28 @@ export class SubscriptionManager {
         this.server = new Server(store as ContentStore, this, this.appSettings);
     }
 
+    /** Sets the ContentStore */
     setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.contentStore = store;
     }
 
+    /** Sets the AppSettings */
     setAppSettings(appSettings:AppSettings) {
         this.appSettings = appSettings;
     }
 
+    /** Sets the Server */
     setServer(server:Server|ServerFull) {
         this.server = server;
     }
 
+    /**
+     * Adds a subscriber for a screen and dataprovider to the subscription-map
+     * @param screenName - the name of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update the state
+     * @param subs - the subscription-map to add the function to
+     */
     handleScreenDataProviderSubscriptions(screenName:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
         /** Checks if there is already a Map for the dataChangeSubscriber */
         const existingMap = subs.get(screenName);
@@ -218,6 +239,13 @@ export class SubscriptionManager {
         }
     }
 
+    /**
+     * Handles the unsubscribing process of components which are subscribed to data-providers
+     * @param screenName - the name of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update the state
+     * @param subs - the subscription-map which should be unsubscribed from
+     */
     handleScreenDataProviderUnsubs(screenName:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
         const subscriber = subs.get(screenName)?.get(dataProvider)
         if(subscriber)
@@ -450,30 +478,58 @@ export class SubscriptionManager {
         this.activeScreenSubscriber.set(key, fn);
     }
 
+    /**
+     * Subscribes to restart
+     * @param fn - the function to update the state
+     */
     subscribeToRestart(fn:Function) {
         this.restartSubscriber.push(fn);
     }
 
+    /**
+     * Subscribes to app-name
+     * @param fn - the function to update the state
+     */
     subscribeToAppName(fn: Function) {
         this.appNameSubscriber.push(fn);
     }
 
+    /**
+     * Subscribes to css-version
+     * @param fn - the function to update the state
+     */
     subscribeToCssVersion(fn:Function) {
         this.cssVersionSubscriber = fn;
     }
 
+    /**
+     * Subscribes to theme
+     * @param fn - the function to update the state
+     */
     subscribeToTheme(id:string, fn:Function) {
         this.themeSubscriber.set(id, fn);
     }
 
+    /**
+     * Subscribes to login-mode
+     * @param fn - the function to update the state
+     */
     subscribeToLogin(fn:Function) {
         this.loginSubscriber = fn;
     }
 
+    /**
+     * Subscribes to mfa-wait-properties
+     * @param fn - the function to update the state
+     */
     subscribeToMFAWait(fn:Function) {
         this.MFAWaitSubscriber = fn;
     }
 
+    /**
+     * Subscribes to mfa-url-properties
+     * @param fn - the function to update the state
+     */
     subscribeToMFAURL(fn:Function) {
         this.MFAURLSubscriber = fn;
     }
@@ -673,30 +729,54 @@ export class SubscriptionManager {
         this.activeScreenSubscriber.delete(key);
     }
 
+    /**
+     * Unsubscribes from restart
+     * @param fn - the function to update the state
+     */
     unsubscribeFromRestart(fn:Function) {
         this.restartSubscriber.splice(this.restartSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
+    /**
+     * Unsubscribes from appname
+     * @param fn - the function to update the state
+     */
     unsubscribeFromAppName(fn:Function) {
         this.appNameSubscriber.splice(this.appNameSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
+    /**
+     * Unsubscribes from restart
+     */
     unsubscribeFromCssVersion() {
         this.cssVersionSubscriber = () => {};
     }
 
+    /**
+     * Unsubscribes from theme
+     * @param id - the id to delete
+     */
     unsubscribeFromTheme(id:string) {
         this.themeSubscriber.delete(id);
     }
 
+    /**
+     * Unsubscribes from login-mode
+     */
     unsubscribeFromLogin() {
         this.loginSubscriber = () => {};
     }
 
+    /**
+     * Unsubscribes from mfa-wait-properties
+     */
     unsubscribeFromMFAWait() {
         this.MFAWaitSubscriber = () => {};
     }
 
+    /**
+     * Unsubscribes from mfa-url-properties
+     */
     unsubscribeFromMFAURL() {
         this.MFAURLSubscriber = () => {};
     }
@@ -862,34 +942,63 @@ export class SubscriptionManager {
         this.toastSubscriber.apply(undefined, [messageResponse, err]);
     }
 
+    /** Tell the close-frame subscribers that a frame has closed */
     emitCloseFrame() {
         this.closeFrameSubscriber.apply(undefined, []);
     }
 
+    /** Tell the active-screen subscribers that the active-screens changed */
     emitActiveScreens() {
         this.activeScreenSubscriber.forEach((subFunc) => subFunc.apply(undefined, [this.contentStore.activeScreens]));
     }
 
+    /**
+     * Pass the dialog response to the message-dialog-properties subscribers
+     * @param dialog - the message-dialog response sent by the server
+     */
     emitMessageDialog(dialog:DialogResponse) {
         this.messageDialogPropsSubscriber.apply(undefined, [dialog])
     }
 
+    /**
+     * Notify that the css-version of application.css has been changed
+     * @param version - the new version
+     */
     emitCssVersion(version:string) {
         this.cssVersionSubscriber.apply(undefined, [version]);
     }
 
+    /**
+     * Notify the theme subscribers that the theme changed
+     * @param theme - the new theme
+     */
     emitThemeChanged(theme:string) {
         this.themeSubscriber.forEach((subFunc) => subFunc.apply(undefined, [theme]))
     }
 
+    /**
+     * Notify the login-subscribers that the login-mode has changed or that there is an error-message
+     * @param loginMode - the login-mode or undefined
+     * @param errorMessage - the error-message or undefined
+     */
     emitLoginChanged(loginMode?:LoginModeType, errorMessage?: string) {
         this.loginSubscriber.apply(undefined, [loginMode, errorMessage]);
     }
 
+    /**
+     * Notify the mfa-wait subscribers that the code and timeout changed
+     * @param code - the new mfa code
+     * @param timeout - the mfa timeout
+     */
     emitMFAWaitChanged(code: string, timeout: number) {
         this.MFAWaitSubscriber.apply(undefined, [code, timeout]);
     }
 
+    /**
+     * Notify the mfa-url subscribers that the link and timeout changed
+     * @param link - the new mfa link
+     * @param timeout - the mfa timeout
+     */
     emitMFAURLChanged(link: string|MFAURLType, timeout:number) {
         this.MFAURLSubscriber.apply(undefined, [link, timeout]);
     }

@@ -15,8 +15,10 @@
 
 import BaseResponse from "../BaseResponse"
 
+/** Type for the different login modes */
 export type LoginModeType = "manual"|"changePassword"|"changeOneTimePassword"|"automatic"|"lostPassword"|"mFTextInput"|"mFWait"|"mFURL"|undefined
 
+// Type for the url link object sent by the server
 export type MFAURLType = {
     target?: "_self" | "_blank",
     url: string

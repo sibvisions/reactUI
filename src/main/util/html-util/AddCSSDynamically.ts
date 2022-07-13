@@ -17,9 +17,9 @@
  * Dynamically adds CSS-Stylesheets to the head at runtime
  * @param path - the path to the stylesheet
  * @param type - the type of stylesheet that is added
- * @param appSettings - the settings of the application
+ * @param appReadyCallback - a callback to set the appready-state
  */
-export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeCSS"|"designCSS", appReadyCallback:Function, setReady?:boolean) {
+export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeCSS"|"designCSS", appReadyCallback:Function) {
     let before = undefined
     for (let link of document.head.getElementsByTagName('link')) {
         if (link.href.includes("application.css")) {
@@ -46,7 +46,7 @@ export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeC
     link.rel = 'stylesheet'; 
     link.type = 'text/css';
     link.href = path;
-    link.addEventListener("load", () => setReady === false ? {} : appReadyCallback(type));
+    link.addEventListener("load", () => appReadyCallback(type));
 
     if (before && type !== "appCSS") {
         document.head.insertBefore(link, before);

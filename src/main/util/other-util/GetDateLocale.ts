@@ -19,6 +19,7 @@ import { translation } from './Translation';
 
 let globalLocale:any = 'en';
 
+// A function to build a localizing function, from date-fns (had issues with importing)
 function buildLocalizeFn(args:any) {
     return function (dirtyIndex: any, dirtyOptions: any) {
         var options = dirtyOptions || {};
@@ -42,6 +43,7 @@ function buildLocalizeFn(args:any) {
     };
 }
 
+// Overwrites the date-fns locale to use our translation file
 export function overwriteLocaleValues() {
     const eraValues = {
         narrow: [
@@ -294,6 +296,7 @@ export function overwriteLocaleValues() {
     }
 }
 
+// Sets the PrimeReact locale to use our translation file
 export function setPrimeReactLocale() {
     addLocale('custom', {
         accept: translation.get('Yes'),
@@ -373,6 +376,7 @@ export function setDateLocale(locale: string) {
     //globalLocale = locale.split('-')[0];
 }
 
+// Returns the globalLocale
 export function getDateLocale(locale?: string) {
     return globalLocale;
 }

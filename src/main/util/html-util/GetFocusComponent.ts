@@ -15,7 +15,7 @@
 
 /**
  * Focuses the next or previous element based on tabindex.
- * @param id - the id of the currently focused element
+ * @param name - the name of the currently focused element
  * @param next - true if the next element should be focused false if the previous
  */
 export function getFocusComponent(name:string, next:boolean):HTMLElement|undefined {
