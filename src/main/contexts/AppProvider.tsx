@@ -389,7 +389,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 startUpRequest.applicationName = appName;
                 convertedOptions.delete("appName");
             }
-
+            
             if (convertedOptions.has("baseUrl")) {
                 baseUrl = convertedOptions.get("baseUrl") as string;
                 if (baseUrl.charAt(baseUrl.length - 1) === "/") {
@@ -401,11 +401,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
             else if (process.env.NODE_ENV === "production") {
                 const splitURLPath = window.location.pathname.split("/");
 
-                if (splitURLPath.length - 2 >= 3 || !splitURLPath[1]) {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
-                }
-                else if (splitURLPath[1]) {
+                if (splitURLPath.length === 4) {
                     baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
+                }
+                else {
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
                 }
             }
 
