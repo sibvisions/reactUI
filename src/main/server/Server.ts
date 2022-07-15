@@ -386,7 +386,7 @@ class Server extends BaseServer {
                 break;
             }
         }
-        //this.contentStore.closeScreen(closeScreenData.componentId);
+        this.contentStore.closeScreen(closeScreenData.componentId);
     }
 
     /**
