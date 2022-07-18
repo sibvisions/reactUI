@@ -590,7 +590,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             
             const startupRequestCache = sessionStorage.getItem("startup");
-            if (startupRequestCache && startupRequestCache !== "null" && !relaunchArguments.current) {
+            if (startupRequestCache && !relaunchArguments.current) {
                 let preserveOnReload = false;
                 (JSON.parse(startupRequestCache) as Array<any>).forEach((response) => {
                     if (response.preserveOnReload) {

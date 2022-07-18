@@ -14,9 +14,6 @@
  */
 
 :root {
-    /// Font-family
-    --font-family: 'Roboto', sans-serif;
-
     /// Font size
     --font-size: 18px;
 
@@ -193,7 +190,6 @@
 
 body {
     font-size: var(--font-size);
-    font-family: var(--font-family);
 }
 
 .login-form {
@@ -411,7 +407,6 @@ body {
 
     .p-component {
         font-size: var(--font-size);
-        font-family: var(--font-family);
     }
 
     .corp-menu {

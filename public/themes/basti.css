@@ -13,7 +13,6 @@
  * the License.
  */
 :root {
-  --font-family: 'Roboto', sans-serif;
   --font-size: 14px;
   --login-form-top-bottom-padding: 40px;
   --login-form-left-right-padding: 40px;
@@ -74,8 +73,7 @@
   --error-dialog-icon-size: 2rem; }
 
 body {
-  font-size: var(--font-size);
-  font-family: var(--font-family); }
+  font-size: var(--font-size); }
 
 .login-form .p-fluid {
   padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding); }
@@ -222,8 +220,7 @@ body {
     font-size: calc(var(--corp-speeddial-size) / 2); }
 
 .basti .p-component {
-  font-size: var(--font-size);
-  font-family: var(--font-family); }
+  font-size: var(--font-size); }
 
 .basti .p-inputtext {
   padding: var(--input-padding); }
