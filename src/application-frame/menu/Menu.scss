@@ -128,25 +128,25 @@
     }
 }
 
-    .p-menubar {
-        /// Removes default primereact menubar style
-        padding: 0;
-        border: none;
-    
-        .p-submenu-list {
-            z-index: 10;
-        }
+.p-menubar {
+    /// Removes default primereact menubar style
+    padding: 0;
+    border: none;
 
-        .custom-menu-icon {
-            .p-menuitem-icon {
-                width: var(--iconWidth);
-                height: var(--iconHeight);
-                display: inline-block;
-                background-image: var(--iconImage);
-                background-size: var(--iconWidth);
-            }
+    .p-submenu-list {
+        z-index: 10;
+    }
+
+    .custom-menu-icon {
+        .p-menuitem-icon {
+            width: var(--iconWidth);
+            height: var(--iconHeight);
+            display: inline-block;
+            background-image: var(--iconImage);
+            background-size: var(--iconWidth);
         }
     }
+}
 
 /// Profile-image styling
 .profile-image, .profile-image-null {
