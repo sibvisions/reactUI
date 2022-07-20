@@ -144,13 +144,31 @@ class Server extends BaseServer {
      */
     componentExists(name:string) {
         for (let [, value] of this.contentStore.flatContent.entries()) {
-            if (value.name === name) {
+            if (value.name === name && value.visible !== false) {
+                let parent = value.parent;
+                while (parent && !parent.includes("IF")) {
+                    if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)!.visible !== false) {
+                        parent = this.contentStore.getComponentById(parent)!.parent
+                    }
+                    else {
+                        return false;
+                    }
+                }
                 return true;
             }
         }
 
         for (let [, value] of this.contentStore.replacedContent.entries()) {
-            if (value.name === name) {
+            if (value.name === name && value.visible !== false) {
+                let parent = value.parent;
+                while (parent && !parent.includes("IF")) {
+                    if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)?.visible !== false) {
+                        parent = this.contentStore.getComponentById(parent)!.parent
+                    }
+                    else {
+                        return false;
+                    }
+                }
                 return true;
             }
         }
@@ -359,7 +377,8 @@ class Server extends BaseServer {
                             }
                         }
                     }
-                    this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
+                    
+                    this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);
 
                     if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
                         this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);

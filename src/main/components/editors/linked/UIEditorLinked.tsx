@@ -218,7 +218,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (Array.isArray(value)) {
             const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
             const valIndex = props.cellEditor.columnView.columnNames.indexOf(props.cellEditor.linkReference.referencedColumnNames[colNameIndex]);
-            console.log(value[valIndex])
             return value[valIndex];
         } else {
             return value;

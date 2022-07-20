@@ -40,7 +40,8 @@ export type ActiveScreen = {
     name: string,
     id: string,
     className?: string
-    popup?: boolean
+    popup?: boolean,
+    title?: string
 }
 
 // Interface for selected-rows
@@ -426,7 +427,7 @@ export default abstract class BaseContentStore {
      * @param id - the id of the parent
      */
      deleteChildren(id:string, className: string) {
-        const children = this.getChildren(id, className);
+        const children = this.getAllChildren(id, className);
         children.forEach(child => {
             this.deleteChildren(child.id, child.className);
             this.flatContent.delete(child.id);
@@ -518,6 +519,12 @@ export default abstract class BaseContentStore {
      * @param id - the id of the component
      */
     abstract getChildren(id: string, className?: string): Map<string, BaseComponent>;
+
+    /**
+     * Returns all visible children of a parent also invisible ones
+     * @param id - the id of the component
+     */
+    abstract getAllChildren(id:string, className?: string): Map<string, BaseComponent>;
 
     /**
      * Returns the component id of a screen for a component

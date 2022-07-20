@@ -328,6 +328,46 @@ export default class ContentStore extends BaseContentStore {
         return children;
     }
 
+    getAllChildren(id: string, className?: string): Map<string, BaseComponent> {
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+        const componentEntries = mergedContent.entries();
+        let children = new Map<string, BaseComponent>();
+        let entry = componentEntries.next();
+        let parentId = id;
+
+        if (className) {
+            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
+                parentId = mergedContent.get(parentId)!.parent as string
+            }
+        }
+
+        while (!entry.done) {
+            const value = entry.value[1];
+
+            if (value.parent === parentId && !this.removedCustomComponents.has(value.name)) {
+                if (parentId.includes("TP")) {
+                    children.set(value.id, value);
+                }
+                else {
+                    children.set(value.id, value);
+                }
+            }
+            entry = componentEntries.next();
+        }
+        if (className) {
+            if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                children = new Map([...children].filter(entry => entry[0].includes("-tb")));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                children = new Map([...children].filter(entry => entry[1]["~additional"]));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
+            }
+        }
+        return children;
+    }
+
     /**
      * Adds a menuItem to the contentStore
      * @param menuItem - the menuItem

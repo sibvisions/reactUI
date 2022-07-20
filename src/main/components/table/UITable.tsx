@@ -890,8 +890,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                 values: primaryKeys.map(pk => currDataRow[pk])
                             }
                         }} />
-                }
-                }
+                }}
                 style={{ whiteSpace: 'nowrap' }}
                 bodyClassName={concatClassnames(
                     className,
