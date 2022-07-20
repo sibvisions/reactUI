@@ -29,8 +29,8 @@
   --std-profile-pic: 35px;
   --std-profile-separator-margin: 4px;
   --std-profile-submenu-width-small: 10rem;
-  --std-topbar-buttons: 40px;
-  --std-topbar-buttons-small: 25px;
+  --topbar-button-size: 40px;
+  --topbar-button-size-small: 25px;
   --std-fadeout-width: 20px;
   --std-fadeout-left: calc(var(--std-menu-collapsed-width) - var(--std-fadeout-width));
   --std-menu-header-padding: 0.5rem 1rem 0.5rem 0.625rem;
@@ -114,8 +114,8 @@ body {
     width: var(--std-logo-width); }
 
 .basti_small .std-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-  width: var(--std-topbar-buttons);
-  height: var(--std-topbar-buttons); }
+  width: var(--topbar-button-size);
+  height: var(--topbar-button-size); }
 
 .basti_small .std-menu .profile-menu {
   height: var(--std-profile-height); }
@@ -315,8 +315,8 @@ body {
       max-height: var(--std-logo-height);
       width: var(--std-logo-width); }
   .basti .std-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--std-topbar-buttons-small);
-    height: var(--std-topbar-buttons-small); }
+    width: var(--topbar-button-size-small);
+    height: var(--topbar-button-size-small); }
   .basti .std-menu .fadeout {
     margin-top: calc(var(--std-header-height) + var(--std-logo-height)); }
   .basti .corp-menu .p-button.p-button-icon-only.menu-topbar-buttons {

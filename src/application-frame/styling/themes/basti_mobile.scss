@@ -69,10 +69,10 @@
     --std-profile-submenu-width-small: 10rem;
 
     /// Standard-menu full size of topbar buttons
-    --std-topbar-buttons: 60px;
+    --topbar-button-size: 60px;
 
     /// Standard-menu small size of topbar buttons
-    --std-topbar-buttons-small: 30px;
+    --topbar-button-size-small: 30px;
 
     /// Standard-menu-fadeout-width
     --std-fadeout-width: 20px;
@@ -253,8 +253,8 @@ body {
         }
 
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--std-topbar-buttons);
-            height: var(--std-topbar-buttons);
+            width: var(--topbar-button-size);
+            height: var(--topbar-button-size);
         }
 
         .profile-menu {
@@ -602,8 +602,8 @@ body {
             }
 
             .p-button.p-button-icon-only.menu-topbar-buttons {
-                width: var(--std-topbar-buttons-small);
-                height: var(--std-topbar-buttons-small);
+                width: var(--topbar-button-size-small);
+                height: var(--topbar-button-size-small);
                 padding: 0;
             }
 

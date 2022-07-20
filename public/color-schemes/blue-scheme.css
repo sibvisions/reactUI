@@ -37,7 +37,10 @@
   --topbar-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
   --topbar-button-background: transparent;
   --topbar-button-hover-background: #1c7bc9;
-  --profile-background: #2196F3;
+  --topbar-button-text-color: var(--topbar-text-color)
+
+    /// Profile-menu background
+    --profile-background: #2196F3;
   --profile-hover-background: #1c7bc9;
   --profile-text-color: #ffffff;
   --profile-separator: 2px solid #1c7bc9;
@@ -205,7 +208,7 @@ body {
 
 .p-button.p-button-icon-only.menu-topbar-buttons {
   background: var(--topbar-button-background);
-  color: var(--topbar-text-color);
+  color: var(--topbar-button-text-color);
   border-radius: var(--button-border-radius); }
   .p-button.p-button-icon-only.menu-topbar-buttons:hover {
     background: var(--topbar-button-hover-background); }
