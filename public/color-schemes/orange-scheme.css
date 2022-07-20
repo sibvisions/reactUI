@@ -37,10 +37,8 @@
   --topbar-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
   --topbar-button-background: transparent;
   --topbar-button-hover-background: #d67b13;
-  --topbar-button-text-color: var(--topbar-text-color)
-
-    /// Profile-menu background
-    --profile-background: #f78500;
+  --topbar-button-text-color: var(--topbar-text-color);
+  --profile-background: #f78500;
   --profile-hover-background: #d67b13;
   --profile-text-color: #ffffff;
   --profile-separator: 2px solid #d67b13;
