@@ -389,7 +389,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     if (newVal[props.columnName] === lastValue.current) {
                         setText(lastValue.current)
                     }
-                    sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                    else {
+                        sendSetValues(props.dataRow, props.name, columnNames, newVal, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                    }
                 }
                 /** If there is no more than 1 columnName in linkReference, text is enough */
                 else {
