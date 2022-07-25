@@ -305,26 +305,25 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [cellIcon?.icon, context.server.RESOURCE_URL]);
 
-    // Returns the correct cell-renderer based on the celleditor-classname
-    const getRenderer = () => {
+    const [Component, extraProps] = useMemo(() => {
         switch (columnMetaData?.cellEditor.className) {
             case CELLEDITOR_CLASSNAMES.CHECKBOX:
             case CELLEDITOR_CLASSNAMES.CHOICE:
-                return <DirectCellRenderer icon={icon} columnMetaData={columnMetaData} {...props} />
+                return [ DirectCellRenderer ]
             case CELLEDITOR_CLASSNAMES.DATE:
-                return <DateCellRenderer icon={icon} stateCallback={() => { setWaiting(true); setEdit(true) }} columnMetaData={columnMetaData} {...props} />
+                return [ DateCellRenderer, {stateCallback: () => { setWaiting(true); setEdit(true) }} ]
             case CELLEDITOR_CLASSNAMES.IMAGE:
-                return <ImageCellRenderer icon={icon} columnMetaData={columnMetaData} {...props} />
+                return [ ImageCellRenderer ]
             case CELLEDITOR_CLASSNAMES.LINKED:
-                return <LinkedCellRenderer icon={icon} stateCallback={() => { setWaiting(true); setEdit(true) }} columnMetaData={columnMetaData} {...props} />
+                return [ LinkedCellRenderer, {stateCallback: () => { setWaiting(true); setEdit(true) }} ]
             case CELLEDITOR_CLASSNAMES.NUMBER:
-                return <NumberCellRenderer icon={icon} columnMetaData={columnMetaData} {...props} />
+                return [ NumberCellRenderer ]
             case CELLEDITOR_CLASSNAMES.TEXT:
-                return <TextCellRenderer icon={icon} columnMetaData={columnMetaData} {...props} />
+                return [ TextCellRenderer ]
             default:
-                return props.cellData
+                return [(props:any) => <>{props.cellData}</>]
         }
-    }
+    }, [columnMetaData?.cellEditor.className])
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
@@ -344,7 +343,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                                 setEdit(true);
                             }
                         }}>
-                        {getRenderer()}
+                        <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
                     </div>
                 ) : (!edit ?
                     <div
@@ -356,7 +355,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                                 setEdit(true)
                             }
                         }}>
-                        {getRenderer()}
+                        <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
                     </div>
                     :
                     <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
@@ -365,7 +364,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
             : <div
                 style={cellStyle}
                 className={cellClassNames.join(' ')}>
-                {getRenderer()}
+                <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
             </div>
     )
 }
