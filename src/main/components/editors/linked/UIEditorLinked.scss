@@ -45,6 +45,10 @@
         min-width: 120px !important;
     }
 
+    &.dropdown-table.no-table-header .p-autocomplete-item-group {
+        display: none
+    }
+
     .p-autocomplete-items {
         max-height: none !important;
         padding: 0;

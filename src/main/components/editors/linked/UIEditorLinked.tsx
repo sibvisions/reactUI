@@ -57,6 +57,7 @@ export interface ICellEditorLinked extends ICellEditor {
     }
     clearColumns:Array<string>
     displayReferencedColumnName?:string
+    tableHeaderVisible?:boolean
 }
 
 /** Interface for LinkedCellEditor */
@@ -217,8 +218,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         // Then use this index with the referencedColumnNames to find the column in the columnView and return the correct value.
         if (Array.isArray(value)) {
             const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
-            const valIndex = props.cellEditor.columnView.columnNames.indexOf(props.cellEditor.linkReference.referencedColumnNames[colNameIndex]);
-            return value[valIndex];
+            return value[colNameIndex];
         } else {
             return value;
         }
@@ -302,6 +302,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
+
+        console.log(inputVal, value)
 
         /** Returns the values, of the databook, that match the input of the user */
         // check if providedData has an entry exact of inputVal
@@ -435,13 +437,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         text = value[props.cellEditor.displayReferencedColumnName];
                     }
                     else if(props.cellEditor.columnView?.columnCount > 1) {
-                        text = props.cellEditor.columnView.columnNames.map(c => value[c]);
+                        const { __recordFormats, recordStatus, ...test } = value
+                        text = Array.from(Object.values(test));
                     }
                     else {
                         const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
                         text = value[props.cellEditor.linkReference.referencedColumnNames[colNameIndex]];
                     }
-                } 
+                }
                 suggestions.push(text)
             });
         }
@@ -476,50 +479,63 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     const itemTemplate = useCallback((d, index) => {
         if (Array.isArray(d)) {
             return d.map((d, i) => {
-                const cellStyle: CSSProperties = {}
-                let icon:JSX.Element | null = null;
-
-                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name][i]) {
-                    const format = providedData[index].__recordFormats[props.name][i]
-
-                    if (format.background) {
-                        cellStyle.background = format.background;
+                const sortedData = Object.keys(providedData[index]).sort((a, b) => {
+                    if (a !== "__recordFormats" && b === "__recordFormats") {
+                        return -1
                     }
-
-                    if (format.foreground) {
-                        cellStyle.color = format.foreground;
+                    else if (a === "__recordFormats" && b !== "__recordFormats") {
+                        return 1
                     }
-
-                    if (format.font) {
-                        const font = getFont(format.font);
-                        if (font) {
-                            cellStyle.fontFamily = font.fontFamily;
-                            cellStyle.fontWeight = font.fontWeight;
-                            cellStyle.fontStyle = font.fontStyle;
-                            cellStyle.fontSize = font.fontSize;
+                    else {
+                        return 0
+                    }
+                });
+                if (props.cellEditor.columnView.columnNames.includes(sortedData[i])) {
+                    const cellStyle: CSSProperties = {}
+                    let icon:JSX.Element | null = null;
+    
+                    if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name][i]) {
+                        const format = providedData[index].__recordFormats[props.name][i]
+    
+                        if (format.background) {
+                            cellStyle.background = format.background;
                         }
-                    }
-
-                    if (format.image) {
-                        const iconData = parseIconData(format.foreground, format.image);
-                        if (iconData.icon) {
-                            if (isFAIcon(iconData.icon)) {
-                                icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+    
+                        if (format.foreground) {
+                            cellStyle.color = format.foreground;
+                        }
+    
+                        if (format.font) {
+                            const font = getFont(format.font);
+                            if (font) {
+                                cellStyle.fontFamily = font.fontFamily;
+                                cellStyle.fontWeight = font.fontWeight;
+                                cellStyle.fontStyle = font.fontStyle;
+                                cellStyle.fontSize = font.fontSize;
+                            }
+                        }
+    
+                        if (format.image) {
+                            const iconData = parseIconData(format.foreground, format.image);
+                            if (iconData.icon) {
+                                if (isFAIcon(iconData.icon)) {
+                                    icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+                                }
+                                else {
+                                    icon = <img
+                                    alt="icon"
+                                    src={props.context.server.RESOURCE_URL + iconData.icon}
+                                    style={{width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                                }
                             }
                             else {
-                                icon = <img
-                                alt="icon"
-                                src={props.context.server.RESOURCE_URL + iconData.icon}
-                                style={{width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                                icon = null;
                             }
                         }
-                        else {
-                            icon = null;
-                        }
                     }
+                    
+                    return <div style={cellStyle} key={i}>{icon ?? d}</div>
                 }
-
-                return <div style={cellStyle} key={i}>{icon ?? d}</div>
             })
         } else {
             return d;
@@ -530,6 +546,21 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     const groupedItemTemplate = useCallback(d => {
         return (d.label as string[]).map((d, i) => <div key={i}>{metaData?.columns[i]?.label ?? props.columnMetaData?.label ?? d}</div>)
     }, [props.columnMetaData, providedData, metaData]);
+
+    const getScrollHeight = () => {
+        if (tableOptions) {
+            if (props.cellEditor.tableHeaderVisible === false) {
+                return (providedData.length * 38 > 200) ? "200px" : `${providedData.length * 38}px`
+            }
+            else {
+                // +44 for table header
+                return ((providedData.length) * 38 + 44) > 200 ? "200px" : `${(providedData.length) * 38 + 44}px`
+            }
+        }
+        else {
+            return (providedData.length * 38) > 200 ? "200px" : `${providedData.length * 38}px`
+        }
+    }
 
     return (
         <span 
@@ -560,10 +591,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 panelClassName={concatClassnames(
                     "rc-editor-linked-dropdown",
                     "dropdown-" + props.name, props.isCellEditor ? "dropdown-celleditor" : "", 
+                    props.cellEditor.tableHeaderVisible === false ? "no-table-header" : "",
                     tableOptions ? "dropdown-table" : "",
                     linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""
                 )}
-                scrollHeight={tableOptions ? ((providedData.length + 1) * 38) > 200 ? "200px" : `${(providedData.length + 1) * 38}px` : (providedData.length * 38) > 200 ? "200px" : `${providedData.length * 38}px`}
+                scrollHeight={getScrollHeight()}
                 inputStyle={{
                     ...textAlignment, 
                     ...props.cellStyle,
