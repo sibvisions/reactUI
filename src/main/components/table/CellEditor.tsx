@@ -98,8 +98,9 @@ export interface ICellEditor {
 function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDescription | undefined, props: any, stopCellEditing: Function, passedValues: string) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
-        const calcWidth = "calc(100% + " + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-left-right') + " + 0.1rem)";
-        const calcHeight = "calc(100% + " + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-top-bottom') + ")";
+        const docStyle = window.getComputedStyle(document.documentElement);
+        const calcWidth = "calc(100% + " + docStyle.getPropertyValue('--table-cell-padding-left-right') + " + 0.1rem)";
+        const calcHeight = "calc(100% + " + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + ")";
 
         editor = <CellEditorWrapper
             {...{
@@ -151,11 +152,13 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
 
+    const docStyle = window.getComputedStyle(document.documentElement);
+
     // Calculates the minus margin-left to display no gap when opening the cell-editor
-    const calcMarginLeft = "calc(0rem - calc(" + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-left-right') + " / 2) - 0.05rem)";
+    const calcMarginLeft = "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-left-right') + " / 2) - 0.05rem)";
 
     // Calculates the minus margin-top to display no gap when opening the cell-editor
-    const calcMarginTop = "calc(0rem - calc(" + window.getComputedStyle(document.documentElement).getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)";
+    const calcMarginTop = "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)";
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -175,11 +178,9 @@ export const CellEditor: FC<ICellEditor> = (props) => {
 
     /** Whenn the selected cell changes and the editor is editable close it */
     useEffect(() => {
-        if (cellContext.selectedCellId !== props.cellId().selectedCellId) {
-            if (edit) {
-                setEdit(false);
-                props.stopEditing()
-            }
+        if (edit && cellContext.selectedCellId !== props.cellId().selectedCellId) {
+            setEdit(false);
+            props.stopEditing()
         }
     }, [cellContext.selectedCellId]);
 
@@ -223,7 +224,10 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     }, [setEdit, selectNext, selectPrevious, enterNavigationMode, tabNavigationMode]);
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
-    useOutsideClick(wrapperRef, () => { setEdit(false); props.stopEditing() }, columnMetaData);
+    useOutsideClick(wrapperRef, () => { 
+        setEdit(false); 
+        props.stopEditing();
+    }, columnMetaData);
 
     /**
      * Keylistener for cells, if F2 key is pressed, open the editor of the selected cell, if a key is pressed which is an input, open the editor and use the input
@@ -244,7 +248,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     }, [cellContext.selectedCellId, setEdit]);
 
     /** Adds Keylistener to the tableContainer */
-    useEventHandler(tableContainer, "keydown", (e:any) => handleCellKeyDown(e));
+    useEventHandler(tableContainer, "keydown", handleCellKeyDown);
 
     // Returns true if the cell is editable
     const isEditable = useMemo(() => {
@@ -325,9 +329,16 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [columnMetaData?.cellEditor.className])
 
+    const handleDoubleClick = useCallback(() => {
+        if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
+            setWaiting(true);
+            setEdit(true)
+        }
+    }, [setWaiting, setEdit]);
+
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
-        (isEditable) ?
+        isEditable ?
             (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
                 ((edit && !waiting) ?
                     <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
@@ -349,12 +360,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                     <div
                         style={cellStyle}
                         className={cellClassNames.join(' ')}
-                        onDoubleClick={() => {
-                            if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
-                                setWaiting(true);
-                                setEdit(true)
-                            }
-                        }}>
+                        onDoubleClick={handleDoubleClick}>
                         <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
                     </div>
                     :
