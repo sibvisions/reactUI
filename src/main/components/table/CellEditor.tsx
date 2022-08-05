@@ -87,6 +87,7 @@ export interface ICellEditor {
     rowNumber: number
     colIndex: number
     filter?: Function
+    rowData: any
 }
 
 /** 

@@ -34,6 +34,8 @@ import RecordFormat from "../util/types/RecordFormat";
 import { getMetaData } from "../util/data-util/GetMetaData";
 import AppSettings from "../AppSettings";
 import BaseServer from "../server/BaseServer";
+import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
+import { ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 
 // Type for ActiveScreens
 export type ActiveScreen = {
@@ -765,17 +767,26 @@ export default abstract class BaseContentStore {
     setMetaData(screenName: string, metaData: MetaDataResponse) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
         const existingMap = this.getScreenDataproviderMap(screenName);
+        const modifiedMetaData = {...metaData, columns: metaData.columns.map((column => {
+            if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED 
+                && !(column.cellEditor as ICellEditorLinked).linkReference.columnNames.length
+                && (column.cellEditor as ICellEditorLinked).linkReference.referencedColumnNames.length) {
+                (column.cellEditor as ICellEditorLinked).linkReference.columnNames.push(column.name)
+            }
+            return column
+        }))}
+
         if (existingMap) {
             if (existingMap.has(metaData.dataProvider)) {
-                (existingMap.get(metaData.dataProvider) as IDataBook).metaData = metaData;
+                (existingMap.get(metaData.dataProvider) as IDataBook).metaData = modifiedMetaData;
             }
             else {
-                existingMap.set(metaData.dataProvider, {metaData: metaData});
+                existingMap.set(metaData.dataProvider, {metaData: modifiedMetaData});
             }
         }
         else {
             const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
-            tempMap.set(metaData.dataProvider, {metaData: metaData})
+            tempMap.set(metaData.dataProvider, {metaData: modifiedMetaData})
             this.dataBooks.set(screenName, tempMap);
         }
         this.subManager.notifyMetaDataChange(screenName, metaData.dataProvider);

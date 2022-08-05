@@ -850,6 +850,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 body={(rowData: any, tableInfo: any) => {
                     if (!rowData) { return <div></div> }
                     return <CellEditor
+                        rowData={rowData}
                         pk={_.pick(rowData, primaryKeys)}
                         screenName={screenName}
                         name={props.name as string}

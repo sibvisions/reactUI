@@ -17,7 +17,7 @@ import { History } from "history";
 import _ from "underscore";
 import API from "../API";
 import AppSettings from "../AppSettings";
-import BaseContentStore from "../contentstore/BaseContentStore";
+import BaseContentStore, { IDataBook } from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
 import ContentStoreFull from "../contentstore/ContentStoreFull";
 import { createFetchRequest } from "../factories/RequestFactory";
@@ -35,6 +35,9 @@ import MetaDataResponse from "../response/data/MetaDataResponse";
 import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
 import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
 import { translation } from "../util/other-util/Translation";
+import { bn } from "date-fns/locale";
+import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
+import { convertColNamesToReferenceColNames, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -355,6 +358,12 @@ export default abstract class BaseServer {
                 else if (b.name === RESPONSE_NAMES.CLOSE_SCREEN && a.name !== RESPONSE_NAMES.CLOSE_SCREEN) {
                     return 1;
                 }
+                else if (a.name === RESPONSE_NAMES.DAL_META_DATA && (b.name !== RESPONSE_NAMES.DAL_META_DATA && b.name !== RESPONSE_NAMES.CLOSE_SCREEN)) {
+                    return -1
+                }
+                else if (b.name === RESPONSE_NAMES.DAL_META_DATA && (a.name !== RESPONSE_NAMES.DAL_META_DATA && a.name !== RESPONSE_NAMES.CLOSE_SCREEN)) {
+                    return 1
+                }
                 else {
                     return 0;
                 }
@@ -486,6 +495,50 @@ export default abstract class BaseServer {
      processFetch(fetchData: FetchResponse, detailMapKey?: string) {
         const builtData = this.buildDatasets(fetchData);
         const screenName = this.getScreenName(fetchData.dataProvider);
+
+        if (this.contentStore.getDataBook(screenName, fetchData.dataProvider)) {
+            const dataBook = this.contentStore.getDataBook(screenName, fetchData.dataProvider) as IDataBook
+            dataBook.allFetched = fetchData.isAllFetched;
+
+            // if (dataBook.metaData) {
+            //     dataBook.metaData.columns.forEach((column) => {
+            //         if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
+            //             const castedColumn = column.cellEditor as ICellEditorLinked;
+            //             let dataToDisplayMap = new Map<string, string>();
+            //             if (castedColumn.linkReference.dataToDisplayMap) {
+            //                 dataToDisplayMap = castedColumn.linkReference.dataToDisplayMap;
+            //             }
+
+            //             builtData.forEach((data) => {
+            //                 if (data) {
+            //                     const convertedData = convertColNamesToReferenceColNames(data, castedColumn.linkReference);
+            //                     if (castedColumn.displayReferencedColumnName) {
+            //                         dataToDisplayMap.set(JSON.stringify(convertedData), convertedData[castedColumn.displayReferencedColumnName as string]);
+            //                     }
+            //                     else if (castedColumn.displayConcatMask) {
+            //                         let displayString = "";
+            //                         if (castedColumn.displayConcatMask.includes("*")) {
+            //                             displayString = castedColumn.displayConcatMask
+            //                             const count = (castedColumn.displayConcatMask.match(/\*/g) || []).length;
+            //                             for (let i = 0; i < count; i++) {
+            //                                 displayString = displayString.replace('*', convertedData[castedColumn.columnView.columnNames[i]] !== undefined ? convertedData[castedColumn.columnView.columnNames[i]] : "");
+            //                             }
+            //                         }
+            //                         else {
+            //                             castedColumn.columnView.columnNames.forEach((column, i) => {
+            //                                 displayString += convertedData[column] + (i !== castedColumn.columnView.columnNames.length - 1 ? castedColumn.displayConcatMask : "");
+            //                             });
+            //                         }
+            //                         dataToDisplayMap.set(JSON.stringify(convertedData), displayString);
+            //                     }
+            //                 }  
+            //             });
+            //             castedColumn.linkReference.dataToDisplayMap = dataToDisplayMap
+            //         }
+            //     })
+            // }
+        } 
+
         // If there is a detailMapKey, call updateDataProviderData with it
         this.contentStore.updateDataProviderData(
             screenName, 
@@ -496,10 +549,6 @@ export default abstract class BaseServer {
             detailMapKey,
             fetchData.clear
         );
-
-        if (this.contentStore.getDataBook(screenName, fetchData.dataProvider)) {
-            this.contentStore.getDataBook(screenName, fetchData.dataProvider)!.allFetched = fetchData.isAllFetched
-        }
         
         this.contentStore.setSortDefinition(screenName, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);
 
