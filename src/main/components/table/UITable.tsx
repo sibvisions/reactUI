@@ -858,7 +858,9 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         cellData={rowData[colName]}
                         cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                         resource={context.server.RESOURCE_URL}
-                        cellId={() => { return { selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() } }}
+                        cellId={() => ({ 
+                            selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() 
+                        })}
                         tableContainer={wrapRef.current ? wrapRef.current : undefined}
                         selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
                         selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}

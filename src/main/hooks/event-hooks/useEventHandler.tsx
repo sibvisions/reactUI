@@ -21,10 +21,10 @@ import { useEffect, useRef } from "react";
  * @param event - the event
  * @param handler - the function which should be executed
  */
-const useEventHandler = (target?: HTMLElement, event?: keyof HTMLElementEventMap, handler?: EventListener) => {
+const useEventHandler = <K extends keyof HTMLElementEventMap>(target?: HTMLElement, event?: K, handler?: (e: HTMLElementEventMap[K]) => any) => {
     const targetRef = useRef<HTMLElement>();
-    const handlerRef = useRef<EventListener>();
-    const eventRef = useRef<keyof HTMLElementEventMap>();
+    const handlerRef = useRef<(e: HTMLElementEventMap[K]) => any>();
+    const eventRef = useRef<K>();
 
     useEffect(() => {
         if(!target?.addEventListener){

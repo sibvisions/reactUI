@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
@@ -115,7 +115,7 @@ const ErrorBar:FC = () => {
      * Either starts the session restart or retries the last failed request, with escape or space key
      */
     useEventHandler(errorProps.sessionExpired || errorProps.gone || errorProps.retry ? document.body : undefined, "keydown", (event) => {
-        if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
+        if ([" ", "Escape"].indexOf(event.key) !== -1) {
             handleRetry()
         }
     });
