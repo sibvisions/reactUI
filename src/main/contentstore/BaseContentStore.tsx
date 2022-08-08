@@ -61,7 +61,8 @@ export interface IDataBook {
     allFetched?: boolean,
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
-    readOnly?: boolean
+    readOnly?: boolean,
+    isLinkedReferenceTo?: string
 }
 
 /** The ContentStore stores active content like user, components and data*/
@@ -768,11 +769,28 @@ export default abstract class BaseContentStore {
         const compPanel = this.getComponentByName(screenName) as IPanel;
         const existingMap = this.getScreenDataproviderMap(screenName);
         const modifiedMetaData = {...metaData, columns: metaData.columns.map((column => {
-            if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED 
-                && !(column.cellEditor as ICellEditorLinked).linkReference.columnNames.length
-                && (column.cellEditor as ICellEditorLinked).linkReference.referencedColumnNames.length) {
-                (column.cellEditor as ICellEditorLinked).linkReference.columnNames.push(column.name)
-            }
+            const castedCellEditor = column.cellEditor as ICellEditorLinked;
+            const linkReference = castedCellEditor.linkReference;
+            if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
+                if (existingMap) {
+                    if (existingMap.has(linkReference.referencedDataBook)) {
+                        (existingMap.get(linkReference.referencedDataBook) as IDataBook).isLinkedReferenceTo = metaData.dataProvider;
+                    }
+                    else {
+                        existingMap.set(linkReference.referencedDataBook, {isLinkedReferenceTo: metaData.dataProvider});
+                    }
+                }
+                else {
+                    const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
+                    tempMap.set(linkReference.referencedDataBook, {isLinkedReferenceTo: metaData.dataProvider})
+                    this.dataBooks.set(screenName, tempMap);
+                }
+
+
+                if (!linkReference.columnNames.length && linkReference.referencedColumnNames.length) {
+                    linkReference.columnNames.push(column.name)
+                }
+            } 
             return column
         }))}
 
