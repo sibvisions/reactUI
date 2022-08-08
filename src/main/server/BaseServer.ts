@@ -192,10 +192,10 @@ export default abstract class BaseServer {
                 && endpoint !== REQUEST_KEYWORDS.CLOSE_SCREEN
                 && !this.componentExists(request.componentId)
             ) {
-                reject("Component doesn't exist");
+                reject("Component doesn't exist: " + request.componentId);
             }
-            else if (request.dataProvider && !this.contentStore.dataBooks.get(this.getScreenName(request.dataProvider))?.has(request.dataProvider)) {
-                reject("Dataprovider doesn't exist")
+            else if (request.dataProvider && !this.contentStore.dataBooks.get(this.getScreenName(request.dataProvider))?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                reject("Dataprovider doesn't exist: " + request.dataProvider)
             }
             else if (this.errorIsDisplayed) {
                 reject("Not sending request while an error is active");

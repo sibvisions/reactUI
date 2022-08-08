@@ -329,7 +329,7 @@ export default class ContentStore extends BaseContentStore {
     }
 
     getAllChildren(id: string, className?: string): Map<string, BaseComponent> {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent, ...this.removedContent]);
         const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
         let entry = componentEntries.next();
