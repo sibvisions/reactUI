@@ -31,6 +31,7 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     aliveInterval?: number
     wsPingInterval?: number
     userRestart?:boolean
-    foldMenuOnCollapse?:boolean
+    foldMenuOnCollapse?:boolean,
+    rememberMe?: boolean
 }
 export default ApplicationMetaDataResponse;

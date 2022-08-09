@@ -29,6 +29,10 @@
     /// Standard-menu header height
     --std-header-height: 70px;
 
+    --std-screen-title-size: 22px;
+
+    --std-screen-title-margin: 10px;
+
     /// Standard-menu header height when mini
     --std-header-mini-height: 35px;
 
@@ -240,6 +244,11 @@ body {
 
         .menu-topbar {
             margin-left: var(--std-menu-width);
+
+            .menu-screen-title {
+                font-size: var(--std-screen-title-size);
+                margin-left: var(--std-screen-title-margin);
+            }
         }
 
         .menu-logo-wrapper {

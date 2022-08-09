@@ -98,9 +98,7 @@
 /// Menu-screen-title styling
 .menu-screen-title {
     @extend %ellipsis-overflow;
-    font-size: 22px;
     font-weight: bold;
-    margin-left: 10px;
     caret-color: transparent;
 }
 

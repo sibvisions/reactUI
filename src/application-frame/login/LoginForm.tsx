@@ -107,17 +107,18 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} />
                             <label htmlFor="password">{translation.get("Password")} </label>
                         </div>
+                        {(context.appSettings.applicationMetaData.lostPasswordEnabled || context.appSettings.applicationMetaData.rememberMe) && 
                         <div className={concatClassnames(
                             "login-extra-options",
                             context.appSettings.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
-                            <div className="login-cbx-container">
-                                <Checkbox 
-                                    inputId="rememberMe" 
-                                    className="remember-me-cbx" 
-                                    checked={rememberMe} 
+                            {context.appSettings.applicationMetaData.rememberMe !== false && <div className="login-cbx-container">
+                                <Checkbox
+                                    inputId="rememberMe"
+                                    className="remember-me-cbx"
+                                    checked={rememberMe}
                                     onChange={(event) => setRememberMe(prevState => event.checked)} />
                                 <label htmlFor="rememberMe" className="p-checkbox-label">{translation.get("Remember me?")}</label>
-                            </div>
+                            </div>}
                             {context.appSettings.applicationMetaData.lostPasswordEnabled &&
                                 <Button
                                     type="button"
@@ -130,7 +131,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                     icon="pi pi-question-circle"
                                     onClick={() => props.changeLoginMode("reset")} />
                             }
-                        </div>
+                        </div>}
                         <Button 
                             type="submit" 
                             className="login-button rc-button"

@@ -18,12 +18,13 @@
   --login-form-left-right-padding: 40px;
   --login-form-field-margin: 1.5rem;
   --std-header-height: 70px;
+  --std-screen-title-size: 22px;
+  --std-screen-title-margin: 10px;
   --std-menu-width: 240px;
   --std-menu-collapsed-width: 80px;
   --std-logo-width: 190px;
   --std-logo-collapsed-width: 60px;
   --std-logo-height: 60px;
-  --std-profile-height: 60px;
   --std-profile-width-small: 60px;
   --std-profile-padding: 0.75rem 1rem;
   --std-profile-pic: 40px;
@@ -106,6 +107,9 @@ body {
 
 .basti .std-menu .menu-topbar {
   margin-left: var(--std-menu-width); }
+  .basti .std-menu .menu-topbar .menu-screen-title {
+    font-size: var(--std-screen-title-size);
+    margin-left: var(--std-screen-title-margin); }
 
 .basti .std-menu .menu-logo-wrapper {
   height: var(--std-header-height);
@@ -155,18 +159,18 @@ body {
   margin-top: var(--std-header-height); }
 
 .basti .profile-menu {
-  height: var(--std-profile-height); }
+  height: 100%; }
   .basti .profile-menu .p-menubar {
     height: 100%; }
     .basti .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-      height: var(--std-profile-height);
+      height: 100%;
       padding: var(--std-profile-padding); }
     .basti .profile-menu .p-menubar .p-submenu-list {
       width: calc(100% - var(--std-profile-separator-margin));
       margin-left: var(--std-profile-separator-margin); }
 
 .basti .vl {
-  height: var(--std-profile-height); }
+  height: 100%; }
 
 .basti .corp-menu .corp-menu-header {
   height: var(--corp-header-height); }

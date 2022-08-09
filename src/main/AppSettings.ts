@@ -34,7 +34,8 @@ type ApplicationMetaData = {
     applicationTheme: { value: string, urlSet: boolean },
     applicationDesign: string,
     applicationName: string,
-    aliveInterval?: number
+    aliveInterval?: number,
+    rememberMe?: boolean
 }
 
 /** Interface for whether specific buttons should be visible or not */
@@ -222,6 +223,7 @@ export default class AppSettings {
         this.applicationMetaData.lostPasswordEnabled = appMetaData.lostPasswordEnabled;
         this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;
         this.applicationMetaData.aliveInterval = appMetaData.aliveInterval;
+        this.applicationMetaData.rememberMe = appMetaData.rememberMe;
 
         if (!this.applicationMetaData.applicationLayout.urlSet) {
             this.applicationMetaData.applicationLayout.layout = appMetaData.applicationLayout
