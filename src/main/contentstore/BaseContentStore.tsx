@@ -62,7 +62,7 @@ export interface IDataBook {
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
     readOnly?: boolean,
-    isLinkedReferenceTo?: string
+    isLinkedReferenceTo?: string[]
 }
 
 /** The ContentStore stores active content like user, components and data*/
@@ -767,22 +767,29 @@ export default abstract class BaseContentStore {
      */
     setMetaData(screenName: string, metaData: MetaDataResponse) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
-        const existingMap = this.getScreenDataproviderMap(screenName);
+        const existingMapModified = this.getScreenDataproviderMap(screenName);
         const modifiedMetaData = {...metaData, columns: metaData.columns.map((column => {
+            
             const castedCellEditor = column.cellEditor as ICellEditorLinked;
             const linkReference = castedCellEditor.linkReference;
             if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
-                if (existingMap) {
-                    if (existingMap.has(linkReference.referencedDataBook)) {
-                        (existingMap.get(linkReference.referencedDataBook) as IDataBook).isLinkedReferenceTo = metaData.dataProvider;
+                if (existingMapModified) {
+                    if (existingMapModified.has(linkReference.referencedDataBook)) {
+                        const dataBook = (existingMapModified.get(linkReference.referencedDataBook) as IDataBook)
+                        if (!dataBook.isLinkedReferenceTo) {
+                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).isLinkedReferenceTo = [metaData.dataProvider];
+                        }
+                        else if (dataBook.isLinkedReferenceTo && !dataBook.isLinkedReferenceTo.includes(metaData.dataProvider)) {
+                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).isLinkedReferenceTo?.push(metaData.dataProvider);
+                        }
                     }
                     else {
-                        existingMap.set(linkReference.referencedDataBook, {isLinkedReferenceTo: metaData.dataProvider});
+                        existingMapModified.set(linkReference.referencedDataBook, {isLinkedReferenceTo: [metaData.dataProvider]});
                     }
                 }
                 else {
                     const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
-                    tempMap.set(linkReference.referencedDataBook, {isLinkedReferenceTo: metaData.dataProvider})
+                    tempMap.set(linkReference.referencedDataBook, {isLinkedReferenceTo: [metaData.dataProvider]});
                     this.dataBooks.set(screenName, tempMap);
                 }
 
@@ -793,6 +800,8 @@ export default abstract class BaseContentStore {
             } 
             return column
         }))}
+
+        const existingMap = this.getScreenDataproviderMap(screenName);
 
         if (existingMap) {
             if (existingMap.has(metaData.dataProvider)) {

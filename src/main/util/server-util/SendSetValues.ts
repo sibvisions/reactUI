@@ -35,7 +35,7 @@ export async function sendSetValues(
     columnName: string | string[],
     value: string | number | boolean | Array<any> | null,
     server: Server|ServerFull,
-    lastValue: string | number | boolean | Array<any> | null | undefined,
+    lastValue: string | number | boolean | any | Array<any> | null | undefined,
     topbar: TopBarContextType,
     rowIndex?: number,
     selectedIndex?: number,
@@ -48,7 +48,7 @@ export async function sendSetValues(
     let tempValues: any = value;
     /** If value is an object only send the values of the object */
     if (typeof value === "object" && value !== null) {
-        tempValues = Object.values(value)
+        tempValues = Object.values(value);
     }
 
     if (rowIndex !== undefined) {
@@ -61,7 +61,7 @@ export async function sendSetValues(
     req.values = Array.isArray(tempValues) ? tempValues : [tempValues];
     if (lastValue !== undefined) {
         if (typeof value === "object") {
-            if (!_.isEqual(value, lastValue)) {
+            if (!_.isEqual(value, lastValue) && !(value === null && Object.values(lastValue).every(x => x === null))) {
                 await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUES), topbar);
             }
         }

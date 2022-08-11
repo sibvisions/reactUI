@@ -204,7 +204,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     const metaData:MetaDataResponse = useMetaData(props.screenName, props.dataRow||"") as MetaDataResponse;
 
     const cellEditorMetaData = useMemo(() => {
-        if (metaData.columns.find(column => column.name === props.columnName)) {
+        if (metaData && metaData.columns.find(column => column.name === props.columnName)) {
             return metaData.columns.find(column => column.name === props.columnName)?.cellEditor as ICellEditorLinked
         }
         return undefined
@@ -258,7 +258,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (props.selectedRow && lastValue.current !== props.selectedRow) {
             if (isDisplayRefColNameOrConcat) {
                 if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
-                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow, props.cellEditor.linkReference), props.cellEditor.linkReference.referencedColumnNames);
+                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow, cellEditorMetaData.linkReference), props.cellEditor.linkReference.referencedColumnNames);
                     setText(getDisplayValue(extractedObject))
                     lastValue.current = props.selectedRow;
                 }
@@ -291,7 +291,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 return result;
             }
             else {
-                const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
+                const colNameIndex = cellEditorMetaData ? 
+                cellEditorMetaData.linkReference.columnNames.findIndex(columnName => columnName === props.columnName) 
+                : props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
                 return value[colNameIndex];
             }
         } else {
@@ -372,8 +374,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const index = colNames.findIndex(col => col === props.columnName);
         const columnNames = (colNames.length === 0 && refColNames.length === 1) ? props.columnName : colNames;
 
-        const inputObj:any = {}
-        linkReference.referencedColumnNames.forEach((key, i) => inputObj[key] = value[i]);
+        let inputObj:any|any[] = {}
+        linkReference.referencedColumnNames.forEach((key, i) => {
+            if (i < value.length) {
+                inputObj[key] = value[i]
+            }
+        });
         
         const convertedColNamesObj = convertReferenceColNamesToColNames(inputObj, props.cellEditor.linkReference);
         const extractedLastValue = getExtractedObject(lastValue.current, colNames);
@@ -384,13 +390,23 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         else {
             if (colNames.length > 1) {
+                if (colNames.length > Object.values(inputObj).length) {
+                    let tempValues = Object.values(inputObj)
+                    for (let i = tempValues.length; i < linkReference.referencedColumnNames.length; i++) {
+                        tempValues[i] = (inputObj as any)[linkReference.referencedColumnNames[i]]
+                    }
+                    inputObj = tempValues;
+                }
+                setText(getDisplayValue(convertedColNamesObj))
                 sendSetValues(props.dataRow, props.name, columnNames, inputObj, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
             }
             else {
                 if (props.cellEditor.displayReferencedColumnName) {
+                    setText(getDisplayValue(inputObj))
                     sendSetValues(props.dataRow, props.name, columnNames, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference)[refColNames[0]], props.topbar, props.rowNumber);
                 }
                 else {
+                    setText(getDisplayValue(convertedColNamesObj))
                     sendSetValues(props.dataRow, props.name, columnNames, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, props.rowNumber);
                 }
             }
@@ -402,7 +418,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
      * if the corresponding row is found in its databook. if it isn't, the state is set back to its previous value
      */
      const handleInput = () => {
-        const linkReference = props.cellEditor.linkReference;
+        const linkReference = cellEditorMetaData ? cellEditorMetaData.linkReference : props.cellEditor.linkReference;
 
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
@@ -417,7 +433,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     return getDisplayValue(extractedData).toString().includes(text);
                 }
                 else {
-                    if (data[refColNames[index]]) {
+                    console.log(data)
+                    if (data && data[refColNames[index]]) {
                         if (typeof data[refColNames[index]] !== "string") {
                             data[refColNames[index]].toString().includes(text);
                         }
@@ -448,7 +465,22 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference) : extractedLastValue));
             }
             else {
-                sendSetValues(props.dataRow, props.name, colNames, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference), props.topbar, props.rowNumber);
+                console.log(extractedData)
+                if (colNames.length > 1) {
+                    let tempValues = Object.values(extractedData)
+                    if (colNames.length > Object.values(extractedData).length) {
+                        for (let i = tempValues.length; i < linkReference.referencedColumnNames.length; i++) {
+                            tempValues[i] = (extractedData as any)[linkReference.referencedColumnNames[i]]
+                        }
+                    }
+                    setText(getDisplayValue(convertReferenceColNamesToColNames(extractedData, props.cellEditor.linkReference)))
+                    sendSetValues(props.dataRow, props.name, colNames, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+                }
+                else {
+                    setText(getDisplayValue(extractedData))
+                    sendSetValues(props.dataRow, props.name, colNames, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference), props.topbar, props.rowNumber);
+                }
+
             }
         }
         /** If there is no match found set the old value */
@@ -552,7 +584,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 return <div style={cellStyle} key={i}>{icon ?? d}</div>
             }
             else {
-                if (props.cellEditor.linkReference.columnNames[i] === props.columnName) {
+                if (cellEditorMetaData?.linkReference.columnNames[i] === props.columnName) {
                     if (props.cellEditor.displayReferencedColumnName) {
                         return providedData[index][props.cellEditor.displayReferencedColumnName]
                     }
