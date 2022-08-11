@@ -14,6 +14,7 @@
  */
 
 /** Request imports */
+import AboutRequest from "../request/application-ui/AboutRequest";
 import CloseContentRequest from "../request/application-ui/CloseContentRequest";
 import CloseFrameRequest from "../request/application-ui/CloseFrameRequest";
 import CloseScreenRequest from "../request/application-ui/CloseScreenRequest";
@@ -597,6 +598,17 @@ export const createAliveRequest = (values?: AliveRequest): AliveRequest => {
     const req:AliveRequest = {
         clientId: values?.clientId || getClientId()
     }
+    return req;
+}
 
+/**
+ * Returns an about-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the about-request
+ * @returns an alive-request object
+ */
+ export const createAboutRequest = (values?: AboutRequest): AboutRequest => {
+    const req:AboutRequest = {
+        clientId: values?.clientId || getClientId()
+    }
     return req;
 }

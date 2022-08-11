@@ -16,13 +16,12 @@
 import { useEffect, useState, useContext, useCallback } from "react";
 import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../contexts/AppProvider";
-import { createLogoutRequest } from "../../factories/RequestFactory";
+import { createAboutRequest, createLogoutRequest } from "../../factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import { LIB_VERSION } from "../../../version";
 import ContentStore from "../../contentstore/ContentStore";
 import { MenuOptions, VisibleButtons } from "../../AppSettings";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
-import ApplicationSettingsResponse from "../../response/app/ApplicationSettingsResponse";
 import { translation } from "../../util/other-util/Translation";
 
 /**
@@ -73,16 +72,6 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             )
         }
 
-        if (logoutVisible !== false) {
-            profileMenuItems.push({
-                label: translation.get("Logout"),
-                icon: "pi pi-power-off",
-                command(e: MenuItemCommandParams) {
-                    sendLogout()
-                }
-            })
-        }
-
         if (restartVisible && context.server.preserveOnReload) {
             profileMenuItems.push({
                 label: translation.get("Restart"),
@@ -108,9 +97,26 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             label: "Info",
             icon: "pi pi-info-circle",
             command(e: MenuItemCommandParams) {
-                context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
+                showTopBar(context.server.sendRequest(createAboutRequest(), REQUEST_KEYWORDS.ABOUT), topbar)
+                //context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
             }
         })
+
+        profileMenuItems.push({
+            separator: true
+        })
+
+        if (logoutVisible !== false) {
+            profileMenuItems.push({
+                label: translation.get("Logout"),
+                icon: "pi pi-power-off",
+                command(e: MenuItemCommandParams) {
+                    sendLogout()
+                }
+            })
+        }
+
+
         setModel([
             {
                 label: currUser.displayName,
