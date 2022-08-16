@@ -25,10 +25,10 @@
   --std-logo-width: 190px;
   --std-logo-collapsed-width: 60px;
   --std-logo-height: 60px;
+  --std-profile-height: 60px;
   --std-profile-width-small: 60px;
   --std-profile-padding: 0.75rem 1rem;
   --std-profile-pic: 40px;
-  --std-profile-separator-margin: 4px;
   --std-profile-submenu-width-small: 10rem;
   --topbar-button-size: 60px;
   --topbar-button-size-small: 40px;
@@ -159,18 +159,17 @@ body {
   margin-top: var(--std-header-height); }
 
 .basti .profile-menu {
-  height: 100%; }
+  height: var(--std-profile-height); }
   .basti .profile-menu .p-menubar {
     height: 100%; }
     .basti .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-      height: 100%;
+      height: var(--std-profile-height);
       padding: var(--std-profile-padding); }
     .basti .profile-menu .p-menubar .p-submenu-list {
-      width: calc(100% - var(--std-profile-separator-margin));
-      margin-left: var(--std-profile-separator-margin); }
+      width: 100%; }
 
 .basti .vl {
-  height: 100%; }
+  height: var(--std-profile-height); }
 
 .basti .corp-menu .corp-menu-header {
   height: var(--corp-header-height); }

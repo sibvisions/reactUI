@@ -31,7 +31,6 @@
   --std-profile-padding: 0.75rem 1rem;
   --std-profile-pic: 40px;
   --std-profile-pic-mini: 30px;
-  --std-profile-separator-margin: 4px;
   --std-profile-submenu-width-small: 10rem;
   --topbar-button-size: 60px;
   --topbar-button-size-small: 30px;
@@ -132,8 +131,7 @@ body {
       height: var(--std-profile-height);
       padding: var(--std-profile-padding); }
     .basti_mobile .std-menu .profile-menu .p-menubar .p-submenu-list {
-      width: calc(100% - var(--std-profile-separator-margin));
-      margin-left: var(--std-profile-separator-margin); }
+      width: 100%; }
 
 .basti_mobile .std-menu .vl {
   height: var(--std-profile-height); }

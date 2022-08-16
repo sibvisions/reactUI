@@ -49,6 +49,8 @@
     /// Standard-menu logo height
     --std-logo-height: 60px;
 
+    --std-profile-height: 60px;
+
     /// Standard-menu small profile-menu width
     --std-profile-width-small: 60px;
 
@@ -57,9 +59,6 @@
 
     /// Standard-menu profile-menu picture size
     --std-profile-pic: 40px;
-
-    /// Standard-menu profile-menu & buttons separator margin
-    --std-profile-separator-margin: 4px;
 
     /// Standard-menu profile-menu sub-menu width when in mini mode
     --std-profile-submenu-width-small: 10rem;
@@ -309,24 +308,23 @@ body {
     }
 
     .profile-menu {
-        height: 100%;
+        height: var(--std-profile-height);
 
         .p-menubar {
             height: 100%;
             .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-                height: 100%;
+                height: var(--std-profile-height);
                 padding: var(--std-profile-padding);
             }
 
             .p-submenu-list {
-                width: calc(100% - var(--std-profile-separator-margin));
-                margin-left: var(--std-profile-separator-margin);
+                width: 100%
             }
         }
     }
 
     .vl {
-        height: 100%;
+        height: var(--std-profile-height);
     }
 
     .corp-menu {

@@ -61,9 +61,6 @@
     /// Standard-menu profile-menu picture size
     --std-profile-pic: 35px;
 
-    /// Standard-menu profile-menu & buttons separator margin
-    --std-profile-separator-margin: 4px;
-
     /// Standard-menu profile-menu sub-menu width when in mini mode
     --std-profile-submenu-width-small: 10rem;
 
@@ -272,8 +269,7 @@ body {
                 }
     
                 .p-submenu-list {
-                    width: calc(100% - var(--std-profile-separator-margin));
-                    margin-left: var(--std-profile-separator-margin);
+                    width: 100%
                 }
             }
         }

@@ -19,7 +19,7 @@
         width: 7px;
     }
     &::-webkit-scrollbar-button:start:decrement {
-        height: 70px;
+        height: var(--std-header-height);
     }
     &::-webkit-scrollbar-track {
         background: white; 
@@ -38,7 +38,7 @@
         width: 7px;
     }
     &::-webkit-scrollbar-button:start:decrement {
-        height: 70px;
+        height: var(--std-header-height);
     }
     &::-webkit-scrollbar-track {
         background: var(--dark-panelmenu-scroll-background); 
@@ -59,7 +59,7 @@
         height: 7px;
     }
     &::-webkit-scrollbar-button:start:decrement {
-        height: 70px;
+        height: var(--std-header-height);
     }
     &::-webkit-scrollbar-track {
         background: #49525e; 

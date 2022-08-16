@@ -29,7 +29,6 @@
   --std-profile-width-small: 60px;
   --std-profile-padding: 0.25rem 0.5rem;
   --std-profile-pic: 35px;
-  --std-profile-separator-margin: 4px;
   --std-profile-submenu-width-small: 10rem;
   --topbar-button-size: 40px;
   --topbar-button-size-small: 25px;
@@ -130,8 +129,7 @@ body {
       height: var(--std-profile-height);
       padding: var(--std-profile-padding); }
     .basti_small .std-menu .profile-menu .p-menubar .p-submenu-list {
-      width: calc(100% - var(--std-profile-separator-margin));
-      margin-left: var(--std-profile-separator-margin); }
+      width: 100%; }
 
 .basti_small .std-menu .vl {
   height: var(--std-profile-height); }
