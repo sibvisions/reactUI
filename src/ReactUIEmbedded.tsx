@@ -37,16 +37,17 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
         if (props.style && props.style.height) {
             document.documentElement.style.setProperty("--main-height", props.style.height as string)
         }
+        console.log(window.getComputedStyle(document.getElementsByClassName("embed-frame-no-border")[0]).height, window.getComputedStyle(document.getElementsByClassName("embed-frame-no-border")[0]).width)
     },[props.style]);
 
     return (
         <AppWrapper embedOptions={props.embedOptions}>
             {context.appReady ?
                 <>
-                    <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
+                    {props.embedOptions && !props.embedOptions.showMenu && <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
                         ReactUI Embedded WorkScreen
-                    </span>
-                    <div className="embed-frame">
+                    </span>}
+                    <div className={props.embedOptions?.showMenu ? "embed-frame-no-border" : "embed-frame"}>
                         <Switch>
                             <Route exact path={"/login"} render={() => <Login />} />
                             <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />

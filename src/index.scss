@@ -109,6 +109,12 @@ body {
     border-radius: 18px;
     overflow: hidden;
 }
+
+.embed-frame-no-border {
+    height: 100%;
+    width: 100%;
+}
+
 .rc-message-dialog {
     min-width: 20vw;
 
