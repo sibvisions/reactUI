@@ -13,12 +13,10 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
+import React, { FC, useCallback, useContext, useEffect, useMemo } from "react";
 import { appContext } from "../../../contexts/AppProvider";
-import { createFilterRequest } from "../../../factories/RequestFactory";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
-import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
-import { convertColNamesToReferenceColNames, convertReferenceColNamesToColNames, fetchLinkedRefDatabook, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
+import { convertColNamesToReferenceColNames, fetchLinkedRefDatabook, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
 
 /**
@@ -41,19 +39,9 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     /** True, if there is a displayReferencedColumnName or a displayConcatMask */
     const isDisplayRefColNameOrConcat = useMemo(() => castedCellEditor.displayReferencedColumnName || castedCellEditor.displayConcatMask, [castedCellEditor.displayReferencedColumnName, castedCellEditor.displayConcatMask]);
 
-    const previousDataMap = useRef<Map<string, string>>();
-
     // If there is a cell-data fetch the linkedReference Databook so the correct value can be displayed
     useEffect(() => {
         if (props.cellData) {
-            context.contentStore.clearDataFromProvider(props.screenName, castedCellEditor.linkReference.referencedDataBook)
-            const filterReq = createFilterRequest();
-            filterReq.dataProvider = castedCellEditor.linkReference.referencedDataBook;
-            filterReq.editorComponentId = props.name;
-            filterReq.value = "";
-        
-            context.server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER);
-
             fetchLinkedRefDatabook(
                 props.screenName, 
                 castedCellEditor.linkReference.referencedDataBook,

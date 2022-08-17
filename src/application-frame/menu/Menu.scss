@@ -38,7 +38,7 @@
     display: flex;
     z-index: 20;
     align-items: center;
-    width: 100%;
+    width: var(--main-width);
 }
 
 /// When menu is collapsed
@@ -174,7 +174,7 @@
     @include styledScrollbarPanelDefault();
     position: fixed;
     z-index: 10;
-    height: 100%;
+    height: var(--main-height);
     overflow-x: hidden;
 
     /// Panelmenu styling, nesting needed because primereact nesting

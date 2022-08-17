@@ -433,7 +433,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     return getDisplayValue(extractedData).toString().includes(text);
                 }
                 else {
-                    console.log(data)
                     if (data && data[refColNames[index]]) {
                         if (typeof data[refColNames[index]] !== "string") {
                             data[refColNames[index]].toString().includes(text);
@@ -465,7 +464,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference) : extractedLastValue));
             }
             else {
-                console.log(extractedData)
                 if (colNames.length > 1) {
                     let tempValues = Object.values(extractedData)
                     if (colNames.length > Object.values(extractedData).length) {

@@ -113,7 +113,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
 
     return (
         <>
-            {(!embeddedContext) &&
+            {(!embeddedContext || embeddedContext.showMenu) &&
                 <div className="corp-menu">
                     <div className="corp-menu-topbar">
                         <div className="corp-menu-header">

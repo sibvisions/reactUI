@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useContext, useLayoutEffect } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect } from "react";
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from "./application-frame/screen-management/ui-manager/UIManager";
@@ -37,8 +37,24 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
         if (props.style && props.style.height) {
             document.documentElement.style.setProperty("--main-height", props.style.height as string)
         }
-        console.log(window.getComputedStyle(document.getElementsByClassName("embed-frame-no-border")[0]).height, window.getComputedStyle(document.getElementsByClassName("embed-frame-no-border")[0]).width)
     },[props.style]);
+    
+    useEffect(() => {
+        if (props.embedOptions && props.embedOptions.showMenu) {
+            const elem = document.getElementsByClassName("embed-frame-no-border")[0];
+            const mainHeight = window.getComputedStyle(document.documentElement).getPropertyValue('--main-height');
+            const mainWidth = window.getComputedStyle(document.documentElement).getPropertyValue('--main-width');
+            if (elem) {
+                if (mainHeight && window.getComputedStyle(elem).height && window.getComputedStyle(elem).height !== mainHeight) {
+                    document.documentElement.style.setProperty("--main-height", window.getComputedStyle(elem).height);
+                }
+
+                if (mainWidth && window.getComputedStyle(elem).width && window.getComputedStyle(elem).width !== mainWidth) {
+                    document.documentElement.style.setProperty("--main-width", window.getComputedStyle(elem).width);
+                }
+            }
+        }
+    })
 
     return (
         <AppWrapper embedOptions={props.embedOptions}>
