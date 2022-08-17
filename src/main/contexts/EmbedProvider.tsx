@@ -26,7 +26,7 @@ interface IEmbedContext {
 /** This component provides an embeddedcontext to know if the app is embedded */
 const EmbedProvider: FC<IEmbedContext> = (props) => {
     return (
-        <EmbeddedContext.Provider value={props.embedOptions !== undefined ? true : false}>
+        <EmbeddedContext.Provider value={props.embedOptions !== undefined && !props.embedOptions.showMenu}>
             {props.children}
         </EmbeddedContext.Provider>
     )
