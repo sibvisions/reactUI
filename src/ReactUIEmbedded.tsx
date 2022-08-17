@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useContext, useLayoutEffect } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect } from "react";
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from "./application-frame/screen-management/ui-manager/UIManager";
@@ -38,15 +38,32 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
             document.documentElement.style.setProperty("--main-height", props.style.height as string)
         }
     },[props.style]);
+    
+    useEffect(() => {
+        if (props.embedOptions && props.embedOptions.showMenu) {
+            const elem = document.getElementsByClassName("embed-frame-no-border")[0];
+            const mainHeight = window.getComputedStyle(document.documentElement).getPropertyValue('--main-height');
+            const mainWidth = window.getComputedStyle(document.documentElement).getPropertyValue('--main-width');
+            if (elem) {
+                if (mainHeight && window.getComputedStyle(elem).height && window.getComputedStyle(elem).height !== mainHeight) {
+                    document.documentElement.style.setProperty("--main-height", window.getComputedStyle(elem).height);
+                }
+
+                if (mainWidth && window.getComputedStyle(elem).width && window.getComputedStyle(elem).width !== mainWidth) {
+                    document.documentElement.style.setProperty("--main-width", window.getComputedStyle(elem).width);
+                }
+            }
+        }
+    })
 
     return (
         <AppWrapper embedOptions={props.embedOptions}>
             {context.appReady ?
                 <>
-                    <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
+                    {props.embedOptions && !props.embedOptions.showMenu && <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
                         ReactUI Embedded WorkScreen
-                    </span>
-                    <div className="embed-frame">
+                    </span>}
+                    <div className={props.embedOptions?.showMenu ? "embed-frame-no-border" : "embed-frame"}>
                         <Switch>
                             <Route exact path={"/login"} render={() => <Login />} />
                             <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />

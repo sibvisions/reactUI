@@ -33,14 +33,20 @@ import { IPanel } from "../components/panels/panel/UIPanel";
 import RecordFormat from "../util/types/RecordFormat";
 import { getMetaData } from "../util/data-util/GetMetaData";
 import AppSettings from "../AppSettings";
+import BaseServer from "../server/BaseServer";
+import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
+import { ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 
+// Type for ActiveScreens
 export type ActiveScreen = {
     name: string,
     id: string,
     className?: string
-    popup?: boolean
+    popup?: boolean,
+    title?: string
 }
 
+// Interface for selected-rows
 export interface ISelectedRow {
     dataRow: any,
     index: number,
@@ -48,20 +54,27 @@ export interface ISelectedRow {
     selectedColumn?: string
 }
 
+// Interface for Databooks
 export interface IDataBook {
     data?: Map<string, any>,
     metaData?: MetaDataResponse,
     allFetched?: boolean,
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
-    readOnly?: boolean
+    readOnly?: boolean,
+    isLinkedReferenceTo?: string[]
 }
 
+/** The ContentStore stores active content like user, components and data*/
 export default abstract class BaseContentStore {
-    /** subscriptionManager instance */
+    /** SubscriptionManager instance */
     abstract subManager:SubscriptionManager
 
+    /** AppSettings instance */
     abstract appSettings: AppSettings;
+
+    /** Server instance */
+    abstract server: BaseServer;
 
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
@@ -84,16 +97,14 @@ export default abstract class BaseContentStore {
     /** A Map which stores replace-screens made by the user, the key is the components title and the value a function to build the replace-screen*/
     replaceScreens = new Map<string, Function>();
 
+    /** A map which stores removed custom components made by the user, the key is the components title and the value is the component-object */
     removedCustomComponents = new Map<string, BaseComponent>();
 
     /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
     replacedContent = new Map<string, BaseComponent>();
 
-    /** A Map which stores the navigation names for screens to route, the key is the componentId of the screen and the value is the navigation name */
-    navigationNames = new Map<string, string>();
-
-    /** A Map which stores the translation values, the key is the original text and the value is the translated text */
-    translation = new Map<string, string>();
+    /** A Map which stores the navigation names for screens to route, the key is the navigation name of the screen and the value is an object containing the screenId and the componentId */
+    navigationNames = new Map<string, { screenId: string, componentId: string}>();
 
     /** A Map which stores application parameters sent by the server, the key is the property and the value is the value */
     customProperties = new Map<string, any>();
@@ -104,6 +115,7 @@ export default abstract class BaseContentStore {
     //DataProvider Maps
     dataBooks = new Map<string, Map<string, IDataBook>>();
 
+    // An array of custom-startup-properties which are sent to the server on startup
     customStartUpProperties = new Array<CustomStartupProps>();
 
     /** The currently active screens usually only one screen but with popups multiple possible */
@@ -112,6 +124,7 @@ export default abstract class BaseContentStore {
     /** the react routers history object */
     history?:History<any>;
 
+    /** Global components are extra components which are not available in VisionX but are displayable client-side */
     globalComponents:Map<string, Function> = new Map<string, Function>().set("SignaturePad", (props: BaseComponent) => <SignaturePad {...props} />);
 
     //Maybe unnecessary in the future
@@ -125,17 +138,33 @@ export default abstract class BaseContentStore {
     }
 
     /**
-     * Sets the subscription-manager
+     * Sets the Subscription-Manager instance
      * @param subManager - the subscription-manager instance 
      */
     setSubscriptionManager(subManager:SubscriptionManager) {
         this.subManager = subManager;
     }
 
+    /**
+     * Sets the AppSettings instance
+     * @param appSettings - the appsettings instance
+     */
     setAppSettings(appSettings:AppSettings) {
         this.appSettings = appSettings;
     }
 
+    /**
+     * Sets the server instance
+     * @param server - the server instance
+     */
+    setServer(server:BaseServer) {
+        this.server = server
+    } 
+
+    /**
+     * Sets the custom-startup-properties
+     * @param arr - an array of custom-startup-properties
+     */
     setStartupProperties(arr:CustomStartupProps[]) {
         this.customStartUpProperties = [...this.customStartUpProperties, ...arr];
     }
@@ -365,23 +394,35 @@ export default abstract class BaseContentStore {
         return self.indexOf(value) === index;
     }
 
+    /**
+     * Sets or updates flatContent, removedContent, replacedContent, updates properties and notifies subscriber
+     * that either a popup should be displayed, properties changed, or their parent changed, based on server sent components
+     * @param componentsToUpdate - an array of components sent by the server
+     */
     abstract updateContent(componentsToUpdate: Array<BaseComponent>, desktop:boolean): void;
 
+    /**
+     * Sets the currently active screens or clears the array
+     * @param screenInfo - the screen-info of the newly opened screen or nothing to clear active screens
+     * @param popup - true, if the newly opened screen is a popup
+     */
     abstract setActiveScreen(screenInfo?:ActiveScreen, popup?:boolean): void;
 
     /**
-     * When a screen closes cleanUp the data for the window 
+     * When a screen closes cleanUp the data for the window if it isn't a content and update the active-screens
      * @param windowName - the name of the window to close
      */
-     closeScreen(windowName: string, closeContent?:boolean) {
+     closeScreen(windowName: string, closeContent?:boolean, opensWelcome?:boolean) {
         let window = this.getComponentByName(windowName);
 
         if (window && !closeContent) {
             this.cleanUp(window.id, window.name, window.className);
         }
 
-        this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
-        this.subManager.emitActiveScreens();
+        if (!opensWelcome) {
+            this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+            this.subManager.emitActiveScreens();
+        }
     }
 
     /**
@@ -389,7 +430,7 @@ export default abstract class BaseContentStore {
      * @param id - the id of the parent
      */
      deleteChildren(id:string, className: string) {
-        const children = this.getChildren(id, className);
+        const children = this.getAllChildren(id, className);
         children.forEach(child => {
             this.deleteChildren(child.id, child.className);
             this.flatContent.delete(child.id);
@@ -397,7 +438,7 @@ export default abstract class BaseContentStore {
     }
 
     /**
-     * Deletes the component from flatContent and removes all data from the contentStore, if the compinent is a popup, close it
+     * Deletes the component from flatContent and removes all data from the contentStore
      * @param id - the component id
      * @param name - the component name
      */
@@ -435,20 +476,23 @@ export default abstract class BaseContentStore {
 
     /**
      * Sets or updates the navigation-name for a screen
-     * @param screenName - the name of a screen
      * @param navName - the navigation name of a screen
+     * @param componentId - the componentId to add a screen
      */
-     setNavigationName(screenName:string, navName:string) {
-        let existingMap = this.navigationNames.get(screenName);
-        if (existingMap)
-            existingMap = navName;
-        else
-            this.navigationNames.set(screenName, navName);
+     setNavigationName(navName:string, componentId: string) {
+        let existingNav = this.navigationNames.get(navName);
+        if (existingNav) {
+            existingNav.componentId = componentId;
+        }
+        else {
+            this.navigationNames.set(navName, { componentId: componentId, screenId: "" });
+        }
+            
     }
 
     /**
      * Returns the built window
-     * @param windowName - the name of the window
+     * @param window - the window as active-screen
      * @returns the built window
      */
      getWindow(window: ActiveScreen) {
@@ -480,6 +524,12 @@ export default abstract class BaseContentStore {
     abstract getChildren(id: string, className?: string): Map<string, BaseComponent>;
 
     /**
+     * Returns all visible children of a parent also invisible ones
+     * @param id - the id of the component
+     */
+    abstract getAllChildren(id:string, className?: string): Map<string, BaseComponent>;
+
+    /**
      * Returns the component id of a screen for a component
      * @param id - the id of the component
      * @returns the component id of a screen for a component
@@ -501,6 +551,10 @@ export default abstract class BaseContentStore {
         return comp?.name
     }
 
+    /**
+     * Returns true if the component is a popup or content
+     * @param comp - the component
+     */
     isPopup(comp:IPanel) {
         if (comp.screen_modal_ || comp.content_modal_) {
             return true;
@@ -508,6 +562,10 @@ export default abstract class BaseContentStore {
         return false;
     }
 
+    /**
+     * Returns the dataproviders of a screen as map
+     * @param screenId - the screen-id
+     */
     getScreenDataproviderMap(screenId:string): Map<string, IDataBook>|undefined {
         if (this.dataBooks.has(screenId)) {
             return this.dataBooks.get(screenId);
@@ -515,6 +573,11 @@ export default abstract class BaseContentStore {
         return undefined
     }
 
+    /**
+     * Returns the databook of a specific screen
+     * @param screenId - the name of the screen
+     * @param dataProvider - the dataprovider
+     */
     getDataBook(screenId:string, dataProvider:string): IDataBook|undefined {
         if (this.getScreenDataproviderMap(screenId)?.has(dataProvider)) {
             return this.getScreenDataproviderMap(screenId)!.get(dataProvider);
@@ -608,7 +671,7 @@ export default abstract class BaseContentStore {
      * @param to - to which row will be set/updated
      * @param from - from which row will be set/updated
      * @param referenceKey - the primary key value of the master-reference
-     * @param selectedRow - the currently selected row of the master-reference
+     * @param clear - clears the data from the dataprovider
      */
      updateDataProviderData(
         screenName:string, 
@@ -616,9 +679,7 @@ export default abstract class BaseContentStore {
         newDataSet: Array<any>, 
         to:number, 
         from:number, 
-        treePath?:number[], 
         referenceKey?:string,
-        recordFormat?: RecordFormat,
         clear?:boolean
     ) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
@@ -699,20 +760,60 @@ export default abstract class BaseContentStore {
         }
     }
 
+    /**
+     * Sets or updates the meta the metadata of a databook and notfies the metadata-subscribers.
+     * @param screenName - the name of the screen
+     * @param metaData - the metadata to set
+     */
     setMetaData(screenName: string, metaData: MetaDataResponse) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
+        const existingMapModified = this.getScreenDataproviderMap(screenName);
+        const modifiedMetaData = {...metaData, columns: metaData.columns.map((column => {
+            
+            const castedCellEditor = column.cellEditor as ICellEditorLinked;
+            const linkReference = castedCellEditor.linkReference;
+            if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
+                if (existingMapModified) {
+                    if (existingMapModified.has(linkReference.referencedDataBook)) {
+                        const dataBook = (existingMapModified.get(linkReference.referencedDataBook) as IDataBook)
+                        if (!dataBook.isLinkedReferenceTo) {
+                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).isLinkedReferenceTo = [metaData.dataProvider];
+                        }
+                        else if (dataBook.isLinkedReferenceTo && !dataBook.isLinkedReferenceTo.includes(metaData.dataProvider)) {
+                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).isLinkedReferenceTo?.push(metaData.dataProvider);
+                        }
+                    }
+                    else {
+                        existingMapModified.set(linkReference.referencedDataBook, {isLinkedReferenceTo: [metaData.dataProvider]});
+                    }
+                }
+                else {
+                    const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
+                    tempMap.set(linkReference.referencedDataBook, {isLinkedReferenceTo: [metaData.dataProvider]});
+                    this.dataBooks.set(screenName, tempMap);
+                }
+
+
+                if (!linkReference.columnNames.length && linkReference.referencedColumnNames.length) {
+                    linkReference.columnNames.push(column.name)
+                }
+            } 
+            return column
+        }))}
+
         const existingMap = this.getScreenDataproviderMap(screenName);
+
         if (existingMap) {
             if (existingMap.has(metaData.dataProvider)) {
-                (existingMap.get(metaData.dataProvider) as IDataBook).metaData = metaData;
+                (existingMap.get(metaData.dataProvider) as IDataBook).metaData = modifiedMetaData;
             }
             else {
-                existingMap.set(metaData.dataProvider, {metaData: metaData});
+                existingMap.set(metaData.dataProvider, {metaData: modifiedMetaData});
             }
         }
         else {
             const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
-            tempMap.set(metaData.dataProvider, {metaData: metaData})
+            tempMap.set(metaData.dataProvider, {metaData: modifiedMetaData})
             this.dataBooks.set(screenName, tempMap);
         }
         this.subManager.notifyMetaDataChange(screenName, metaData.dataProvider);
@@ -801,10 +902,13 @@ export default abstract class BaseContentStore {
      getDataRow(screenName:string, dataProvider: string, indexOfRow: number) : any{
         const data = this.getData(screenName, dataProvider);
         const dataRow = data[indexOfRow];
-        if(dataRow)
+        if(dataRow) {
             return dataRow;
-        else
+        }
+        else {
             return undefined
+        }
+            
     }
 
     /**
@@ -821,6 +925,7 @@ export default abstract class BaseContentStore {
                 (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn};
             }
             else {
+                // If the compPanel is a popup use the screenName shown in the dataProvider
                 if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.selectedRow) {
                     let popupSR:IDataBook = {selectedRow: this.getDataBook(dataProvider.split('/')[1], dataProvider)!.selectedRow };
                     popupSR.selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}
@@ -833,6 +938,7 @@ export default abstract class BaseContentStore {
         }
         else {
             const tempMapRow = new Map<string, IDataBook>();
+            // If the compPanel is a popup use the screenName shown in the dataProvider
             if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.selectedRow) {
                 let popupSR:IDataBook = {selectedRow: this.getDataBook(dataProvider.split('/')[1], dataProvider)!.selectedRow };
                 popupSR.selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}

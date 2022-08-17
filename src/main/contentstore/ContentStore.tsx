@@ -23,14 +23,21 @@ import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
 import { BaseMenuButton, ServerMenuButtons } from "../response/data/MenuResponse";
 import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperType";
 import AppSettings from "../AppSettings";
+import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
+import Server from "../server/Server";
 
-/** The ContentStore stores active content like user, components and data*/
+/** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: partial*/
 export default class ContentStore extends BaseContentStore {
-    /** subscriptionManager instance */
+    /** SubscriptionManager instance */
     subManager: SubscriptionManager = new SubscriptionManager(this);
 
+    /** AppSettings instance */
     appSettings: AppSettings = new AppSettings(this, this.subManager);
 
+    /** Server instance */
+    server: Server = new Server(this, this.subManager, this.appSettings, this.history);
+
+    /** A Map which stores the menugroup as key and an array of the menu-item objects usable by PrimeReact as values */
     menuItems = new Map<string, Array<ServerMenuButtons>>();
 
     /** The toolbar-entries sent by the server */
@@ -39,9 +46,7 @@ export default class ContentStore extends BaseContentStore {
     /** The current logged in user */
     currentUser: UserData = new UserData();
 
-    /** A Map which stores a workscreens nav-name as key and the componentId of the menu as value to open screens when navigating */
-    navOpenScreenMap = new Map<string, string>();
-
+    /** A cache for the dialog-buttons to know which component-id to send to the server */
     dialogButtons:Array<string> = new Array<string>();
 
     /**
@@ -323,8 +328,48 @@ export default class ContentStore extends BaseContentStore {
         return children;
     }
 
+    getAllChildren(id: string, className?: string): Map<string, BaseComponent> {
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent, ...this.removedContent]);
+        const componentEntries = mergedContent.entries();
+        let children = new Map<string, BaseComponent>();
+        let entry = componentEntries.next();
+        let parentId = id;
+
+        if (className) {
+            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
+                parentId = mergedContent.get(parentId)!.parent as string
+            }
+        }
+
+        while (!entry.done) {
+            const value = entry.value[1];
+
+            if (value.parent === parentId && !this.removedCustomComponents.has(value.name)) {
+                if (parentId.includes("TP")) {
+                    children.set(value.id, value);
+                }
+                else {
+                    children.set(value.id, value);
+                }
+            }
+            entry = componentEntries.next();
+        }
+        if (className) {
+            if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                children = new Map([...children].filter(entry => entry[0].includes("-tb")));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                children = new Map([...children].filter(entry => entry[1]["~additional"]));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
+            }
+        }
+        return children;
+    }
+
     /**
-     * Adds a menuItem to the contentStor
+     * Adds a menuItem to the contentStore
      * @param menuItem - the menuItem
      */
      addMenuItem(menuItem: ServerMenuButtons){
@@ -335,6 +380,8 @@ export default class ContentStore extends BaseContentStore {
         else {
             this.menuItems.set(menuItem.group, [menuItem]);
         }
+
+        this.setNavigationName(menuItem.navigationName + getNavigationIncrement(menuItem.navigationName, this.navigationNames), menuItem.componentId);
     }
 
     /**
@@ -358,7 +405,7 @@ export default class ContentStore extends BaseContentStore {
     registerCustomOfflineScreen(title: string, group: string, customScreen: ReactElement, icon?:string){
         const menuButton: ServerMenuButtons = {
             group: group,
-
+            navigationName: "",
             componentId: "",
             image: icon ? icon.substring(0,2) + " " + icon : "",
             text: title,

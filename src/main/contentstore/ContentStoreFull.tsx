@@ -21,13 +21,19 @@ import BaseComponent from "../util/types/BaseComponent";
 import { IPanel } from "../components/panels/panel/UIPanel";
 import { isWorkScreen } from "../util/component-util/IsWorkScreen";
 import AppSettings from "../AppSettings";
+import ServerFull from "../server/ServerFull";
 
+/** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: full*/
 export default class ContentStoreFull extends BaseContentStore {
-    /** subscriptionManager instance */
+    /** SubscriptionManager instance */
     subManager: SubscriptionManager = new SubscriptionManager(this);
 
     /** AppSettings instance */
     appSettings: AppSettings = new AppSettings(this, this.subManager);
+
+    /** Server instance */
+    server: ServerFull = new ServerFull(this, this.subManager, this.appSettings, this.history);
+
     /**
      * Sets the currently active screens or clears the array
      * @param screenInfo - the screen-info of the newly opened screen or nothing to clear active screens
@@ -261,6 +267,53 @@ export default class ContentStoreFull extends BaseContentStore {
      * @param id - the id of the component
      */
      getChildren(id: string, className?: string): Map<string, BaseComponent> {
+        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
+        const componentEntries = mergedContent.entries();
+        let children = new Map<string, BaseComponent>();
+        let entry = componentEntries.next();
+        let parentId = id;
+
+        if (className) {
+            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
+                parentId = mergedContent.get(parentId)!.parent as string
+            }
+        }
+
+        while (!entry.done) {
+            const value = entry.value[1];
+
+            if (parentId && parentId.includes("-frame-tb")) {
+                parentId = parentId.substring(0, parentId.indexOf("-"));
+            }
+
+            if (value.parent === parentId && !this.removedCustomComponents.has(value.name) && value.className !== COMPONENT_CLASSNAMES.MENUBAR) {
+                if (parentId.includes("TP")) {
+                    children.set(value.id, value);
+                }
+                else if (value.visible !== false) {
+                    children.set(value.id, value);
+                }
+            }
+            entry = componentEntries.next();
+        }
+        if (className) {
+            if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                children = new Map([...children].filter(entry => entry[0].includes("-tb")));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                children = new Map([...children].filter(entry => entry[1]["~additional"]));
+            }
+            else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
+            }
+            else if (className === COMPONENT_CLASSNAMES.MOBILELAUNCHER || className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
+                children = new Map([...children].filter(entry => !entry[1]["~additional"]));
+            }
+        }
+        return children;
+    }
+
+    getAllChildren(id: string, className?: string): Map<string, BaseComponent> {
         const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
         const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();

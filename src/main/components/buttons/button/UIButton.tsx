@@ -28,17 +28,15 @@ import { IButton } from "../IButton";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
-
-
+import { IExtendableButton } from "../../../extend-components/buttons/ExtendButton";
 
 /**
  * This component displays a basic button
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIButton: FC<IButton> = (baseProps) => {
+const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
@@ -46,7 +44,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButton & IExtendableButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)
@@ -69,7 +67,11 @@ const UIButton: FC<IButton> = (baseProps) => {
 
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
-    const onButtonPress = () => {
+    const onButtonPress = (event:any) => {
+        if (props.onClick) {
+            props.onClick(event)
+        }
+
         if (props.eventAction) {
             const req = createDispatchActionRequest();
             req.componentId = props.name;
@@ -80,7 +82,7 @@ const UIButton: FC<IButton> = (baseProps) => {
     return (
         <span ref={buttonWrapperRef} style={layoutStyle}>
             <Button
-                id={checkComponentName(props.name)}
+                id={props.name}
                 ref={buttonRef}
                 className={concatClassnames(
                     "rc-button",
@@ -118,7 +120,7 @@ const UIButton: FC<IButton> = (baseProps) => {
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnStyle.iconPos}
                 tabIndex={btnStyle.tabIndex}
-                onClick={onButtonPress}
+                onClick={(event) => onButtonPress(event)}
                 onFocus={(event) => {
                     if (props.eventFocusGained) {
                         onFocusGained(props.name, context.server);

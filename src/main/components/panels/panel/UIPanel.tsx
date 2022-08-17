@@ -24,7 +24,6 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/compone
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
@@ -143,7 +142,7 @@ export function panelGetStyle(group: boolean, layoutStyle?: CSSProperties, prefS
  */
 const UIPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -180,14 +179,14 @@ const UIPanel: FC<IPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             <div
                 className={concatClassnames(
                     "rc-panel",
                     props.style
                 )}
                 ref={panelRef}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,

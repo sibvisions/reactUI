@@ -13,13 +13,14 @@
  * the License.
  */
 
-import React, { FC, ReactElement, useContext } from "react";
+import React, { FC, ReactElement, useContext, useEffect, useState } from "react";
 import { Dialog } from 'primereact/dialog';
 import { appContext } from "../../../contexts/AppProvider";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
 import { IPanel } from "../panel/UIPanel";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { IExtendablePopup } from "../../../extend-components/panels/ExtendPopupWrapper";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -30,12 +31,28 @@ export interface IPopup extends IPanel {
  * Component which is a wrapper for a Panel if it is a PopupPanel
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIPopupWrapper: FC<IPopup> = (baseProps) => {
+const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** The current app-theme e.g. "basti" */
+    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
+
+    /** Subscribes the resize-handler to the theme */
+    useEffect(() => {
+        context.subscriptions.subscribeToTheme("popup", (theme:string) => setAppTheme(theme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromTheme("popup");
+        }
+    }, [context.subscriptions]);
+
     /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen */
     const handleOnHide = () => {
+        if (baseProps.onClose) {
+            baseProps.onClose();
+        }
+
         if (baseProps.screen_modal_) {
             const csRequest = createCloseScreenRequest();
             csRequest.componentId = baseProps.name;
@@ -62,11 +79,15 @@ const UIPopupWrapper: FC<IPopup> = (baseProps) => {
         }
     }
 
+    // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any
     return (
         <Dialog
-            className={concatClassnames("rc-popup", baseProps.style, "basti")}
+            className={concatClassnames("rc-popup", baseProps.style, appTheme)}
             header={baseProps.screen_title_ || baseProps.content_title_}
             visible={baseProps.screen_modal_ || baseProps.content_modal_}
+            onDrag={(e) => baseProps.onDrag ? baseProps.onDrag(e) : undefined}
+            onDragStart={(e) => baseProps.onDragStart ? baseProps.onDragStart(e) : undefined}
+            onDragEnd={(e) => baseProps.onDragEnd ? baseProps.onDragEnd(e) : undefined}
             onHide={handleOnHide} 
             resizable={false}
             baseZIndex={1010}

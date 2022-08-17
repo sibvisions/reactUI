@@ -13,6 +13,7 @@
  * the License.
  */
 
+/** Interface for the login-credentials */
 interface ILoginCredentials {
     username: string,
     password: string

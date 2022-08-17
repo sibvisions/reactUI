@@ -25,6 +25,7 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 type ShowPopupFn = (id: string) => void;
 type HidePopupFn = () => void;
 
+// Creates a popup-context with functions to show and hide the menu and an event function
 const PopupContext = createContext<{
     showPopup: ShowPopupFn;
     hidePopup: HidePopupFn;
@@ -35,6 +36,7 @@ const PopupContext = createContext<{
     onContextMenu: () => {},
 });
 
+// Creates the popupmenu
 function makeMenu(flatItems: Map<string, BaseComponent>, parent: string, context: any): MenuItem[] {
     return Array.from(flatItems.values())
         .filter(item => item.parent === parent)
@@ -66,15 +68,27 @@ function makeMenu(flatItems: Map<string, BaseComponent>, parent: string, context
     
 }
 
+// Provides the popup-context to its children
 export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** Reference for the last event */
     const lastEvent = useRef<SyntheticEvent>();
+
+    /** Reference for the context menu */
     const contextMenu = useRef<ContextMenu>();
+
+    /** State of the popup-menu-item-model */
     const [model, setModel] = useState<any>([{
         label:'Hello World',
         icon:'pi pi-fw pi-external-link'
     }]);
+
+    /** Reference which popup is currently opened */
     const popup = useRef<string>();
+
+    // Sets the model and shows the popup if the given id is not the current popup id and the lastEvent isn't null
     const showPopup = useCallback<ShowPopupFn>((id) => {
         if (id !== popup.current && lastEvent.current) {
             setModel(makeMenu(context.contentStore.flatContent, id, context));
@@ -83,6 +97,8 @@ export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
             lastEvent.current = undefined;
         }
     }, []);
+
+    // Hides the popup if it is opened and the lastEvent isn't null
     const hidePopup = useCallback<HidePopupFn>(() => {
         if (popup.current && lastEvent.current) {
             contextMenu.current?.hide(lastEvent.current);
@@ -90,6 +106,8 @@ export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
             lastEvent.current = undefined;
         }
     }, []);
+
+    // When the popup-menu hides, send a close-popup-menu-request to the server
     const onHide = useCallback(() => {
         if(popup.current) {
             context.server.sendRequest(createComponentRequest({
@@ -123,12 +141,15 @@ export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
 }
 
 export const usePopupMenu = (props: any) => {
+    // Use the Popup-Context to use its functions
     const popupContext = useContext(PopupContext);
 
+    // end if the server sent no popup property
     if(!props.hasOwnProperty("popupMenu")) {
         return {};
     }
 
+    // Show or hide popup
     const { popupMenu } = props;
     if (popupMenu) {
         popupContext.showPopup(popupMenu);

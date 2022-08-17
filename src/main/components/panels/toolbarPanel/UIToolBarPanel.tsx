@@ -21,7 +21,6 @@ import useComponents from "../../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import Dimension from "../../../util/types/Dimension";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
 
@@ -74,11 +73,11 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
                 className={props.style}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,

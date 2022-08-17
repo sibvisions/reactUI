@@ -21,7 +21,6 @@ import useComponents from "../../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Dimension from "../../../util/types/Dimension";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
@@ -32,7 +31,7 @@ import Layout from "../../layouts/Layout";
  */
 const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -58,6 +57,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Removes 17px from width and/or height of the panel for the layout-calculation to make room for the scrollbar if a scrollbar is needed */
     const scrollStyle = useMemo(() => {
         let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, context.transferType);
         let foundHigher = false;
@@ -122,10 +122,10 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
 
     return (
         <>
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 className={concatClassnames(
                     "rc-scrollpanel",
                     props.style

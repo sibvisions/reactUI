@@ -13,6 +13,11 @@
  * the License.
  */
 
+/**
+ * Returns the tabIndex of a component
+ * @param focusable - True or undefined, if the component is focusable
+ * @param tabIndex - the tabindex of the component
+ */
 export function getTabIndex(focusable:boolean|undefined, tabIndex:number|undefined): number|undefined {
     return focusable !== false ? tabIndex : -1
 }

@@ -40,11 +40,16 @@ const useMenuItems = (menus?:string[]) => {
      * @returns unsubscribing from menuchanges on unmount
      */
     useEffect(() => {
+        // Returns a menu-item which can be used by the PrimeReact MenuModel-API
         const getMenuItem = (item: ServerMenuButtons|BaseComponent):MenuItemCustom|MenuItem => {
+            // Checks if the given item has been sent by the server transfertype full
             const isBaseComp = (item:ServerMenuButtons|BaseComponent): item is BaseComponent => {
                 return (item as BaseComponent).id !== undefined
             }
+
             const iconData = parseIconData(undefined, item.image)
+
+            // Setting initial menu-item properties
             const menuItem:MenuItem = {
                 label: item.text,
                 icon: iconData.icon,
@@ -58,6 +63,7 @@ const useMenuItems = (menus?:string[]) => {
                 separator: item.className === "Separator" ? true : false,
             }
 
+            // If the item is sent by the server add a dispatch-action command and if the icon is custom add a classname
             if (isBaseComp(item)) {
                 menuItem.command = item.eventAction 
                 ? 
@@ -71,6 +77,7 @@ const useMenuItems = (menus?:string[]) => {
                 menuItem.className = !isFAIcon(iconData.icon) ? "custom-menu-icon" : "";
                 return menuItem
             }
+            // If transferType is partial add some more properties which are needed by the menu
             else {
                 const castedMenuItem = menuItem as MenuItemCustom
                 castedMenuItem.command = () => showTopBar(item.action(), topbar);
@@ -81,34 +88,44 @@ const useMenuItems = (menus?:string[]) => {
             }
         }
 
+        // Builds the menu-item hirarchy for transferType partial
         const receiveNewMenuItems = (menuGroup: Map<string, Array<ServerMenuButtons>>) => {
             const primeMenu = new Array<MenuItem>();
 
+            // Returns an array of menu-items for the Prime-React menu
             const getSubItems = (arr: Array<ServerMenuButtons>) => {
                 return arr.map(menuItem => getMenuItem(menuItem));
             }
 
             menuGroup.forEach((value, key) => {
+                // Split for submenus
                 const nameSplit = key.split("/");
                 let menuIterator = primeMenu;
                 let i = 0
                 while (i < nameSplit.length) {
-                    const foundEntry = menuIterator.find(item => item.label === nameSplit[i]);
-                    if (!foundEntry) {
+                    const foundMenuGroup = menuIterator.find(item => item.label === nameSplit[i]);
+                    // If the menu-group hasn't been found add it
+                    if (!foundMenuGroup) {
                         const newMainMenuGroup = {
                             label: nameSplit[i],
                             icon: undefined,
+                            // If i is nameSplit.length - 1 it is the last level and we can just get the final subitem-level
+                            // If not we can leave the items array empty and it gets filled later.
                             items: i === nameSplit.length - 1 ?
-                            getSubItems(value) : []
+                            getSubItems(value) : [],
+                            className: i !== 0 ? "is-submenu " : ""
                         };
+                        // The new menu-group gets pushed to the menu-iterator and the new menuIterator becomes the menu-groups (sub-)items array
+                        // because the next entries in the loop can only be children of the menu-group
                         menuIterator.push(newMainMenuGroup)
                         menuIterator = newMainMenuGroup.items;
                     }
+                    // If the menu-group has been found, add the subitems to the existing ones
                     else {
                         if (i === nameSplit.length - 1) {
-                            foundEntry.items = [...(foundEntry.items as MenuItem[]), ...getSubItems(value)];
+                            foundMenuGroup.items = [...(foundMenuGroup.items as MenuItem[]), ...getSubItems(value)];
                         }
-                        menuIterator = foundEntry.items as MenuItem[];
+                        menuIterator = foundMenuGroup.items as MenuItem[];
                     }
                     i++;
                 }
@@ -116,13 +133,16 @@ const useMenuItems = (menus?:string[]) => {
             setMenuItems(primeMenu);
         }
 
+        // Builds the menu-item hirarchy for transferType full
         const receiveNewMenuItemsV2 = (menuId:string) => {
             let primeMenu:MenuItem = {};
 
+            // Returns an array of menu-items for the Prime-React menu
             const getSubItems = (arr: BaseComponent[]) => {
                 return arr.map(menuItem => getMenuItem(menuItem))
             }
 
+            // Check if the menuId is in the contentstore and add it
             const menuGroup = context.contentStore.getComponentById(menuId);
             if (menuGroup) {
                 const menuItems = Array.from((context.contentStore as ContentStoreFull).getChildren(menuId).values()).filter(item => item.visible !== false);
@@ -136,6 +156,7 @@ const useMenuItems = (menus?:string[]) => {
             return primeMenu
         }
 
+        // TransferType full builds menus, sets the state and needs to subscribe to parent-changes
         if (context.transferType === "full") {
             if (menus) {
                 const tempMenuItems:MenuItem[] = []
@@ -159,8 +180,8 @@ const useMenuItems = (menus?:string[]) => {
                     }))   
                 });
             }
-
         }
+        //TransferType partial builds menus and subscribes to menu-change
         else {
             receiveNewMenuItems(context.contentStore.menuItems);
             context.subscriptions.subscribeToMenuChange(receiveNewMenuItems);

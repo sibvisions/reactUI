@@ -21,14 +21,16 @@ import useComponentConstants from "../../hooks/components-hooks/useComponentCons
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../util/component-util/IsCompDisabled";
 import { sendSetValue } from "../../util/server-util/SendSetValues";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { IExtendableText } from "../../extend-components/text/ExtendText";
 
+/** Interface for TextAreas */
 interface ITextArea extends ITextField {
     rows?:number
 }
@@ -37,12 +39,12 @@ interface ITextArea extends ITextField {
  * This component displays a textarea not linked to a databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UITextArea: FC<ITextArea> = (baseProps) => {
+const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
     /** Reference for the textarea */
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<ITextArea>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<ITextArea & IExtendableText>(baseProps);
 
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text || "");
@@ -66,7 +68,7 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
     return (
         <InputTextarea 
             ref={inputRef} 
-            id={checkComponentName(props.name)}
+            id={props.name}
             className={concatClassnames(
                 "rc-input", 
                 props.focusable === false ? 
@@ -76,10 +78,20 @@ const UITextArea: FC<ITextArea> = (baseProps) => {
             )}
             value={text||""}
             style={{...layoutStyle, ...compStyle, resize: 'none'}} 
-            onChange={event => setText(event.currentTarget.value)} 
+            onChange={event => {
+                if (props.onChange) {
+                    props.onChange({ originalEvent: event, value: event.currentTarget.value });
+                }
+
+                setText(event.currentTarget.value)
+            }} 
             onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-            onBlur={() => {
+            onBlur={(event) => {
                 if (!isCompDisabled(props)) {
+                    if (props.onBlur) {
+                        props.onBlur(event);
+                    }
+
                     sendSetValue(props.name, text, context.server, lastValue.current, topbar);
                     lastValue.current = text;
     

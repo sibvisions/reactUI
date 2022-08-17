@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useCallback, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
@@ -29,8 +29,8 @@ import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import { IExtendableChoiceEditor } from "../../../extend-components/editors/ExtendChoiceEditor";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor {
@@ -49,7 +49,7 @@ export interface IEditorChoice extends IRCCellEditor {
  * being clicked different images then will be displayed and the value in the databook will be changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorChoice: FC<IEditorChoice> = (props) => {
+const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
 
@@ -71,6 +71,7 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
     /** Check if the ChoiceCellEditor only accepts two values */
     const viableAriaPressed = props.cellEditor.allowedValues.length === 2 && props.cellEditor.allowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
 
+    // Sets the background-color if cellFormatting is set in a cell-editor
     useLayoutEffect(() => {
         if (props.isCellEditor && wrapRef.current) {
             if (props.cellFormatting && props.colIndex !== undefined && props.cellFormatting[props.colIndex]) {
@@ -177,6 +178,13 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             showTopBar(props.context.server.sendRequest(setValReq, REQUEST_KEYWORDS.SET_VALUES), props.topbar);
         }
     }
+
+    // If the lib user extends the ChoiceCellEditor with onChange, call it when slectedRow changes.
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange({ value: currentImageValue, allowedValues: props.cellEditor.allowedValues })
+        }
+    }, [currentImageValue, props.onChange]);
     
     return (
         <span
@@ -220,17 +228,23 @@ const UIEditorChoice: FC<IEditorChoice> = (props) => {
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
              >
-            <Tooltip target={!props.isCellEditor ? "#" + checkComponentName(props.name) : undefined} />
+            <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
             <img
                 ref={imgRef}
-                id={!props.isCellEditor ? checkComponentName(props.name) : undefined}
+                id={!props.isCellEditor ? props.name : undefined}
                 className={concatClassnames(
                     "rc-editor-choice-img", 
                     props.isReadOnly ? "choice-read-only" : "",
                     props.style
                 )}
                 alt=""
-                onClick={setNextValue}
+                onClick={(event) => {
+                    if (props.onClick) {
+                        props.onClick(event);
+                    }
+
+                    setNextValue()
+                }}
                 src={currentImageValue !== "invalid" ?
                     props.context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
                         currentImageValue

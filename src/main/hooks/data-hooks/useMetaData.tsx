@@ -37,6 +37,7 @@ const useMetaData = <T extends string|undefined, U extends "numeric"|undefined>(
     /** Current state of the data received by the dataprovider */
     const [metaData, setMetaData] = useState<FullOrColumn<T, U>|undefined>(getMetaData(screenName, dataProvider, context.contentStore, column));
 
+    // Subscribes to meta-data changes
     useEffect(() => {
         context.subscriptions.subscribeToMetaData(screenName, dataProvider, () => setMetaData(getMetaData(screenName, dataProvider, context.contentStore, column)));
         return () => context.subscriptions.unsubscribeFromMetaData(screenName, dataProvider, () => setMetaData(getMetaData(screenName, dataProvider, context.contentStore, column)));

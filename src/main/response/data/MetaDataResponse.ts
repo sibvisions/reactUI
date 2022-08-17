@@ -28,6 +28,7 @@ export type MetaDataReference = {
     referencedDataBook: string
 }
 
+// Interface for column-description
 export interface ColumnDescription {
     name:string,
     label: string,
@@ -45,11 +46,12 @@ export interface ColumnDescription {
     sortable: boolean,
     movable: boolean
 }
-
+// Interface for length-based column-descriptions
 export interface LengthBasedColumnDescription extends ColumnDescription {
     length: number
 }
 
+// Interface for numeric-based column-descriptions
 export interface NumericColumnDescription extends LengthBasedColumnDescription {
     precision: number,
     scale: number,

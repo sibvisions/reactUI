@@ -21,12 +21,13 @@ import Layout from "../layouts/Layout";
 
 /**
  * This component displays a menubar for a frame
- * @param baseProps - the base properties received from the frame
+ * @param props - the base properties received from the frame
  */
 const UIToolbar: FC<any> = (props) => {
-
+    /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(props.id, props.className);
 
+    /** reports the size to its frame */
     const reportSize = (size:Dimension) => {
         props.sizeCallback({ height: size.height + 1, width: size.width });
     };

@@ -40,6 +40,11 @@ export function getScreensData(dataProviderMap:Map<string, IDataBook>|undefined,
     return new Map();
 }
 
+/**
+ * Returns the selected-rows of given databooks as a map
+ * @param pMap - the databook map of a screen
+ * @param dataBooks - the databooks of a screen
+ */
 export function getScreenSelectedRows(pMap:Map<string, IDataBook>|undefined, dataBooks:string[]): Map<string, ISelectedRow | undefined> {
     if (pMap !== undefined) {
         const tempMap = new Map();

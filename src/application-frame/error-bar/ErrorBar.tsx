@@ -13,13 +13,16 @@
  * the License.
  */
 
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 
+/**
+ * Interface for server-error messages
+ */
 export type IServerFailMessage = {
     headerMessage:string,
     bodyMessage:string,
@@ -31,15 +34,15 @@ export type IServerFailMessage = {
 /**
  * This component displays an error-message as a bar "above" the application.
  * The application is not usable behind the error because of a glass-pane
- * @param props - contains the error message and if the session is expired or server error
  */
 const ErrorBar:FC = () => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();
 
+    /** True, if the error-bar is visible */
     const [visible, setVisible] = useState<boolean>(false);
 
-    /** Reference for the dialog which shows the timeout error message */
+    /** Reference for the dialog which shows the error message */
     const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {} });
 
     /** History of react-router-dom */
@@ -48,6 +51,7 @@ const ErrorBar:FC = () => {
     /** True, if a request has already been sent, to prevent multiple requests being sent when spamming "esc" or click */
     const alreadySent = useRef<boolean>(false);
 
+    // Subscribes to the error-bar visibility and the properties of which information to show/execute
     useEffect(() => {
         context.subscriptions.subscribeToErrorBarVisible((show: boolean) => setVisible(show));
         context.subscriptions.subscribeToErrorBarProps((
@@ -70,6 +74,7 @@ const ErrorBar:FC = () => {
         }
     }, [context.subscriptions])
 
+    // When the errorProps change, set alreadySent to false
     useEffect(() => {
         if (alreadySent.current) {
             alreadySent.current = false;
@@ -107,10 +112,10 @@ const ErrorBar:FC = () => {
     }
 
     /**
-     * Either starts the session restart or retries the last failed request
+     * Either starts the session restart or retries the last failed request, with escape or space key
      */
     useEventHandler(errorProps.sessionExpired || errorProps.gone || errorProps.retry ? document.body : undefined, "keydown", (event) => {
-        if ([" ", "Escape"].indexOf((event as KeyboardEvent).key) !== -1) {
+        if ([" ", "Escape"].indexOf(event.key) !== -1) {
             handleRetry()
         }
     });

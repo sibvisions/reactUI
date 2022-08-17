@@ -16,14 +16,13 @@
 import { useEffect, useState, useContext, useCallback } from "react";
 import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../contexts/AppProvider";
-import { createLogoutRequest } from "../../factories/RequestFactory";
-import useTranslation from "../app-hooks/useTranslation";
+import { createAboutRequest, createLogoutRequest } from "../../factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
 import { LIB_VERSION } from "../../../version";
 import ContentStore from "../../contentstore/ContentStore";
 import { MenuOptions, VisibleButtons } from "../../AppSettings";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
-import ApplicationSettingsResponse from "../../response/app/ApplicationSettingsResponse";
+import { translation } from "../../util/other-util/Translation";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -31,16 +30,17 @@ import ApplicationSettingsResponse from "../../response/app/ApplicationSettingsR
 const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** Current state of translations */
-    const translations = useTranslation();
+
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    const [slideOptions, setSlideOptions] = useState<Array<MenuItem>>();
+    /** The model of the profile-menu */
+    const [model, setModel] = useState<Array<MenuItem>>();
 
+    /** True, if change-password is enabled */
     const [changePwEnabled, setChangePwEnabled] = useState<boolean>(context.appSettings.changePasswordEnabled);
 
-    /** removes authKey from local storage, resets contentstore and sends logoutRequest to server */
+    /** removes authKey from local storage, resets contentstore and sends logout-request to server */
     const sendLogout = useCallback(() => {
         const logoutRequest = createLogoutRequest();
         localStorage.removeItem("authKey")
@@ -48,16 +48,14 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         showTopBar(context.server.sendRequest(logoutRequest, REQUEST_KEYWORDS.LOGOUT), topbar)
     }, [context.server, context.contentStore]);
 
+    // Subscribes to appsettings
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((menuOptions: MenuOptions, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
 
-        return () => context.subscriptions.unsubscribeFromAppSettings((appSettings: ApplicationSettingsResponse) => {
-            if (appSettings.changePassword !== undefined) {
-                setChangePwEnabled(appSettings.changePassword)
-            }
-        });
+        return () => context.subscriptions.unsubscribeFromAppSettings((menuOptions: MenuOptions, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
     }, [])
 
+    // Building the profile-menu-model
     useEffect(() => {
         const currUser = (context.contentStore as ContentStore).currentUser;
         const profileMenuItems: MenuItem[] = []
@@ -65,7 +63,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         if (changePwEnabled) {
             profileMenuItems.push(
                 {
-                    label: translations.get("Change password"),
+                    label: translation.get("Change password"),
                     icon: "pi pi-lock-open",
                     command(e: MenuItemCommandParams) {
                         context.subscriptions.emitChangePasswordVisible()
@@ -74,19 +72,9 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             )
         }
 
-        if (logoutVisible !== false) {
-            profileMenuItems.push({
-                label: translations.get("Logout"),
-                icon: "pi pi-power-off",
-                command(e: MenuItemCommandParams) {
-                    sendLogout()
-                }
-            })
-        }
-
         if (restartVisible && context.server.preserveOnReload) {
             profileMenuItems.push({
-                label: translations.get("Restart"),
+                label: translation.get("Restart"),
                 icon: "pi pi-refresh",
                 command(e: MenuItemCommandParams) {
                     const startupRequestCache = sessionStorage.getItem("startup");
@@ -109,19 +97,36 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             label: "Info",
             icon: "pi pi-info-circle",
             command(e: MenuItemCommandParams) {
-                context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
+                showTopBar(context.server.sendRequest(createAboutRequest(), REQUEST_KEYWORDS.ABOUT), topbar)
+                //context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
             }
         })
-        setSlideOptions([
+
+        profileMenuItems.push({
+            separator: true
+        })
+
+        if (logoutVisible !== false) {
+            profileMenuItems.push({
+                label: translation.get("Logout"),
+                icon: "pi pi-power-off",
+                command(e: MenuItemCommandParams) {
+                    sendLogout()
+                }
+            })
+        }
+
+
+        setModel([
             {
                 label: currUser.displayName,
                 icon: currUser.profileImage ? 'profile-image' : 'profile-image-null fas fa-user',
                 items: profileMenuItems
             }
         ])
-    }, [(context.contentStore as ContentStore).currentUser, translations, changePwEnabled])
+    }, [(context.contentStore as ContentStore).currentUser, translation, changePwEnabled])
 
-    return slideOptions;
+    return model;
 }
 
 export default useProfileMenuItems;

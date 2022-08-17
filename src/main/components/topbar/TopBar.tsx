@@ -17,21 +17,30 @@ import React, { FC, useState, createContext } from "react";
 import TopBarProgress from "react-topbar-progress-indicator";
 import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
 
+// Interface for the topbar-context
 export interface TopBarContextType {
     show: Function
     hide: Function
 }
+
 
 export const TopBarContext = createContext<TopBarContextType>({
     show: () => {},
     hide: () => {}
 });
 
+/**
+ * Shows the topbar and after the promise is fulfilled, the topbar disappears
+ * @param promise - the promise which is being sent
+ * @param topbar - the topbar to display
+ * @returns 
+ */
 export function showTopBar(promise: Promise<any>, topbar: TopBarContextType) {
     topbar.show();
     return promise.finally(() => topbar.hide());
 };
 
+// Shows a topbar at the top of the browser when a promise is being processed.
 const TopBar:FC = ({children}) => {
     const [show, setShow] = useState(false);
 

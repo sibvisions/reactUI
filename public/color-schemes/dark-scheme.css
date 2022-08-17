@@ -37,6 +37,7 @@
   --topbar-logo-background: linear-gradient(270deg, #4f5966 0%, #3f4b5b 100%);
   --topbar-button-background: transparent;
   --topbar-button-hover-background: #2a323d;
+  --topbar-button-text-color: var(--topbar-text-color);
   --profile-background: #3f4b5b;
   --profile-hover-background: #2a323d;
   --profile-text-color: #ffffff;
@@ -191,7 +192,8 @@ body {
 
 .login-form {
   background: var(--login-mask-background);
-  border-radius: var(--login-border-radius); }
+  border-radius: var(--login-border-radius);
+  box-shadow: var(--login-shadow); }
 
 .login-logo-wrapper {
   background: var(--login-logo-background); }
@@ -205,7 +207,7 @@ body {
 
 .p-button.p-button-icon-only.menu-topbar-buttons {
   background: var(--topbar-button-background);
-  color: var(--topbar-text-color);
+  color: var(--topbar-button-text-color);
   border-radius: var(--button-border-radius); }
   .p-button.p-button-icon-only.menu-topbar-buttons:hover {
     background: var(--topbar-button-hover-background); }

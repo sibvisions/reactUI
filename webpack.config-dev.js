@@ -17,6 +17,7 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = () => {
@@ -25,7 +26,7 @@ module.exports = () => {
         entry: './src/moduleIndex.ts',
         output: {
             filename: 'moduleIndex.js',
-            library: 'JVxReactUI',
+            library: '@sibvisions/reactui',
             libraryTarget: 'umd'
         },
         devtool: 'inline-source-map',
@@ -44,7 +45,26 @@ module.exports = () => {
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
             }),
-            new CleanWebpackPlugin()
+            new CleanWebpackPlugin(),
+            new CopyPlugin({
+                patterns: [
+                    {
+                        from: "*.scss",
+                        context: path.resolve(__dirname, "src", "application-frame", "styling", "color-schemes"),
+                        to: "./resources/color-schemes",
+                    },
+                    {
+                        from: "*.scss",
+                        context: path.resolve(__dirname, "src", "application-frame", "styling", "themes"),
+                        to: "./resources/themes",
+                    },
+                    {
+                        from: "SetupPackage.js",
+                        context: path.resolve(__dirname, "src"),
+                        to: "./"
+                    }
+                ]
+            })
         ],
         module: {
             rules: [
@@ -76,6 +96,9 @@ module.exports = () => {
                 {
                     test: /\.(png|svg|jpg|gif|webP)$/,
                     type: 'asset/resource',
+                    generator: {
+                        filename: 'resources/assets/[name][ext]'
+                    }
                     // use: {
                     //     loader: 'file-loader',
                     //     options: {
@@ -87,12 +110,12 @@ module.exports = () => {
                     test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                     type: 'asset/resource',
                     generator: {
-                        filename: 'resources/fonts/[name].[ext]'
+                        filename: 'resources/fonts/[name][ext]'
                     },
                     // use: {
                     //     loader: 'file-loader',
                     //     options: {
-                    //         name: 'resources/fonts/[name].[ext]',
+                    //         name: 'resources/fonts/[name][ext]',
                     //     }
                     // },
                 },

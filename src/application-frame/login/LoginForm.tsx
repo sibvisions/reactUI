@@ -25,7 +25,9 @@ import ILoginCredentials from "./ILoginCredentials";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
+import { translation } from "../../main/util/other-util/Translation";
 
+/** Interface for the default-login form */
 export interface ILoginForm extends ILoginCredentials {
     changeLoginMode: Function
     changeLoginData: Function
@@ -38,7 +40,7 @@ export interface ILoginForm extends ILoginCredentials {
  */
 const LoginForm:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** State for username field */
     const [username, setUsername] = useState<string>("");
@@ -82,7 +84,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                 <div className="p-fluid">
                         {props.errorMessage && 
                         <div className="login-error-message p-field">
-                            { translations.has(props.errorMessage) ? translations.get(props.errorMessage) : props.errorMessage}
+                            { translation.has(props.errorMessage) ? translation.get(props.errorMessage) : props.errorMessage}
                         </div>
                         }
                         <div className="p-field p-float-label p-input-icon-left">
@@ -93,7 +95,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                 type="text"
                                 autoComplete="username"
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)} />
-                            <label htmlFor="username">{translations.get("Username")} </label>
+                            <label htmlFor="username">{translation.get("Username")} </label>
                         </div>
                         <div className="p-field p-float-label p-input-icon-left">
                             <i className="pi pi-key" />
@@ -103,19 +105,20 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                 type="password"
                                 autoComplete="current-password"
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} />
-                            <label htmlFor="password">{translations.get("Password")} </label>
+                            <label htmlFor="password">{translation.get("Password")} </label>
                         </div>
+                        {(context.appSettings.applicationMetaData.lostPasswordEnabled || context.appSettings.applicationMetaData.rememberMe) && 
                         <div className={concatClassnames(
                             "login-extra-options",
                             context.appSettings.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
-                            <div className="login-cbx-container">
-                                <Checkbox 
-                                    inputId="rememberMe" 
-                                    className="remember-me-cbx" 
-                                    checked={rememberMe} 
+                            {context.appSettings.applicationMetaData.rememberMe !== false && <div className="login-cbx-container">
+                                <Checkbox
+                                    inputId="rememberMe"
+                                    className="remember-me-cbx"
+                                    checked={rememberMe}
                                     onChange={(event) => setRememberMe(prevState => event.checked)} />
-                                <label htmlFor="rememberMe" className="p-checkbox-label">{translations.get("Remember me?")}</label>
-                            </div>
+                                <label htmlFor="rememberMe" className="p-checkbox-label">{translation.get("Remember me?")}</label>
+                            </div>}
                             {context.appSettings.applicationMetaData.lostPasswordEnabled &&
                                 <Button
                                     type="button"
@@ -124,11 +127,11 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                         '--background': btnBgd,
                                         '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                                     } as CSSProperties}
-                                    label={translations.get("Lost password")}
+                                    label={translation.get("Lost password")}
                                     icon="pi pi-question-circle"
                                     onClick={() => props.changeLoginMode("reset")} />
                             }
-                        </div>
+                        </div>}
                         <Button 
                             type="submit" 
                             className="login-button rc-button"
@@ -136,7 +139,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                 '--background': btnBgd,
                                 '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                             } as CSSProperties} 
-                            label={translations.get("Login")}
+                            label={translation.get("Login")}
                             icon="pi pi-lock-open" />
                     </div>
             </form>

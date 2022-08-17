@@ -27,7 +27,7 @@ const ScreenWrapper:FC<{
 
     /** 
      * Adds classname to parent elements of workscreen (parent of parent etc.) with flex styles 
-     * so workscreen can fill the remaining space.
+     * so workscreen can fill the remaining space. If there is an onOpen function set call it on open
      */
     useEffect(() => {
         if (props.onOpen) {

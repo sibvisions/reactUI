@@ -22,6 +22,7 @@ interface ITimer {
     reset: Function
 }
 
+// A Timer to do interval stuff
 class Timer implements ITimer {
     fn:Function = () => {};
     ms:number = 0;
@@ -33,6 +34,7 @@ class Timer implements ITimer {
         this.timerObj = setInterval(this.fn, this.ms);
     }
 
+    // Stop the timer if it is running
     stop() {
         if (this.timerObj) {
             clearInterval(this.timerObj);

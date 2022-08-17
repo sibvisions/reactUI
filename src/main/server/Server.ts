@@ -43,6 +43,12 @@ import WelcomeDataResponse from "../response/ui/WelcomeDataResponse";
 import CloseFrameResponse from "../response/ui/CloseFrameResponse";
 import ContentResponse from "../response/ui/ContentResponse";
 import CloseContentResponse from "../response/ui/CloseContentResponse";
+import { indexOfEnd } from "../util/string-util/IndexOfEnd";
+import { History } from "history";
+import { createOpenScreenRequest } from "../factories/RequestFactory";
+import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
+import { translation } from "../util/other-util/Translation";
+import { overwriteLocaleValues, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -55,6 +61,7 @@ enum REQUEST_ENDPOINTS {
     CLOSE_SCREEN = "/api/closeScreen",
     CLOSE_CONTENT = "/api/closeContent",
     REOPEN_SCREEN = "/api/reopenScreen",
+    ABOUT = "/api/about",
 
     //login/account-management
     LOGIN = "/api/v2/login",
@@ -105,35 +112,64 @@ enum REQUEST_ENDPOINTS {
 
 /** Server class sends requests and handles responses */
 class Server extends BaseServer {
+    // Function which can be set by lib users, gets executed when the menu response is received
     onMenuFunction:Function = () => {};
 
+    // Function which can be set by lib users, gets executed screens are opened
     onOpenScreenFunction:Function = () => {};
 
+    // Function which can be set by lib users, gets executed when the login response is received
     onLoginFunction:Function = () => {};
 
+    // True, if the last closed screen was a popup
     lastClosedWasPopUp = false;
 
+    // Sets the onMenu Function
     setOnMenuFunction(fn:Function) {
         this.onMenuFunction = fn;
     }
 
+    // Sets the onOpenScreen Function
     setOnOpenScreenFunction(fn:Function) {
         this.onOpenScreenFunction = fn;
     }
 
+    // Sets the onLoginFunction
     setOnLoginFunction(fn:Function) {
         this.onLoginFunction = fn;
     }
 
+    /**
+     * Returns true if the component exists
+     * @param name - the name of the component
+     */
     componentExists(name:string) {
         for (let [, value] of this.contentStore.flatContent.entries()) {
-            if (value.name === name) {
+            if (value.name === name && value.visible !== false) {
+                let parent = value.parent;
+                while (parent && !parent.includes("IF")) {
+                    if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)!.visible !== false) {
+                        parent = this.contentStore.getComponentById(parent)!.parent
+                    }
+                    else {
+                        return false;
+                    }
+                }
                 return true;
             }
         }
 
         for (let [, value] of this.contentStore.replacedContent.entries()) {
-            if (value.name === name) {
+            if (value.name === name && value.visible !== false) {
+                let parent = value.parent;
+                while (parent && !parent.includes("IF")) {
+                    if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)?.visible !== false) {
+                        parent = this.contentStore.getComponentById(parent)!.parent
+                    }
+                    else {
+                        return false;
+                    }
+                }
                 return true;
             }
         }
@@ -147,6 +183,7 @@ class Server extends BaseServer {
 
     /** ----------SENDING-REQUESTS---------- */
 
+    // A Map which contains the request-keyword as key and the server endpoint as value
     endpointMap = new Map<string, string>()
     .set(REQUEST_KEYWORDS.OPEN_SCREEN, REQUEST_ENDPOINTS.OPEN_SCREEN)
     .set(REQUEST_KEYWORDS.CLOSE_SCREEN, REQUEST_ENDPOINTS.CLOSE_SCREEN)
@@ -189,10 +226,12 @@ class Server extends BaseServer {
     .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
     .set(REQUEST_KEYWORDS.CANCEL_LOGIN, REQUEST_ENDPOINTS.CANCEL_LOGIN)
     .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE)
-    .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS.EXIT);
+    .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS.EXIT)
+    .set(REQUEST_KEYWORDS.ABOUT, REQUEST_ENDPOINTS.ABOUT);
 
     /** ----------HANDLING-RESPONSES---------- */
 
+    /** A Map which checks which function needs to be called when a response is received, for data responses */
     dataResponseMap = new Map<string, Function>()
     .set(RESPONSE_NAMES.DAL_FETCH, this.processFetch.bind(this))
     .set(RESPONSE_NAMES.DAL_META_DATA, this.processMetaData.bind(this))
@@ -316,7 +355,7 @@ class Server extends BaseServer {
      * @param genericData - the genericResponse
      */
     generic(genericData: GenericResponse) {
-        if (genericData.changedComponents && genericData.changedComponents.length) {
+        if (genericData.changedComponents && genericData.changedComponents.length && (!this.linkOpen || !genericData.home)) {
             this.contentStore.updateContent(genericData.changedComponents, false);
         }
         if (!genericData.update) {
@@ -330,18 +369,18 @@ class Server extends BaseServer {
                      * to the navigation-name, if not, don't add anything, and call setNavigationName
                      */
                     if (workScreen.screen_navigationName_) {
-                        let increment: number | string = 0;
-                        for (let value of this.contentStore.navigationNames.values()) {
-                            if (value.replace(/\s\d+$/, '') === workScreen.screen_navigationName_)
-                                increment++
+                        const increment = getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames)
+                        if (this.contentStore.navigationNames.has(workScreen.screen_navigationName_ + increment)) {
+                            const foundNavName = this.contentStore.navigationNames.get(workScreen.screen_navigationName_ + increment) as { screenId: string, componentId: string };
+                            foundNavName.screenId = workScreen.name;
+
+                            if (workScreen.screen_navigationName_ + increment === this.linkOpen) {
+                                this.linkOpen = "";
+                            }
                         }
-                        if (increment === 0 || (increment === 1 && this.contentStore.navigationNames.has(workScreen.name))) {
-                            increment = '';
-                        }
-                        (this.contentStore as ContentStore).navOpenScreenMap.set(workScreen.screen_navigationName_ + increment.toString(), this.lastOpenedScreen);
-                        this.contentStore.setNavigationName(workScreen.name, workScreen.screen_navigationName_ + increment.toString())
                     }
-                    this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "" }, workScreen ? workScreen.screen_modal_ : false);
+                    
+                    this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);
 
                     if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
                         this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
@@ -399,6 +438,11 @@ class Server extends BaseServer {
 
     //Dal
 
+    /**
+     * Returns the current screen-name
+     * @param dataProvider 
+     * @returns 
+     */
     getScreenName(dataProvider:string) {
         if (this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1]) {
             const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
@@ -466,10 +510,12 @@ class Server extends BaseServer {
         console.error(errData.details)
     }
 
+    /** Shows an info toast */
     showInfo(infoData: MessageResponse) {
         this.subManager.emitToast(infoData, "error");
     }
 
+    /** Sets the dialogbutton-component-ids and shows the dialog */
     showMessageDialog(dialogData:DialogResponse) {
         (this.contentStore as ContentStore).dialogButtons = [];
         if (dialogData.okComponentId) {
@@ -507,10 +553,12 @@ class Server extends BaseServer {
                 .then((response:any) => response.text())
                 .then(value => parseString(value, (err, result) => { 
                     if (result) {
-                        result.properties.entry.forEach((entry:any) => this.contentStore.translation.set(entry.$.key, entry._));
+                        // After fetching the translation, fill the translation map, overwrite and set the locals and set translation appready param true
+                        result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._))
+                        overwriteLocaleValues();
+                        setPrimeReactLocale();
                         this.appSettings.setAppReadyParam("translation");
                         this.translationFetched = true;
-                        this.subManager.emitTranslation();
                     }
                 }));
             }
@@ -547,6 +595,7 @@ class Server extends BaseServer {
         this.appSettings.setWelcomeScreen(welcomeData.homeScreen);
     }
 
+    // Closes a frame
     closeFrame(closeFrameData:CloseFrameResponse) {
         // TODO: change dialogButtons to map with key as componentId of dialog and values buttons
         // then delete the componentId key of closeFrameData
@@ -554,6 +603,7 @@ class Server extends BaseServer {
         this.subManager.emitCloseFrame();
     }
 
+    // Opens a content by calling the contentstores updatecontent method to add it to the flatcontent and updating the active-screens
     content(contentData:ContentResponse) {
         let workScreen:IPanel|undefined
         if (contentData.changedComponents && contentData.changedComponents.length) {
@@ -573,6 +623,7 @@ class Server extends BaseServer {
         }
     }
 
+    // Closes a content
     closeContent(closeContentData:CloseContentResponse) {
         if (closeContentData.componentId) {
             this.contentStore.closeScreen(closeContentData.componentId, true);
@@ -589,12 +640,28 @@ class Server extends BaseServer {
     routingDecider(responses: Array<BaseResponse>) {
         let routeTo: string | undefined;
         let highestPriority = 0;
+        const pathName = (this.history as History).location.pathname as string
 
         responses.forEach(response => {
+
             if (response.name === RESPONSE_NAMES.USER_DATA) {
                 if (highestPriority < 1) {
                     highestPriority = 1;
-                    routeTo = "home";
+                    // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
+                    const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
+                    if (pathName.includes("home") && screenToOpen) {
+                        const req = createOpenScreenRequest();
+                        req.componentId = screenToOpen;
+                        this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
+                    }
+                    else if (pathName === "/login" && this.linkOpen && this.contentStore.navigationNames.has(this.linkOpen)) {
+                        const req = createOpenScreenRequest();
+                        req.componentId = this.contentStore.navigationNames.get(this.linkOpen)!.componentId;
+                        this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
+                    }
+                    else {
+                        routeTo = "home";
+                    }
                 }
                 this.appSettings.setAppReadyParam("userOrLogin");
             }
@@ -604,10 +671,14 @@ class Server extends BaseServer {
                 if (GResponse.changedComponents && GResponse.changedComponents.length) {
                     firstComp = GResponse.changedComponents[0] as IPanel
                 }
-                if (!GResponse.update && firstComp && !firstComp.screen_modal_) {
-                    if (highestPriority < 2) {
+                
+                if (!GResponse.update && firstComp && firstComp.screen_navigationName_ && !firstComp.screen_modal_) {
+                    const increment = getNavigationIncrement(firstComp.screen_navigationName_, this.contentStore.navigationNames)
+                    if (highestPriority < 2 
+                        && this.contentStore.navigationNames.has(firstComp.screen_navigationName_ + increment)
+                        && (!this.linkOpen || this.linkOpen === firstComp.screen_navigationName_ + increment)) {
                         highestPriority = 2;
-                        routeTo = "home/" + this.contentStore.navigationNames.get(GResponse.componentId);
+                        routeTo = "home/" + firstComp.screen_navigationName_ + increment;
                     }
                 }
             }
@@ -642,6 +713,7 @@ class Server extends BaseServer {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     routeTo = "login";
+
                     this.appSettings.setAppReadyParam("userOrLogin");
                 }
             }

@@ -15,9 +15,6 @@
 
 /// Basic Theme React
 :root {
-    /// Font-family
-    --font-family: 'Roboto', sans-serif;
-
     /// Font-size
     --font-size: 14px;
 
@@ -32,6 +29,10 @@
 
     /// Standard-menu header height
     --std-header-height: 70px;
+
+    --std-screen-title-size: 22px;
+
+    --std-screen-title-margin: 10px;
 
     /// Standard-menu width when expanded
     --std-menu-width: 240px;
@@ -48,7 +49,6 @@
     /// Standard-menu logo height
     --std-logo-height: 60px;
 
-    /// Standard-menu height of the profile-menu
     --std-profile-height: 60px;
 
     /// Standard-menu small profile-menu width
@@ -60,17 +60,14 @@
     /// Standard-menu profile-menu picture size
     --std-profile-pic: 40px;
 
-    /// Standard-menu profile-menu & buttons separator margin
-    --std-profile-separator-margin: 4px;
-
     /// Standard-menu profile-menu sub-menu width when in mini mode
     --std-profile-submenu-width-small: 10rem;
 
     /// Standard-menu full size of topbar buttons
-    --std-topbar-buttons: 60px;
+    --topbar-button-size: 60px;
 
     /// Standard-menu small size of topbar buttons
-    --std-topbar-buttons-small: 40px;
+    --topbar-button-size-small: 40px;
 
     /// Standard-menu-fadeout-width
     --std-fadeout-width: 20px;
@@ -188,7 +185,6 @@
 
 body {
     font-size: var(--font-size);
-    font-family: var(--font-family);
 }
 
 .login-form {
@@ -240,6 +236,11 @@ body {
 
         .menu-topbar {
             margin-left: var(--std-menu-width);
+
+            .menu-screen-title {
+                font-size: var(--std-screen-title-size);
+                margin-left: var(--std-screen-title-margin);
+            }
         }
 
         .menu-logo-wrapper {
@@ -253,29 +254,8 @@ body {
         }
 
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--std-topbar-buttons);
-            height: var(--std-topbar-buttons);
-        }
-
-        .profile-menu {
-            height: var(--std-profile-height);
-
-            .p-menubar {
-                height: 100%;
-                .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
-                    height: var(--std-profile-height);
-                    padding: var(--std-profile-padding);
-                }
-    
-                .p-submenu-list {
-                    width: calc(100% - var(--std-profile-separator-margin));
-                    margin-left: var(--std-profile-separator-margin);
-                }
-            }
-        }
-
-        .vl {
-            height: var(--std-profile-height);
+            width: var(--topbar-button-size);
+            height: var(--topbar-button-size);
         }
 
         .profile-image, .profile-image-null {
@@ -325,6 +305,26 @@ body {
             width: var(--std-fadeout-width);
             margin-top: var(--std-header-height);
         }
+    }
+
+    .profile-menu {
+        height: var(--std-profile-height);
+
+        .p-menubar {
+            height: 100%;
+            .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
+                height: var(--std-profile-height);
+                padding: var(--std-profile-padding);
+            }
+
+            .p-submenu-list {
+                width: 100%
+            }
+        }
+    }
+
+    .vl {
+        height: var(--std-profile-height);
     }
 
     .corp-menu {
@@ -407,7 +407,6 @@ body {
 
     .p-component {
         font-size: var(--font-size);
-        font-family: var(--font-family);
     }
     
     .p-inputtext {
@@ -583,8 +582,8 @@ body {
             }
 
             .p-button.p-button-icon-only.menu-topbar-buttons {
-                width: var(--std-topbar-buttons-small);
-                height: var(--std-topbar-buttons-small);
+                width: var(--topbar-button-size-small);
+                height: var(--topbar-button-size-small);
             }
 
             .fadeout {

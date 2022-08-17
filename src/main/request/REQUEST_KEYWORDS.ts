@@ -25,6 +25,7 @@ enum REQUEST_KEYWORDS {
     CLOSE_CONTENT = "close_content",
     REOPEN_SCREEN = "reopen_screen",
     EXIT = "exit",
+    ABOUT = "about",
 
     //login
     LOGIN = "login",

@@ -32,14 +32,15 @@ import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
 import { sortGroupDataGoogle } from "../../util/component-util/SortGroupData";
 import { sendSetValues } from "../../util/server-util/SendSetValues";
 import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { IExtendableMapGoogle } from "../../extend-components/maps/ExtendMapGoogle";
 
 /**
  * This component displays a map view with Google Maps
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIMapGoogle: FC<IMap> = (baseProps) => {
+const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
     /** Reference for the div that is wrapping the map containing layout information */
     const mapWrapperRef = useRef<any>(null);
 
@@ -47,7 +48,7 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
     const mapInnerRef = useRef(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IMap>(baseProps);
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<IMap & IExtendableMapGoogle>(baseProps);
 
     /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
@@ -69,10 +70,6 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
 
     /** The provided data for points/markers */
     const [providedPointData] = useDataProviderData(screenName, props.pointsDataBook);
-
-    const markerArray = useRef<Array<google.maps.Marker>>(new Array<google.maps.Marker>());
-
-    const polygonArray = useRef<Array<google.maps.Polygon>>(new Array<google.maps.Polygon>());
 
     /** Hook for MouseListener */
     useMouseListener(props.name, mapWrapperRef.current ? mapWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -131,22 +128,17 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     }, []);
 
+    // Creates the markers based on the providedPointData and sets the selected-marker for the last marker.
     useEffect(() => {
         if (mapInnerRef.current && providedPointData) {
             //@ts-ignore
             const map = mapInnerRef.current.map
-
-            // Deleting marker before setting new ones
-            markerArray.current.forEach(marker => {
-                marker.setMap(null);
-            });
 
             const latColName = props.latitudeColumnName;
             const lngColname = props.longitudeColumnName;
             providedPointData.forEach((point: any, i: number) => {
                 let iconData: string | IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                 const marker = new google.maps.Marker({ position: { lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE }, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon) });
-                markerArray.current.push(marker);
                 marker.setMap(map);
                 if (i === providedPointData.length - 1) {
                     setSelectedMarker(marker);
@@ -160,11 +152,6 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         if (mapInnerRef.current && providedGroupData) {
             //@ts-ignore
             const map = mapInnerRef.current.map
-
-            // Deleting marker before setting new ones
-            polygonArray.current.forEach(polygon => {
-                polygon.setMap(null);
-            });
 
             const groupData = sortGroupDataGoogle(providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName);
             if (groupData.length) {
@@ -205,6 +192,13 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     }, [centerPosition])
 
+    // If the lib user extends the Map with onSelectedMarkerChanged, call it when the selected-marker changes.
+    useEffect(() => {
+        if (props.onSelectedMarkerChanged) {
+            props.onSelectedMarkerChanged(selectedMarker?.getPosition()?.lat(), selectedMarker?.getPosition()?.lng());
+        }
+    }, [selectedMarker, props.onSelectedMarkerChanged])
+
     /** 
      * Adds eventlisteners to the map
      * @returns removes the eventlisteners
@@ -214,8 +208,13 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
             //@ts-ignore
             const map = mapInnerRef.current.map
 
-            /** If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server */
+            // If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server
+            // If the lib user extends the Icon with onClick, call it when the Map is clicked.
             const onClick = (e:any) => {
+                if (props.onClick) {
+                    props.onClick({ originalEvent: e.domEvent, lat: e.latLng.lat(), lng: e.latLng.lng() });
+                }
+
                 if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: e.latLng.lat(), lng: e.latLng.lng()})
                     sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latLng.lat(), e.latLng.lng()], context.server, undefined, topbar);
@@ -223,22 +222,37 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
                 }
             }
 
-            /** When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center */
+            // When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center
+            // If the lib user extends the Map with onDrag, call it when the Map is being dragged.
             const onDrag = () => {
+                if (props.onDrag) {
+                    props.onDrag(map.getCenter().lat(), map.getCenter().lng());
+                }
+
                  if (selectedMarker && props.pointSelectionLockedOnCenter)
                      selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
             }
 
-            /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
+            // When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without
+            // If the lib user extends the Map with onDragEnd, call it when the map dragging has ended.
             const onDragEnd = () => {
+                if (props.onDragEnd) {
+                    props.onDragEnd(map.getCenter().lat(), map.getCenter().lng());
+                }
+
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, undefined, topbar);
                     setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
                 }
             }
 
-            /** Change position of selectedMarker to center when zoom is changed and locked on center is enabled */
+            // Change position of selectedMarker to center when zoom is changed and locked on center is enabled
+            // If the lib user extends the Map with onZoomChanged, call it when the zoom-level changes.
             const onZoomChanged = () => {
+                if (props.onZoomChanged) {
+                    props.onZoomChanged(map.getCenter().lat(), map.getCenter().lng());
+                }
+
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
                     sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, undefined, topbar);
@@ -257,14 +271,14 @@ const UIMapGoogle: FC<IMap> = (baseProps) => {
         }
     },[selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName,
        props.name, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter,
-       props.pointsDataBook]
+       props.pointsDataBook, props.onClick, props.onDrag, props.onDragEnd, props.onZoomChanged]
     );
 
     /** If the map is not ready, return just a div width set size so it can report its size and initialize */
     if (mapReady === false)
-        return <div ref={mapWrapperRef} id={checkComponentName(props.name)} style={{width: '100px', height: '100px'}}/>
+        return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} {...popupMenu} id={checkComponentName(props.name)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <div ref={mapWrapperRef} {...popupMenu} id={props.name} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <GMap ref={mapInnerRef} className={props.style} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )

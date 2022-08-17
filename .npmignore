@@ -1,0 +1,4 @@
+SetupPackage.*
+*.moduleIndex.*
+version.*
+moduleIndex.js.LICENSE.txt

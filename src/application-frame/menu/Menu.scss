@@ -38,7 +38,7 @@
     display: flex;
     z-index: 20;
     align-items: center;
-    width: 100%;
+    width: var(--main-width);
 }
 
 /// When menu is collapsed
@@ -98,9 +98,7 @@
 /// Menu-screen-title styling
 .menu-screen-title {
     @extend %ellipsis-overflow;
-    font-size: 22px;
     font-weight: bold;
-    margin-left: 10px;
     caret-color: transparent;
 }
 
@@ -128,25 +126,25 @@
     }
 }
 
-    .p-menubar {
-        /// Removes default primereact menubar style
-        padding: 0;
-        border: none;
-    
-        .p-submenu-list {
-            z-index: 10;
-        }
+.p-menubar {
+    /// Removes default primereact menubar style
+    padding: 0;
+    border: none;
 
-        .custom-menu-icon {
-            .p-menuitem-icon {
-                width: var(--iconWidth);
-                height: var(--iconHeight);
-                display: inline-block;
-                background-image: var(--iconImage);
-                background-size: var(--iconWidth);
-            }
+    .p-submenu-list {
+        z-index: 10;
+    }
+
+    .custom-menu-icon {
+        .p-menuitem-icon {
+            width: var(--iconWidth);
+            height: var(--iconHeight);
+            display: inline-block;
+            background-image: var(--iconImage);
+            background-size: var(--iconWidth);
         }
     }
+}
 
 /// Profile-image styling
 .profile-image, .profile-image-null {
@@ -176,7 +174,7 @@
     @include styledScrollbarPanelDefault();
     position: fixed;
     z-index: 10;
-    height: 100%;
+    height: var(--main-height);
     overflow-x: hidden;
 
     /// Panelmenu styling, nesting needed because primereact nesting

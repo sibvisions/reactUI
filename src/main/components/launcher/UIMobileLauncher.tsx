@@ -21,6 +21,7 @@ import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import UIFrame from "../frame/UIFrame";
 import { IPanel } from "../panels/panel/UIPanel";
 
+// Interface for Windows
 export interface IWindow extends IPanel {
     title:string
     layout:string,
@@ -32,7 +33,7 @@ export interface IWindow extends IPanel {
 
 const UIMobileLauncher: FC<IWindow> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);

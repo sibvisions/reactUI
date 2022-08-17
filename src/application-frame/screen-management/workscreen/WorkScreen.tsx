@@ -41,16 +41,17 @@ const WorkScreen: FC = () => {
 
     /** The screens which need to be rendered */
     const renderedScreens = useMemo(() => {
-        if (activeScreens.length) {
-            context.subscriptions.emitSelectedMenuItem(activeScreens.slice(-1).pop()!.className as string);
+        if (activeScreens.length && activeScreens[0] && activeScreens[0].title) {
+            context.subscriptions.notifyScreenTitleChanged(activeScreens[0].title)
         }
         else {
-            context.subscriptions.emitSelectedMenuItem("");
+            context.subscriptions.notifyScreenTitleChanged(context.appSettings.applicationMetaData.applicationName)
         }
+
         return buildWindow(activeScreens)
     }, [activeScreens]);
 
-    // Subscribes the WorkScreen component to the active-screens to have the up to date active-screen state
+    // Subscribes to the active-screens to have the up to date active-screen state
     useLayoutEffect(() => {
         context.subscriptions.subscribeToActiveScreens("workscreen", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 

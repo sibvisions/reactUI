@@ -15,12 +15,14 @@
 
 import ComponentResponse from "../ComponentResponse"
 
+// Interface for a BaseMenuButton sent by the server
 export interface BaseMenuButton {
     componentId: string,
     text: string,
     image:string,
     enabled?: boolean,
     className?: string
+    navigationName:string
     action?: () => Promise<any>
 }
 

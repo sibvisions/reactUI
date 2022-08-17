@@ -22,6 +22,8 @@ import { appContext } from "../../contexts/AppProvider";
  * @param screenName - the name of the screen
  * @param dataProvider - the dataprovider
  * @param column - the column
+ * @param showIndex - true, if you want to see the entire selectedRow object
+ * @param rowIndex - the index of the row
  */
 const useRowSelect = (screenName:string, dataProvider: string, column?: string, showIndex?:boolean, rowIndex?:number) => {
     /** Use context to gain access for contentstore and server methods */
@@ -70,19 +72,24 @@ const useRowSelect = (screenName:string, dataProvider: string, column?: string, 
             if (newRow) {
                 if (rowIndex === undefined || (rowIndex !== undefined && rowIndex === newRow.index)) {
                     if(column && newRow.dataRow) {
+                        // if show index is false just return the single value of the column else return all of the Databook's selectedRow object
                         setSelectedRow(!showIndex ? newRow.dataRow[column] : {data: newRow.dataRow[column], index: newRow.index, selectedColumn: newRow.selectedColumn});
                     }
                     else {
+                        // if show index is false return the dataRow object, else return all of the Databook's selectedRow object
                         setSelectedRow(!showIndex ? newRow.dataRow : {data: newRow.dataRow, index: newRow.index, selectedColumn: newRow.selectedColumn});
                     }
                 }
                 else {
+                    // Gets the current data of the databook for the correct row
                     const data = context.contentStore.getDataBook(screenName, dataProvider)?.data?.get("current")[rowIndex]
                     if (data) {
+                        // If a column is set and showindex is false it just returns the value else return all of the Databook's selectedRow object
                         if (column) {
                             const dataCol = data[column];
                             setSelectedRow(!showIndex ? dataCol : {data: dataCol, index: newRow.index, selectedColumn: newRow.selectedColumn});
                         }
+                        // If showindex is false it just returns the value else return all of the Databook's selectedRow object
                         else {
                             setSelectedRow(!showIndex ? data : {data: data, index: newRow.index, selectedColumn: newRow.selectedColumn});
                         }    

@@ -21,6 +21,9 @@ import { isCorporation } from "../../../main/util/server-util/IsCorporation";
 import ResizeProvider from "../../../main/contexts/ResizeProvider";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 
+/**
+ * Main displaying component which holds the menu and the main screen element, manages resizing for layout recalculating. For full transferType
+ */
 const UIManagerFull: FC<any> = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -34,10 +37,12 @@ const UIManagerFull: FC<any> = () => {
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
+    /** The currently used app-theme */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
+    // Subscribes to the menu-options and to the theme
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions) => {
             setMenuOptions(menuOptions);
         });
 

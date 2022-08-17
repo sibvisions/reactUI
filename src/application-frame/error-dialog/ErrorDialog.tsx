@@ -21,12 +21,13 @@ import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } f
 import tinycolor from "tinycolor2";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import ErrorResponse from "../../main/response/error/ErrorResponse";
+import { translation } from "../../main/util/other-util/Translation";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 
-/** Displays an errr-message as dialog */
+/** Displays an error-message as dialog */
 const ErrorDialog:FC = () => {
     /** Returns utility variables */
-    const [context,, translations] = useConstants();
+    const [context] = useConstants();
 
     /** True, if the error-dialog is visible */
     const [visible, setVisible] = useState<boolean>(false);
@@ -43,33 +44,37 @@ const ErrorDialog:FC = () => {
     /** The currently selected error when details is expanded */
     const [selectedError, setSelectedError] = useState<{label: string, exception: string} | null>(null)
 
+    // Builds the error-causes as items to show in the Listbox 
     const errorItems = useMemo(() => {
         if (errorProps && errorProps.exceptions) {
             return [{
-                label: translations.get("Cause(s) of failure") as string,
+                label: translation.get("Cause(s) of failure") as string,
                 items: errorProps.exceptions.map(ex => {
                     return { label: ex.message, exception: ex.exception }
                 })
             }]
         }
         return [{
-            label: translations.get("Cause(s) of failure") as string,
+            label: translation.get("Cause(s) of failure") as string,
             items: []
         }]
     }, [errorProps]);
 
+    // Subscribes to the error-dialog properties
     useEffect(() => {
         context.subscriptions.subscribeToErrorDialogProps((errData:ErrorResponse) => setErrorProps(errData));
 
         return () => context.subscriptions.unsubscribeFromErrorDialogProps();
     }, [context.subscriptions]);
 
+    // When the error-dialog receives properties, set visible to true
     useEffect(() => {
         if (errorProps) {
             setVisible(true);
         }
     }, [errorProps]);
 
+    // When the details-buttons is pressed and the details aren't showing, remove the 'width' and 'height' property to return to the default size without details.
     useEffect(() => {
         const elem = document.getElementById("error-dialog");
         if (!showDetails && elem) {
@@ -80,6 +85,7 @@ const ErrorDialog:FC = () => {
 
     const handleOnHide = () => setVisible(false)    
 
+    // Build footer based on showDetails
     const errorFooter = useCallback(() => {
         return (
             <div className="error-dialog-footer">
@@ -91,7 +97,7 @@ const ErrorDialog:FC = () => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("Details")}
+                        label={translation.get("Details")}
                         onClick={() => {
                             setSelectedError(errorItems.length ? errorItems[0].items[0] : null);
                             setShowDetails(prevState => !prevState)
@@ -103,7 +109,7 @@ const ErrorDialog:FC = () => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        label={translations.get("OK")}
+                        label={translation.get("OK")}
                         onClick={() => handleOnHide()} />
                 </div>
                 {showDetails &&
@@ -140,7 +146,7 @@ const ErrorDialog:FC = () => {
         <Dialog
             id="error-dialog"
             className={concatClassnames("error-dialog", showDetails ? "error-details-enabled" : "") }
-            header={translations.get(errorProps?.title as string) || translations.get("Error")} 
+            header={translation.get(errorProps?.title as string) || translation.get("Error")} 
             footer={errorFooter} 
             visible={visible} 
             onHide={handleOnHide} 

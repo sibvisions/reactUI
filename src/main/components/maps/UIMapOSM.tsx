@@ -29,7 +29,7 @@ import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
 import { sortGroupDataOSM } from "../../util/component-util/SortGroupData";
 import { sendMapFetchRequests } from "../../util/server-util/SendMapFetchRequests";
@@ -37,6 +37,7 @@ import { sendSetValues } from "../../util/server-util/SendSetValues";
 import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
 import IconProps from "../comp-props/IconProps";
 import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
+import { IExtendableMap } from "../../extend-components/maps/ExtendMapGoogle";
 
 /** Interface for Map components */
 export interface IMap extends BaseComponent {
@@ -64,7 +65,7 @@ export interface IMap extends BaseComponent {
  * This part of the map will cover positioning and size reporting and wraps the actual map
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIMapOSM: FC<IMap> = (baseProps) => {
+const UIMapOSM: FC<IMap & IExtendableMap> = (baseProps) => {
     /** Reference for the map element */
     const mapRef = useRef<any>(null);
 
@@ -72,7 +73,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     const layoutStyle = useLayoutValue(baseProps.id);
 
     /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IMap>(baseProps.id, baseProps);
+    const [props] = useProperties<IMap & IExtendableMap>(baseProps.id, baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
@@ -104,7 +105,7 @@ const UIMapOSM: FC<IMap> = (baseProps) => {
     if (layoutStyle) {
         return (
             <div ref={mapRef} {...popupMenu} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
-                <MapContainer id={checkComponentName(props.name)} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
+                <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
                     <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition}/>
                 </MapContainer>
             </div>
@@ -123,7 +124,7 @@ export default UIMapOSM
  * This part of the map, displays the map, adds data, sends requests to the server etc.
  * @param props - props received by container map component
  */
-const UIMapOSMConsumer: FC<IMap> = (props) => {
+const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
     /** Leaflet hook to get map instance */
     const map = useMap();
 
@@ -208,29 +209,54 @@ const UIMapOSMConsumer: FC<IMap> = (props) => {
         }
     }, [selectedMarker, map, props.center, props.zoomLevel, props.pointSelectionLockedOnCenter]);
 
-    /** When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center */
+    // When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center
+    // If the lib user extends the Map with onDrag, call it when the Map is being dragged.
     const onMove = useCallback((e) => {
+        if (props.onDrag) {
+            props.onDrag(map.getCenter().lat, map.getCenter().lng);
+        }
+
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
             selectedMarker.setLatLng(map.getCenter());
+            if (props.onSelectedMarkerChanged) {
+                props.onSelectedMarkerChanged(map.getCenter().lat, map.getCenter().lng);
+            }
         }
-    },[map, selectedMarker, props.pointSelectionLockedOnCenter]);
+    },[map, selectedMarker, props.pointSelectionLockedOnCenter, props.onDrag, props.onSelectedMarkerChanged]);
 
-    /** When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without */
+    // When dragging is finished, send setValues with marker position to server, timeout with saveRequest ecause it reset the position without
+    // If the lib user extends the Map with onDragEnd, call it when the map dragging has ended.
     const onMoveEnd = useCallback((e) => {
+        if (props.onDragEnd) {
+            props.onDragEnd(map.getCenter().lat, map.getCenter().lng);
+        }
+
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server, undefined, topbar);
             setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
         }
-    },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
+    },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, 
+       props.longitudeColumnName, props.name, props.pointsDataBook, props.onDragEnd])
 
-    /** If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server */
+    // If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server
+    // If the lib user extends the Icon with onClick, call it when the Map is clicked.
+    // If the lib user extends the Map with onSelectedMarkerChanged, call it when the selected-marker changes.
     const onClick = useCallback((e) => {
+        if (props.onClick) {
+            props.onClick({ originalEvent: e.originalEvent, lat: e.latlng.lat, lng: e.latlng.lng })
+        }
+
         if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
             selectedMarker.setLatLng([e.latlng.lat, e.latlng.lng])
+            if (props.onSelectedMarkerChanged) {
+                props.onSelectedMarkerChanged(e.latlng.lat, e.latlng.lng);
+            }
+
             sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], [e.latlng.lat, e.latlng.lng], context.server, undefined, topbar);
             setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
         }
-    },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook])
+    },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, 
+       props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook, props.onClick])
 
     useMapEvent('move', onMove);
     useMapEvent('moveend', onMoveEnd)

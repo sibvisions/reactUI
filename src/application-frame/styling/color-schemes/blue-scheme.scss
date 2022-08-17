@@ -47,6 +47,8 @@
     /// Blue topbar buttons hover background
     --topbar-button-hover-background: #1c7bc9;
 
+    --topbar-button-text-color: var(--topbar-text-color);
+
     /// Profile-menu background
     --profile-background: #2196F3;
 
@@ -495,6 +497,7 @@ body {
 .login-form {
     background: var(--login-mask-background);
     border-radius: var(--login-border-radius);
+    box-shadow: var(--login-shadow);
 }
 
 .login-logo-wrapper {
@@ -513,7 +516,7 @@ body {
 
 .p-button.p-button-icon-only.menu-topbar-buttons {
     background: var(--topbar-button-background);
-    color: var(--topbar-text-color);
+    color: var(--topbar-button-text-color);
     border-radius: var(--button-border-radius);
 
     &:hover {

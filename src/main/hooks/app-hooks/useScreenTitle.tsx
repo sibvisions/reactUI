@@ -26,6 +26,7 @@ const useScreenTitle = () => {
     /** Current state of screen title, displays the screen title */
     const [screenTitle, setScreenTitle] = useState<string>("");
 
+    // Subscribes to the screen-title
     useEffect(() => {
         context.subscriptions.subscribeToScreenTitle((appName: string) => setScreenTitle(appName));
 

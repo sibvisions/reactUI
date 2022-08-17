@@ -23,11 +23,12 @@ import useConstants from "./useConstants";
 import DialogResponse from "../../response/ui/DialogResponse";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { translation } from "../../util/other-util/Translation";
 
 /** Returns the ConfirmDialog properties and if the ConfirmDialog is visible */
 const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** The properties of the message */
     const [messageProps, setMessageProps] = useState<DialogResponse>();
@@ -62,22 +63,29 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
         if (messageProps) {
             const headerContent = (iconType: 0 | 1 | 2 | 3 | 9 | -1): { icon: string, text: string } => {
                 if (iconType === 0) {
-                    return { text: translations.get("Information") as string, icon: "pi pi-info-circle" };
+                    return { text: translation.get("Information") as string, icon: "pi pi-info-circle" };
                 }
                 else if (iconType === 1) {
-                    return { text: translations.get("Warning") as string, icon: "pi pi-exclamation-circle" };
+                    return { text: translation.get("Warning") as string, icon: "pi pi-exclamation-circle" };
                 }
                 else if (iconType === 2) {
-                    return { text: translations.get("Error") as string, icon: "pi pi-times-circle" };
+                    return { text: translation.get("Error") as string, icon: "pi pi-times-circle" };
                 }
                 else if (iconType === 3) {
-                    return { text: translations.get("Question") as string, icon: "pi pi-question-circle" };
+                    return { text: translation.get("Question") as string, icon: "pi pi-question-circle" };
                 }
                 else {
                     return { text: "", icon: "" };
                 }
             }
     
+            /**
+             * Builds the footer content based on the button type
+             * @param buttonType - the button type
+             * @param okCompId - the component id of the ok button
+             * @param cancelCompId - the component id of the cancel button
+             * @param notOkCompId - the component id of the not ok button
+             */
             const footerContent = (buttonType: 4 | 5 | 6 | 7 | 8 | -1, okCompId?: string, cancelCompId?: string, notOkCompId?: string) => {
                 const sendPressButton = (compId?:string) => {
                     if (compId) {
@@ -87,6 +95,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                     }
                 }
 
+                // Returns the button background of the current color scheme
                 const getButtonBackground = ():string => {
                     return window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
                 }
@@ -101,7 +110,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                     '--background': getButtonBackground(),
                                     '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                                 } as CSSProperties}
-                                label={buttonType === 4 ? translations.get("Cancel") : translations.get("No")}
+                                label={buttonType === 4 ? translation.get("Cancel") : translation.get("No")}
                                 onClick={() => {
                                     sendPressButton(cancelCompId);
                                 }} />
@@ -112,7 +121,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                     '--background': getButtonBackground(),
                                     '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                                 } as CSSProperties}
-                                label={buttonType === 4 ? translations.get("OK") : translations.get("Yes")}
+                                label={buttonType === 4 ? translation.get("OK") : translation.get("Yes")}
                                 onClick={() => {
                                     sendPressButton(okCompId);
                                 }} />
@@ -128,7 +137,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                 '--background': getButtonBackground(),
                                 '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                             } as CSSProperties}
-                            label={translations.get("OK")}
+                            label={translation.get("OK")}
                             onClick={() => {
                                 sendPressButton(okCompId);
                             }} />
@@ -145,14 +154,14 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                         '--background': getButtonBackground(),
                                         '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                                     } as CSSProperties}
-                                    label={translations.get("Cancel")}
+                                    label={translation.get("Cancel")}
                                     onClick={() => {
                                         sendPressButton(cancelCompId);
                                     }} />
                                 <Button
                                     type="button"
                                     className="rc-button"
-                                    label={translations.get("No")}
+                                    label={translation.get("No")}
                                     style={{
                                         marginLeft: '0.5rem',
                                         '--background': getButtonBackground(),
@@ -170,7 +179,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                                     '--background': getButtonBackground(),
                                     '--hoverBackground': tinycolor(getButtonBackground()).darken(5).toString()
                                 } as CSSProperties}
-                                label={translations.get("Yes")}
+                                label={translation.get("Yes")}
                                 onClick={() => {
                                     sendPressButton(okCompId);
                                 }} />
@@ -182,6 +191,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                 }
             }
     
+            // Returns the correct header type
             const getHeaderType = (iconType: 0 | 1 | 2 | 3 | 9 | -1) => {
                 if (iconType === 0) {
                     return "info";
@@ -225,6 +235,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                     }
                 </>
 
+            // Sends a close-frame request to the server when the dialog is being closed
             const handleOnHide = () => {
                 const closeFrameReq = createCloseFrameRequest();
                 closeFrameReq.componentId = messageProps.componentId;

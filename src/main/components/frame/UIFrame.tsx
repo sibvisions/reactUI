@@ -33,6 +33,7 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import Layout from "../layouts/Layout";
 
+// Interface for Frames
 export interface IFrame extends IInternalFrame {
     frameStyle?: CSSProperties,
     internal?: boolean
@@ -43,29 +44,40 @@ export interface IFrame extends IInternalFrame {
     compSizes?: Map<string, ComponentSizes>
 }
 
+/** This component renders a frame which can contain a menubar, toolbars and content sent by the server (workscreen, content, launcher etc.) */
 const UIFrame: FC<IFrame> = (props) => {
+    /** Returns utility variables */
     const [context, topbar] = useConstants();
 
+    /** Casts the contentStore to contentstore-full because the UIFrame is only used in Full transferType */
     const castedContentStore = context.contentStore as ContentStoreFull
 
+    /** The menubar-properties of the frame or undefined if there is no menubar */
     const menuBarProps = useMemo(() => castedContentStore.getMenuBar(props.id), [props.children]);
 
+    /** True, if the frame has one or more toolbars */
     const hasToolBars = useMemo(() => castedContentStore.hasToolBars(props.id), [props.children]);
 
+    /** The size of the menubar */
     const [menuBarSize, setMenuBarSize] = useState<Dimension>({ width: 0, height: 0 });
 
+    /** The size of the toolbar */
     const [toolBarSize, setToolBarSize] = useState<Dimension>({ width: 0, height: 0 });
 
+    /** A callback to set the menubar-size */
     const menuBarSizeCallback = useCallback((size:Dimension) => setMenuBarSize(size), []);
 
+    /** A callback to set the toolbar-size */
     const toolBarSizeCallback = useCallback((size:Dimension) => {
         if (toolBarSize.height !== size.height || toolBarSize.width !== size.width) {
             setToolBarSize(size)
         }
     }, [toolBarSize]);
 
+    /** The icon properties for the frame icon */
     const iconProps = useMemo(() => parseIconData(undefined, props.iconImage), [props.iconImage]);
 
+    /** The frame style minus the menubar-size and toolbar-size */
     const adjustedStyle = useMemo(() => {
         const styleCopy:CSSProperties = {...props.frameStyle};
         if (props.frameStyle) {
@@ -75,7 +87,7 @@ const UIFrame: FC<IFrame> = (props) => {
     }, [menuBarSize, toolBarSize, props.frameStyle]);
 
     return (
-        <div style={{ visibility: props.compSizes ? undefined : "hidden" }}>
+        <div id={props.id + "-frame"} style={{ visibility: props.compSizes ? undefined : "hidden" }}>
             {props.internal &&
                 <div className="rc-frame-header">
                     {props.iconImage !== undefined &&

@@ -17,6 +17,10 @@ import React, { FC } from "react";
 import CellEditorWrapper from "../../editors/CellEditorWrapper";
 import { ICellRender } from "../CellEditor";
 
+/**
+ * This Component renders Direct-Cell-Editors, which can be clicked directly and don't have to be opened extra. Eg. Checkbox and Choice
+ * @param props - the properties received from the table
+ */
 const DirectCellRenderer: FC<ICellRender> = (props) => {
     return (
         <>

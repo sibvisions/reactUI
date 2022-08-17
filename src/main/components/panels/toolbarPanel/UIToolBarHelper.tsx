@@ -23,7 +23,6 @@ import useComponents from "../../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import Dimension from "../../../util/types/Dimension";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import Layout from "../../layouts/Layout";
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
@@ -34,10 +33,17 @@ export interface IToolBarHelper extends IPanel {
     toolBarVisible?:boolean
 }
 
+/**
+ * Renders the toolbarhelper
+ * additional components when toolbarhelper is main
+ * not additional components when toolbarhelper is center
+ * @param props the properties received by the parent
+ */
 const ToolBarHelper:FC<IToolBarHelper> = (props) => {
-    
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext)
 
+    /** get the layout style value */
     const layoutStyle = useLayoutValue(props.id, { visibility: "hidden" });
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
@@ -116,7 +122,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
     
     return (
         <>
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             <div
                 className={concatClassnames(
                     props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? "rc-toolbar" : "rc-panel",
@@ -124,7 +130,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                     props.style
                 )}
                 ref={panelRef}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,
@@ -164,6 +170,12 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
     )
 }
 
+/**
+ * The ToolBarHelper component is a helper component for toolbarpanels, 
+ * it either contains the "main" part of the toolbar (contains the components of the toolbar eg. buttons)
+ * or the "center" part of the toolbar (contains the screen/layout).
+ * @param baseProps the properties received by the server
+ */
 const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     /** Component constants */
     const [context,, [props]] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});

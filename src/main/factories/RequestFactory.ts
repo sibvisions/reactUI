@@ -14,6 +14,7 @@
  */
 
 /** Request imports */
+import AboutRequest from "../request/application-ui/AboutRequest";
 import CloseContentRequest from "../request/application-ui/CloseContentRequest";
 import CloseFrameRequest from "../request/application-ui/CloseFrameRequest";
 import CloseScreenRequest from "../request/application-ui/CloseScreenRequest";
@@ -560,9 +561,9 @@ export const createChangesRequest = (values?: ChangesRequest): ChangesRequest =>
 }
 
 /**
- * Returns a mouse-clicked-request object with either properties which can be overwritten or properties as parameters
- * @param values - properties for the mouse-clicked-request
- * @returns a mouse-clicked-request object
+ * Returns a bounds-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the bounds-request
+ * @returns a bounds-request object
  */
  export const createBoundsRequest = (values?: BoundsRequest): BoundsRequest => {
     const req:BoundsRequest = {
@@ -576,6 +577,11 @@ export const createChangesRequest = (values?: ChangesRequest): ChangesRequest =>
     return req;
 }
 
+/**
+ * Returns a cancel-login-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the cancel-login-request
+ * @returns a cancel-login-request object
+ */
 export const createCancelLoginRequest = (values?: CancelLoginRequest) => {
     const req:CancelLoginRequest = {
         clientId: values?.clientId || getClientId()
@@ -583,10 +589,26 @@ export const createCancelLoginRequest = (values?: CancelLoginRequest) => {
     return req;
 }
 
+/**
+ * Returns an alive-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the alive-request
+ * @returns an alive-request object
+ */
 export const createAliveRequest = (values?: AliveRequest): AliveRequest => {
     const req:AliveRequest = {
         clientId: values?.clientId || getClientId()
     }
+    return req;
+}
 
+/**
+ * Returns an about-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the about-request
+ * @returns an alive-request object
+ */
+ export const createAboutRequest = (values?: AboutRequest): AboutRequest => {
+    const req:AboutRequest = {
+        clientId: values?.clientId || getClientId()
+    }
     return req;
 }

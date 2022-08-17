@@ -15,9 +15,6 @@
 
 /// Basic Theme React - Small
 :root {
-    /// Font-family
-    --font-family: 'Roboto', sans-serif;
-
     /// Font-size
     --font-size: 12px;
 
@@ -32,6 +29,10 @@
 
     /// Standard-menu header height
     --std-header-height: 70px;
+
+    --std-screen-title-size: 22px;
+
+    --std-screen-title-margin: 10px;
 
     /// Standard-menu width when expanded
     --std-menu-width: 240px;
@@ -60,17 +61,14 @@
     /// Standard-menu profile-menu picture size
     --std-profile-pic: 35px;
 
-    /// Standard-menu profile-menu & buttons separator margin
-    --std-profile-separator-margin: 4px;
-
     /// Standard-menu profile-menu sub-menu width when in mini mode
     --std-profile-submenu-width-small: 10rem;
 
     /// Standard-menu full size of topbar buttons
-    --std-topbar-buttons: 40px;
+    --topbar-button-size: 40px;
 
     /// Standard-menu small size of topbar buttons
-    --std-topbar-buttons-small: 25px;
+    --topbar-button-size-small: 25px;
 
     /// Standard-menu-fadeout-width
     --std-fadeout-width: 20px;
@@ -188,7 +186,6 @@
 
 body {
     font-size: var(--font-size);
-    font-family: var(--font-family);
 }
 
 .login-form {
@@ -239,6 +236,11 @@ body {
 
         .menu-topbar {
             margin-left: var(--std-menu-width);
+
+            .menu-screen-title {
+                font-size: var(--std-screen-title-size);
+                margin-left: var(--std-screen-title-margin);
+            }
         }
 
         .menu-logo-wrapper {
@@ -252,8 +254,8 @@ body {
         }
 
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--std-topbar-buttons);
-            height: var(--std-topbar-buttons);
+            width: var(--topbar-button-size);
+            height: var(--topbar-button-size);
         }
 
         .profile-menu {
@@ -267,8 +269,7 @@ body {
                 }
     
                 .p-submenu-list {
-                    width: calc(100% - var(--std-profile-separator-margin));
-                    margin-left: var(--std-profile-separator-margin);
+                    width: 100%
                 }
             }
         }
@@ -406,7 +407,6 @@ body {
 
     .p-component {
         font-size: var(--font-size);
-        font-family: var(--font-family);
     }
 
     .p-inputtext {
@@ -570,8 +570,8 @@ body {
             }
 
             .p-button.p-button-icon-only.menu-topbar-buttons {
-                width: var(--std-topbar-buttons-small);
-                height: var(--std-topbar-buttons-small);
+                width: var(--topbar-button-size-small);
+                height: var(--topbar-button-size-small);
             }
 
             .fadeout {

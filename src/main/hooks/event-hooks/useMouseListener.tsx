@@ -34,7 +34,7 @@ const getMouseButton = (button:number): "Left"|"Middle"|"Right" => {
 }
 
 /**
- * Adds mouse-listeners for the components
+ * Adds mouse-listeners for the components and sends mouse-event-request to the server
  * @param compName - the name of the component
  * @param element - the element which the handler is added to
  * @param eventMouseClicked - true if mouse clicked should be added

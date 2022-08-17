@@ -13,12 +13,13 @@
  * the License.
  */
 :root {
-  --font-family: 'Roboto', sans-serif;
   --font-size: 14px;
   --login-form-top-bottom-padding: 40px;
   --login-form-left-right-padding: 40px;
   --login-form-field-margin: 1.5rem;
   --std-header-height: 70px;
+  --std-screen-title-size: 22px;
+  --std-screen-title-margin: 10px;
   --std-menu-width: 240px;
   --std-menu-collapsed-width: 80px;
   --std-logo-width: 190px;
@@ -28,10 +29,9 @@
   --std-profile-width-small: 60px;
   --std-profile-padding: 0.75rem 1rem;
   --std-profile-pic: 40px;
-  --std-profile-separator-margin: 4px;
   --std-profile-submenu-width-small: 10rem;
-  --std-topbar-buttons: 60px;
-  --std-topbar-buttons-small: 40px;
+  --topbar-button-size: 60px;
+  --topbar-button-size-small: 40px;
   --std-fadeout-width: 20px;
   --std-fadeout-left: calc(var(--std-menu-collapsed-width) - var(--std-fadeout-width));
   --std-menu-header-padding: 1rem 1rem 1rem 0.625rem;
@@ -74,8 +74,7 @@
   --error-dialog-icon-size: 2rem; }
 
 body {
-  font-size: var(--font-size);
-  font-family: var(--font-family); }
+  font-size: var(--font-size); }
 
 .login-form .p-fluid {
   padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding); }
@@ -108,6 +107,9 @@ body {
 
 .basti .std-menu .menu-topbar {
   margin-left: var(--std-menu-width); }
+  .basti .std-menu .menu-topbar .menu-screen-title {
+    font-size: var(--std-screen-title-size);
+    margin-left: var(--std-screen-title-margin); }
 
 .basti .std-menu .menu-logo-wrapper {
   height: var(--std-header-height);
@@ -117,22 +119,8 @@ body {
     width: var(--std-logo-width); }
 
 .basti .std-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-  width: var(--std-topbar-buttons);
-  height: var(--std-topbar-buttons); }
-
-.basti .std-menu .profile-menu {
-  height: var(--std-profile-height); }
-  .basti .std-menu .profile-menu .p-menubar {
-    height: 100%; }
-    .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-      height: var(--std-profile-height);
-      padding: var(--std-profile-padding); }
-    .basti .std-menu .profile-menu .p-menubar .p-submenu-list {
-      width: calc(100% - var(--std-profile-separator-margin));
-      margin-left: var(--std-profile-separator-margin); }
-
-.basti .std-menu .vl {
-  height: var(--std-profile-height); }
+  width: var(--topbar-button-size);
+  height: var(--topbar-button-size); }
 
 .basti .std-menu .profile-image, .basti .std-menu .profile-image-null {
   width: var(--std-profile-pic);
@@ -169,6 +157,19 @@ body {
   left: var(--std-fadeout-left);
   width: var(--std-fadeout-width);
   margin-top: var(--std-header-height); }
+
+.basti .profile-menu {
+  height: var(--std-profile-height); }
+  .basti .profile-menu .p-menubar {
+    height: 100%; }
+    .basti .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+      height: var(--std-profile-height);
+      padding: var(--std-profile-padding); }
+    .basti .profile-menu .p-menubar .p-submenu-list {
+      width: 100%; }
+
+.basti .vl {
+  height: var(--std-profile-height); }
 
 .basti .corp-menu .corp-menu-header {
   height: var(--corp-header-height); }
@@ -222,8 +223,7 @@ body {
     font-size: calc(var(--corp-speeddial-size) / 2); }
 
 .basti .p-component {
-  font-size: var(--font-size);
-  font-family: var(--font-family); }
+  font-size: var(--font-size); }
 
 .basti .p-inputtext {
   padding: var(--input-padding); }
@@ -326,8 +326,8 @@ body {
       max-height: var(--std-logo-height);
       width: var(--std-logo-width); }
   .basti .std-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--std-topbar-buttons-small);
-    height: var(--std-topbar-buttons-small); }
+    width: var(--topbar-button-size-small);
+    height: var(--topbar-button-size-small); }
   .basti .std-menu .fadeout {
     margin-top: calc(var(--std-header-height) + var(--std-logo-height)); }
   .basti .corp-menu .p-button.p-button-icon-only.menu-topbar-buttons {

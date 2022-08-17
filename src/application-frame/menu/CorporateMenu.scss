@@ -36,10 +36,45 @@
 
 .p-menubar {
     border-radius: 0;
-    .p-submenu-list {
+
+    &.profile-menubar .p-submenu-list {
         max-height: 600px;
         overflow: auto;
     }
+}
+
+.p-menubar:not(.profile-menubar) {
+    .wrapper {
+        position: relative;
+    }
+
+    .p-submenu-list {
+        max-height: 600px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        display: block;
+        position: static;
+    }
+
+    li.p-menuitem {
+        position: static;
+
+        .wrapper {
+            position: absolute;
+            z-index: 10;
+            display: none;
+        }
+    }
+
+    & ul:not(.p-menubar-root-list) li.p-menuitem {
+        &:hover > .wrapper {
+            display: block;
+        }
+    }
+}
+
+.p-menubar:not(.profile-menubar) .p-menubar-root-list > .p-menuitem-active > .wrapper {
+    display: block
 }
 
 .corp-menu-logo-wrapper {
@@ -48,18 +83,25 @@
     transition: max-width 0.5s ease-out;
 }
 
-.p-menubar {
-    .p-menubar-root-list {
-        @include styledScrollbarCorp();
-        overflow-y: auto;
-        overflow-x: hidden;
-        height: inherit;
-
-        >.p-menuitem {
-            float: left;
-            position: unset;
+.corp-menu-menubar, .mobile-launcher-menu {
+    .p-menubar {
+        .p-menubar-root-list {
+            @include styledScrollbarCorp();
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: inherit;
+    
+            >.p-menuitem {
+                float: left;
+                position: unset;
+            }
         }
     }
+}
+
+.corp-menu-menubar {
+    display: flex;
+    align-items: center;
 }
 
 .p-speeddial {

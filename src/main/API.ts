@@ -59,14 +59,21 @@ class API {
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager
 
+    /** Sets the ContentStore */
     setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.#contentStore = store;
     }
 
+    /** Sets the Server */
     setServer(server: BaseServer|Server|ServerFull) {
         this.#server = server;
     }
 
+    /**
+     * Sends a request to the server
+     * @param req - the request you want to send to the server
+     * @param endpoint - the endpoint to send the request to
+     */
     sendRequest(req: any, endpoint: string) {
         this.#server.sendRequest(req, endpoint);
     }
@@ -75,7 +82,6 @@ class API {
      * Sends an open-screen-request to the server to open a workscreen
      * @param id - the id of the screen opened
      * @param parameter - optional parameters that are being sent to the server
-     * @param useClassName - true, if the screen is opened with the classname instead of the component id
      */
     sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }) {
         const openReq = createOpenScreenRequest();
@@ -84,16 +90,16 @@ class API {
             openReq.parameter = parameter;
         }
 
-        this.#server.lastOpenedScreen = id;
-
         return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
 
+    /**
+     * Sends an open-screen request internally
+     * @param id - the id of the screen opened
+     */
     sendOpenScreenIntern(id:string) {
         const openReq = createOpenScreenRequest();
         openReq.componentId = id;
-
-        this.#server.lastOpenedScreen = id;
 
         return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
@@ -112,7 +118,9 @@ class API {
 
     /**
      * Sends a closeScreenRequest to the server for the given screen.
-     * @param screenName - the screen to be closed
+     * @param id - the component id of the screen
+     * @param parameter - the screen-parameters
+     * @param popup - true, if the screen to close is a popup
      */
     sendCloseScreenRequest(id: string, parameter?: { [key: string]: any }, popup?:boolean) {
         if (this.#appSettings.transferType !== "full") {
@@ -207,6 +215,7 @@ class API {
             const newItem: ServerMenuButtons = {
                 componentId: menuItem.id,
                 text: menuItem.text,
+                navigationName: menuItem.navigationName,
                 group: menuItem.menuGroup,
                 image: menuItem.icon ? menuItem.icon.substring(0, 2) + " " + menuItem.icon : "",
                 action: itemAction
@@ -285,6 +294,7 @@ class API {
             }
         }
         (this.#contentStore as ContentStore).addToolbarItem({ 
+            navigationName: toolbarItem.navigationName,
             componentId: toolbarItem.id, 
             text: toolbarItem.title, 
             image: toolbarItem.icon.substring(0, 2) + " " + toolbarItem.icon, 
@@ -383,23 +393,32 @@ class API {
         return (this.#contentStore as ContentStore).currentUser;
     }
 
+    /**
+     * Adds a global-component to the ContentStore
+     * @param name - the name of the global-component
+     * @param comp - the component to render
+     */
     addGlobalComponent(name:string, comp:ReactElement) {
         this.#contentStore.globalComponents.set(name, (props:any) => React.cloneElement(comp, props));
     }
 
+    /**
+     * Adds a css file to the head before the dynamically loaded css files of the reactUI
+     * @param path - the path to the css-file
+     */
     addCSSToHeadBefore(path:string) {
         let before = undefined
         for (let link of document.head.getElementsByTagName('link')) {
-            if (link.href.includes("application.css")) {
-                before = link;
-            }
-            else if (!before && link.href.includes("color-schemes")) {
+            if (!before && link.href.includes("design")) {
                 before = link;
             }
             else if (!before && link.href.includes("themes")) {
                 before = link
             }
-            else if (!before && link.href.includes("design")) {
+            else if (!before && link.href.includes("color-schemes")) {
+                before = link;
+            }
+            else if (link.href.includes("application.css")) {
                 before = link;
             }
         }
@@ -416,6 +435,10 @@ class API {
         }
     }
 
+    /**
+     * Adds a css file to the head after the dynamically loaded css files of the reactUI
+     * @param path - the path to the css-file
+     */
     addCSSToHeadAfter(path:string) {
         const link:HTMLLinkElement = document.createElement('link');
         link.rel = 'stylesheet'; 
@@ -427,6 +450,23 @@ class API {
         else {
             this.#appSettings.cssToAddWhenReady.push(link);
         }
+    }
+
+    /**
+     * Extends a component with the given functions
+     * @param name - the name of the component
+     * @param component - the component with the functions to be extended
+     */
+    extendComponent(name: string, component: ReactElement) {
+        const existingComp = this.#contentStore.getComponentByName(name);
+        if (existingComp) {
+            for (let newPropName in component.props) {
+                //@ts-ignore
+                existingComp[newPropName] = component.props[newPropName];
+            }
+            this.#subManager.propertiesSubscriber.get(existingComp.id)?.apply(undefined, [existingComp]);
+        }
+
     }
 }
 export default API

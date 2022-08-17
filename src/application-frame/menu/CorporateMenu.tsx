@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useEffect, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useState } from "react";
 import { Menubar } from 'primereact/menubar';
 import { SpeedDial } from "primereact/speeddial";
 import { Tooltip } from 'primereact/tooltip'
@@ -27,6 +27,8 @@ import useScreenTitle from "../../main/hooks/app-hooks/useScreenTitle";
 import useMenuItems from "../../main/hooks/data-hooks/useMenuItems";
 import { parseIconData } from "../../main/components/comp-props/ComponentProperties";
 import { BaseMenuButton } from "../../main/response/data/MenuResponse";
+import { DomHandler } from "primereact/utils";
+import useMultipleEventHandler from "../../main/hooks/event-hooks/useMultipleEventHandler";
 
 /**
  * Renders the menu as a topbar and a menubar below, when the application-layout is corporation
@@ -67,6 +69,25 @@ const CorporateMenu:FC<IMenu> = (props) => {
     /** State of the toolbar-items */
     const [toolbarItems, setToolbarItems] = useState<Array<MenuItem>>(handleNewToolbarItems((context.contentStore as ContentStore).toolbarItems));
 
+    // Adds a wrapper div to all submenu-lists, for the submenus to be correctly displayed when there are sub-submenus
+    useLayoutEffect(() => {
+        if (menuItems) {
+            const submenus = document.getElementsByClassName("p-submenu-list");
+            for (let submenu of submenus) {
+                if (submenu.closest(".p-menubar") && !submenu.closest(".p-menubar")!.classList.contains("profile-menubar")) {
+                    const parent = submenu.parentElement;
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add("wrapper")
+    
+                    if (parent && !parent.classList.contains("wrapper")) {
+                        parent.replaceChild(wrapper, submenu);
+                        wrapper.appendChild(submenu);
+                    }
+                }
+            }
+        }
+    }, [menuItems])
+
     /** 
      * The corporate-menu subscribes to the screen name and app-settings, so everytime these properties change the state
      * will get updated.
@@ -78,9 +99,21 @@ const CorporateMenu:FC<IMenu> = (props) => {
         return () => context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
     }, [context.subscriptions]);
 
+    //@ts-ignore Event handling for sub-submenus, to absolutely position them next to their parent submenu
+    useMultipleEventHandler(DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu").length ? 
+    //@ts-ignore
+    DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu") : undefined, "mouseover",
+    (event:any) => {
+        const menuItem = event.currentTarget
+        const submenuWrapper = menuItem.querySelector(".wrapper");
+        const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
+        submenuWrapper.style.top = menuItemPos.top + 'px';
+        submenuWrapper.style.left = menuItemPos.left + Math.round(menuItem.offsetWidth) + 'px'
+    });
+
     return (
         <>
-            {(!embeddedContext) &&
+            {(!embeddedContext || embeddedContext.showMenu) &&
                 <div className="corp-menu">
                     <div className="corp-menu-topbar">
                         <div className="corp-menu-header">

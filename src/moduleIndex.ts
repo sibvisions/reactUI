@@ -35,4 +35,7 @@ export { default as useAllRowSelect } from './main/hooks/data-hooks/useAllRowSel
 // Requests
 export * from './main/factories/RequestFactory';
 
+// Extendable Components
+export * from './main/extend-components'
+
 //export { appContext } from './main/contexts/AppProvider';

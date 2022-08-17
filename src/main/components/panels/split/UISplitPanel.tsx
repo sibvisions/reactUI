@@ -24,8 +24,8 @@ import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Dimension from "../../../util/types/Dimension";
 import ChildWithProps from "../../../util/types/ChildWithProps";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
+import { IExtendableSplitPanel } from "../../../extend-components/panels/ExtendSplitPanel";
 
 /** Interface for UISplitPanel */
 export interface ISplit extends BaseComponent{
@@ -38,9 +38,9 @@ export interface ISplit extends BaseComponent{
  * This component wraps the SplitPanel and provides it with properties
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UISplitPanel: FC<ISplit> = (baseProps) => {
+const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
     /** Component constants */
-    const [,, [props], layoutStyle] = useComponentConstants<ISplit>(baseProps, {visibility: 'hidden'});
+    const [,, [props], layoutStyle] = useComponentConstants<ISplit & IExtendableSplitPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children */
     const [children, components, compSizes] = useComponents(props.id, props.className);
@@ -121,12 +121,14 @@ const UISplitPanel: FC<ISplit> = (baseProps) => {
     return(
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
-                id={checkComponentName(props.name)}
+                id={props.name}
                 style={layoutStyle}
                 forwardedRef={splitRef}
                 trigger={layoutStyle}
                 onTrigger={handleResize}
                 onResize={handleResize}
+                onResizeExtend={props.onResize}
+                onResizeEndExtend={props.onResizeEnd}
                 leftComponent={firstChild}
                 rightComponent={secondChild}
                 dividerPosition={props.dividerPosition}

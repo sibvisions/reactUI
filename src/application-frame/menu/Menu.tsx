@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 import { useHistory } from "react-router";
@@ -36,6 +36,8 @@ import useMenuItems from "../../main/hooks/data-hooks/useMenuItems";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import { ActiveScreen } from "../../main/contentstore/BaseContentStore";
+import { translation } from "../../main/util/other-util/Translation";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -62,11 +64,12 @@ interface IProfileMenu {
  */
 export const ProfileMenu:FC<IProfileMenu> = (props) => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
 
+    /** State of the menuOptions, eg. foldOnCollapse */
     const [menuOptions, setMenuOptions] = useState<MenuOptions>(context.appSettings.menuOptions);
 
     /** The profile-menu options */
@@ -77,14 +80,14 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
 
     // Subscribes to the menu-visibility and the visible-buttons displayed in the profile-menu
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
             setMenuOptions(menuOptions)
 
             setVisibleButtons(visibleButtons);
         });
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
                 setMenuOptions(menuOptions)
 
                 setVisibleButtons(visibleButtons);
@@ -104,6 +107,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen);
                         }
                         else {
+                            context.contentStore.setActiveScreen();
                             history.push('/home');
                             return Promise.resolve(true);
                         }
@@ -116,17 +120,15 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             const screenName = context.contentStore.activeScreens[0].name;
                             const closeReq = createCloseScreenRequest();
                             closeReq.componentId = screenName;
-                            context.contentStore.setActiveScreen();
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
                                     (context.server as Server).lastClosedWasPopUp = false;
-                                    context.contentStore.closeScreen(screenName, context.appSettings.welcomeScreen ? true : false);
+                                    context.contentStore.closeScreen(screenName, undefined, context.appSettings.welcomeScreen ? true : false);
                                     showTopBar(openWelcomeOrHome(), topbar);
                                 }
                             });
                         }
                         else {
-                            context.contentStore.setActiveScreen();
                             showTopBar(openWelcomeOrHome(), topbar);
                         }
                     }
@@ -138,7 +140,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 icon="fas fa-save"
                 className="menu-topbar-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_KEYWORDS.SAVE), topbar)}
-                tooltip={translations.get("Save")}
+                tooltip={translation.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
             {(!visibleButtons || (visibleButtons.reload || visibleButtons.rollback) && props.showButtons) &&
                 <Button
@@ -152,11 +154,12 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_KEYWORDS.ROLLBACK), topbar)
                         }
                     }}
-                    tooltip={translations.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
+                    tooltip={translation.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
                     tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
             {props.showButtons && menuOptions.userSettings && <div className="vl" />}
             {menuOptions.userSettings && <div className="profile-menu">
                 <Menubar
+                    className="profile-menubar"
                     style={(context.contentStore as ContentStore).currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${(context.contentStore as ContentStore).currentUser.profileImage})` } : {}}
                     model={profileMenu} />
             </div>}
@@ -175,7 +178,7 @@ const Menu: FC<IMenu> = (props) => {
     /** True, if the application is embedded, then don't display the menu */
     const embeddedContext = useContext(EmbeddedContext);
 
-    /** Flag if the manu is collpased or expanded */
+    /** Flag if the menu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('menu');
 
     /** The current state of device-status */
@@ -199,12 +202,53 @@ const Menu: FC<IMenu> = (props) => {
     /** True, if the menu should close on collapse */
     const foldMenuOnCollapse = useMemo(() => context.appSettings.menuOptions.foldMenuOnCollapse, [context.appSettings.menuOptions]);
 
-    /** The currently selected-menuitem */
-    const [selectedMenuItem, setSelectedMenuItem] = useState<string>((context.contentStore as ContentStore).activeScreens.length ? 
-    (context.contentStore as ContentStore).activeScreens.slice(-1).pop()!.className as string : "");
+    /** State of the active-screens */
+    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);    
 
     /** get menu items */
-    const menuItems = useMenuItems()
+    const menuItems = useMenuItems();
+
+    // Subscribes to the active-screens
+    useLayoutEffect(() => {
+        context.subscriptions.subscribeToActiveScreens("menu", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
+
+        return () => {
+            context.subscriptions.unsubscribeFromActiveScreens("menu");
+        }
+    },[context.subscriptions])
+
+    // The current selected menu-item based on the active-screen
+    const selectedMenuItem = useMemo(() => {
+        let foundMenuItem: string = "";
+        if (activeScreens.length) {
+            if (context.transferType === "partial") {
+                // Go through the activescreens from the back and check if the active-screen has a menu-item if yes make it the selected-item
+                for (let i = activeScreens.length - 1; i >= 0; i--) {
+                    if (foundMenuItem) {
+                        break;
+                    }
+                    else {
+                        context.contentStore.menuItems.forEach(items => {
+                            if (items.length) {
+                                items.forEach(item => {
+                                    if (item.componentId.split(":")[0] === activeScreens[i].className) {
+                                        foundMenuItem = activeScreens[i].className as string;
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }
+            }
+
+            // If there was no menu-item found through the loop, just take the last active-screen
+            if (!foundMenuItem) {
+                foundMenuItem = activeScreens.slice(-1).pop()!.className as string
+            }
+        }
+
+        return foundMenuItem
+    }, [activeScreens])
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -218,17 +262,6 @@ const Menu: FC<IMenu> = (props) => {
             }
         }
     },[props.forwardedRef])
-
-    /** 
-     * The standard-menu subscribes to the screen name, selectedMenuItem and app-settings, so everytime these properties change the state
-     * will get updated.
-     *  @returns unsubscribing from the screen name on unmounting
-     */
-    useEffect(() => {
-        context.subscriptions.subscribeToSelectedMenuItem((menuItem: string) => setSelectedMenuItem(menuItem));
-
-        return () => context.subscriptions.unsubscribeFromSelectedMenuItem();
-    }, [context.subscriptions]);
 
     /** Handling if menu is collapsed or expanded based on windowsize */
     useEffect(() => {
@@ -250,6 +283,7 @@ const Menu: FC<IMenu> = (props) => {
         }
     }, [context.contentStore, context.subscriptions, deviceStatus])
 
+    // Extends the panel-menu based on the selected menu-item
     useEffect(() => {
         if (props.menuOptions.menuBar) {
             if (menuItems) {
@@ -337,7 +371,7 @@ const Menu: FC<IMenu> = (props) => {
     /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
         if (props.menuOptions.menuBar) {
-            if ((event as any).propertyName === "max-height") {
+            if ((event as any).propertyName === "max-height" && selectedMenuItem) {
                 const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
                 if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
                     menuElem.classList.add("p-menuitem--active")
@@ -364,7 +398,7 @@ const Menu: FC<IMenu> = (props) => {
 
     return (
         <>
-            {(props.menuOptions.menuBar && !embeddedContext) &&
+            {(props.menuOptions.menuBar && (!embeddedContext || embeddedContext.showMenu)) &&
                 <div className={concatClassnames(
                     "std-menu",
                     menuCollapsed ? " menu-collapsed" : "",

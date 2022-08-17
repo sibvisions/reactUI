@@ -24,8 +24,9 @@ import BaseContentStore from "../../contentstore/BaseContentStore";
 export function getScreenIdFromNavigation(navigationName:string, contentStore:BaseContentStore) {
     let screenId:string = navigationName;
     for (let [key, value] of contentStore.navigationNames.entries()) {
-        if (value === navigationName)
-            screenId = key
+        if (key === navigationName) {
+            screenId = value.screenId
+        }
     }
     return screenId
 }

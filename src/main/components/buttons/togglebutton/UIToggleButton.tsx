@@ -13,8 +13,8 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useRef } from "react";
-import { ToggleButton, ToggleButtonIconPositionType } from 'primereact/togglebutton';
+import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
+import { ToggleButton, ToggleButtonChangeParams, ToggleButtonIconPositionType } from 'primereact/togglebutton';
 import tinycolor from 'tinycolor2';
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
@@ -27,14 +27,14 @@ import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { IExtendableToggleButton } from "../../../extend-components/buttons/ExtendToggleButton";
 
 /**
  * This component displays a Button which can be toggled on and off
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
+const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
@@ -42,7 +42,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle,, compStyle] = useComponentConstants<IButtonSelectable>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current ? buttonRef.current.container : undefined)
@@ -64,8 +64,19 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    //If lib-user extends Togglebutton with onChange, call it when selected changes
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.selected);
+        }
+    }, [props.selected, props.onChange])
+
     /** When the ToggleButton is pressed, send a pressButtonRequest to the server */
-    const handleOnChange = () => {
+    const handleOnChange = (event:ToggleButtonChangeParams) => {
+        if (props.onClick) {
+            props.onClick(event.originalEvent);
+        }
+
         const req = createDispatchActionRequest();
         req.componentId = props.name;
         showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
@@ -80,7 +91,7 @@ const UIToggleButton: FC<IButtonSelectable> = (baseProps) => {
         >
             <ToggleButton
                 ref={buttonRef}
-                id={checkComponentName(props.name)}
+                id={props.name}
                 className={concatClassnames(
                     "rc-togglebutton",
                     !btnStyle.borderPainted ? "border-notpainted" : '',

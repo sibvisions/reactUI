@@ -26,7 +26,7 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/compone
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
+import { IExtendableImageEditor } from "../../../extend-components/editors/ExtendImageEditor";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor {
@@ -44,7 +44,7 @@ export interface IEditorImage extends IRCCellEditor {
  *  This component displays an image
  * @param props - Initial properties sent by the server for this component
  */
-export const UIEditorImage: FC<IEditorImage> = (props) => {
+export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) => {
     /** Reference for wrapper span */
     const wrapRef = useRef<HTMLSpanElement>(null);
 
@@ -101,6 +101,13 @@ export const UIEditorImage: FC<IEditorImage> = (props) => {
         }   
     }
 
+    // If the lib user extends the ImageCellEditor with onChange, call it when slectedRow changes.
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange();
+        }
+    }, [props.selectedRow, props.onChange])
+
     return (
         <span
             ref={wrapRef}
@@ -115,10 +122,10 @@ export const UIEditorImage: FC<IEditorImage> = (props) => {
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
         >
-            <Tooltip target={!props.isCellEditor ? "#" + checkComponentName(props.name) : undefined} />
+            <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
             {(props.selectedRow || props.cellEditor.defaultImageName) &&
                 <img
-                    id={!props.isCellEditor ? checkComponentName(props.name) : undefined}
+                    id={!props.isCellEditor ? props.name : undefined}
                     className={concatClassnames(imageStyle, props.style)}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
@@ -129,6 +136,11 @@ export const UIEditorImage: FC<IEditorImage> = (props) => {
                     onError={e => (e.target as HTMLImageElement).style.display = 'none'}
                     data-pr-tooltip={props.toolTipText}
                     data-pr-position="left"
+                    onClick={(e) => {
+                        if (props.onClick) {
+                            props.onClick(e)
+                        }
+                    }}
                 {...popupMenu}
                 />}
         </span>

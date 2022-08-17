@@ -30,6 +30,7 @@ import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import { IExtendableDateEditor } from "../../../extend-components/editors/ExtendDateEditor";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {
@@ -68,6 +69,7 @@ const dateFormats = [
     "dd/MMMM/yyyyy"
 ]
 
+// Parses a date-string through multiple formats
 const parseMultiple = (
     dateString: string,
     formatString: string[],
@@ -88,7 +90,7 @@ const parseMultiple = (
  * which opens a datepicker to choose a date and change the value in its databook
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorDate: FC<IEditorDate> = (props) => {
+const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
 
@@ -134,7 +136,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
-    setDateLocale(props.context.appSettings.locale);
+    //setDateLocale(props.context.appSettings.locale);
 
     /**
      * Returns true, if the given date is a valid date
@@ -163,6 +165,7 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    // When the cell-editor is opened focus the input and forward the pressed key when opening, on unmount save the date-input if the screen is still opened
     useEffect(() => {
         setTimeout(() => {
             if (calendarInput.current && props.isCellEditor) {
@@ -189,6 +192,14 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         
     },[props.selectedRow]);
 
+    // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.selectedRow ? new Date(props.selectedRow) : undefined)
+        }
+    }, [props.selectedRow, props.onChange])
+
+    // Checks if the time has changed to hide the overlay if the date has been selected directly
     const timeChanged = (newDate: Date, oldDate: Date) => {
         if (!oldDate || newDate.getHours() !== oldDate.getHours() || newDate.getMinutes() !== oldDate.getMinutes() || newDate.getSeconds() !== oldDate.getSeconds()) {
             return true;
@@ -245,6 +256,11 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
         //@ts-ignore
         [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event:Event) => {
         event.stopPropagation();
+
+        if (props.onInput) {
+            props.onInput(event as KeyboardEvent)
+        }
+
         if ((event as KeyboardEvent).key === "Enter") {
             handleDateInput();
             alreadySaved.current = true;
@@ -342,6 +358,10 @@ const UIEditorDate: FC<IEditorDate> = (props) => {
                 }}
                 onBlur={event => {
                     if (!props.isReadOnly) {
+                        if (props.onBlur) {
+                            props.onBlur(event);
+                        }
+
                         // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
                         //@ts-ignore
                         if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
@@ -386,11 +406,7 @@ class CustomCalendar extends Calendar {
     formatDateTime(date: Date) {
         let formattedValue = null;
         if (date) {
-            if (this.props.timeOnly) {
-                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
-            } else {
-                formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
-            }
+            formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
         }
 
         return formattedValue;

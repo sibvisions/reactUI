@@ -25,12 +25,12 @@ import { getDecimalLength, getGrouping, getPrimePrefix, getScaleDigits } from ".
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
-import { checkComponentName } from "../../../util/component-util/CheckComponentName";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
+import { IExtendableNumberEditor } from "../../../extend-components/editors/ExtendNumberEditor";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -56,7 +56,7 @@ export interface ScaleType {
  * when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorNumber: FC<IEditorNumber> = (props) => {
+const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     /** Reference for the NumberCellEditor element */
     const numberRef = useRef<InputNumber>(null);
 
@@ -101,7 +101,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         : {minScale: 0, maxScale: 0}, 
     [props.columnMetaData, props.cellEditor.numberFormat]);
 
-    /** Wether the value should be grouped or not */
+    /** Whether the value should be grouped or not */
     const useGrouping = getGrouping(props.cellEditor.numberFormat);
 
     /** 
@@ -118,6 +118,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
      */
     const decimalLength = useMemo(() => props.columnMetaData ? getDecimalLength((props.columnMetaData as NumericColumnDescription).precision, (props.columnMetaData as NumericColumnDescription).scale) : undefined, [props.columnMetaData]);
 
+    /** Returns true if the caret is before the comma */
     const isSelectedBeforeComma = () => {
         if (numberRef.current) {
             //@ts-ignore
@@ -142,11 +143,21 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
         lastValue.current = props.selectedRow;
     },[props.selectedRow]);
 
+    // If the lib user extends the NumberCellEditor with onChange, call it when selectedRow changes.
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.selectedRow)
+        }
+    }, [props.selectedRow, props.onChange])
+
     // When the cell-editor is in a table and the passed-key is not a number set null as value. On unmount of the in-table cell-editor blur.
     useEffect(() => {
         if (props.isCellEditor && props.passedKey) {
-            if (/^[0-9]$/i.test(props.passedKey)) {
+            if (!/^[0-9]$/i.test(props.passedKey)) {
                 setValue(null as any)
+            }
+            else {
+                setValue(props.passedKey)
             }
         }
 
@@ -208,7 +219,7 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
             <span aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
                     ref={numberRef}
-                    id={checkComponentName(props.name)}
+                    id={props.name}
                     inputRef={numberInput}
                     className={numberClassNames}
                     useGrouping={useGrouping}
@@ -223,13 +234,24 @@ const UIEditorNumber: FC<IEditorNumber> = (props) => {
                         ...textAlignment, 
                         ...props.cellStyle
                     }}
-                    onChange={event => setValue(event.value) }
+                    onChange={event => {
+                        if (props.onInput) {
+                            props.onInput(event);
+                        }
+
+                        setValue(event.value)
+                    }}
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
-                    onBlur={() => {
+                    onBlur={(event) => {
                         if (!props.isReadOnly) {
                             if (props.eventFocusLost) {
                                 onFocusLost(props.name, props.context.server);
                             }
+
+                            if (props.onBlur) {
+                                props.onBlur(event)
+                            }
+
                             sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                         }
                     }}

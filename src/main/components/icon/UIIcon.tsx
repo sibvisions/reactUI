@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import BaseComponent from "../../util/types/BaseComponent";
 import { Tooltip } from "primereact/tooltip";
 import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
@@ -26,23 +26,24 @@ import { getAlignments } from "../comp-props/GetAlignments";
 import Dimension from "../../util/types/Dimension";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
-import { checkComponentName } from "../../util/component-util/CheckComponentName";
+
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import { IExtendableIcon } from "../../extend-components/icon/ExtendIcon";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIIcon: FC<BaseComponent> = (baseProps) => {
+const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
     /** Reference for the span that is wrapping the icon containing layout information */
     const iconRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle,, compStyle] = useComponentConstants<BaseComponent>(baseProps);
+    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<BaseComponent & IExtendableIcon>(baseProps);
 
     /** Properties for icon */
-    const iconProps = parseIconData(props.foreground, props.image);
+    const iconProps = useMemo(() => parseIconData(props.foreground, props.image), [props.foreground, props.image]);
 
     /** Extracting onLoadCallback, id and alignments from baseProps */
     const {onLoadCallback, id, horizontalAlignment, verticalAlignment} = props;
@@ -94,6 +95,13 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
         }
     },[onLoadCallback, id, props.image, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    // If the lib user extends the Icon with onChange, call it when the image changes.
+    useEffect(() => {
+        if (props.onChange) {
+            props.onChange(props.image)
+        }
+    }, [props.image])
+
     /** 
     * Returns wether the icon is a FontAwesome icon or an image sent by the server 
     * @returns Iconelement based on if the icon is FontAwesome or server sent image
@@ -101,11 +109,11 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
             if(isFAIcon(icon))
-                return <i id={checkComponentName(props.name)} {...popupMenu} className={icon} style={{ color: iconProps.color, fontSize: iconProps.size?.height }} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
+                return <i id={props.name} {...popupMenu} className={icon} style={{ color: iconProps.color, fontSize: iconProps.size?.height }} data-pr-tooltip={props.toolTipText} data-pr-position="left"/>
             else {
                 return (
                 <img
-                    id={checkComponentName(props.name)}
+                    id={props.name}
                     {...popupMenu}
                     alt="icon"
                     src={context.server.RESOURCE_URL + icon}
@@ -135,7 +143,7 @@ const UIIcon: FC<BaseComponent> = (baseProps) => {
             style={{...layoutStyle, ...compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         >
-            <Tooltip target={"#" + checkComponentName(props.name)} />
+            <Tooltip target={"#" + props.name} />
             {iconOrImage(iconProps.icon)}
         </span>
     )

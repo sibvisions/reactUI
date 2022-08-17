@@ -21,6 +21,7 @@ import IconProps from "../../components/comp-props/IconProps";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
+// Interface for button-style
 interface IButtonStyle {
     style: CSSProperties,
     iconProps: IconProps,

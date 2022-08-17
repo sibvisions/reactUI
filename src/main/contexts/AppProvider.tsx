@@ -37,6 +37,7 @@ import { addCSSDynamically } from "../util/html-util/AddCSSDynamically";
 import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
 import useEventHandler from "../hooks/event-hooks/useEventHandler";
 import Timer from "../util/other-util/Timer";
+import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
     return (contentStore as ContentStore).menuItems !== undefined;
@@ -77,6 +78,7 @@ const server = new Server(contentStore, subscriptions, appSettings);
 const api = new API(server, contentStore, appSettings, subscriptions);
 
 contentStore.setSubscriptionManager(subscriptions);
+contentStore.setServer(server);
 
 server.setAPI(api);
 
@@ -117,12 +119,16 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
     }
 
+    /** Reference for the websocket */
     const ws = useRef<WebSocket|null>(null);
 
+    /** Flag, if the websocket needs to be reconnected */
     const isReconnect = useRef<boolean>(false);
 
+    /** Flag if the websocket is connected */
     const wsIsConnected = useRef<boolean>(false);
 
+    /** Reference for the relauncharguments sent by the server */
     const relaunchArguments = useRef<any>(null);
 
     /** Current State of the context */
@@ -148,58 +154,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
     },[contextState.subscriptions]);
 
-    /** Default values for translation */
-    useEffect(() => {
-        contextState.contentStore.translation
-        .set("Username", "Username")
-        .set("Password", "Password")
-        .set("Login", "Login")
-        .set("Logout", "Logout")
-        .set("Settings", "Settings")
-        .set("Change password", "Change password")
-        .set("Please enter and confirm the new password.", "Please enter and confirm the new password.")
-        .set("New Password", "New Password")
-        .set("Confirm Password", "Confirm Password")
-        .set("The new Password is empty", "The new Password is empty")
-        .set("The passwords are different!", "The passwords are different!")
-        .set("The old and new password are the same", "The old and new password are the same")
-        .set("Change password", "Change password")
-        .set("Reset password", "Reset password")
-        .set("Lost password", "Lost password")
-        .set("Remember me?", "Remember me?")
-        .set("Email", "Email")
-        .set("Request", "Request")
-        .set("Please enter your e-mail address.", "Please enter your e-mail address.")
-        .set("The email is required", "The email is required")
-        .set("One-time password", "One-time password")
-        .set("Please enter your one-time password and set a new password", "Please enter your one-time password and set a new password")
-        .set("Please enter your e-mail address.", "Please enter your e-mail address.")
-        .set("Save", "Save")
-        .set("Reload", "Reload")
-        .set("Rollback", "Rollback")
-        .set("Information", "Information")
-        .set("Error", "Error")
-        .set("Warning", "Warning")
-        .set("Question", "Question")
-        .set("OK", "OK")
-        .set("Cancel", "Cancel")
-        .set("Yes", "Yes")
-        .set("No", "No")
-        .set("Change", "Change")
-        .set("Session expired!", "Session expired!")
-        .set("Take note of any unsaved data, and <u>click here</u> or press ESC to continue.", "Take note of any unsaved data, and <u>click here</u> or press ESC to continue.")
-        .set("The authentication code is required", "The authentication code is required")
-        .set("Code", "Code")
-        .set("Verification", "Verification")
-        .set("Please enter your confirmation code.", "Please enter your confirmation code.")
-        .set("Waiting for verification.", "Waiting for verification.")
-        .set("Matching code", "Matching code")
-        .set("Confirm", "Confirm")
-        .set("Details", "Details")
-        .set("Cause(s) of failure", "Cause(s) of failure")
-        .set("Restart", "Restart");
-    },[contextState.contentStore]);
-
+    // Creates the startup-request and sends it to the server, inits the websocket
     useEffect(() => {
         const startUpRequest = createStartupRequest();
         const urlParams = new URLSearchParams(window.location.search);
@@ -212,6 +167,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let aliveIntervalToSet:number|undefined = undefined;
         let wsPingIntervalToSet:number|undefined = undefined;
 
+        /** Initialises the websocket and handles the messages the server sends and sets the ping interval. also handles reconnect */
         const initWS = (baseURL:string) => {
             const connectWs = () => {
                 const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
@@ -248,7 +204,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                 };
 
-                ws.current.onerror = (error) => console.error("WebSocket error", error);
+                ws.current.onerror = () => console.error("WebSocket error");
 
                 ws.current.onmessage = (e) => {
                     if (e.data instanceof Blob) {
@@ -265,7 +221,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             else if (jscmd.command === "api/reopenScreen") {
                                 const openReq = createOpenScreenRequest();
                                 openReq.className = jscmd.arguments.className;
-                                contextState.server.lastOpenedScreen = jscmd.arguments.className;
                                 showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
                             }
                             else if (jscmd.command === "reloadCss") {
@@ -285,6 +240,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             connectWs()
         }
 
+        /** Sends the startup-request to the server and initialises the alive interval */
         const sendStartup = (req:StartupRequest|UIRefreshRequest, preserve:boolean, restartArgs?:any) => {
             if (restartArgs) {
                 (req as StartupRequest).arguments = restartArgs;
@@ -308,6 +264,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             .catch(() => {});
         }
 
+        // Fetches the app file which contains intervals
         const fetchApp = () => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app.json').then((r) => r.json())
@@ -329,6 +286,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             });
         }
 
+        // Fetches the app-config file which contains the transfertype
         const fetchAppConfig = () => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app_config.json').then((r) => r.json())
@@ -350,6 +308,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             });
         }
 
+        // Fetches the config.json file which contains various application settings
         const fetchConfig = () => {
             return new Promise<any>((resolve, reject) => {
                 fetch('config.json')
@@ -386,6 +345,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
     
                     if (data.langCode) {
                         contextState.appSettings.language = data.langCode;
+                        contextState.appSettings.locale = data.langCode;
                     }
     
                     if (data.timezone) {
@@ -429,7 +389,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 startUpRequest.applicationName = appName;
                 convertedOptions.delete("appName");
             }
-
+            
             if (convertedOptions.has("baseUrl")) {
                 baseUrl = convertedOptions.get("baseUrl") as string;
                 if (baseUrl.charAt(baseUrl.length - 1) === "/") {
@@ -441,11 +401,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
             else if (process.env.NODE_ENV === "production") {
                 const splitURLPath = window.location.pathname.split("/");
 
-                if (splitURLPath.length - 2 >= 3 || !splitURLPath[1]) {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
-                }
-                else if (splitURLPath[1]) {
+                if (splitURLPath.length === 4) {
                     baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
+                }
+                else {
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
                 }
             }
 
@@ -467,6 +427,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (convertedOptions.has("langCode")) {
                 contextState.appSettings.language = convertedOptions.get("langCode");
+                contextState.appSettings.locale = convertedOptions.get("langCode");
                 startUpRequest.langCode = convertedOptions.get("langCode");
                 convertedOptions.delete("langCode");
             }
@@ -556,6 +517,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("aliveInterval");
             }
 
+            if (aliveIntervalToSet) {
+                contextState.server.aliveInterval = aliveIntervalToSet;
+            }
+
             if (convertedOptions.has("wsPingInterval")) {
                 const parsedValue = parseInt(convertedOptions.get("wsPingInterval"));
                 if (!isNaN(parsedValue)) {
@@ -565,17 +530,23 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("wsPingInterval");
             }
 
+            if (wsPingIntervalToSet) {
+                contextState.server.wsPingInterval = wsPingIntervalToSet;
+            }
+
             convertedOptions.forEach((v, k) => {
                 startUpRequest["custom_" + k] = v;
             });
         }
 
+        // Initialises contentstore and server after config fetches. based on transfertype
         const afterConfigFetch = () => {
             checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams);
             if (contextState.transferType === "full") {
                 contextState.contentStore = new ContentStoreFull(history);
                 contextState.contentStore.setSubscriptionManager(contextState.subscriptions);
                 contextState.contentStore.setAppSettings(contextState.appSettings);
+                contextState.contentStore.setServer(contextState.server);
                 contextState.subscriptions.setContentStore(contextState.contentStore);
                 contextState.api.setContentStore(contextState.contentStore);
                 contextState.appSettings.setContentStore(contextState.contentStore);
@@ -587,6 +558,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+                if (history.location.pathname.includes("#/home")) {
+                    contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "#home") - 1);
+                }
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);
 
@@ -630,11 +604,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (response.applicationColorScheme && !schemeToSet) {
-                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
+                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => {});
                     }
 
                     if (response.applicationTheme && !themeToSet) {
-                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"));
+                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => {});
                     }
 
                     if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.transferType === "partial") {

@@ -17,9 +17,15 @@ import React, { FC, useMemo } from "react";
 import { ICellEditor } from "../../editors/IEditor";
 import { ICellRender } from "../CellEditor";
 
+/**
+ * Renders the text-cell when the column is a text-cell
+ * @param props - the properties received from the table
+ */
 const TextCellRenderer: FC<ICellRender> = (props) => {
+    /** Casts the cell-editor property to ICellEditor because we can be sure it is a text-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditor;
 
+    // If the contentType is a password, show the password dots or just the cell-data
     const displayTextValue = useMemo(() => {
         if (props.cellData !== null) {
             if (castedCellEditor.contentType === "text/plain;password") {

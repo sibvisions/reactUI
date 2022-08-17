@@ -13,8 +13,8 @@
  * the License.
  */
 
-import React, { FC, useContext } from 'react';
-import PrimeReact from 'primereact/api';
+import React, { FC, useContext, useLayoutEffect } from 'react';
+import PrimeReact, { addLocale, locale } from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
 import LoadingScreen from './application-frame/loading/Loadingscreen';
@@ -23,6 +23,7 @@ import AppWrapper from './AppWrapper';
 import UIManagerFull from './application-frame/screen-management/ui-manager/UIManagerFull';
 import { appContext } from './main/contexts/AppProvider';
 import Login from './application-frame/login/Login';
+import { translation } from './main/util/other-util/Translation';
 
 
 /**
@@ -31,7 +32,7 @@ import Login from './application-frame/login/Login';
  */
 const ReactUI: FC<ICustomContent> = (props) => {
     const context = useContext(appContext);
-
+    
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
   

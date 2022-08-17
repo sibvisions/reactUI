@@ -28,9 +28,9 @@ import { TopBarContextType } from "../../components/topbar/TopBar";
  * @param fb - the fallback value for styles
  */
 const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSProperties):
-[AppContextType, TopBarContextType, [T], CSSProperties|undefined, Map<string, string>, CSSProperties] => {
+[AppContextType, TopBarContextType, [T], CSSProperties|undefined, CSSProperties] => {
     /** Returns utility variables */
-    const [context, topbar, translations] = useConstants();
+    const [context, topbar] = useConstants();
 
     /** Up to date properties for the component */
     const [props] = useProperties<T>(baseProps.id, {...baseProps});
@@ -41,6 +41,6 @@ const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSPro
     /** get the component style of the component */
     const compStyle = useComponentStyle(props);
 
-    return [context, topbar, [props], layoutStyle, translations, compStyle];
+    return [context, topbar, [props], layoutStyle, compStyle];
 }
 export default useComponentConstants

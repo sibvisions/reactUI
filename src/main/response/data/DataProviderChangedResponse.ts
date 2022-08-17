@@ -15,6 +15,7 @@
 
 import BaseResponse from "../BaseResponse"
 
+// Type for changed-columns
 export type IChangedColumns = {
     name: string
     label?: string

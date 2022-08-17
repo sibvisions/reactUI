@@ -13,13 +13,18 @@
  * the License.
  */
 
-import React, { FC, useContext, useEffect, useMemo } from "react";
+import React, { FC, useCallback, useContext, useEffect, useMemo } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
-import { fetchLinkedRefDatabook, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
+import { convertColNamesToReferenceColNames, fetchLinkedRefDatabook, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
 
+/**
+ * Renders the linked-cell when the column is a linked-cell
+ * @param props - the properties received from the table
+ */
 const LinkedCellRenderer: FC<ICellRender> = (props) => {
+    /** Casts the cell-editor property to ICellEditorLinked because we can be sure it is a linked-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorLinked
 
     /** The data provided by the databook */
@@ -31,13 +36,18 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     /** True if the linkRef has already been fetched */
     const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
 
+    /** True, if there is a displayReferencedColumnName or a displayConcatMask */
+    const isDisplayRefColNameOrConcat = useMemo(() => castedCellEditor.displayReferencedColumnName || castedCellEditor.displayConcatMask, [castedCellEditor.displayReferencedColumnName, castedCellEditor.displayConcatMask]);
+
+    // If there is a cell-data fetch the linkedReference Databook so the correct value can be displayed
     useEffect(() => {
         if (props.cellData) {
             fetchLinkedRefDatabook(
                 props.screenName, 
-                castedCellEditor.linkReference.referencedDataBook, 
+                castedCellEditor.linkReference.referencedDataBook,
                 props.cellData, 
                 castedCellEditor.displayReferencedColumnName,
+                castedCellEditor.displayConcatMask,
                 context.server,
                 context.contentStore
             );
@@ -45,28 +55,60 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     }, []);
 
     /** A map which stores the referenced-column-values as keys and the display-values as value */
-    const displayValueMap = useMemo(() => {
-        const map = new Map<string, string>();
-        if (providedData.length && castedCellEditor.displayReferencedColumnName) {
-            providedData.forEach((data:any) => map.set(
-                data[castedCellEditor.linkReference.referencedColumnNames[0]], 
-                data[castedCellEditor.displayReferencedColumnName as string]
-            ))
-        }
-        return map;
-    }, [linkRefFetchFlag]);
+    // const dataToDisplayMap = useMemo(() => {
+    //     const map:Map<string, string> = new Map<string, string>(previousDataMap.current);
+    //     if (providedData.length) {
+    //         providedData.forEach((data:any) => {
+    //             const extractedObject = getExtractedObject(data, castedCellEditor.linkReference.referencedColumnNames);
+    //             if (castedCellEditor.displayReferencedColumnName) {
+    //                 map.set(JSON.stringify(extractedObject), data[castedCellEditor.displayReferencedColumnName as string]);
+    //             }
+    //             else if (castedCellEditor.displayConcatMask) {
+    //                 let displayString = "";
+    //                 if (castedCellEditor.displayConcatMask.includes("*")) {
+    //                     displayString = castedCellEditor.displayConcatMask
+    //                     const count = (castedCellEditor.displayConcatMask.match(/\*/g) || []).length;
+    //                     for (let i = 0; i < count; i++) {
+    //                         displayString = displayString.replace('*', data[castedCellEditor.columnView.columnNames[i]] !== undefined ? data[castedCellEditor.columnView.columnNames[i]] : "");
+    //                     }
+    //                 }
+    //                 else {
+    //                     castedCellEditor.columnView.columnNames.forEach((column, i) => {
+    //                         displayString += data[column] + (i !== castedCellEditor.columnView.columnNames.length - 1 ? castedCellEditor.displayConcatMask : "");
+    //                     });
+    //                 }
+    //                 map.set(JSON.stringify(extractedObject), displayString);
+    //             }
+    //         });
+    //     }
+    //     previousDataMap.current = map;
+    //     return map;
 
-    const linkedDisplayValue = useMemo(() => {
-        if (castedCellEditor.displayReferencedColumnName) {
-            if (displayValueMap.has(props.cellData)) {
-                return displayValueMap.get(props.cellData);
-            }
-            else {
-                return "";
+    // }, [linkRefFetchFlag, providedData, castedCellEditor.linkReference.referencedColumnNames, castedCellEditor.displayConcatMask, castedCellEditor.displayReferencedColumnName, castedCellEditor.columnView]);
+
+    /**
+     * Returns the displayValue to display
+     * @param value - the datarow which should be displayed
+     */
+    const getDisplayValue = useCallback((value:any) => {
+        if (isDisplayRefColNameOrConcat) {
+            if (castedCellEditor && castedCellEditor.linkReference.dataToDisplayMap?.has(JSON.stringify(value))) {
+                return castedCellEditor.linkReference.dataToDisplayMap.get(JSON.stringify(value))
             }
         }
-        return props.cellData
-    }, [props.cellData, linkRefFetchFlag]);
+        return value[props.colName]
+    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, castedCellEditor])
+
+    /** The displayValue to display */ 
+    const linkedDisplayValue = useMemo(() => {
+        if (castedCellEditor && castedCellEditor.linkReference.dataToDisplayMap?.size) {
+            return getDisplayValue(getExtractedObject(convertColNamesToReferenceColNames(props.rowData, castedCellEditor.linkReference), castedCellEditor.linkReference.referencedColumnNames))
+        }
+        else {
+            return getDisplayValue(props.rowData)
+        }
+        
+    }, [props.cellData, linkRefFetchFlag, castedCellEditor]);
 
     return (
         <>
