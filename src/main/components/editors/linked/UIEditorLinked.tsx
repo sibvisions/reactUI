@@ -475,7 +475,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     sendSetValues(props.dataRow, props.name, colNames, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
                 }
                 else {
-                    console.log(extractedData)
                     setText(getDisplayValue(extractedData))
                     sendSetValues(props.dataRow, props.name, colNames, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference), props.topbar, props.rowNumber);
                 }
