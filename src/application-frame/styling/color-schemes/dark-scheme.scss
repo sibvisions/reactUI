@@ -18,474 +18,474 @@
 /// Darkmode Scheme
 :root {
     /// Darkmode login background
-    --login-mask-background: rgba(63, 75, 91, 0.93);
+    --login-mask-background:rgba(63, 75, 91, 0.93);
 
     /// Darkmode login logo background
-    --login-logo-background: #3f4b5b;
+    --login-logo-background:#3f4b5b;
 
     /// Darkmode login box-shadow
-    --login-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
+    --login-shadow:5px 5px 45px 5px rgba(0,0,0,0.6);
 
     /// Darkmode client background
-    --screen-background: #20262e;
+    --screen-background:#20262e;
 
     /// Darkmode text color
-    --text-color: rgba(255, 255, 255, 0.87);
+    --text-color:rgba(255, 255, 255, 0.87);
 
     /// Darkmode background for topbar
-    --topbar-background: #3f4b5b;
+    --topbar-background:#3f4b5b;
 
     /// Darkmode menu color
-    --topbar-text-color: #ffffff;
+    --topbar-text-color:#ffffff;
 
     /// Darkmode logo background
-    --topbar-logo-background: linear-gradient(270deg, #4f5966 0%, #3f4b5b 100%);
+    --topbar-logo-background:linear-gradient(270deg, #4f5966 0%, #3f4b5b 100%);
 
     /// Darkmode topbar buttons background
-    --topbar-button-background: transparent;
+    --topbar-button-background:transparent;
 
     /// Darkmode topbar buttons hover background
-    --topbar-button-hover-background: #2a323d;
+    --topbar-button-hover-background:#2a323d;
 
-    --topbar-button-text-color: var(--topbar-text-color);
+    --topbar-button-text-color:var(--topbar-text-color);
 
     /// Profile-menu background
-    --profile-background: #3f4b5b;
+    --profile-background:#3f4b5b;
 
     /// profile-menu hover background-color
-    --profile-hover-background: #2a323d;
+    --profile-hover-background:#2a323d;
 
     /// profile-menu text-color
-    --profile-text-color: #ffffff;
+    --profile-text-color:#ffffff;
 
     /// profile-menu separator
-    --profile-separator: 2px solid #5b6067;
+    --profile-separator:2px solid #5b6067;
 
     /// profile-menu submenu background
-    --profile-submenu-background: #3f4b5b;
+    --profile-submenu-background:#3f4b5b;
 
     /// profile-menu items hover background
-    --profile-item-hover-background: #303a48;
+    --profile-item-hover-background:#303a48;
 
     /// profile items hover text color
-    --profile-item-hover-text-color: #ffffff;
+    --profile-item-hover-text-color:#ffffff;
 
     /// Darkmode panel-menu background
-    --std-menu-background: #2a323d;
+    --std-menu-background:#2a323d;
 
     /// Darkmode panel-menu hover background
-    --std-menu-item-hover-background: #222a33;
+    --std-menu-item-hover-background:#222a33;
 
     /// Darkmode panel-menu color
-    --std-menu-text-color: #d9d9d9;
+    --std-menu-text-color:#d9d9d9;
 
     /// Darkmode panel-menu color hover
-    --std-menu-item-hover-text-color: #ffffff;
+    --std-menu-item-hover-text-color:#ffffff;
 
     /// Darkmode color for active menuitem
-    --std-menu-activeitem-color: #2196F3;
+    --std-menu-activeitem-color:#2196F3;
 
     /// Darkmode menu border
-    --std-menu-border: 1px solid rgba(120,130,140,.13);
+    --std-menu-border:1px solid rgba(120,130,140,.13);
 
     /// Darkmode fadeout background
-    --std-menu-fadeout-background: linear-gradient(90deg, #2a323d00 0%, #2a323d 100%);
+    --std-menu-fadeout-background:linear-gradient(90deg, #2a323d00 0%, #2a323d 100%);
 
     /// menubar background
-    --menubar-background: var(--topbar-background);
+    --menubar-background:var(--topbar-background);
 
     /// menubar hover background
-    --menubar-hover-background: var(--topbar-button-hover-background);
+    --menubar-hover-background:var(--topbar-button-hover-background);
 
     /// menubar text-color
-    --menubar-text-color: var(--topbar-text-color);
+    --menubar-text-color:var(--topbar-text-color);
 
     /// menubar submenu background
-    --menubar-submenu-background: #3f4b5b;
+    --menubar-submenu-background:#3f4b5b;
 
     /// menubar items hover background
-    --menubar-item-hover-background: #303a48;
+    --menubar-item-hover-background:#303a48;
 
     /// menubar items hover text-color
-    --menubar-item-hover-text-color: #ffffff;
+    --menubar-item-hover-text-color:#ffffff;
 
     /// Darkmode background for corporation menu speeddial
-    --corp-menu-speeddial-background: #ffffff;
+    --corp-menu-speeddial-background:#ffffff;
 
     /// Darkmode color for corporation menu speeddial
-    --corp-menu-speeddial-color: #495057;
+    --corp-menu-speeddial-color:#495057;
 
     /// Darkmode shadow for corporation menu speeddial
     --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
 
     /// Darkmode button color
-    --primary-color: #205e8f;
+    --primary-color:#205e8f;
 
     /// Darkmode component background
-    --input-background: #2a323d;
+    --input-background:#2a323d;
 
     /// Darkmode component border
-    --input-border: 1px solid #3f4b5b;
+    --input-border:1px solid #3f4b5b;
 
     /// Darkmode input placeholder color;
-    --input-placeholder-color: rgba(255, 255, 255, 0.6);
+    --input-placeholder-color:rgba(255, 255, 255, 0.6);
 
     /// checkbox unselected background
-    --checkbox-background: #2a323d;
+    --checkbox-background:#2a323d;
 
     /// checkbox unselected border
-    --checkbox-border: 1px solid #3f4b5b;
+    --checkbox-border:1px solid #3f4b5b;
 
     /// checkbox selected outer background
-    --checkbox-selected-background: #2196f3;
+    --checkbox-selected-background:#2196f3;
 
     /// checkbox selected outer hover background
-    --checkbox-selected-hover-background: #0b7ad1;
+    --checkbox-selected-hover-background:#0b7ad1;
 
     /// checkbox selected inner color
-    --checkbox-color: #151515;
+    --checkbox-color:#151515;
 
     /// radiobutton unselected background
-    --radiobutton-background: #2a323d;
+    --radiobutton-background:#2a323d;
 
     /// checkbox unselected border
-    --radiobutton-border: 1px solid #3f4b5b;
+    --radiobutton-border:1px solid #3f4b5b;
 
     /// checkbox selected outer background
-    --radiobutton-selected-outer-background: #2196f3;
+    --radiobutton-selected-outer-background:#2196f3;
 
     /// checkbox selected outer hover background
-    --radiobutton-selected-outer-hover-background: #0b7ad1;
+    --radiobutton-selected-outer-hover-background:#0b7ad1;
 
     /// checkbox selected inner color
-    --radiobutton-inner-color: #151515;
+    --radiobutton-inner-color:#151515;
 
     /// Darkmode toolbar background
-    --toolbar-background: #303a48;
+    --toolbar-background:#303a48;
 
     /// Darkmode toolbar border
     --toolbar-border-color:#3f4b5b;
 
-    --toolbar-separator-color: #bbbbbb;
+    --toolbar-separator-color:#bbbbbb;
 
     /// Darkmode table-header background
-    --table-header-background: #20262e;
+    --table-header-background:#20262e;
 
     /// Darkmode table-header border
-    --table-header-border: 1px solid #3f4b5b;
+    --table-header-border:1px solid #3f4b5b;
 
     /// Background when hovering a table header column
-    --table-header-hover-background: #1c283a;
+    --table-header-hover-background:#1c283a;
 
     /// Darkmode table selected row background
-    --table-selected-row-background: linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%);
+    --table-selected-row-background:linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%);
 
     /// Darkmode table-row background for odd rows
-    --table-row-odd-background: #2a323d;
+    --table-row-odd-background:#2a323d;
 
     /// Darkmode table-row background for even rows
-    --table-row-even-background: #272c33;
+    --table-row-even-background:#272c33;
 
     /// Darkmode background when hovering a table/linked row
-    --table-row-hover-background: #1c283a;
+    --table-row-hover-background:#1c283a;
 
     /// Darkmode table-row border
-    --table-row-border: 1px solid #3f4b5b;
+    --table-row-border:1px solid #3f4b5b;
 
     /// Darkmode cell hover color
-    --table-cell-hover-color: rgb(131, 131, 131);
+    --table-cell-hover-color:rgb(131, 131, 131);
 
     /// Darkmode cell background for required fields on even rows
-    --table-required-even-background: rgb(253, 238, 195);
+    --table-required-even-background:rgb(253, 238, 195);
 
     /// Darkmode cell background for required fields on odd rows
-    --table-required-odd-background: rgb(255, 244, 210);
+    --table-required-odd-background:rgb(255, 244, 210);
 
     /// Darkmode cell font color when a cell is required
-    --table-required-color: #495057;
+    --table-required-color:#495057;
 
     /// Darkmode cell background for readonly fields on even rows
-    --table-readonly-even-background: rgb(230, 230, 230);
+    --table-readonly-even-background:rgb(230, 230, 230);
 
     /// Darkmode cell background for readonly fields on odd rows
-    --table-readonly-odd-background: rgb(239, 239, 239);
+    --table-readonly-odd-background:rgb(239, 239, 239);
 
     /// Darkmode table-header sort color
-    --table-sort-color: #2196F3;
+    --table-sort-color:#2196F3;
 
     /// Darkmode LinkedCellEditor panel background
-    --linked-panel-background: #3f4b5b;
+    --linked-panel-background:#3f4b5b;
 
     /// Darkmode LinkedCellEditor item hover background
-    --linked-item-hover-background: #303a48;
+    --linked-item-hover-background:#303a48;
 
     /// LinkedCellEditor hover text-color
-    --linked-item-hover-text-color: #ffffff;
+    --linked-item-hover-text-color:#ffffff;
 
     /// Darkmode overlay background for popupmenubuttons
-    --popupmenubutton-panel-background: #3f4b5b;
+    --popupmenubutton-panel-background:#3f4b5b;
 
     /// Darkmode popupmenu item hover background
-    --popupmenubutton-item-hover-background: #303a48;
+    --popupmenubutton-item-hover-background:#303a48;
 
     /// popupmenu item hover text-color
-    --popupmenubutton-item-hover-text-color: #ffffff;
+    --popupmenubutton-item-hover-text-color:#ffffff;
 
     /// Darkmode DateCellEditor panel background
-    --date-panel-background: #3f4b5b;
+    --date-panel-background:#3f4b5b;
 
     /// Darkmode DateCellEditor header border
-    --date-panel-header-border: 1px solid #2a323d;
+    --date-panel-header-border:1px solid #2a323d;
 
     /// Darkmode color when hovering over a day to select
-    --date-panel-hover-color: #495057;
+    --date-panel-hover-color:#495057;
 
     /// Darkmode date panel selected date background
-    --date-selected-background: #e3f2fd;
+    --date-selected-background:#e3f2fd;
 
     /// Darkmode Dialog header background
-    --dialog-header-background: #3f4b5b;
+    --dialog-header-background:#3f4b5b;
 
     /// Dialog header text-color
-    --dialog-header-text-color: var(--text-color);
+    --dialog-header-text-color:var(--text-color);
 
     /// Darkmode 'x' color when hovering
-    --dialog-icon-hover-color: #495057;
+    --dialog-icon-hover-color:#495057;
 
     /// Darkmode Dialog header border
-    --dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
+    --dialog-header-border:1px solid rgba(0, 0, 0, 0.15);
 
     /// Darkmode Dialog background
-    --dialog-content-background: #20262e;
+    --dialog-content-background:#20262e;
 
     /// Darkmode TabSet navbar background
-    --tab-navbar-background: #3f4b5b;
+    --tab-navbar-background:#3f4b5b;
 
     /// Darkmode TabSet navbar border
-    --tab-navbar-border-color: #3f4b5b;
+    --tab-navbar-border-color:#3f4b5b;
 
     /// Darkmode border and color of a selected tab
-    --tab-selected-color: #2196fe;
+    --tab-selected-color:#2196fe;
 
     /// Darkmode TabSet hover background
-    --tab-hover-background: #20262e;
+    --tab-hover-background:#20262e;
 
     /// Darkmode TabSet border color
-    --tab-border-color: var(--text-color);
+    --tab-border-color:var(--text-color);
 
     /// Darkmode Tree background
-    --tree-background: #20262e;
+    --tree-background:#20262e;
 
     /// Darkmode Tree border
-    --tree-border: 1px solid #2a323d;
+    --tree-border:1px solid #2a323d;
 
     /// Darkmode Tree item hover background
-    --tree-item-hover-background: #303a48;
+    --tree-item-hover-background:#303a48;
 
     /// Darkmode Tree selected item background
-    --tree-selected-item-background: #3f4b5b;
+    --tree-selected-item-background:#3f4b5b;
 
-    --tree-even-background: var(--table-row-odd-background);
+    --tree-even-background:var(--table-row-odd-background);
 
     /// Darkmode HTMLEditor toolbar background
-    --html-toolbar-background: #3f4b5b;
+    --html-toolbar-background:#3f4b5b;
 
     /// Darkmode HTMLEditor toolbar border
-    --html-toolbar-border: 1px solid #2a323d;
+    --html-toolbar-border:1px solid #2a323d;
 
     /// Darkmode HTMLEditor button hover colors
-    --html-toolbar-button-hover-background: rgba(255, 255, 255, 0.7);
+    --html-toolbar-button-hover-background:rgba(255, 255, 255, 0.7);
 
     /// Darkmode HTMLEditor picker expanded background
-    --html-picker-expanded-background: #2a323d;
+    --html-picker-expanded-background:#2a323d;
 
     /// Darkmode HTMLEditor picker item hover background
-    --html-picker-item-hover-background: #303a48;
+    --html-picker-item-hover-background:#303a48;
 
     /// Darkmode Message info background
-    --message-info-header-background: var(--primary-color);
+    --message-info-header-background:var(--primary-color);
 
     /// Darkmode Message info hover background of closing element
-    --message-info-header-close-hover: #276b96;
+    --message-info-header-close-hover:#276b96;
 
     /// Darkmode Message info header color
-    --message-info-header-color: #ffffff;
+    --message-info-header-color:#ffffff;
 
     /// Darkmode Message warning background
-    --message-warning-header-background: #b69425;
+    --message-warning-header-background:#b69425;
 
     /// Darkmode Message warning hover background of closing element
-    --message-warning-header-close-hover: #978138;
+    --message-warning-header-close-hover:#978138;
 
     /// Darkmode Message warning header color
-    --message-warning-header-color: #ffffff;
+    --message-warning-header-color:#ffffff;
 
     /// Darkmode Message error background
-    --message-error-header-background: #CC0C39;
+    --message-error-header-background:#CC0C39;
 
     /// Darkmode Message error hover background of closing element
-    --message-error-header-close-hover: #a92230;
+    --message-error-header-close-hover:#a92230;
 
     /// Darkmode Message error header color
-    --message-error-header-color: #ffffff;
+    --message-error-header-color:#ffffff;
 
     /// Darkmode Message question background
-    --message-question-header-background: #018786;
+    --message-question-header-background:#018786;
 
     /// Darkmode Message question hover background of closing element
-    --message-question-header-close-hover: #017372;
+    --message-question-header-close-hover:#017372;
 
     /// Darkmode Message question header color
-    --message-question-header-color: #ffffff;
+    --message-question-header-color:#ffffff;
 
     /// Darkmode error-bar background
-    --error-bar-background: rgba(66, 73, 82, 0.8);
+    --error-bar-background:rgba(66, 73, 82, 0.8);
 
     /// Darkmode loading-screen background left
-    --loading-screen-left-background: #20262e;
+    --loading-screen-left-background:#20262e;
 
     /// Darkmode loading-screen background right
-    --loading-screen-right-background: #3f4b5b;
+    --loading-screen-right-background:#3f4b5b;
 
     /// Darkmode loading-screen spinner colors
-    --loading-spinner-color-1: #b3ec23;
+    --loading-spinner-color-1:#b3ec23;
 
-    --loading-spinner-color-2: #95c41f;
+    --loading-spinner-color-2:#95c41f;
 
-    --loading-spinner-color-3: #8bb61d;
+    --loading-spinner-color-3:#8bb61d;
 
-    --loading-spinner-color-4: #80a818;
+    --loading-spinner-color-4:#80a818;
 
     /// Darkmode tab close button color
-    --tab-close-color: #cdcfd1;
+    --tab-close-color:#cdcfd1;
 
     /// Darkmode tab close button hover color
-    --tab-close-hover-color: #6f757a;
+    --tab-close-hover-color:#6f757a;
 
     /// Darkmode focus border/shadow
-    --focus-box-shadow: 0 0 0 0.2rem rgb(147 197 253 / 70%);
+    --focus-box-shadow:0 0 0 0.2rem rgb(147 197 253 / 70%);
 
     /// Darkmode hover border-color
-    --border-color-hover: #2196fe;
+    --border-color-hover:#2196fe;
 
     /// Darkmode border-radius for login
-    --login-border-radius: 6px;
+    --login-border-radius:6px;
 
     /// Darkmode border-radius for buttons
-    --button-border-radius: 3px;
+    --button-border-radius:3px;
 
     /// Darkmode border-radius for editors
-    --editor-border-radius: 3px;
+    --editor-border-radius:3px;
 
     /// Darkmode border-radius for DatePicker panel
-    --date-border-radius: 3px;
+    --date-border-radius:3px;
 
     /// Darkmode border-radius for LinkedCellEditor panel
-    --linked-border-radius: 3px;
+    --linked-border-radius:3px;
 
     /// Darkmode border-radius for Tables/Trees
-    --table-border-radius: 0px;
+    --table-border-radius:0px;
 
     /// Darkmode border-radius for tabset navbar
-    --tab-border-radius: 0px;
+    --tab-border-radius:0px;
 
     /// Darkmode border-radius for Dialogs
-    --dialog-border-radius: 3px;
+    --dialog-border-radius:3px;
 
     /// Darkmode border-radius for toolbars which are NOT part of navigation-tables
-    --toolbar-border-radius: 0px;
+    --toolbar-border-radius:0px;
 
     /// Darkmode Topbar color
-    --topbar-colors: #2196F3, #2196F3;
+    --topbar-colors:#2196F3, #2196F3;
 
     ///System Colors
 
     /// Darkmode mandatory background
-    --mandatory-background: rgb(255, 244, 210);
+    --mandatory-background:rgb(255, 244, 210);
 
     /// Darkmode read-only background
-    --readonly-background: #2a323d;
+    --readonly-background:#2a323d;
 
     /// Darkmode invalid editor background
-    --invalid-background: rgb(209, 51, 51);
+    --invalid-background:rgb(209, 51, 51);
 
-    --gone-background: #b69425bb;
+    --gone-background:#b69425bb;
 
-    --signature-pad-background: #303a48;
+    --signature-pad-background:#303a48;
 
     /// V2 Variables
 
     /// The background color of the launcher toolbar
-    --launcher-toolbar-background: var(--topbar-background);
+    --launcher-toolbar-background:var(--topbar-background);
 
     /// The separator color of launcher toolbars
-    --launcher-toolbar-separator-color: #303a48;
+    --launcher-toolbar-separator-color:#303a48;
 
     /// The text-color of buttons of the launcher
-    --launcher-toolbar-button-text-color: var(--topbar-text-color);
+    --launcher-toolbar-button-text-color:var(--topbar-text-color);
 
     /// The background color when hovering toolbar buttons of the launcher
-    --launcher-toolbar-button-hover-background: var(--topbar-button-hover-background);
+    --launcher-toolbar-button-hover-background:var(--topbar-button-hover-background);
 
     /// The text-color when hovering toolbar buttons of the launcher
-    --launcher-toolbar-button-hover-text-color: var(--topbar-text-color);
+    --launcher-toolbar-button-hover-text-color:var(--topbar-text-color);
 
     /// frame menubar background
-    --frame-menubar-background: var(--topbar-background);
+    --frame-menubar-background:var(--topbar-background);
 
     /// frame menubar hover background
-    --frame-menubar-hover-background: var(--topbar-button-hover-background);
+    --frame-menubar-hover-background:var(--topbar-button-hover-background);
 
     /// frame menubar text-color
-    --frame-menubar-text-color: var(--topbar-text-color);
+    --frame-menubar-text-color:var(--topbar-text-color);
 
     /// frame menubar submenu background
-    --frame-menubar-submenu-background: #3f4b5b;
+    --frame-menubar-submenu-background:#3f4b5b;
 
     /// frame menubar items hover background
-    --frame-menubar-item-hover-background: #303a48;
+    --frame-menubar-item-hover-background:#303a48;
 
     /// frame menubar items hover text-color
-    --frame-menubar-item-hover-text-color: #ffffff;
+    --frame-menubar-item-hover-text-color:#ffffff;
 
     /// The background color of the frame toolbar
-    --frame-toolbar-background: var(--topbar-background);
+    --frame-toolbar-background:var(--topbar-background);
 
     /// The separator color of frame toolbars
-    --frame-toolbar-separator-color: #303a48;
+    --frame-toolbar-separator-color:#303a48;
 
     /// The text-color of buttons of the frame
-    --frame-toolbar-button-text-color: var(--topbar-text-color);
+    --frame-toolbar-button-text-color:var(--topbar-text-color);
 
     /// The background color when hovering toolbar buttons of the launcher
-    --frame-toolbar-button-hover-background: var(--topbar-button-hover-background);
+    --frame-toolbar-button-hover-background:var(--topbar-button-hover-background);
 
     /// The text-color when hovering toolbar buttons of the launcher
-    --frame-toolbar-button-hover-text-color: var(--topbar-text-color);
+    --frame-toolbar-button-hover-text-color:var(--topbar-text-color);
 
     /// The background color for frame headers
-    --frame-header-background: #4f4f4f;
+    --frame-header-background:#4f4f4f;
 
     /// The text-color for frame headers
-    --frame-header-color: var(--topbar-text-color);
+    --frame-header-color:var(--topbar-text-color);
 
     /// The border for frame headers
-    --frame-header-border: 1px solid #616161;
+    --frame-header-border:1px solid #616161;
 
     /// The hover background color of the frame close button
-    --frame-header-button-hover-background: #e3f2fd;
+    --frame-header-button-hover-background:#e3f2fd;
 
     /// The hover text color of the frame close button
-    --frame-header-button-hover-color: #495057;
+    --frame-header-button-hover-color:#495057;
 
     /// Border radius of the frame
-    --frame-border-radius: 9px;
+    --frame-border-radius:9px;
 
     /// Box shadow of the frame
-    --frame-shadow: 0 22px 70px 4px rgb(0 0 0 / 56%);
+    --frame-shadow:0 22px 70px 4px rgb(0 0 0 / 56%);
 
     /// Frame border-width on the sides
-    --frame-border-width: 4px;
+    --frame-border-width:4px;
 }
 
 body {

@@ -15,6 +15,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import '@sibvisions/reactui-designer/dist/main.css'
 import './index.scss';
 import * as serviceWorker from './serviceWorker';
 import MiddleMan from './MiddleMan';

@@ -62,8 +62,11 @@
 
 
 :root {
-    --main-height: 100vh;
-    --main-width: 100vw;
+    --main-height:100vh;
+    --main-width:100vw;
+    --designer-topbar-height:70px;
+    --designer-panel-wrapper-width:300px;
+    --designer-content-padding:0.5rem;
 }
 
 @font-face {

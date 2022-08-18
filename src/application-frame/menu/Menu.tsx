@@ -50,12 +50,14 @@ export interface MenuItemCustom extends MenuItem {
 export interface IMenu extends IForwardRef {
     showMenuMini?:boolean,
     menuOptions:MenuOptions,
+    designerViewCallback:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /** Interface for profile-menu */
 interface IProfileMenu {
     showButtons?: boolean,
-    visibleButtons?: VisibleButtons
+    visibleButtons?: VisibleButtons,
+    designerViewCallback:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -97,6 +99,12 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     
     return (
         <>
+            {props.showButtons && <Button
+                icon="fas fa-palette"
+                className="menu-topbar-buttons"
+                onClick={() => props.designerViewCallback(prevState => !prevState)}
+                tooltip="Design"
+                tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
             {props.showButtons && visibleButtons.home && <Button
                 icon="fas fa-home"
                 className="menu-topbar-buttons"
@@ -418,7 +426,7 @@ const Menu: FC<IMenu> = (props) => {
                                 <span className="menu-screen-title">{screenTitle}</span>
                             </div>
                             <div className="menu-topbar-right">
-                                <ProfileMenu showButtons  />
+                                <ProfileMenu showButtons designerViewCallback={props.designerViewCallback}  />
                             </div>
                         </div>
                     </div>

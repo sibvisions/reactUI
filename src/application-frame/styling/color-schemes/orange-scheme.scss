@@ -18,474 +18,474 @@
 /// Orange Scheme
 :root {
     /// Orange login background
-    --login-mask-background: rgb(245, 245, 245, 0.93);
+    --login-mask-background:rgb(245, 245, 245, 0.93);
 
     /// Orange login background
-    --login-logo-background: #ffffff;
+    --login-logo-background:#ffffff;
 
     /// Orange login box-shadow
-    --login-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
+    --login-shadow:5px 5px 45px 5px rgba(0,0,0,0.6);
 
     /// Orange client background
-    --screen-background: #ffffff;
+    --screen-background:#ffffff;
 
     /// Orange text color
-    --text-color: #495057;
+    --text-color:#495057;
 
     /// Orange background for topbar
-    --topbar-background: #f78500;
+    --topbar-background:#f78500;
 
     /// Orange menu color
-    --topbar-text-color: #ffffff;
+    --topbar-text-color:#ffffff;
 
     /// Orange logo background
-    --topbar-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
+    --topbar-logo-background:linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
 
     /// Orange topbar buttons background
-    --topbar-button-background: transparent;
+    --topbar-button-background:transparent;
 
     // Orange topbar buttons hover background
-    --topbar-button-hover-background: #d67b13;
+    --topbar-button-hover-background:#d67b13;
 
-    --topbar-button-text-color: var(--topbar-text-color);
+    --topbar-button-text-color:var(--topbar-text-color);
 
     /// Profile-menu background
-    --profile-background: #f78500;
+    --profile-background:#f78500;
 
     /// profile-menu hover background-color
-    --profile-hover-background: #d67b13;
+    --profile-hover-background:#d67b13;
 
     /// profile-menu text-color
-    --profile-text-color: #ffffff;
+    --profile-text-color:#ffffff;
 
     /// profile-menu separator
-    --profile-separator: 2px solid #d67b13;
+    --profile-separator:2px solid #d67b13;
 
     /// profile-menu submenu background
-    --profile-submenu-background: #ffffff;
+    --profile-submenu-background:#ffffff;
 
     /// profile-menu items hover background
-    --profile-item-hover-background: #e9ecef;
+    --profile-item-hover-background:#e9ecef;
 
     /// profile items hover text color
-    --profile-item-hover-text-color: #000000;
+    --profile-item-hover-text-color:#000000;
 
     /// Orange panel-menu background
-    --std-menu-background: #fafafa;
+    --std-menu-background:#fafafa;
 
     /// Orange panel-menu hover background
-    --std-menu-item-hover-background: #e9ecef;
+    --std-menu-item-hover-background:#e9ecef;
 
     /// Orange panel-menu color
-    --std-menu-text-color: #495057;
+    --std-menu-text-color:#495057;
 
     /// Orange panel-menu color hover
-    --std-menu-item-hover-text-color: #000000;
+    --std-menu-item-hover-text-color:#000000;
 
     /// Orange color for active menuitem
-    --std-menu-activeitem-color: #f78500;
+    --std-menu-activeitem-color:#f78500;
 
     /// Orange menu border
-    --std-menu-border: 1px solid rgba(120,130,140,.13);
+    --std-menu-border:1px solid rgba(120,130,140,.13);
 
     /// Orange fadeout background
-    --std-menu-fadeout-background: linear-gradient(90deg, #fafafa00 0%, #fafafa 100%);
+    --std-menu-fadeout-background:linear-gradient(90deg, #fafafa00 0%, #fafafa 100%);
 
     /// menubar background
-    --menubar-background: var(--topbar-background);
+    --menubar-background:var(--topbar-background);
 
     /// menubar hover background
-    --menubar-hover-background: var(--topbar-button-hover-background);
+    --menubar-hover-background:var(--topbar-button-hover-background);
 
     /// menubar text-color
-    --menubar-text-color: var(--topbar-text-color);
+    --menubar-text-color:var(--topbar-text-color);
 
     /// menubar submenu background
-    --menubar-submenu-background: #ffffff;
+    --menubar-submenu-background:#ffffff;
 
     /// menubar items hover background
-    --menubar-item-hover-background: #e9ecef;
+    --menubar-item-hover-background:#e9ecef;
 
     /// menubar items hover text-color
-    --menubar-item-hover-text-color: #000000;
+    --menubar-item-hover-text-color:#000000;
 
     /// Orange background for corporation menu speeddial
-    --corp-menu-speeddial-background: #ffffff;
+    --corp-menu-speeddial-background:#ffffff;
 
     /// Orange color for corporation menu speeddial
-    --corp-menu-speeddial-color: #495057;
+    --corp-menu-speeddial-color:#495057;
 
     /// Orange shadow for corporation menu speeddial
     --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
 
     /// Orange button color
-    --button-background: #f78500;
+    --button-background:#f78500;
 
     /// Orange component background
-    --input-background: #ffffff;
+    --input-background:#ffffff;
 
     /// Orange component border
-    --input-border: 1px solid #ced4da;
+    --input-border:1px solid #ced4da;
 
     /// Orange input placeholder color;
-    --input-placeholder-color: #6c757d;
+    --input-placeholder-color:#6c757d;
 
     /// checkbox unselected background
-    --checkbox-background: #ffffff;
+    --checkbox-background:#ffffff;
 
     /// checkbox unselected border
-    --checkbox-border: 1px solid #ced4da;
+    --checkbox-border:1px solid #ced4da;
 
     /// checkbox selected outer background
-    --checkbox-selected-background: #f78500;
+    --checkbox-selected-background:#f78500;
 
     /// checkbox selected outer hover background
-    --checkbox-selected-hover-background: #db7500;
+    --checkbox-selected-hover-background:#db7500;
 
     /// checkbox selected inner color
-    --checkbox-color: #ffffff;
+    --checkbox-color:#ffffff;
 
     /// radiobutton unselected background
-    --radiobutton-background: #ffffff;
+    --radiobutton-background:#ffffff;
 
     /// checkbox unselected border
-    --radiobutton-border: 1px solid #ced4da;
+    --radiobutton-border:1px solid #ced4da;
 
     /// checkbox selected outer background
-    --radiobutton-selected-outer-background: #f78500;
+    --radiobutton-selected-outer-background:#f78500;
 
     /// checkbox selected outer hover background
-    --radiobutton-selected-outer-hover-background: #db7500;
+    --radiobutton-selected-outer-hover-background:#db7500;
 
     /// checkbox selected inner color
-    --radiobutton-inner-color: #ffffff;
+    --radiobutton-inner-color:#ffffff;
 
     /// Orange toolbar background
-    --toolbar-background: #f8f9fa;
+    --toolbar-background:#f8f9fa;
 
     /// Orange toolbar border
-    --toolbar-border-color: #dee2e6;
+    --toolbar-border-color:#dee2e6;
 
-    --toolbar-separator-color: #bbbbbb;
+    --toolbar-separator-color:#bbbbbb;
 
     /// Orange table-header background
-    --table-header-background: #ffffff;
+    --table-header-background:#ffffff;
 
     /// Orange table-header border
-    --table-header-border: 1px solid #e9ecef;
+    --table-header-border:1px solid #e9ecef;
 
     /// Background when hovering a table header column
-    --table-header-hover-background: #e9ecef;
+    --table-header-hover-background:#e9ecef;
 
     /// Orange table selected row background
-    --table-selected-row-background: linear-gradient(180deg, rgba(227,177,27,0.5) 2%, rgba(213,166,22,0.5) 98%); 
+    --table-selected-row-background:linear-gradient(180deg, rgba(227,177,27,0.5) 2%, rgba(213,166,22,0.5) 98%); 
 
     /// Orange table-row background for odd rows
-    --table-row-odd-background: #fafafa;
+    --table-row-odd-background:#fafafa;
 
     /// Orange table-row background for even rows
-    --table-row-even-background: #ffffff;
+    --table-row-even-background:#ffffff;
 
     /// Orange background when hovering a table/linked row
-    --table-row-hover-background: #e9ecef;
+    --table-row-hover-background:#e9ecef;
 
     /// Orange table-row border
-    --table-row-border: 1px solid #e9ecef;
+    --table-row-border:1px solid #e9ecef;
 
     /// Orange cell hover color
-    --table-cell-hover-color: rgb(131, 131, 131);
+    --table-cell-hover-color:rgb(131, 131, 131);
 
     /// Orange cell background for required fields on even rows
-    --table-required-even-background: rgb(253, 238, 195);
+    --table-required-even-background:rgb(253, 238, 195);
 
     /// Orange cell background for required fields on odd rows
-    --table-required-odd-background: rgb(255, 244, 210);
+    --table-required-odd-background:rgb(255, 244, 210);
 
     /// Orange cell font color when a cell is required
-    --table-required-color: var(--text-color);
+    --table-required-color:var(--text-color);
 
     /// Orange cell background for readonly fields on even rows
-    --table-readonly-even-background: rgb(230, 230, 230);
+    --table-readonly-even-background:rgb(230, 230, 230);
 
     /// Orange cell background for readonly fields on odd rows
-    --table-readonly-odd-background: rgb(239, 239, 239);
+    --table-readonly-odd-background:rgb(239, 239, 239);
 
     /// Orange table-header sort color
-    --table-sort-color: #f78500;
+    --table-sort-color:#f78500;
 
     /// Orange LinkedCellEditor panel background
-    --linked-panel-background: #ffffff;
+    --linked-panel-background:#ffffff;
 
     /// Orange LinkedCellEditor item hover background
-    --linked-item-hover-background: #e9ecef;
+    --linked-item-hover-background:#e9ecef;
 
     /// LinkedCellEditor hover text-color
-    --linked-item-hover-text-color: #000000;
+    --linked-item-hover-text-color:#000000;
 
     /// Orange overlay background for popupmenubuttons
-    --popupmenubutton-panel-background: #ffffff;
+    --popupmenubutton-panel-background:#ffffff;
 
     /// Orange popupmenu item hover background
-    --popupmenubutton-item-hover-background: #e9ecef;
+    --popupmenubutton-item-hover-background:#e9ecef;
 
     /// popupmenu item hover text-color
-    --popupmenubutton-item-hover-text-color: #000000;
+    --popupmenubutton-item-hover-text-color:#000000;
 
     /// Orange DateCellEditor panel background
-    --date-panel-background: #ffffff;
+    --date-panel-background:#ffffff;
 
     /// Orange DateCellEditor header border
-    --date-panel-header-border: 1px solid #dee2e6;
+    --date-panel-header-border:1px solid #dee2e6;
 
     /// Orange color when hovering over a day to select
-    --date-panel-hover-color: var(--text-color);
+    --date-panel-hover-color:var(--text-color);
 
     /// Orange date panel selected date background
-    --date-selected-background: #fff3e0;
+    --date-selected-background:#fff3e0;
 
     /// Orange Dialog header background
-    --dialog-header-background: #ffffff;
+    --dialog-header-background:#ffffff;
 
     /// Dialog header text-color
-    --dialog-header-text-color: var(--text-color);
+    --dialog-header-text-color:var(--text-color);
 
     /// Orange 'x' color when hovering
-    --dialog-icon-hover-color: var(--text-color);
+    --dialog-icon-hover-color:var(--text-color);
 
     /// Orange Dialog header border
-    --dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
+    --dialog-header-border:1px solid rgba(0, 0, 0, 0.15);
 
     /// Orange Dialog background
-    --dialog-content-background: #ffffff;
+    --dialog-content-background:#ffffff;
 
     /// Orange TabSet navbar background
-    --tab-navbar-background: #ffffff;
+    --tab-navbar-background:#ffffff;
 
     /// Orange TabSet navbar border
-    --tab-navbar-border-color: #dee2e6;
+    --tab-navbar-border-color:#dee2e6;
 
     /// Orange border and color of a selected tab
-    --tab-selected-color: #ffc107;
+    --tab-selected-color:#ffc107;
 
     /// Orange TabSet hover background
-    --tab-hover-background: #ffffff;
+    --tab-hover-background:#ffffff;
 
     /// Orange TabSet border color
-    --tab-border-color: #dee2e6;
+    --tab-border-color:#dee2e6;
 
     /// Orange Tree background
-    --tree-background: #ffffff;
+    --tree-background:#ffffff;
 
     /// Orange Tree border
-    --tree-border: 1px solid #dee2e6;
+    --tree-border:1px solid #dee2e6;
 
     /// Orange Tree item hover background
-    --tree-item-hover-background: #e9ecef;
+    --tree-item-hover-background:#e9ecef;
 
     /// Orange Tree selected item background
-    --tree-selected-item-background: #fdefd4;
+    --tree-selected-item-background:#fdefd4;
 
-    --tree-even-background: var(--table-row-odd-background);
+    --tree-even-background:var(--table-row-odd-background);
 
     /// Orange HTMLEditor toolbar background
-    --html-toolbar-background: #f8f9fa;
+    --html-toolbar-background:#f8f9fa;
 
     /// Orange HTMLEditor toolbar border
-    --html-toolbar-border: 1px solid #dee2e6;
+    --html-toolbar-border:1px solid #dee2e6;
 
     /// Orange HTMLEditor button hover colors
-    --html-toolbar-button-hover-background: #000000;
+    --html-toolbar-button-hover-background:#000000;
 
     /// Orange HTMLEditor picker expanded background
-    --html-picker-expanded-background: #ffffff;
+    --html-picker-expanded-background:#ffffff;
 
     /// Orange HTMLEditor picker item hover background
-    --html-picker-item-hover-background: #e9ecef;
+    --html-picker-item-hover-background:#e9ecef;
 
     /// Orange Message info background
-    --message-info-header-background: #2196F3;
+    --message-info-header-background:#2196F3;
 
     /// Orange Message info hover background of closing element
-    --message-info-header-close-hover: #276b96;
+    --message-info-header-close-hover:#276b96;
 
     /// Orange Message info header color
-    --message-info-header-color: #ffffff;
+    --message-info-header-color:#ffffff;
 
     /// Orange Message warning background
-    --message-warning-header-background: #ffcf40;
+    --message-warning-header-background:#ffcf40;
 
     /// Orange Message warning hover background of closing element
-    --message-warning-header-close-hover: #ebbd35;
+    --message-warning-header-close-hover:#ebbd35;
 
     /// Orange Message warning header color
-    --message-warning-header-color: #ffffff;
+    --message-warning-header-color:#ffffff;
 
     /// Orange Message error background
-    --message-error-header-background: #CC0C39;
+    --message-error-header-background:#CC0C39;
 
     /// Orange Message error hover background of closing element
-    --message-error-header-close-hover: #a92230;
+    --message-error-header-close-hover:#a92230;
 
     /// Orange Message error header color
-    --message-error-header-color: #ffffff;
+    --message-error-header-color:#ffffff;
 
     /// Orange Message question background
-    --message-question-header-background: #17c0eb;
+    --message-question-header-background:#17c0eb;
 
     /// Orange Message question hover background of closing element
-    --message-question-header-close-hover: #13aacf;
+    --message-question-header-close-hover:#13aacf;
 
     /// Orange Message question header color
-    --message-question-header-color: #ffffff;
+    --message-question-header-color:#ffffff;
 
     /// Orange error-bar background
-    --error-bar-background: rgba(255, 255, 255, 0.8);
+    --error-bar-background:rgba(255, 255, 255, 0.8);
 
     /// Orange loading-screen background left
-    --loading-screen-left-background: #ffffff;
+    --loading-screen-left-background:#ffffff;
 
     /// Orange loading-screen background right
-    --loading-screen-right-background: #f1f1f1;
+    --loading-screen-right-background:#f1f1f1;
 
     /// Orange loading-screen spinner colors
-    --loading-spinner-color-1: #b3ec23;
+    --loading-spinner-color-1:#b3ec23;
 
-    --loading-spinner-color-2: #95c41f;
+    --loading-spinner-color-2:#95c41f;
 
-    --loading-spinner-color-3: #8bb61d;
+    --loading-spinner-color-3:#8bb61d;
 
-    --loading-spinner-color-4: #80a818;
+    --loading-spinner-color-4:#80a818;
 
     /// Orange tab close button color
-    --tab-close-color: #cdcfd1;
+    --tab-close-color:#cdcfd1;
 
     /// Orange tab close button hover color
-    --tab-close-hover-color: #6f757a;
+    --tab-close-hover-color:#6f757a;
 
     /// Orange focus border/shadow
-    --focus-box-shadow: 0 0 0 0.2rem #ffe69c;
+    --focus-box-shadow:0 0 0 0.2rem #ffe69c;
 
     /// Orange hover border-color
-    --border-color-hover: #f78500;
+    --border-color-hover:#f78500;
 
     /// Orange border-radius for login
-    --login-border-radius: 6px;
+    --login-border-radius:6px;
 
     /// Orange border-radius for buttons
-    --button-border-radius: 3px;
+    --button-border-radius:3px;
 
     /// Orange border-radius for editors
-    --editor-border-radius: 3px;
+    --editor-border-radius:3px;
 
     /// Orange border-radius for DatePicker panel
-    --date-border-radius: 3px;
+    --date-border-radius:3px;
 
     /// Orange border-radius for LinkedCellEditor panel
-    --linked-border-radius: 3px;
+    --linked-border-radius:3px;
     
     /// Orange border-radius for Tables/Trees
-    --table-border-radius: 3px;
+    --table-border-radius:3px;
 
     /// Orange border-radius for tabset navbar
-    --tab-border-radius: 0px;
+    --tab-border-radius:0px;
     
     /// Orange border-radius for Dialogs
-    --dialog-border-radius: 4px;
+    --dialog-border-radius:4px;
 
     /// Orange border-radius for toolbars which are NOT part of navigation-tables
-    --toolbar-border-radius: 0px;
+    --toolbar-border-radius:0px;
 
     /// Orange Topbar colors
-    --topbar-colors: #f78500, #f78500;
+    --topbar-colors:#f78500, #f78500;
 
     ///System Colors
 
     /// Orange mandatory background
-    --mandatory-background: rgb(255, 244, 210);
+    --mandatory-background:rgb(255, 244, 210);
 
     /// Orange read-only background
-    --readonly-background: rgb(239, 239, 239);
+    --readonly-background:rgb(239, 239, 239);
 
     /// Orange invalid editor background
-    --invalid-background: rgb(209, 51, 51);
+    --invalid-background:rgb(209, 51, 51);
 
-    --gone-background: #ffcf40bb;
+    --gone-background:#ffcf40bb;
 
-    --signature-pad-background: var(--screen-background);
+    --signature-pad-background:var(--screen-background);
 
     /// V2 Variables
 
     /// The background color of the launcher toolbar
-    --launcher-toolbar-background: var(--topbar-background);
+    --launcher-toolbar-background:var(--topbar-background);
 
     /// The separator color of launcher toolbars
-    --launcher-toolbar-separator-color: #ca6c00;
+    --launcher-toolbar-separator-color:#ca6c00;
 
     /// The text-color of buttons of the launcher
-    --launcher-toolbar-button-text-color: var(--topbar-text-color);
+    --launcher-toolbar-button-text-color:var(--topbar-text-color);
 
     /// The background color when hovering toolbar buttons of the launcher
-    --launcher-toolbar-button-hover-background: var(--topbar-button-hover-background);
+    --launcher-toolbar-button-hover-background:var(--topbar-button-hover-background);
 
     /// The text-color when hovering toolbar buttons of the launcher
-    --launcher-toolbar-button-hover-text-color: var(--topbar-text-color);
+    --launcher-toolbar-button-hover-text-color:var(--topbar-text-color);
 
     /// frame menubar background
-    --frame-menubar-background: var(--topbar-background);
+    --frame-menubar-background:var(--topbar-background);
 
     /// frame menubar hover background
-    --frame-menubar-hover-background: var(--topbar-button-hover-background);
+    --frame-menubar-hover-background:var(--topbar-button-hover-background);
 
     /// frame menubar text-color
-    --frame-menubar-text-color: var(--topbar-text-color);
+    --frame-menubar-text-color:var(--topbar-text-color);
 
     /// frame menubar submenu background
-    --frame-menubar-submenu-background: #ffffff;
+    --frame-menubar-submenu-background:#ffffff;
 
     /// frame menubar items hover background
-    --frame-menubar-item-hover-background: #e9ecef;
+    --frame-menubar-item-hover-background:#e9ecef;
 
     /// frame menubar items hover text-color
-    --frame-menubar-item-hover-text-color: #000000;
+    --frame-menubar-item-hover-text-color:#000000;
 
     /// The background color of the frame toolbar
-    --frame-toolbar-background: var(--topbar-background);
+    --frame-toolbar-background:var(--topbar-background);
 
     /// The separator color of frame toolbars
-    --frame-toolbar-separator-color: #ca6c00;
+    --frame-toolbar-separator-color:#ca6c00;
 
     /// The text-color of buttons of the frame
-    --frame-toolbar-button-text-color: var(--topbar-text-color);
+    --frame-toolbar-button-text-color:var(--topbar-text-color);
 
     /// The background color when hovering toolbar buttons of the launcher
-    --frame-toolbar-button-hover-background: var(--topbar-button-hover-background);
+    --frame-toolbar-button-hover-background:var(--topbar-button-hover-background);
 
     /// The text-color when hovering toolbar buttons of the launcher
-    --frame-toolbar-button-hover-text-color: var(--topbar-text-color);
+    --frame-toolbar-button-hover-text-color:var(--topbar-text-color);
 
     /// The background color for frame headers
-    --frame-header-background: #ffc786;
+    --frame-header-background:#ffc786;
 
     /// The text-color for frame headers
-    --frame-header-color: var(--topbar-text-color);
+    --frame-header-color:var(--topbar-text-color);
 
     /// The border for frame headers
-    --frame-header-border: 1px solid #e28011;
+    --frame-header-border:1px solid #e28011;
 
     /// The hover background color of the frame close button
-    --frame-header-button-hover-background: var(--topbar-button-hover-background);
+    --frame-header-button-hover-background:var(--topbar-button-hover-background);
 
     /// The hover text color of the frame close button
-    --frame-header-button-hover-color: #1e1f20;
+    --frame-header-button-hover-color:#1e1f20;
 
     /// Border radius of the frame
-    --frame-border-radius: 9px;
+    --frame-border-radius:9px;
 
     /// Box shadow of the frame
-    --frame-shadow: 0 22px 70px 4px rgb(0 0 0 / 56%);
+    --frame-shadow:0 22px 70px 4px rgb(0 0 0 / 56%);
 
     /// Frame border-width on the sides
-    --frame-border-width: 4px;
+    --frame-border-width:4px;
 }
 
 body {

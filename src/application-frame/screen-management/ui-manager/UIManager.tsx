@@ -30,6 +30,7 @@ import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useRespons
 import ChildWithProps from "../../../main/util/types/ChildWithProps";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
+import { ReactUIDesigner } from '@sibvisions/reactui-designer/dist/moduleIndex'
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -71,6 +72,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
+    const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
+
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
      * @param start - Biggest possible size of menu
@@ -85,6 +88,31 @@ const UIManager: FC<IUIManagerProps> = (props) => {
         }
         return dataArray;
     }
+
+    useEffect(() => {
+        const docStyle = window.getComputedStyle(document.documentElement)
+        const mainHeight = docStyle.getPropertyValue('--main-height');
+        const mainWidth = docStyle.getPropertyValue('--main-width');
+        if (showDesignerView) {
+            if (mainHeight === "100vh") {
+                document.documentElement.style.setProperty("--main-height", 
+                `calc(100vh - ${docStyle.getPropertyValue('--designer-topbar-height')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
+            }
+
+            if (mainWidth === "100vw") {
+                document.documentElement.style.setProperty("--main-width", `calc(100vw - ${docStyle.getPropertyValue('--designer-panel-wrapper-width')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
+            }
+        }
+        else {
+            if (mainHeight !== "100vh") {
+                document.documentElement.style.setProperty("--main-height", "100vh");
+            }
+
+            if (mainWidth !== "100vw") {
+                document.documentElement.style.setProperty("--main-width", "100vw");
+            }
+        }
+    }, [showDesignerView])
 
     /** Current state of menu size */
     const menuSize = useResponsiveBreakpoints(menuRef, 
@@ -115,51 +143,63 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const CustomWrapper = props.customAppWrapper;
 
-    return (
+    const content = 
         (CustomWrapper) ?
-            <div
-                className={concatClassnames(
-                    "reactUI",
-                    isCorporation(appLayout, appTheme) ? "corporation" : "",
-                    appTheme
-                )}>
-                <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.name} password="" />
-                <CustomWrapper>
-                    <div id="reactUI-main" className="main">
-                        <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize}>
-                            <ScreenManager />
-                        </ResizeProvider>
-                    </div>
-                </CustomWrapper>
-            </div>
-            : <div className={concatClassnames(
+        <div
+            className={concatClassnames(
                 "reactUI",
                 isCorporation(appLayout, appTheme) ? "corporation" : "",
                 appTheme
-            )} >
-                <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
-                {isCorporation(appLayout, appTheme) ?
-                    <CorporateMenu
-                        menuOptions={menuOptions} />
-                    :
-                    <Menu
-                        forwardedRef={menuRef}
-                        showMenuMini={menuMini}
-                        menuOptions={menuOptions} />}
-                <div id="reactUI-main" className={concatClassnames(
-                    "main",
-                    isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
-                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
-                    menuMini ? "" : "screen-no-mini",
-                    menuOptions.toolBar ? "toolbar-visible" : "",
-                    !menuOptions.menuBar ? "menu-not-visible" : "",
-                    !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
-                )}>
-                    <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
+            )}>
+            <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.name} password="" />
+            <CustomWrapper>
+                <div id="reactUI-main" className="main">
+                    <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize}>
                         <ScreenManager />
                     </ResizeProvider>
                 </div>
+            </CustomWrapper>
+        </div>
+        : <div className={concatClassnames(
+            "reactUI",
+            isCorporation(appLayout, appTheme) ? "corporation" : "",
+            appTheme
+        )} >
+            <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
+            {isCorporation(appLayout, appTheme) ?
+                <CorporateMenu
+                    menuOptions={menuOptions}
+                    designerViewCallback={setShowDesignerView} />
+                :
+                <Menu
+                    forwardedRef={menuRef}
+                    showMenuMini={menuMini}
+                    menuOptions={menuOptions}
+                    designerViewCallback={setShowDesignerView} />}
+            <div id="reactUI-main" className={concatClassnames(
+                "main",
+                isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
+                ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
+                menuMini ? "" : "screen-no-mini",
+                menuOptions.toolBar ? "toolbar-visible" : "",
+                !menuOptions.menuBar ? "menu-not-visible" : "",
+                !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
+            )}>
+                <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
+                    <ScreenManager />
+                </ResizeProvider>
             </div>
+        </div>
+
+    return (
+        (showDesignerView) ?
+            <ReactUIDesigner>
+                {content}
+            </ReactUIDesigner> 
+            :
+            <>
+                {content}
+            </>
     )
 }
 export default UIManager

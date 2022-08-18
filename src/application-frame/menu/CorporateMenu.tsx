@@ -125,7 +125,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
                             </div>
                             <span className="menu-screen-title">{screenTitle}</span>
                             <div className="corp-menu-profile">
-                                <ProfileMenu showButtons />
+                                <ProfileMenu showButtons designerViewCallback={props.designerViewCallback} />
                             </div>
                         </div>
                         {props.menuOptions.menuBar &&

@@ -18,474 +18,474 @@
 /// Default Scheme
 :root {
     /// Default login background
-    --login-mask-background: rgb(245, 245, 245, 0.93);
+    --login-mask-background:rgb(245, 245, 245, 0.93);
 
     /// Default login background
-    --login-logo-background: #ffffff;
+    --login-logo-background:#ffffff;
 
     /// Default login box-shadow
-    --login-shadow: 5px 5px 45px 5px rgba(0,0,0,0.6);
+    --login-shadow:5px 5px 45px 5px rgba(0,0,0,0.6);
 
     /// Default client background
-    --screen-background: #ffffff;
+    --screen-background:#ffffff;
 
     /// Default text color
-    --text-color: #495057;
+    --text-color:#495057;
 
     /// Default background for topbar
-    --topbar-background: #7a7f85;
+    --topbar-background:#7a7f85;
 
     /// Default menu color
-    --topbar-text-color: #ffffff;
+    --topbar-text-color:#ffffff;
 
     /// Default logo background
-    --topbar-logo-background: linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
+    --topbar-logo-background:linear-gradient(270deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 100%);
 
     /// Default topbar buttons background
-    --topbar-button-background: transparent;
+    --topbar-button-background:transparent;
 
     /// Default topbar buttons hover background
-    --topbar-button-hover-background: #454b52;
+    --topbar-button-hover-background:#454b52;
 
-    --topbar-button-text-color: var(--topbar-text-color);
+    --topbar-button-text-color:var(--topbar-text-color);
 
     /// profile-menu background
-    --profile-background: var(--topbar-background);
+    --profile-background:var(--topbar-background);
 
     /// profile-menu hover background-color
-    --profile-hover-background: var(--topbar-button-hover-background);
+    --profile-hover-background:var(--topbar-button-hover-background);
 
     /// profile-menu text-color
-    --profile-text-color: var(--topbar-text-color);
+    --profile-text-color:var(--topbar-text-color);
 
     /// profile-menu separator
-    --profile-separator: 2px solid #5b6067;
+    --profile-separator:2px solid #5b6067;
 
     /// profile-menu submenu background
-    --profile-submenu-background: #ffffff;
+    --profile-submenu-background:#ffffff;
 
     /// profile-menu items hover background
-    --profile-item-hover-background: #e9ecef;
+    --profile-item-hover-background:#e9ecef;
 
     /// profile items hover text color
-    --profile-item-hover-text-color: #000000;
+    --profile-item-hover-text-color:#000000;
 
     /// Default panel-menu background
-    --std-menu-background: #fafafa;
+    --std-menu-background:#fafafa;
 
     /// Default panel-menu hover background
-    --std-menu-item-hover-background: #e9ecef;
+    --std-menu-item-hover-background:#e9ecef;
 
     /// Default panel-menu color
-    --std-menu-text-color: #495057;
+    --std-menu-text-color:#495057;
 
     /// Default panel-menu color hover
-    --std-menu-item-hover-text-color: #000000;
+    --std-menu-item-hover-text-color:#000000;
 
     /// Default color for active menuitem
-    --std-menu-activeitem-color: #2196F3;
+    --std-menu-activeitem-color:#2196F3;
 
     /// Default menu border
-    --std-menu-border: 1px solid rgba(120,130,140,.13);
+    --std-menu-border:1px solid rgba(120,130,140,.13);
 
     /// Default fadeout background
-    --std-menu-fadeout-background: linear-gradient(90deg, #fafafa00 0%, #fafafa 100%);
+    --std-menu-fadeout-background:linear-gradient(90deg, #fafafa00 0%, #fafafa 100%);
 
     /// menubar background
-    --menubar-background: var(--topbar-background);
+    --menubar-background:var(--topbar-background);
 
     /// menubar hover background
-    --menubar-hover-background: var(--topbar-button-hover-background);
+    --menubar-hover-background:var(--topbar-button-hover-background);
 
     /// menubar text-color
-    --menubar-text-color: var(--topbar-text-color);
+    --menubar-text-color:var(--topbar-text-color);
 
     /// menubar submenu background
-    --menubar-submenu-background: #ffffff;
+    --menubar-submenu-background:#ffffff;
 
     /// menubar items hover background
-    --menubar-item-hover-background: #e9ecef;
+    --menubar-item-hover-background:#e9ecef;
 
     /// menubar items hover text-color
-    --menubar-item-hover-text-color: #000000;
+    --menubar-item-hover-text-color:#000000;
 
     /// Default background for corporation menu speeddial
-    --corp-menu-speeddial-background: #ffffff;
+    --corp-menu-speeddial-background:#ffffff;
 
     /// Default color for corporation menu speeddial
-    --corp-menu-speeddial-color: #495057;
+    --corp-menu-speeddial-color:#495057;
 
     /// Default shadow for corporation menu speeddial
     --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
 
     /// Default button color
-    --primary-color: #2196F3;
+    --primary-color:#2196F3;
 
     /// Default component background
-    --input-background: #ffffff;
+    --input-background:#ffffff;
 
     /// Default component border
-    --input-border: 1px solid #ced4da;
+    --input-border:1px solid #ced4da;
 
     /// Default input placeholder color;
-    --input-placeholder-color: #6c757d;
+    --input-placeholder-color:#6c757d;
 
     /// checkbox unselected background
-    --checkbox-background: #ffffff;
+    --checkbox-background:#ffffff;
 
     /// checkbox unselected border
-    --checkbox-border: 1px solid #ced4da;
+    --checkbox-border:1px solid #ced4da;
 
     /// checkbox selected background
-    --checkbox-selected-background: #2196f3;
+    --checkbox-selected-background:#2196f3;
 
     /// checkbox selected hover background
-    --checkbox-selected-hover-background: #0b7ad1;
+    --checkbox-selected-hover-background:#0b7ad1;
 
     /// checkbox selected color
-    --checkbox-color: #ffffff;
+    --checkbox-color:#ffffff;
 
     /// radiobutton unselected background
-    --radiobutton-background: #ffffff;
+    --radiobutton-background:#ffffff;
 
     /// checkbox unselected border
-    --radiobutton-border: 1px solid #ced4da;
+    --radiobutton-border:1px solid #ced4da;
 
     /// checkbox selected outer background
-    --radiobutton-selected-outer-background: #2196f3;
+    --radiobutton-selected-outer-background:#2196f3;
 
     /// checkbox selected outer hover background
-    --radiobutton-selected-outer-hover-background: #0b7ad1;
+    --radiobutton-selected-outer-hover-background:#0b7ad1;
 
     /// checkbox selected inner color
-    --radiobutton-inner-color: #ffffff;
+    --radiobutton-inner-color:#ffffff;
 
     /// Default toolbar background
-    --toolbar-background: #f8f9fa;
+    --toolbar-background:#f8f9fa;
 
     /// Default toolbar border
-    --toolbar-border-color: #dee2e6;
+    --toolbar-border-color:#dee2e6;
 
-    --toolbar-separator-color: #bbbbbb;
+    --toolbar-separator-color:#bbbbbb;
 
     /// Default table-header background
-    --table-header-background: #ffffff;
+    --table-header-background:#ffffff;
 
     /// Default table-header border
-    --table-header-border: 1px solid #e9ecef;
+    --table-header-border:1px solid #e9ecef;
 
     /// Background when hovering a table header column
-    --table-header-hover-background: #e9ecef;
+    --table-header-hover-background:#e9ecef;
 
     /// Default table selected row background
-    --table-selected-row-background: linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%) !important;
+    --table-selected-row-background:linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%) !important;
 
     /// Default table-row background for odd rows
-    --table-row-odd-background: #fafafa;
+    --table-row-odd-background:#fafafa;
 
     /// Default table-row background for even rows
-    --table-row-even-background: #ffffff;
+    --table-row-even-background:#ffffff;
 
     /// Default background when hovering a table/linked row
-    --table-row-hover-background: #e9ecef;
+    --table-row-hover-background:#e9ecef;
 
     /// Default table-row border
-    --table-row-border: 1px solid #e9ecef;
+    --table-row-border:1px solid #e9ecef;
 
     /// Default cell hover color
-    --table-cell-hover-color: rgb(131, 131, 131);
+    --table-cell-hover-color:rgb(131, 131, 131);
 
     /// Default cell background for required fields on even rows
-    --table-required-even-background: rgb(253, 238, 195);
+    --table-required-even-background:rgb(253, 238, 195);
 
     /// Default cell background for required fields on odd rows
-    --table-required-odd-background: rgb(255, 244, 210);
+    --table-required-odd-background:rgb(255, 244, 210);
 
     /// Default cell font color when a cell is required
-    --table-required-color: var(--text-color);
+    --table-required-color:var(--text-color);
 
     /// Default cell background for readonly fields on even rows
-    --table-readonly-even-background: rgb(230, 230, 230);
+    --table-readonly-even-background:rgb(230, 230, 230);
 
     /// Default cell background for readonly fields on odd rows
-    --table-readonly-odd-background: rgb(239, 239, 239);
+    --table-readonly-odd-background:rgb(239, 239, 239);
 
     /// Default table-header sort color
-    --table-sort-color: #2196F3;
+    --table-sort-color:#2196F3;
 
     /// Default LinkedCellEditor panel background
-    --linked-panel-background: #ffffff;
+    --linked-panel-background:#ffffff;
 
     /// Default LinkedCellEditor item hover background
-    --linked-item-hover-background: #e9ecef;
+    --linked-item-hover-background:#e9ecef;
 
     /// LinkedCellEditor hover text-color
-    --linked-item-hover-text-color: #000000;
+    --linked-item-hover-text-color:#000000;
 
     /// Default overlay background for popupmenubuttons
-    --popupmenubutton-panel-background: #ffffff;
+    --popupmenubutton-panel-background:#ffffff;
 
     /// Default popupmenu item hover background
-    --popupmenubutton-item-hover-background: #e9ecef;
+    --popupmenubutton-item-hover-background:#e9ecef;
 
     /// popupmenu item hover text-color
-    --popupmenubutton-item-hover-text-color: #000000;
+    --popupmenubutton-item-hover-text-color:#000000;
 
     /// Default DateCellEditor panel background
-    --date-panel-background: #ffffff;
+    --date-panel-background:#ffffff;
 
     /// Default DateCellEditor header border
-    --date-panel-header-border: 1px solid #dee2e6;
+    --date-panel-header-border:1px solid #dee2e6;
 
     /// Default color when hovering over a day to select
-    --date-panel-hover-color: var(--text-color);
+    --date-panel-hover-color:var(--text-color);
 
     /// Default date panel selected date background
-    --date-selected-background: #e3f2fd;
+    --date-selected-background:#e3f2fd;
 
     /// Default Dialog header background
-    --dialog-header-background: #ffffff;
+    --dialog-header-background:#ffffff;
 
     /// Dialog header text-color
-    --dialog-header-text-color: var(--text-color);
+    --dialog-header-text-color:var(--text-color);
 
     /// Default 'x' color when hovering
-    --dialog-icon-hover-color: var(--text-color);
+    --dialog-icon-hover-color:var(--text-color);
 
     /// Default Dialog header border
-    --dialog-header-border: 1px solid rgba(0, 0, 0, 0.15);
+    --dialog-header-border:1px solid rgba(0, 0, 0, 0.15);
 
     /// Default Dialog background
-    --dialog-content-background: #ffffff;
+    --dialog-content-background:#ffffff;
 
     /// Default TabSet navbar background
-    --tab-navbar-background: #ffffff;
+    --tab-navbar-background:#ffffff;
 
     /// Default TabSet navbar border
-    --tab-navbar-border-color: #dee2e6;
+    --tab-navbar-border-color:#dee2e6;
 
     /// Default border and color of a selected tab
-    --tab-selected-color: #2196fe;
+    --tab-selected-color:#2196fe;
 
     /// Default TabSet hover background
-    --tab-hover-background: #ffffff;
+    --tab-hover-background:#ffffff;
 
     /// Default TabSet border color
-    --tab-border-color: #dee2e6;
+    --tab-border-color:#dee2e6;
 
     /// Default Tree background
-    --tree-background: #ffffff;
+    --tree-background:#ffffff;
 
     /// Default Tree border
-    --tree-border: 1px solid #dee2e6;
+    --tree-border:1px solid #dee2e6;
 
     /// Default Tree item hover background
-    --tree-item-hover-background: #e9ecef;
+    --tree-item-hover-background:#e9ecef;
 
     /// Default Tree selected item background
-    --tree-selected-item-background: #E3F2FD;
+    --tree-selected-item-background:#E3F2FD;
 
-    --tree-even-background: var(--table-row-odd-background);
+    --tree-even-background:var(--table-row-odd-background);
 
     /// Default HTMLEditor toolbar background
-    --html-toolbar-background: #f8f9fa;
+    --html-toolbar-background:#f8f9fa;
 
     /// Default HTMLEditor toolbar border
-    --html-toolbar-border: 1px solid #dee2e6;
+    --html-toolbar-border:1px solid #dee2e6;
 
     /// Default HTMLEditor button hover colors
-    --html-toolbar-button-hover-background: #000000;
+    --html-toolbar-button-hover-background:#000000;
 
     /// Default HTMLEditor picker expanded background
-    --html-picker-expanded-background: #ffffff;
+    --html-picker-expanded-background:#ffffff;
 
     /// Default HTMLEditor picker item hover background
-    --html-picker-item-hover-background: #e9ecef;
+    --html-picker-item-hover-background:#e9ecef;
 
     /// Default Message info background
-    --message-info-header-background: var(--primary-color);
+    --message-info-header-background:var(--primary-color);
 
     /// Default Message info hover background of closing element
-    --message-info-header-close-hover: #276b96;
+    --message-info-header-close-hover:#276b96;
 
     /// Default Message info header text color
-    --message-info-header-color: #ffffff;
+    --message-info-header-color:#ffffff;
 
     /// Default Message warning background
-    --message-warning-header-background: #ffcf40;
+    --message-warning-header-background:#ffcf40;
 
     /// Default Message warning hover background of closing element
-    --message-warning-header-close-hover: #ebbd35;
+    --message-warning-header-close-hover:#ebbd35;
 
     /// Default Message warning header text color
-    --message-warning-header-color: #ffffff;
+    --message-warning-header-color:#ffffff;
 
     /// Default Message error background
-    --message-error-header-background: #CC0C39;
+    --message-error-header-background:#CC0C39;
 
     /// Default Message error hover background of closing element
-    --message-error-header-close-hover: #a92230;
+    --message-error-header-close-hover:#a92230;
 
     /// Default Message error header text color
-    --message-error-header-color: #ffffff;
+    --message-error-header-color:#ffffff;
 
     /// Default Message question background
-    --message-question-header-background: #17c0eb;
+    --message-question-header-background:#17c0eb;
 
     /// Default Message question hover background of closing element
-    --message-question-header-close-hover: #13aacf;
+    --message-question-header-close-hover:#13aacf;
 
     /// Default Message question header text color
-    --message-question-header-color: #ffffff;
+    --message-question-header-color:#ffffff;
 
     /// Default error-bar background
-    --error-bar-background: rgba(255, 255, 255, 0.8);
+    --error-bar-background:rgba(255, 255, 255, 0.8);
 
     /// Default loading-screen background left
-    --loading-screen-left-background: #ffffff;
+    --loading-screen-left-background:#ffffff;
 
     /// Default loading-screen background right
-    --loading-screen-right-background: #f1f1f1;
+    --loading-screen-right-background:#f1f1f1;
 
     /// Default loading-screen spinner colors
-    --loading-spinner-color-1: #b3ec23;
+    --loading-spinner-color-1:#b3ec23;
 
-    --loading-spinner-color-2: #95c41f;
+    --loading-spinner-color-2:#95c41f;
 
-    --loading-spinner-color-3: #8bb61d;
+    --loading-spinner-color-3:#8bb61d;
 
-    --loading-spinner-color-4: #80a818;
+    --loading-spinner-color-4:#80a818;
 
     /// Default tab close button color
-    --tab-close-color: #cdcfd1;
+    --tab-close-color:#cdcfd1;
 
     /// Default tab close button hover color
-    --tab-close-hover-color: #6f757a;
+    --tab-close-hover-color:#6f757a;
 
     /// Default focus border/shadow
-    --focus-box-shadow: 0 0 0 0.2rem #8dcdff;
+    --focus-box-shadow:0 0 0 0.2rem #8dcdff;
 
     /// Default hover border-color
-    --border-color-hover: #2196fe;
+    --border-color-hover:#2196fe;
 
     /// Default border-radius for login
-    --login-border-radius: 6px;
+    --login-border-radius:6px;
 
     /// Default border-radius for buttons
-    --button-border-radius: 3px;
+    --button-border-radius:3px;
 
     /// Default border-radius for editors
-    --editor-border-radius: 3px;
+    --editor-border-radius:3px;
 
     /// Default border-radius for DatePicker panel
-    --date-border-radius: 3px;
+    --date-border-radius:3px;
 
     /// Orange border-radius for LinkedCellEditor panel
-    --linked-border-radius: 3px;
+    --linked-border-radius:3px;
 
     /// Default border-radius for Tables/Trees
-    --table-border-radius: 0px;
+    --table-border-radius:0px;
 
     /// Default border-radius for tabset navbar
-    --tab-border-radius: 0px;
+    --tab-border-radius:0px;
 
     /// Default border-radius for Dialogs
-    --dialog-border-radius: 3px;
+    --dialog-border-radius:3px;
 
     /// Default border-radius for toolbars which are NOT part of navigation-tables
-    --toolbar-border-radius: 0px;
+    --toolbar-border-radius:0px;
 
     /// Default Topbar color
-    --topbar-colors: #2196F3, #2196F3;
+    --topbar-colors:#2196F3, #2196F3;
 
     ///System Colors
 
     /// Default mandatory background
-    --mandatory-background: rgb(255, 244, 210);
+    --mandatory-background:rgb(255, 244, 210);
 
     /// Default read-only background
-    --readonly-background: rgb(239, 239, 239);
+    --readonly-background:rgb(239, 239, 239);
 
     /// Default invalid editor background
-    --invalid-background: rgb(209, 51, 51);
+    --invalid-background:rgb(209, 51, 51);
 
-    --gone-background: #ffcf40bb;
+    --gone-background:#ffcf40bb;
 
-    --signature-pad-background: var(--screen-background);
+    --signature-pad-background:var(--screen-background);
 
     /// V2 Variables
 
     /// The background color of the launcher toolbar
-    --launcher-toolbar-background: var(--topbar-background);
+    --launcher-toolbar-background:var(--topbar-background);
 
     /// The separator color of launcher toolbars
-    --launcher-toolbar-separator-color: #f8f9fa;
+    --launcher-toolbar-separator-color:#f8f9fa;
 
     /// The text-color of buttons of the launcher
-    --launcher-toolbar-button-text-color: var(--topbar-text-color);
+    --launcher-toolbar-button-text-color:var(--topbar-text-color);
 
     /// The background color when hovering toolbar buttons of the launcher
-    --launcher-toolbar-button-hover-background: var(--topbar-button-hover-background);
+    --launcher-toolbar-button-hover-background:var(--topbar-button-hover-background);
 
     /// The text-color when hovering toolbar buttons of the launcher
-    --launcher-toolbar-button-hover-text-color: var(--topbar-text-color);
+    --launcher-toolbar-button-hover-text-color:var(--topbar-text-color);
 
     /// frame menubar background
-    --frame-menubar-background: var(--topbar-background);
+    --frame-menubar-background:var(--topbar-background);
 
     /// frame menubar hover background
-    --frame-menubar-hover-background: var(--topbar-button-hover-background);
+    --frame-menubar-hover-background:var(--topbar-button-hover-background);
 
     /// frame menubar text-color
-    --frame-menubar-text-color: var(--topbar-text-color);
+    --frame-menubar-text-color:var(--topbar-text-color);
 
     /// frame menubar submenu background
-    --frame-menubar-submenu-background: #ffffff;
+    --frame-menubar-submenu-background:#ffffff;
 
     /// frame menubar items hover background
-    --frame-menubar-item-hover-background: #e9ecef;
+    --frame-menubar-item-hover-background:#e9ecef;
 
     /// frame menubar items hover text-color
-    --frame-menubar-item-hover-text-color: #000000;
+    --frame-menubar-item-hover-text-color:#000000;
 
     /// The background color of the frame toolbar
-    --frame-toolbar-background: var(--topbar-background);
+    --frame-toolbar-background:var(--topbar-background);
 
     /// The separator color of frame toolbars
-    --frame-toolbar-separator-color: #f8f9fa;
+    --frame-toolbar-separator-color:#f8f9fa;
 
     /// The text-color of buttons of the frame
-    --frame-toolbar-button-text-color: var(--topbar-text-color);
+    --frame-toolbar-button-text-color:var(--topbar-text-color);
 
     /// The background color when hovering toolbar buttons of the frame
-    --frame-toolbar-button-hover-background: var(--topbar-button-hover-background);
+    --frame-toolbar-button-hover-background:var(--topbar-button-hover-background);
 
     /// The text-color when hovering toolbar buttons of the frame
-    --frame-toolbar-button-hover-text-color: var(--topbar-text-color);
+    --frame-toolbar-button-hover-text-color:var(--topbar-text-color);
 
     /// The background color for frame headers
-    --frame-header-background: #dddcdf;
+    --frame-header-background:#dddcdf;
 
     /// The text-color for frame headers
-    --frame-header-color: #6c6c6c;
+    --frame-header-color:#6c6c6c;
 
     /// The border for frame headers
-    --frame-header-border: 1px solid #b1b1b1;
+    --frame-header-border:1px solid #b1b1b1;
 
     /// The hover background color of the frame close button
-    --frame-header-button-hover-background: #fafafa;
+    --frame-header-button-hover-background:#fafafa;
 
     /// The hover text color of the frame close button
-    --frame-header-button-hover-color: #1e1f20;
+    --frame-header-button-hover-color:#1e1f20;
 
     /// Border radius of the frame
-    --frame-border-radius: 9px;
+    --frame-border-radius:9px;
 
     /// Box shadow of the frame
-    --frame-shadow: 0 22px 70px 4px rgb(0 0 0 / 56%);
+    --frame-shadow:0 22px 70px 4px rgb(0 0 0 / 56%);
 
     /// Frame border-width on the sides
-    --frame-border-width: 4px;
+    --frame-border-width:4px;
 }
 
 body {

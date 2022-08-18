@@ -15,178 +15,178 @@
 
 :root {
     /// Font size
-    --font-size: 18px;
+    --font-size:18px;
 
     /// Login form top bottom padding
-    --login-form-top-bottom-padding: 40px;
+    --login-form-top-bottom-padding:40px;
   
     /// Login form left right padding
-    --login-form-left-right-padding: 40px;
+    --login-form-left-right-padding:40px;
 
     /// Login form field margin
-    --login-form-field-margin: 1.5rem;
+    --login-form-field-margin:1.5rem;
 
     /// Standard-menu header height
-    --std-header-height: 70px;
+    --std-header-height:70px;
 
-    --std-screen-title-size: 22px;
+    --std-screen-title-size:22px;
 
-    --std-screen-title-margin: 10px;
+    --std-screen-title-margin:10px;
 
     /// Standard-menu header height when mini
-    --std-header-mini-height: 35px;
+    --std-header-mini-height:35px;
 
     /// Standard-menu width when expanded
-    --std-menu-width: 240px;
+    --std-menu-width:240px;
 
     /// Standard-menu width when collapsed
-    --std-menu-collapsed-width: 80px;
+    --std-menu-collapsed-width:80px;
 
     /// Standard-menu logo width when expanded
-    --std-logo-width: 190px;
+    --std-logo-width:190px;
 
     /// Standard-menu logo width when collapsed
-    --std-logo-collapsed-width: 60px;
+    --std-logo-collapsed-width:60px;
 
     /// Standard-menu logo height
-    --std-logo-height: 60px;
+    --std-logo-height:60px;
 
     /// Standard-menu height of the profile-menu
-    --std-profile-height: 60px;
+    --std-profile-height:60px;
 
     /// Standard-menu small profile-menu width
-    --std-profile-width-small: 35px;
+    --std-profile-width-small:35px;
 
     /// Standard-menu profile-menu padding
-    --std-profile-padding: 0.75rem 1rem;
+    --std-profile-padding:0.75rem 1rem;
 
     /// Standard-menu profile-menu picture size
-    --std-profile-pic: 40px;
+    --std-profile-pic:40px;
 
     /// Standard-menu profile-menu picture size mini
-    --std-profile-pic-mini: 30px;
+    --std-profile-pic-mini:30px;
 
     /// Standard-menu profile-menu sub-menu width when in mini mode
-    --std-profile-submenu-width-small: 10rem;
+    --std-profile-submenu-width-small:10rem;
 
     /// Standard-menu full size of topbar buttons
-    --topbar-button-size: 60px;
+    --topbar-button-size:60px;
 
     /// Standard-menu small size of topbar buttons
-    --topbar-button-size-small: 30px;
+    --topbar-button-size-small:30px;
 
     /// Standard-menu-fadeout-width
-    --std-fadeout-width: 20px;
+    --std-fadeout-width:20px;
 
     /// Standard-menu-fadeout-left
-    --std-fadeout-left: calc(var(--std-menu-collapsed-width) - var(--std-fadeout-width));
+    --std-fadeout-left:calc(var(--std-menu-collapsed-width) - var(--std-fadeout-width));
 
     /// Padding of a menu-header for standard menu.
-    --std-menu-header-padding: 1rem 1rem 1rem 0.625rem;
+    --std-menu-header-padding:1rem 1rem 1rem 0.625rem;
 
     /// Padding of a menu-item for standard menu.
-    --std-menu-item-padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+    --std-menu-item-padding:0.75rem 0.75rem 0.75rem 1.5rem;
 
     /// Corporation-menu header height
-    --corp-header-height: 70px;
+    --corp-header-height:70px;
 
     /// Corporation-menu logo width
-    --corp-logo-width: 190px;
+    --corp-logo-width:190px;
 
     /// Corporation-menu profile-menu height
-    --corp-profile-height: 60px;
+    --corp-profile-height:60px;
 
     /// Corporation-menu small profile-menu width
-    --corp-profile-width-small: 35px;
+    --corp-profile-width-small:35px;
 
     /// Corporation-menu profile-menu padding
-    --corp-profile-padding: 0.75rem 1rem;
+    --corp-profile-padding:0.75rem 1rem;
 
     /// Corporation-menu profile-menu picture size
-    --corp-profile-pic: 40px;
+    --corp-profile-pic:40px;
 
     /// Corporation-menu profile-menu & buttons separator margin
-    --corp-profile-separator-margin: 4px;
+    --corp-profile-separator-margin:4px;
 
     /// Corporation-menu profile-menu sub-menu width when in mini mode
-    --corp-profile-submenu-width-small: 10rem;
+    --corp-profile-submenu-width-small:10rem;
 
     /// Corporation-menu full size of topbar buttons
-    --corp-topbar-buttons: 60px;
+    --corp-topbar-buttons:60px;
 
     /// Corporation-menu small size of topbar buttons
-    --corp-topbar-buttons-small: 40px;
+    --corp-topbar-buttons-small:40px;
 
     /// Corporation-menu menubar height
-    --corp-menubar-height: 40px;
+    --corp-menubar-height:40px;
 
     /// Corporation-menu speeddial size
-    --corp-speeddial-size: 2rem;
+    --corp-speeddial-size:2rem;
 
     /// Padding of a menu-header for coporation-menu.
-    --corp-menu-header-padding: 0.75rem 1rem;
+    --corp-menu-header-padding:0.75rem 1rem;
 
     /// Padding of a menu-item for corporation menu.
-    --corp-menu-item-padding: 0.75rem 1rem;
+    --corp-menu-item-padding:0.75rem 1rem;
 
     /// Padding of input fields
-    --input-padding: 0.5rem 0.5rem;
+    --input-padding:0.5rem 0.5rem;
 
     /// Padding for buttons next to input fields. e.g. LinkedCellEditor, DateCellEditor
-    --input-button-padding: 0rem 0.5rem;
+    --input-button-padding:0rem 0.5rem;
 
     /// Icon size for LinkedCellEditor and DateCellEditor
-    --input-button-icon-size: 14px;
+    --input-button-icon-size:14px;
 
     /// Padding for normal buttons
-    --button-padding: 0.5rem 1rem;
+    --button-padding:0.5rem 1rem;
 
     /// Padding for icon-only buttons
-    --button-icon-only-padding: 0.5rem 0.5rem;
+    --button-icon-only-padding:0.5rem 0.5rem;
 
     /// Padding for the left part of the menu-button
-    --menubtn-leftbtn-padding: 0.5rem 0rem 0.5rem 1rem;
+    --menubtn-leftbtn-padding:0.5rem 0rem 0.5rem 1rem;
 
     /// Padding for the right part of the menu-button
-    --menubtn-rightbtn-padding: 0.5rem 0rem;
+    --menubtn-rightbtn-padding:0.5rem 0rem;
 
     /// Size of a checkbox
-    --checkbox-size: 20px;
+    --checkbox-size:20px;
 
     /// Size of a radiobutton
-    --radiobutton-size: 20px;
+    --radiobutton-size:20px;
 
     /// Padding of tabs
-    --tab-padding: 0rem 1rem;
+    --tab-padding:0rem 1rem;
 
     /// Padding of table headers
-    --table-header-padding: 0.6rem 1rem;
+    --table-header-padding:0.6rem 1rem;
 
     /// Padding of table cells
-    --table-cell-padding-top-bottom: 0.2rem;
+    --table-cell-padding-top-bottom:0.2rem;
 
     /// Padding of table cells
-    --table-cell-padding-left-right: 0.4rem;
+    --table-cell-padding-left-right:0.4rem;
 
     /// Height of cell data in a table
-    --table-data-height: 27px;
+    --table-data-height:27px;
 
     /// Fixed Padding for Labels
-    --label-padding: 9px;
+    --label-padding:9px;
 
-    --menubar-height: 40px;
+    --menubar-height:40px;
 
-    --menuicon-size: 14px;
+    --menuicon-size:14px;
 
-    --dialog-header-padding: 1rem;
+    --dialog-header-padding:1rem;
 
-    --error-dialog-min-width: 205px;
+    --error-dialog-min-width:205px;
 
-    --error-dialog-details-gap: 1rem;
+    --error-dialog-details-gap:1rem;
 
-    --error-dialog-textarea-height: 8rem;
+    --error-dialog-textarea-height:8rem;
 
-    --error-dialog-icon-size: 2rem;
+    --error-dialog-icon-size:2rem;
 }
 
 body {
