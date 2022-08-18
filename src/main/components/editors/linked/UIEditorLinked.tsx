@@ -397,7 +397,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     }
                     inputObj = tempValues;
                 }
-                setText(getDisplayValue(convertedColNamesObj))
+                setText(getDisplayValue(inputObj))
                 sendSetValues(props.dataRow, props.name, columnNames, inputObj, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
             }
             else {
@@ -406,7 +406,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     sendSetValues(props.dataRow, props.name, columnNames, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference)[refColNames[0]], props.topbar, props.rowNumber);
                 }
                 else {
-                    setText(getDisplayValue(convertedColNamesObj))
+                    setText(getDisplayValue(inputObj))
                     sendSetValues(props.dataRow, props.name, columnNames, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, props.rowNumber);
                 }
             }
@@ -475,6 +475,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     sendSetValues(props.dataRow, props.name, colNames, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
                 }
                 else {
+                    console.log(extractedData)
                     setText(getDisplayValue(extractedData))
                     sendSetValues(props.dataRow, props.name, colNames, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference), props.topbar, props.rowNumber);
                 }
@@ -497,7 +498,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (values.length > 0) {
             values.forEach((value:any) => {
                 let suggestion : string | string[] = ""
-                const objectKeys = [...props.cellEditor.linkReference.referencedColumnNames];
+                const objectKeys = Object.keys(value).filter(key => key !== "__recordFormats" && key !== "recordStatus");
                 if (props.cellEditor.displayReferencedColumnName) {
                     objectKeys.push(props.cellEditor.displayReferencedColumnName)
                 }
@@ -536,7 +537,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     // Creates an item-template when linked-overlay is displayed as table
     const itemTemplate = useCallback((d:any[], index) => {
         return d.map((d, i) => {
-            if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], props.cellEditor.linkReference.referencedColumnNames))[i])) {
+            if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], Object.keys(providedData[index]).filter(key => key !== "__recordFormats" && key !== "recordStatus")))[i])) {
                 const cellStyle: CSSProperties = {}
                 let icon:JSX.Element | null = null;
 

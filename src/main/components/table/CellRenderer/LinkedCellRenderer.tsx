@@ -54,38 +54,6 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
         }
     }, []);
 
-    /** A map which stores the referenced-column-values as keys and the display-values as value */
-    // const dataToDisplayMap = useMemo(() => {
-    //     const map:Map<string, string> = new Map<string, string>(previousDataMap.current);
-    //     if (providedData.length) {
-    //         providedData.forEach((data:any) => {
-    //             const extractedObject = getExtractedObject(data, castedCellEditor.linkReference.referencedColumnNames);
-    //             if (castedCellEditor.displayReferencedColumnName) {
-    //                 map.set(JSON.stringify(extractedObject), data[castedCellEditor.displayReferencedColumnName as string]);
-    //             }
-    //             else if (castedCellEditor.displayConcatMask) {
-    //                 let displayString = "";
-    //                 if (castedCellEditor.displayConcatMask.includes("*")) {
-    //                     displayString = castedCellEditor.displayConcatMask
-    //                     const count = (castedCellEditor.displayConcatMask.match(/\*/g) || []).length;
-    //                     for (let i = 0; i < count; i++) {
-    //                         displayString = displayString.replace('*', data[castedCellEditor.columnView.columnNames[i]] !== undefined ? data[castedCellEditor.columnView.columnNames[i]] : "");
-    //                     }
-    //                 }
-    //                 else {
-    //                     castedCellEditor.columnView.columnNames.forEach((column, i) => {
-    //                         displayString += data[column] + (i !== castedCellEditor.columnView.columnNames.length - 1 ? castedCellEditor.displayConcatMask : "");
-    //                     });
-    //                 }
-    //                 map.set(JSON.stringify(extractedObject), displayString);
-    //             }
-    //         });
-    //     }
-    //     previousDataMap.current = map;
-    //     return map;
-
-    // }, [linkRefFetchFlag, providedData, castedCellEditor.linkReference.referencedColumnNames, castedCellEditor.displayConcatMask, castedCellEditor.displayReferencedColumnName, castedCellEditor.columnView]);
-
     /**
      * Returns the displayValue to display
      * @param value - the datarow which should be displayed
