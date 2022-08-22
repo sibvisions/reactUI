@@ -672,14 +672,14 @@ body {
                 background: var(--menubar-background);
                 color: var(--menubar-text-color);
 
-                .p-menuitem-text, .p-submenu-icon {
+                .p-menuitem-text, .p-submenu-icon, .p-menuitem-icon {
                     color: var(--menubar-text-color);
                 }
 
                 &:hover {
                     background: var(--menubar-hover-background);
                     color: var(--menubar-text-color);
-                    .p-menuitem-text, .p-submenu-icon {
+                    .p-menuitem-text, .p-submenu-icon, .p-menuitem-icon {
                         color: var(--menubar-text-color);
                     }
                 }

@@ -13,6 +13,7 @@
  * the License.
  */
 
+ /// Basic Theme React - Mobile
 :root {
     /// Font size
     --font-size:18px;
@@ -92,6 +93,8 @@
 
     /// Corporation-menu logo width
     --corp-logo-width:190px;
+
+    --corp-screen-title-size:22px;
 
     /// Corporation-menu profile-menu height
     --corp-profile-height:60px;
@@ -335,6 +338,10 @@ body {
     .corp-menu {
         .corp-menu-header {
             height: var(--corp-header-height);
+
+            .menu-screen-title {
+                font-size: var(--corp-screen-title-size);
+            }
         }
 
         .corp-menu-menubar .p-menubar {

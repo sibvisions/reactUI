@@ -38,6 +38,7 @@
   --std-menu-item-padding:0.375rem 0.75rem 0.375rem 1.5rem;
   --corp-header-height:70px;
   --corp-logo-width:190px;
+  --corp-screen-title-size:22px;
   --corp-profile-height:60px;
   --corp-profile-width-small:60px;
   --corp-profile-padding:0.25rem 0.5rem;
@@ -172,6 +173,8 @@ body {
 
 .basti_small .corp-menu .corp-menu-header {
   height: var(--corp-header-height); }
+  .basti_small .corp-menu .corp-menu-header .menu-screen-title {
+    font-size: var(--corp-screen-title-size); }
 
 .basti_small .corp-menu .corp-menu-menubar .p-menubar {
   height: var(--corp-menubar-height); }
