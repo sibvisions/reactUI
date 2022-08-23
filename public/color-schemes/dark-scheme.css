@@ -38,7 +38,7 @@
   --topbar-button-background:transparent;
   --topbar-button-hover-background:#2a323d;
   --topbar-button-text-color:var(--topbar-text-color);
-  --profile-background:#3f4b5b;
+  --profile-background:var(--topbar-background);
   --profile-hover-background:#2a323d;
   --profile-text-color:#ffffff;
   --profile-separator:2px solid #5b6067;
@@ -53,7 +53,7 @@
   --std-menu-border:1px solid rgba(120,130,140,.13);
   --std-menu-fadeout-background:linear-gradient(90deg, #2a323d00 0%, #2a323d 100%);
   --menubar-background:var(--topbar-background);
-  --menubar-hover-background:var(--topbar-button-hover-background);
+  --menubar-hover-background:#2a323d;
   --menubar-text-color:var(--topbar-text-color);
   --menubar-submenu-background:#3f4b5b;
   --menubar-item-hover-background:#303a48;
@@ -292,7 +292,7 @@ body {
   background: var(--topbar-background); }
 
 .corp-menu-menubar {
-  background: var(--topbar-background); }
+  background: var(--menubar-background); }
 
 .p-speeddial .p-speeddial-button.p-button.p-button-icon-only {
   background: var(--corp-menu-speeddial-background);

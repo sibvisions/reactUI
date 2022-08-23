@@ -50,7 +50,7 @@
     --topbar-button-text-color:var(--topbar-text-color);
 
     /// Profile-menu background
-    --profile-background:#3f4b5b;
+    --profile-background:var(--topbar-background);
 
     /// profile-menu hover background-color
     --profile-hover-background:#2a323d;
@@ -95,7 +95,7 @@
     --menubar-background:var(--topbar-background);
 
     /// menubar hover background
-    --menubar-hover-background:var(--topbar-button-hover-background);
+    --menubar-hover-background:#2a323d;
 
     /// menubar text-color
     --menubar-text-color:var(--topbar-text-color);
@@ -653,7 +653,7 @@ body {
 }
 
 .corp-menu-menubar {
-    background: var(--topbar-background);
+    background: var(--menubar-background);
 }
 
 .p-speeddial .p-speeddial-button.p-button.p-button-icon-only {

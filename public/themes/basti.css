@@ -30,8 +30,8 @@
   --std-profile-padding:0.75rem 1rem;
   --std-profile-pic:40px;
   --std-profile-submenu-width-small:10rem;
-  --topbar-button-size:60px;
-  --topbar-button-size-small:40px;
+  --std-topbar-button-size:60px;
+  --std-topbar-button-size-small:40px;
   --std-fadeout-width:20px;
   --std-fadeout-left:calc(var(--std-menu-collapsed-width) - var(--std-fadeout-width));
   --std-menu-header-padding:1rem 1rem 1rem 0.625rem;
@@ -43,10 +43,9 @@
   --corp-profile-width-small:60px;
   --corp-profile-padding:0.75rem 1rem;
   --corp-profile-pic:40px;
-  --corp-profile-separator-margin:4px;
   --corp-profile-submenu-width-small:10rem;
-  --corp-topbar-buttons:60px;
-  --corp-topbar-buttons-small:40px;
+  --corp-topbar-button-size:60px;
+  --corp-topbar-button-size-small:40px;
   --corp-menubar-height:40px;
   --corp-speeddial-size:2rem;
   --corp-menu-header-padding:0.75rem 1rem;
@@ -120,8 +119,8 @@ body {
     width: var(--std-logo-width); }
 
 .basti .std-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-  width: var(--topbar-button-size);
-  height: var(--topbar-button-size); }
+  width: var(--std-topbar-button-size);
+  height: var(--std-topbar-button-size); }
 
 .basti .std-menu .profile-image, .basti .std-menu .profile-image-null {
   width: var(--std-profile-pic);
@@ -188,16 +187,16 @@ body {
   max-width: var(--corp-logo-width); }
 
 .basti .corp-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-  width: var(--corp-topbar-buttons);
-  height: var(--corp-topbar-buttons); }
+  width: var(--corp-topbar-button-size);
+  height: var(--corp-topbar-button-size); }
 
-.basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-  height: var(--corp-profile-height);
-  padding: var(--corp-profile-padding); }
-
-.basti .corp-menu .profile-menu .p-menubar .p-submenu-list {
-  width: calc(100% - var(--corp-profile-separator-margin));
-  margin-left: var(--corp-profile-separator-margin); }
+.basti .corp-menu .profile-menu {
+  height: var(--corp-profile-height); }
+  .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+    height: var(--corp-profile-height);
+    padding: var(--corp-profile-padding); }
+  .basti .corp-menu .profile-menu .p-menubar .p-submenu-list {
+    width: 100%; }
 
 .basti .corp-menu .vl {
   height: var(--corp-profile-height); }
@@ -329,10 +328,10 @@ body {
       max-height: var(--std-logo-height);
       width: var(--std-logo-width); }
   .basti .std-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--topbar-button-size-small);
-    height: var(--topbar-button-size-small); }
+    width: var(--std-topbar-button-size-small);
+    height: var(--std-topbar-button-size-small); }
   .basti .std-menu .fadeout {
     margin-top: calc(var(--std-header-height) + var(--std-logo-height)); }
   .basti .corp-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--corp-topbar-buttons-small);
-    height: var(--corp-topbar-buttons-small); } }
+    width: var(--corp-topbar-button-size-small);
+    height: var(--corp-topbar-button-size-small); } }

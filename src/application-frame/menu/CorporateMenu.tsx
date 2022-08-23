@@ -124,7 +124,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
                                     src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
                             </div>
                             <span className="menu-screen-title">{screenTitle}</span>
-                            <div className="corp-menu-profile">
+                            <div className="profile-menu">
                                 <ProfileMenu showButtons designerViewCallback={props.designerViewCallback} />
                             </div>
                         </div>

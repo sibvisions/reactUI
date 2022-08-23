@@ -193,7 +193,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     return (
         (showDesignerView) ?
-            <ReactUIDesigner>
+            <ReactUIDesigner isCorporation={isCorporation(appLayout, appTheme)}>
                 {content}
             </ReactUIDesigner> 
             :

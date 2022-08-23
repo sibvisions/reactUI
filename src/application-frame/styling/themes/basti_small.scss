@@ -65,10 +65,10 @@
     --std-profile-submenu-width-small:10rem;
 
     /// Standard-menu full size of topbar buttons
-    --topbar-button-size:40px;
+    --std-topbar-button-size:40px;
 
     /// Standard-menu small size of topbar buttons
-    --topbar-button-size-small:25px;
+    --std-topbar-button-size-small:25px;
 
     /// Standard-menu-fadeout-width
     --std-fadeout-width:20px;
@@ -102,17 +102,14 @@
     /// Corporation-menu profile-menu picture size
     --corp-profile-pic:35px;
 
-    /// Corporation-menu profile-menu & buttons separator margin
-    --corp-profile-separator-margin:4px;
-
     /// Corporation-menu profile-menu sub-menu width when in mini mode
     --corp-profile-submenu-width-small:10rem;
 
     /// Corporation-menu full size of topbar buttons
-    --corp-topbar-buttons:40px;
+    --corp-topbar-button-size:40px;
 
     /// Corporation-menu small size of topbar buttons
-    --corp-topbar-buttons-small:25px;
+    --corp-topbar-button-size-small:25px;
 
     /// Corporation-menu menubar height
     --corp-menubar-height:40px;
@@ -256,8 +253,8 @@ body {
         }
 
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--topbar-button-size);
-            height: var(--topbar-button-size);
+            width: var(--std-topbar-button-size);
+            height: var(--std-topbar-button-size);
         }
 
         .profile-menu {
@@ -354,11 +351,12 @@ body {
         }
 
         .p-button.p-button-icon-only.menu-topbar-buttons {
-            width: var(--corp-topbar-buttons);
-            height: var(--corp-topbar-buttons);
+            width: var(--corp-topbar-button-size);
+            height: var(--corp-topbar-button-size);
         }
 
         .profile-menu {
+            height: var(--corp-profile-height);
             .p-menubar {
                 .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
                     height: var(--corp-profile-height);
@@ -366,8 +364,7 @@ body {
                 }
     
                 .p-submenu-list {
-                    width: calc(100% - var(--corp-profile-separator-margin));
-                    margin-left: var(--corp-profile-separator-margin);
+                    width: 100%;
                 }
             }
         }
@@ -576,8 +573,8 @@ body {
             }
 
             .p-button.p-button-icon-only.menu-topbar-buttons {
-                width: var(--topbar-button-size-small);
-                height: var(--topbar-button-size-small);
+                width: var(--std-topbar-button-size-small);
+                height: var(--std-topbar-button-size-small);
             }
 
             .fadeout {
@@ -587,8 +584,8 @@ body {
 
         .corp-menu {
             .p-button.p-button-icon-only.menu-topbar-buttons {
-                width: var(--corp-topbar-buttons-small);
-                height: var(--corp-topbar-buttons-small);
+                width: var(--corp-topbar-button-size-small);
+                height: var(--corp-topbar-button-size-small);
             }
         }
     }
