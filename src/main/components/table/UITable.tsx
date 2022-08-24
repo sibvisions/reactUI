@@ -839,7 +839,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
                 key={colName}
-                headerClassName={concatClassnames(colName, props.columnLabels[colIndex] === "☐" ? 'select-column' : "") }
+                headerClassName={concatClassnames(colName, (props.columnLabels[colIndex] === "☐" || props.columnLabels[colIndex] === "☑") ? 'select-column' : "") }
                 headerStyle={{
                     overflowX: "hidden",
                     whiteSpace: 'nowrap',
