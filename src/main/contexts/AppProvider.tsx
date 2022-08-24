@@ -363,6 +363,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     if (data.design) {
                         designToSet = data.design;
                     }
+
+                    if (data.designer) {
+                        contextState.appSettings.showDesigner = data.designer;
+                    }
                     resolve({})
                 })
                 .catch(() => reject("config.json not found"))
@@ -528,6 +532,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
 
                 convertedOptions.delete("wsPingInterval");
+            }
+
+            if (convertedOptions.has("designer")) {
+                if (convertedOptions.get("designer") === "true" || convertedOptions.get("designer") === "false") {
+                    contextState.appSettings.showDesigner = convertedOptions.get("designer");
+                }
             }
 
             if (wsPingIntervalToSet) {

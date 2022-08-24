@@ -99,12 +99,6 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     
     return (
         <>
-            {props.showButtons && <Button
-                icon="fas fa-palette"
-                className="menu-topbar-buttons"
-                onClick={() => props.designerViewCallback(prevState => !prevState)}
-                tooltip="Design"
-                tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
             {props.showButtons && visibleButtons.home && <Button
                 icon="fas fa-home"
                 className="menu-topbar-buttons"

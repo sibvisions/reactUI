@@ -183,6 +183,8 @@ export default class AppSettings {
     /** CSS files to add when the app is ready */
     cssToAddWhenReady:Array<any> = [];
 
+    showDesigner: boolean = false;
+
     /**
      * Sets the menu-mode
      * @param value - the menu-mode

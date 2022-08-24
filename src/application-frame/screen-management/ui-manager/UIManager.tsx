@@ -31,6 +31,7 @@ import ChildWithProps from "../../../main/util/types/ChildWithProps";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
 import { ReactUIDesigner } from '@sibvisions/reactui-designer/dist/moduleIndex'
+import { SpeedDial } from "primereact/speeddial";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -73,6 +74,14 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
+
+    const speedDialItems = [
+        {
+            label: "Designer",
+            icon: "fas fa-palette",
+            command: () => setShowDesignerView(prevState => !prevState)
+        }
+    ]
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -188,6 +197,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
                     <ScreenManager />
                 </ResizeProvider>
+                {context.appSettings.showDesigner && <SpeedDial className="designer-speeddial" style={{ position: "absolute", top: "84%", right: "2%", opacity: "0.8" }} model={speedDialItems} />}
             </div>
         </div>
 
