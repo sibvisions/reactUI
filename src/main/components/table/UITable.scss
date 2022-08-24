@@ -48,9 +48,21 @@
                 border-width: 0px 1px 1px 1px;
                 font-weight: bold;
                 padding: 0.6rem 1rem;
+
+                &.select-column {
+                    .p-column-header-content {
+                        justify-content: center;
+                    }
+                }
+
                 .p-sortable-column-icon {
                     font-size: 14px;
                     margin-left: 4px;
+                    display: none;
+
+                    &.pi-sort-amount-up-alt, &.pi-sort-amount-down {
+                        display: inline-block
+                    }
                 }
                 .sort-index {
                     font-size: 10px;

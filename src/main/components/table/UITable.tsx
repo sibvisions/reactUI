@@ -828,7 +828,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 <>
                     {props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable ? "" : " *")}
                     <span className="p-sortable-column-icon pi pi-fw"></span>
-                    <span className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
+                    <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
         }
 
@@ -839,7 +839,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
                 key={colName}
-                headerClassName={colName}
+                headerClassName={concatClassnames(colName, props.columnLabels[colIndex] === "☐" ? 'select-column' : "") }
                 headerStyle={{
                     overflowX: "hidden",
                     whiteSpace: 'nowrap',
@@ -1132,23 +1132,31 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * @param columnName - the column name
      */
     const handleSort = (columnName:string) => {
-        const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
-        const sortReq = createSortRequest();
-        sortReq.dataProvider = props.dataBook;
-        let sortDefToSend: SortDefinition[] = sortDefinitions || [];
-        if (context.ctrlPressed) {
-            if (!sortDef) {
-                sortDefToSend.push({ columnName: columnName, mode: "Ascending" })
+        if (metaData && metaData.columns.find(column => column.name === columnName)?.sortable) {
+            const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
+            const sortReq = createSortRequest();
+            sortReq.dataProvider = props.dataBook;
+            let sortDefToSend: SortDefinition[] = sortDefinitions || [];
+            if (context.ctrlPressed) {
+                if (!sortDef) {
+                    sortDefToSend.push({ columnName: columnName, mode: "Ascending" })
+                }
+                else {
+                    sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === columnName)] = { columnName: columnName, mode: getNextSort(sortDef?.mode) }
+                }
             }
             else {
-                sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === columnName)] = { columnName: columnName, mode: getNextSort(sortDef?.mode) }
+                sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
             }
+            sortReq.sortDefinition = sortDefToSend;
+            if (selectedRow.selectedColumn !== columnName) {
+                sendSelectRequest(columnName, undefined, selectedRow.index).then(() => showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar))
+            }
+            else {
+                showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
+            }
+            
         }
-        else {
-            sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
-        }
-        sortReq.sortDefinition = sortDefToSend;
-        showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
     }
 
     /** Column-resize handler */
