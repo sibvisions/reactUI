@@ -204,3 +204,38 @@ body {
 .no-focus-rect {
     box-shadow: none !important;
 }
+
+.crash-main {
+    background: rgba(0, 0, 0, 0.35);
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+}
+
+.crash-banner {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 1rem 0;
+}
+
+.crash-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+}
+
+.crash-message-text {
+    font-weight: bold;
+    margin-left: 0.5rem;
+}
+
+.crash-button-wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.crash-input-stack {
+    margin: 1rem 0;
+}

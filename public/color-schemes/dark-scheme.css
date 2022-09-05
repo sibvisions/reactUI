@@ -251,7 +251,7 @@ body {
   .menu-panelmenu-wrapper::-webkit-scrollbar {
     width: 7px; }
   .menu-panelmenu-wrapper::-webkit-scrollbar-button:start:decrement {
-    height: 70px; }
+    height: var(--std-header-height); }
   .menu-panelmenu-wrapper::-webkit-scrollbar-track {
     background: var(--dark-panelmenu-scroll-background); }
   .menu-panelmenu-wrapper::-webkit-scrollbar-thumb {
@@ -969,3 +969,6 @@ body {
 
 .rc-signature-pad {
   background: var(--signature-pad-background); }
+
+.crash-banner {
+  background: var(--error-bar-background); }

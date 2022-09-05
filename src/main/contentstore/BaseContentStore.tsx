@@ -767,12 +767,13 @@ export default abstract class BaseContentStore {
      */
     setMetaData(screenName: string, metaData: MetaDataResponse) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
-        const existingMapModified = this.getScreenDataproviderMap(screenName);
+        
         const modifiedMetaData = {...metaData, columns: metaData.columns.map((column => {
-            
+            const existingMapModified = this.getScreenDataproviderMap(screenName);
             const castedCellEditor = column.cellEditor as ICellEditorLinked;
             const linkReference = castedCellEditor.linkReference;
             if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
+                
                 if (existingMapModified) {
                     if (existingMapModified.has(linkReference.referencedDataBook)) {
                         const dataBook = (existingMapModified.get(linkReference.referencedDataBook) as IDataBook)
