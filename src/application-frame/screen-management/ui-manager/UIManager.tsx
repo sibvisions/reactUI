@@ -30,6 +30,7 @@ import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useRespons
 import ChildWithProps from "../../../main/util/types/ChildWithProps";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
+import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -70,6 +71,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
+
+    const embeddedContext = useContext(EmbeddedContext);
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -152,7 +155,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuOptions.toolBar ? "toolbar-visible" : "",
-                    !menuOptions.menuBar ? "menu-not-visible" : "",
+                    !menuOptions.menuBar || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
                     !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
                     <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
