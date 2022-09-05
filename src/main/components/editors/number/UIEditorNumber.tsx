@@ -228,17 +228,16 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     minFractionDigits={scaleDigits.minScale}
                     maxFractionDigits={scaleDigits.maxScale}
                     tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                    value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
+                    value={(typeof value === 'string' && value !== "-") ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value as number | null | undefined}
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
                         ...textAlignment, 
                         ...props.cellStyle
                     }}
-                    onChange={event => {
+                    onValueChange={event => {
                         if (props.onInput) {
                             props.onInput(event);
                         }
-
                         setValue(event.value)
                     }}
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
@@ -251,8 +250,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             if (props.onBlur) {
                                 props.onBlur(event)
                             }
-
-                            sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                            sendSetValues(props.dataRow, props.name, props.columnName, typeof event.target.value === 'string' ? parseFloat((event.target.value as string).replace(/\./g, '').replace(',', '.')) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                         }
                     }}
                     disabled={props.isReadOnly}
@@ -273,15 +271,15 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}
-                value={typeof value === 'string' ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value}
+                value={(typeof value === 'string' && value !== "-") ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value as number | null | undefined}
                 style={props.layoutStyle}
                 inputStyle={{ 
                     ...textAlignment, 
                     //background: !isSysColor(editorBackground) ? editorBackground.background : undefined
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
-                onChange={event => setValue(event.value) }
-                onBlur={() => sendSetValues(props.dataRow, props.name, props.columnName, value, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
+                onValueChange={event => setValue(event.value)}
+                onBlur={(event) => sendSetValues(props.dataRow, props.name, props.columnName, typeof event.target.value === 'string' ? parseFloat((event.target.value as string).replace(/\./g, '').replace(',', '.')) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
                 disabled={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}
