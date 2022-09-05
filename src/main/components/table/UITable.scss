@@ -146,7 +146,9 @@
                     align-items: center;
                 }
                 &.NumberCellEditor {
-                    text-align: right;
+                    .cell-data {
+                        justify-content: flex-end;
+                    }
                 }
                 &.ImageViewer {
                     >.cell-data {
