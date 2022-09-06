@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { Children, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { Children, CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Menu from "../../menu/Menu";
 import { appContext } from "../../../main/contexts/AppProvider";
 import ScreenManager from "../ScreenManager";
@@ -31,8 +31,9 @@ import ChildWithProps from "../../../main/util/types/ChildWithProps";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
 import { ReactUIDesigner } from '@sibvisions/reactui-designer/dist/moduleIndex'
-import { SpeedDial } from "primereact/speeddial";
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
+import { Button } from "primereact/button";
+import tinycolor from "tinycolor2";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -76,13 +77,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
 
-    const speedDialItems = [
-        {
-            label: "Designer",
-            icon: "fas fa-palette",
-            command: () => setShowDesignerView(prevState => !prevState)
-        }
-    ]
     const embeddedContext = useContext(EmbeddedContext);
 
     /**
@@ -193,13 +187,27 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                 menuMini ? "" : "screen-no-mini",
                 menuOptions.toolBar ? "toolbar-visible" : "",
-                !menuOptions.menuBar ? "menu-not-visible" : "",
+                !menuOptions.menuBar || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
                 !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
             )}>
                 <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
                     <ScreenManager />
                 </ResizeProvider>
-                {context.appSettings.showDesigner && <SpeedDial className="designer-speeddial" style={{ position: "absolute", top: "84%", right: "2%", opacity: "0.8" }} model={speedDialItems} />}
+                {context.appSettings.showDesigner && 
+                    <Button 
+                        className="p-button-raised p-button-rounded rc-button" 
+                        icon="fas fa-palette"
+                        style={{ 
+                            "--background": window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), 
+                            "--hoverBackground": tinycolor(window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color')).darken(5).toString(),
+                            width: "4rem",
+                            height: "4rem",
+                            position: "absolute", 
+                            top: "90%", 
+                            right: "2%", 
+                            opacity: "0.8"
+                        } as CSSProperties}
+                        onClick={() => setShowDesignerView(prevState => !prevState)} />}
             </div>
         </div>
 

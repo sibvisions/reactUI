@@ -19,7 +19,7 @@
 }
 
 @mixin btnHover {
-    &.p-button:not(a):not(.p-disabled):not(.border-notpainted):hover {
+    &.p-button:not(a):not(.p-disabled):not(.border-notpainted):hover, &.p-button-raised:not(a):not(.p-disabled):not(.border-notpainted):hover {
         background: var(--hoverBackground);
         border-color: var(--hoverBackground);
 

@@ -71,12 +71,6 @@
   overflow: hidden;
 }
 
-.p-speeddial.designer-speeddial .p-speeddial-button.p-button.p-button-icon-only {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  color: var(--topbar-text-color);
-}
-
 @media screen and (max-width: 530px) {
   .main--with-s-menu.desktop-panel-enabled.screen-expanded.screen-no-mini {
     margin-left: 0;
