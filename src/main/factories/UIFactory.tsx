@@ -97,8 +97,10 @@ const Editor = (props: any) => {
         else{
             return <Dummy {...props} />
         }
-    } else {
-        return <Dummy {...props} />
+    } 
+    else {
+        return <UIEditorText {...props}  />
+        //return <Dummy {...props} />
     }
 }
 

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useContext, useLayoutEffect } from 'react';
+import React, { CSSProperties, FC, useContext, useLayoutEffect, useState } from 'react';
 import PrimeReact, { addLocale, locale } from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
@@ -23,7 +23,54 @@ import AppWrapper from './AppWrapper';
 import UIManagerFull from './application-frame/screen-management/ui-manager/UIManagerFull';
 import { appContext } from './main/contexts/AppProvider';
 import Login from './application-frame/login/Login';
-import { translation } from './main/util/other-util/Translation';
+import {ErrorBoundary} from 'react-error-boundary'
+import { Button } from 'primereact/button';
+import { InputTextarea } from 'primereact/inputtextarea';
+import tinycolor from 'tinycolor2';
+
+const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unknown>) => void }> = ({ error, resetErrorBoundary }) => {
+    const [showDetails, setShowDetails] = useState<boolean>();
+    return (
+        <div className='crash-main'>
+            <div className='crash-banner'>
+                <div className='crash-wrapper'>
+                    <div>
+                        <i className='crash-message-icon pi pi-times-circle' />
+                        <span className='crash-message-text'>Unexpected Error!</span>
+                    </div>
+                    
+                    {showDetails && 
+                        <div className={'crash-input-stack ' + (showDetails ? 'show-crash-details' : '')}  style={{ transition: "max-height 1s ease-out" }}>
+                            <InputTextarea
+                                className='crash-input-stack-textarea rc-input'
+                                value={error.stack}
+                                style={{ resize: 'none' }}
+                                readOnly />
+                        </div>}
+                    <div className='crash-button-wrapper'>
+                        <Button 
+                            className='rc-button' 
+                            style={{ 
+                                "--background": window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+                                "--hoverBackground": tinycolor(window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color')).darken(5).toString()
+                            } as CSSProperties} 
+                            label="Details" 
+                            onClick={() => setShowDetails(prevState => !prevState)} />
+                        <Button 
+                            style={{ 
+                                marginLeft: "0.5rem",
+                                "--background": window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+                                "--hoverBackground": tinycolor(window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color')).darken(5).toString()
+                            } as CSSProperties} 
+                            label="Restart" 
+                            onClick={resetErrorBoundary} />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
+}
 
 
 /**
@@ -39,30 +86,36 @@ const ReactUI: FC<ICustomContent> = (props) => {
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     if (context.transferType === "full") {
         return (
-            <AppWrapper>
-                {context.appReady ?
-                    <Switch>
-                        <Route path={""} render={() => <UIManagerFull />} />
-                    </Switch>
-                    :
-                    <LoadingScreen />
-                }
-            </AppWrapper>
+            <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => context.subscriptions.emitRestart()}>
+                <AppWrapper>
+                    {context.appReady ?
+                        <Switch>
+                            <Route path={""} render={() => <UIManagerFull />} />
+                        </Switch>
+                        :
+                        <LoadingScreen />
+                    }
+                </AppWrapper>
+            </ErrorBoundary>
+
         )
     }
     else {
         return (
-            <AppWrapper>
-                {context.appReady ?
-                    <Switch>
-                            <Route exact path={"/login"} render={() => <Login />} />
-                            <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                            <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                    </Switch>
-                    :
-                    <LoadingScreen />
-                }
-            </AppWrapper>
+            <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => context.subscriptions.emitRestart()}>
+                <AppWrapper>
+                    {context.appReady ?
+                        <Switch>
+                                <Route exact path={"/login"} render={() => <Login />} />
+                                <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                                <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                        </Switch>
+                        :
+                        <LoadingScreen />
+                    }
+                </AppWrapper>
+            </ErrorBoundary>
+
         );
     }
 

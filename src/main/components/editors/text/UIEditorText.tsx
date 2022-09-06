@@ -33,10 +33,11 @@ import { sendSetValues } from "../../../util/server-util/SendSetValues";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableTextEditor } from "../../../extend-components/editors/ExtendTextEditor";
+import CELLEDITOR_CLASSNAMES from "../CELLEDITOR_CLASSNAMES";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {
-    cellEditor: ICellEditor
+    cellEditor?: ICellEditor
     borderVisible?: boolean
     length:number
 }
@@ -207,7 +208,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     const textRef = useRef<any>();
 
     /** Current state value of input element */
-    const [text, setText] = useState(props.selectedRow);
+    const [text, setText] = useState(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -235,7 +236,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
 
     /** Returns the field-type of the TextCellEditor */
     const getFieldType = useCallback(() => {
-        const contentType = props.cellEditor.contentType
+        const contentType = props.cellEditor?.contentType
         if (contentType?.includes("multiline")) {
             return FieldTypes.TEXTAREA;
         }
@@ -248,7 +249,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
         else {
             return FieldTypes.TEXTFIELD;
         }
-    }, [props.cellEditor.contentType])
+    }, [props.cellEditor?.contentType])
 
     //FieldType value of the TextCellEditor
     const fieldType = useMemo(() => getFieldType(), [getFieldType]) 
@@ -275,20 +276,20 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout, password ref has a inconsistency */
     useLayoutEffect(() => {
         if(onLoadCallback && textRef.current && fieldType !== FieldTypes.HTML) {
-            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback);
+            sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback);
         }
-    },[onLoadCallback, id, props.cellEditor.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[onLoadCallback, id, props.cellEditor?.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {
-        setText(props.selectedRow);
-        lastValue.current = props.selectedRow;
+        setText(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
+        lastValue.current = props.selectedRow ? props.selectedRow.data[props.columnName] : undefined;
     },[props.selectedRow]);
 
     // If the lib user extends the TextCellEditor with onChange, call it when selectedRow changes.
     useEffect(() => {
         if (props.onChange) {
-            props.onChange(props.selectedRow);
+            props.onChange(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
         }
     }, [props.selectedRow, props.onChange])
 
@@ -353,7 +354,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
         return fieldType === FieldTypes.HTML ? {
             onLoad: () => {
                 if (textRef.current && onLoadCallback) {
-                    sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
+                    sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
                 }
             },
             onTextChange: showSource || props.isReadOnly ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
@@ -478,7 +479,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, props.isReadOnly, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
-
+        
     /** Return either a textarea, password or normal textfield based on fieldtype */
     return (
         fieldType === FieldTypes.HTML ?

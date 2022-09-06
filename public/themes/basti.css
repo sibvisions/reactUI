@@ -307,6 +307,21 @@ body {
 .p-autocomplete-panel.dropdown-table .p-autocomplete-item {
   height: calc(8px + var(--table-data-height)); }
 
+.crash-message-icon {
+  font-size: var(--crash-message-size); }
+
+.crash-message-text {
+  font-size: var(--crash-message-size); }
+
+.crash-input-stack {
+  max-height: 0rem; }
+  .crash-input-stack.show-crash-details {
+    max-height: var(--crash-stack-height); }
+
+.crash-input-stack-textarea {
+  height: var(--crash-stack-height);
+  width: 100%; }
+
 @media screen and (max-width: 960px) {
   .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
     width: var(--std-profile-submenu-width-small);

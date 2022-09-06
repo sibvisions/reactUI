@@ -978,3 +978,6 @@ body {
 
 .rc-signature-pad {
   background: var(--signature-pad-background); }
+
+.crash-banner {
+  background: var(--error-bar-background); }

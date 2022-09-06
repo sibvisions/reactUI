@@ -65,7 +65,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
-        if (!props.cellEditor.defaultImageName || !props.selectedRow) {
+        if (!props.cellEditor.defaultImageName || !props.selectedRow || !props.selectedRow.data[props.columnName]) {
             const prefSize:Dimension = {width: 0, height: 0}
             if (props.preferredSize) {
                 const parsedSize = parsePrefSize(props.preferredSize) as Dimension
@@ -123,14 +123,14 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
         >
             <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
-            {(props.selectedRow || props.cellEditor.defaultImageName) &&
+            {((props.selectedRow && props.selectedRow.data[props.columnName]) || props.cellEditor.defaultImageName) &&
                 <img
                     id={!props.isCellEditor ? props.name : undefined}
                     className={concatClassnames(imageStyle, props.style)}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
                     //style={imageStyle.img}
-                    src={props.selectedRow ? "data:image/jpeg;base64," + props.selectedRow : props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
+                    src={props.selectedRow.data[props.columnName] ? "data:image/jpeg;base64," + props.selectedRow.data[props.columnName] : props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
                     alt="could not be loaded"
                     onLoad={imageLoaded}
                     onError={e => (e.target as HTMLImageElement).style.display = 'none'}

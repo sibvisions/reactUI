@@ -98,13 +98,13 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     const calendarInput = useRef<HTMLInputElement>(null);
 
     /** The current datevalue */
-    const [dateValue, setDateValue] = useState<any>(props.selectedRow);
+    const [dateValue, setDateValue] = useState<any>(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
 
     /** True, if the overlaypanel is visible */
     const [visible, setVisible] = useState<boolean>(false);
 
     /** The month/year which is currently displayed */
-    const [viewDate, setViewDate] = useState<any>(props.selectedRow ? new Date(props.selectedRow) : new Date());
+    const [viewDate, setViewDate] = useState<any>(props.selectedRow ? new Date(props.selectedRow.data[props.columnName]) : new Date());
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -186,16 +186,16 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
 
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
-        setDateValue(props.selectedRow ? new Date(props.selectedRow) : undefined);
-        setViewDate(props.selectedRow ? new Date(props.selectedRow) : new Date());
-        lastValue.current = props.selectedRow;
+        setDateValue(props.selectedRow ? new Date(props.selectedRow.data[props.columnName]) : undefined);
+        setViewDate(props.selectedRow ? new Date(props.selectedRow.data[props.columnName]) : new Date());
+        lastValue.current = props.selectedRow ? props.selectedRow.data[props.columnName] : undefined;
         
     },[props.selectedRow]);
 
     // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
-            props.onChange(props.selectedRow ? new Date(props.selectedRow) : undefined)
+            props.onChange(props.selectedRow ? new Date(props.selectedRow.data[props.columnName]) : undefined)
         }
     }, [props.selectedRow, props.onChange])
 

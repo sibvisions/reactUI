@@ -111,8 +111,8 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
      */
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";
-        if(props.selectedRow !== undefined && props.cellEditor.allowedValues.includes(props.selectedRow.data)) {
-            validImage = props.selectedRow.data
+        if(props.selectedRow !== undefined && props.cellEditor.allowedValues.includes(props.selectedRow.data[props.columnName])) {
+            validImage = props.selectedRow.data[props.columnName]
         }
         else if (props.cellEditor.defaultImageName !== undefined) {
             validImage = props.cellEditor.defaultImageName;

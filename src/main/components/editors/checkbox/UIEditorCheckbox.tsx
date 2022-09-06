@@ -57,7 +57,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** Current state of wether the CheckBox is currently checked or not */
-    const [checked, setChecked] = useState(props.selectedRow ? props.selectedRow.data : undefined);
+    const [checked, setChecked] = useState(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -82,14 +82,14 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
 
     // Sets the checked value based on the selectedRow data
     useEffect(() => {
-        setChecked(props.selectedRow ? props.selectedRow.data : undefined);
+        setChecked(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
     }, [props.selectedRow]);
 
     // If the lib user extends the CheckboxCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange({ 
-                value: props.selectedRow.data, 
+                value: props.selectedRow ? props.selectedRow.data[props.columnName] : undefined, 
                 selectedValue: props.cellEditor.selectedValue,
                 deselectedValue: props.cellEditor.deselectedValue 
             });

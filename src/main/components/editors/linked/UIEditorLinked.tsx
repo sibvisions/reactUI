@@ -246,7 +246,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         fetchLinkedRefDatabook(
             props.screenName, 
             props.cellEditor.linkReference.referencedDataBook,
-            props.selectedRow, 
+            props.selectedRow ? props.selectedRow.data : undefined, 
             props.cellEditor.displayReferencedColumnName,
             props.cellEditor.displayConcatMask,
             props.context.server, 
@@ -255,17 +255,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useEffect(() => {
-        if (props.selectedRow && lastValue.current !== props.selectedRow) {
+        if (props.selectedRow && lastValue.current !== props.selectedRow.data) {
             if (isDisplayRefColNameOrConcat) {
                 if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
-                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow, cellEditorMetaData.linkReference), props.cellEditor.linkReference.referencedColumnNames);
+                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, cellEditorMetaData.linkReference), props.cellEditor.linkReference.referencedColumnNames);
                     setText(getDisplayValue(extractedObject))
-                    lastValue.current = props.selectedRow;
+                    lastValue.current = props.selectedRow.data;
                 }
             }
             else {
-                setText(getDisplayValue(props.selectedRow));
-                lastValue.current = props.selectedRow;
+                setText(getDisplayValue(props.selectedRow.data));
+                lastValue.current = props.selectedRow.data;
             }
         }
     }, [props.selectedRow, linkRefFetchFlag, cellEditorMetaData]);
@@ -273,7 +273,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     // If the lib user extends the LinkedCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
-            props.onChange(cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.get(props.selectedRow))
+            props.onChange(cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.get(props.selectedRow ? props.selectedRow.data : undefined))
         }
     }, [props.selectedRow, linkRefFetchFlag, props.onChange, cellEditorMetaData])
 

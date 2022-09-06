@@ -181,6 +181,10 @@
     --error-dialog-textarea-height:8rem;
 
     --error-dialog-icon-size:2rem;
+
+    --crash-message-size:2rem;
+
+    --crash-stack-height:8rem;
 }
 
 body {
@@ -536,6 +540,26 @@ body {
     }
 }
 
+.crash-message-icon {
+    font-size: var(--crash-message-size);
+}
+
+.crash-message-text {
+    font-size: var(--crash-message-size);
+}
+
+.crash-input-stack {
+    max-height: 0rem;
+
+    &.show-crash-details {
+        max-height: var(--crash-stack-height);
+    }
+}
+
+.crash-input-stack-textarea {
+    height: var(--crash-stack-height);
+    width: 100%;
+}
 
 @media screen and (max-width: 960px) {
     .basti {

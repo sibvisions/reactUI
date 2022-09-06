@@ -32,6 +32,7 @@ import { concatClassnames } from "../../../main/util/string-util/ConcatClassname
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
 import { ReactUIDesigner } from '@sibvisions/reactui-designer/dist/moduleIndex'
 import { SpeedDial } from "primereact/speeddial";
+import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -82,6 +83,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             command: () => setShowDesignerView(prevState => !prevState)
         }
     ]
+    const embeddedContext = useContext(EmbeddedContext);
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values

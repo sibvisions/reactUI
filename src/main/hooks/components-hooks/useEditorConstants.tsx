@@ -48,16 +48,11 @@ const useEditorConstants = <T extends IRCCellEditor>(baseProps: T, fb?: CSSPrope
     /** The component id of the screen */
     const screenName = useMemo(() => baseProps.isCellEditor ? baseProps.cellScreenName as string : context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow, baseProps.isCellEditor, baseProps.cellScreenName])
 
-    /** True, if the editor is a checkbox or a choice editor */
-    const isCheckOrChoice = useMemo(() => (props.cellEditor?.className === CELLEDITOR_CLASSNAMES.CHOICE || props.cellEditor?.className === CELLEDITOR_CLASSNAMES.CHECKBOX), [props.cellEditor?.className]);
-
-    const isLinked = useMemo(() => props.cellEditor?.className === CELLEDITOR_CLASSNAMES.LINKED, [props.cellEditor?.className])
-
     /** The metadata for the specific column */
     const columnMetaData = useMetaData(screenName, props.dataRow, props.columnName, baseProps.cellEditor?.className === CELLEDITOR_CLASSNAMES.NUMBER ? "numeric" : undefined);
 
     /** The currently selected row */
-    const [selectedRow] = useRowSelect(screenName, props.dataRow, !isLinked ? props.columnName : undefined, isCheckOrChoice ? true : undefined, props.isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
+    const [selectedRow] = useRowSelect(screenName, props.dataRow, props.isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
 
     return [context, topbar, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle]
 }
