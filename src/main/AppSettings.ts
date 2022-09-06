@@ -359,9 +359,9 @@ export default class AppSettings {
     }
 
     /** Sets one of the app-ready parameters, if all of the needed parameters are true, set appReady to true */
-    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"startup"|"userOrLogin"|"translation") {
+    setAppReadyParam(param:"applicationCSS"|"schemeCSS"|"themeCSS"|"startup"|"userOrLogin"|"translation") {
         switch (param) {
-            case "appCSS":
+            case "applicationCSS":
                 this.appReadyParams.appCSSLoaded = true;
                 this.#subManager.notifyAppReadyParamsChange();
                 break;

@@ -19,7 +19,7 @@
  * @param type - the type of stylesheet that is added
  * @param appReadyCallback - a callback to set the appready-state
  */
-export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeCSS"|"designCSS", appReadyCallback:Function) {
+export function addCSSDynamically(path:string, type:"applicationCSS"|"schemeCSS"|"themeCSS", appReadyCallback:Function) {
     let before = undefined
     for (let link of document.head.getElementsByTagName('link')) {
         if (link.href.includes("application.css")) {
@@ -28,16 +28,13 @@ export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeC
     }
 
     for (let link of document.head.getElementsByTagName('link')) {
-        if (link.href.includes("application.css") && type === "appCSS") {
+        if (link.href.includes("application.css") && type === "applicationCSS") {
             document.head.removeChild(link);
         }
         else if (link.href.includes("color-schemes") && type === "schemeCSS") {
             document.head.removeChild(link);
         }
         else if (link.href.includes("themes") && type === "themeCSS") {
-            document.head.removeChild(link);
-        }
-        else if (link.href.includes("design") && type === "designCSS") {
             document.head.removeChild(link);
         }
     }
@@ -48,7 +45,12 @@ export function addCSSDynamically(path:string, type:"appCSS"|"schemeCSS"|"themeC
     link.href = path;
     link.addEventListener("load", () => appReadyCallback(type));
 
-    if (before && type !== "appCSS") {
+    link.addEventListener("error", (e) => {
+        console.error("error in file: " + type + ". The file could not be loaded.");
+        appReadyCallback(type);
+    })
+
+    if (before && type !== "applicationCSS") {
         document.head.insertBefore(link, before);
     }
     else {

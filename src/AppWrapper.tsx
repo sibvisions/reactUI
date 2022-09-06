@@ -66,7 +66,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         if (cssVersion) {
             path = path + "?version=" + cssVersion;
         }
-        addCSSDynamically(path, "appCSS", () => context.appSettings.setAppReadyParam("appCSS"))
+        addCSSDynamically(path, "applicationCSS", () => context.appSettings.setAppReadyParam("applicationCSS"))
     }, [cssVersion, restart, context.appSettings]);
 
     /**
