@@ -32,7 +32,6 @@ type ApplicationMetaData = {
     applicationLayout: { layout: "standard"|"corporation"|"modern", urlSet: boolean },
     applicationColorScheme: { value: string, urlSet: boolean },
     applicationTheme: { value: string, urlSet: boolean },
-    applicationDesign: string,
     applicationName: string,
     aliveInterval?: number,
     rememberMe?: boolean
@@ -56,12 +55,11 @@ export type MenuOptions = {
     foldMenuOnCollapse:boolean
 }
 
-type AppReadyType = {
+export type AppReadyType = {
     appCSSLoaded: boolean
     schemeCSSLoaded: boolean
     themeCSSLoaded: boolean
     startupDone: boolean
-    designCSSLoaded: boolean
     userOrLoginLoaded: boolean
     translationLoaded: boolean
 }
@@ -129,7 +127,6 @@ export default class AppSettings {
         applicationLayout: { layout: "standard", urlSet: false },
         applicationTheme: { value: "basti", urlSet: false },
         applicationColorScheme: { value: "default", urlSet: false },
-        applicationDesign: "",
         applicationName: ""
     };
 
@@ -172,7 +169,6 @@ export default class AppSettings {
         schemeCSSLoaded: false, 
         themeCSSLoaded: false,
         startupDone: false,
-        designCSSLoaded: false,
         userOrLoginLoaded: false,
         translationLoaded: false
     }
@@ -182,6 +178,8 @@ export default class AppSettings {
 
     /** CSS files to add when the app is ready */
     cssToAddWhenReady:Array<any> = [];
+
+    showDebug: boolean = false;
 
     /**
      * Sets the menu-mode
@@ -255,14 +253,6 @@ export default class AppSettings {
             }
             this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
         }
-
-        if (!this.applicationMetaData.applicationDesign && appMetaData.applicationDesign) {
-            this.applicationMetaData.applicationDesign = appMetaData.applicationDesign;
-            addCSSDynamically('design/' + appMetaData.applicationDesign + ".css", "designCSS", () => this.setAppReadyParam("designCSS"))
-        }
-        else if (!this.applicationMetaData.applicationDesign) {
-            this.appReadyParams.designCSSLoaded = true;
-        }
     }
 
     /** Sets the application-theme and that it is being set by url */
@@ -278,11 +268,6 @@ export default class AppSettings {
     /** Sets the application-layout and that it is being set by url */
     setApplicationLayoutByURL(pLayout:"standard"|"corporation"|"modern") {
         this.applicationMetaData.applicationLayout = { layout: pLayout, urlSet: true };
-    }
-
-    /** Sets the application-design and that it is being set by url */
-    setApplicationDesign(pDesign:string) {
-        this.applicationMetaData.applicationDesign = pDesign;
     }
 
     /**
@@ -374,28 +359,31 @@ export default class AppSettings {
     }
 
     /** Sets one of the app-ready parameters, if all of the needed parameters are true, set appReady to true */
-    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"startup"|"designCSS"|"userOrLogin"|"translation") {
+    setAppReadyParam(param:"appCSS"|"schemeCSS"|"themeCSS"|"startup"|"userOrLogin"|"translation") {
         switch (param) {
             case "appCSS":
                 this.appReadyParams.appCSSLoaded = true;
+                this.#subManager.notifyAppReadyParamsChange();
                 break;
             case "schemeCSS":
                 this.appReadyParams.schemeCSSLoaded = true;
+                this.#subManager.notifyAppReadyParamsChange();
                 break;
             case "themeCSS":
                 this.appReadyParams.themeCSSLoaded = true;
+                this.#subManager.notifyAppReadyParamsChange();
                 break;
             case "startup":
                 this.appReadyParams.startupDone = true;
-                break;
-            case "designCSS":
-                this.appReadyParams.designCSSLoaded = true;
+                this.#subManager.notifyAppReadyParamsChange();
                 break;
             case "userOrLogin":
                 this.appReadyParams.userOrLoginLoaded = true;
+                this.#subManager.notifyAppReadyParamsChange();
                 break;
             case "translation":
                 this.appReadyParams.translationLoaded = true;
+                this.#subManager.notifyAppReadyParamsChange();
                 break;
             default:
                 break;
@@ -410,10 +398,10 @@ export default class AppSettings {
         }
         else {
             if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
-                && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.designCSSLoaded) {
+                && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded) {
                     this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
                     this.appReady = true;
-                    this.#subManager.emitAppReady(true);
+                    //this.#subManager.emitAppReady(true);
             }
         }
     }
@@ -426,7 +414,6 @@ export default class AppSettings {
             schemeCSSLoaded: false, 
             themeCSSLoaded: false,
             startupDone: false,
-            designCSSLoaded: false,
             userOrLoginLoaded: false,
             translationLoaded: false
         };
