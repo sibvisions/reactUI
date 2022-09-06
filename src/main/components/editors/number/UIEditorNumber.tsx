@@ -64,7 +64,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     const numberInput = useRef<HTMLInputElement>(null);
 
     /** Current state value of input element */
-    const [value, setValue] = useState<number|string|null>(props.selectedRow);
+    const [value, setValue] = useState<number|string|null>(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -109,7 +109,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
      * 0s will be added
      * @returns a string which will be added before the number
      */
-    const prefixLength = useMemo(() => getPrimePrefix(props.cellEditor.numberFormat, props.selectedRow),
+    const prefixLength = useMemo(() => getPrimePrefix(props.cellEditor.numberFormat, props.selectedRow ? props.selectedRow.data[props.columnName] : undefined),
     [props.cellEditor.numberFormat, props.selectedRow]);
 
     /**
@@ -139,14 +139,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {
-        setValue(props.selectedRow)
-        lastValue.current = props.selectedRow;
+        setValue(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined)
+        lastValue.current = props.selectedRow ? props.selectedRow.data[props.columnName] : undefined;
     },[props.selectedRow]);
 
     // If the lib user extends the NumberCellEditor with onChange, call it when selectedRow changes.
     useEffect(() => {
         if (props.onChange) {
-            props.onChange(props.selectedRow)
+            props.onChange(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined)
         }
     }, [props.selectedRow, props.onChange])
 

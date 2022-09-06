@@ -208,7 +208,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     const textRef = useRef<any>();
 
     /** Current state value of input element */
-    const [text, setText] = useState(props.selectedRow);
+    const [text, setText] = useState(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -282,14 +282,14 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {
-        setText(props.selectedRow);
-        lastValue.current = props.selectedRow;
+        setText(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
+        lastValue.current = props.selectedRow ? props.selectedRow.data[props.columnName] : undefined;
     },[props.selectedRow]);
 
     // If the lib user extends the TextCellEditor with onChange, call it when selectedRow changes.
     useEffect(() => {
         if (props.onChange) {
-            props.onChange(props.selectedRow);
+            props.onChange(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
         }
     }, [props.selectedRow, props.onChange])
 
@@ -479,7 +479,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, props.isReadOnly, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
-
+        
     /** Return either a textarea, password or normal textfield based on fieldtype */
     return (
         fieldType === FieldTypes.HTML ?

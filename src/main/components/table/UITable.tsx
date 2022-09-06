@@ -224,7 +224,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const [columnOrder, setColumnOrder] = useState<string[]|undefined>(metaData?.columnView_table_);
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
-    const [selectedRow] = useRowSelect(screenName, props.dataBook, undefined, true);
+    const [selectedRow] = useRowSelect(screenName, props.dataBook);
 
     /** Reference if the page up/down key was pressed */
     const pageKeyPressed = useRef<boolean>(false);
