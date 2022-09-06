@@ -401,7 +401,7 @@ export default class AppSettings {
                 && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded) {
                     this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
                     this.appReady = true;
-                    //this.#subManager.emitAppReady(true);
+                    this.#subManager.emitAppReady(true);
             }
         }
     }
