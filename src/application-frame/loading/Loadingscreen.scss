@@ -19,10 +19,11 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
-    background: -o-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
-    background: -moz-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
-    background: radial-gradient(119% 190% at -6% -20%, var(--loading-screen-background-left) 70%, var(--loading-screen-background-right) 70%);
+    flex-direction: column;
+    background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
+    background: -o-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
+    background: -moz-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
+    background: radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
 }
 
 .loading-screen-spinner {
@@ -31,4 +32,14 @@
     width: 60px;
     top: calc(50% - 15px);
     left: calc(50% - 30px);
+}
+
+.show-debug {
+    .loading-screen-spinner {
+        top: calc(50% - 23px);
+    }
+}
+
+.loading-screen-text {
+    color: #a5a5a5
 }

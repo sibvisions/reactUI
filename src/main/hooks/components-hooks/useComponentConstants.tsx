@@ -21,6 +21,7 @@ import useComponentStyle from "../style-hooks/useComponentStyle";
 import { AppContextType } from "../../contexts/AppProvider";
 import BaseComponent from "../../util/types/BaseComponent";
 import { TopBarContextType } from "../../components/topbar/TopBar";
+import { IPanel } from "../../components/panels/panel/UIPanel";
 
 /**
  * Returns the component constants which almost every component uses
@@ -36,7 +37,7 @@ const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSPro
     const [props] = useProperties<T>(baseProps.id, {...baseProps});
 
     /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.parent ? props.id : "root", fb);
+    const layoutStyle = useLayoutValue(props.parent || ((props as any).screen_modal_ || (props as any).content_modal_) ? props.id : "root", fb);
 
     /** get the component style of the component */
     const compStyle = useComponentStyle(props);

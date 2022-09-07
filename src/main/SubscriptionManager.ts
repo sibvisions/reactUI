@@ -181,6 +181,8 @@ export class SubscriptionManager {
     /** A function to update the mfa-url-component to its properties */
     MFAURLSubscriber: Function = () => {};
 
+    appReadyParamsSubscriber: Function = () => {};
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -534,6 +536,10 @@ export class SubscriptionManager {
         this.MFAURLSubscriber = fn;
     }
 
+    subscribeToAppReadyParams(fn: Function) {
+        this.appReadyParamsSubscriber = fn;
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -781,6 +787,10 @@ export class SubscriptionManager {
         this.MFAURLSubscriber = () => {};
     }
 
+    unsubscribeFromAppParamsSubscriber() {
+        this.MFAURLSubscriber = () => {};
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param screenName 
@@ -842,6 +852,10 @@ export class SubscriptionManager {
      */
     notifySortDefinitionChange(screenName:string, dataProvider:string) {
         this.sortDefinitionSubscriber.get(screenName)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    notifyAppReadyParamsChange() {
+        this.appReadyParamsSubscriber.apply(undefined, [this.appSettings.appReadyParams])
     }
 
     /**

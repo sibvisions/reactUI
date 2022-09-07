@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, ReactElement, useContext, useEffect, useState } from "react";
+import React, { CSSProperties, FC, ReactElement, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Dialog } from 'primereact/dialog';
 import { appContext } from "../../../contexts/AppProvider";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
@@ -21,6 +21,10 @@ import { IPanel } from "../panel/UIPanel";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { IExtendablePopup } from "../../../extend-components/panels/ExtendPopupWrapper";
+import { LayoutContext } from "../../../LayoutContext";
+import _ from "underscore";
+import useComponents from "../../../hooks/components-hooks/useComponents";
+import Dimension from "../../../util/types/Dimension";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -38,12 +42,23 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
+    /** Current state of all Childcomponents as react children and their preferred sizes */
+    const [, components, componentSizes] = useComponents(baseProps.id + "-popup", baseProps.className);
+
+    /** Current state of the size of the popup-container*/
+    const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
+
+    const popupRef = useRef<any>(null)
+
+    //const [initialFlag, setInitialFlag] = useState<boolean>(false);
+
     /** Subscribes the resize-handler to the theme */
     useEffect(() => {
         context.subscriptions.subscribeToTheme("popup", (theme:string) => setAppTheme(theme));
 
         return () => {
             context.subscriptions.unsubscribeFromTheme("popup");
+            setComponentSize(new Map<string, CSSProperties>())
         }
     }, [context.subscriptions]);
 
@@ -79,21 +94,53 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         }
     }
 
+    const handleInitialSize = () => {
+        if (popupRef.current && popupRef.current.contentEl) {
+            const sizeMap = new Map<string, CSSProperties>();
+            let popupSize:Dimension = { height: 400, width: 600 } 
+            if (componentSizes && componentSizes.has(baseProps.id)) {
+                popupSize.height = componentSizes.get(baseProps.id)!.preferredSize.height;
+                popupSize.width = componentSizes.get(baseProps.id)!.preferredSize.width;
+            }
+            sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+            setComponentSize(sizeMap);
+        }
+    }
+
+    const handlePopupResize = () => {
+        if (popupRef.current && popupRef.current.contentEl) {
+            const sizeMap = new Map<string, CSSProperties>();
+            const popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth };
+            sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+            setComponentSize(sizeMap);
+        }
+    }
+
+    const handleResize = useCallback(_.throttle(handlePopupResize, 50), [handlePopupResize, popupRef.current]);
+
+    useEffect(() => {
+        handleInitialSize();
+    }, [componentSizes])
+
     // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any
     return (
-        <Dialog
-            className={concatClassnames("rc-popup", baseProps.style, appTheme)}
-            header={baseProps.screen_title_ || baseProps.content_title_}
-            visible={baseProps.screen_modal_ || baseProps.content_modal_}
-            onDrag={(e) => baseProps.onDrag ? baseProps.onDrag(e) : undefined}
-            onDragStart={(e) => baseProps.onDragStart ? baseProps.onDragStart(e) : undefined}
-            onDragEnd={(e) => baseProps.onDragEnd ? baseProps.onDragEnd(e) : undefined}
-            onHide={handleOnHide} 
-            resizable={false}
-            baseZIndex={1010}
-            >
-            {baseProps.render}
-        </Dialog>
+        <LayoutContext.Provider value={componentSize}>
+            <Dialog
+                className={concatClassnames("rc-popup", baseProps.style, appTheme)}
+                header={baseProps.screen_title_ || baseProps.content_title_}
+                visible={baseProps.screen_modal_ || baseProps.content_modal_}
+                onDrag={(e) => baseProps.onDrag ? baseProps.onDrag(e) : undefined}
+                onDragStart={(e) => baseProps.onDragStart ? baseProps.onDragStart(e) : undefined}
+                onDragEnd={(e) => baseProps.onDragEnd ? baseProps.onDragEnd(e) : undefined}
+                onHide={handleOnHide}
+                baseZIndex={1010}
+                ref={popupRef}
+                onShow={() => handleInitialSize()}
+                onResize={() => handleResize()}
+                >
+                {baseProps.render}
+            </Dialog>
+        </LayoutContext.Provider>
     )
 }
 export default UIPopupWrapper

@@ -13,16 +13,57 @@
  * the License.
  */
 
-import React, { FC } from "react";
+import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { appContext } from "../../main/contexts/AppProvider";
+import { AppReadyType } from "../../main/AppSettings";
 
 /**
  * A Component which displays a progressspinner to show that the page is currently loading
  * @returns - A Component which displays a progressspinner to show that the page is currently loading
  */
 const LoadingScreen: FC = () => {
+    const context = useContext(appContext);
+
+    const paramTrans = new Map()
+    .set("appCSSLoaded", "application.css")
+    .set("schemeCSSLoaded", "color-scheme css")
+    .set("themeCSSLoaded", "theme css")
+    .set("startupDone", "startup")
+    .set("translationLoaded", "translation")
+    .set("userOrLoginLoaded", "user or login")
+
+    const [appReadyParams, setAppReadyParams] = useState<AppReadyType>(context.appSettings.appReadyParams);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToAppReadyParams((params: AppReadyType) => setAppReadyParams({...params}));
+
+        return () => context.subscriptions.unsubscribeFromAppParamsSubscriber()
+    }, [context.subscriptions]);
+
+    const progressionText = useMemo(() => {
+        if (Object.values(appReadyParams).every(v => v === true)) {
+            return "Done"
+        }
+        else {
+            return Object.entries(appReadyParams).reduce((x, y) => {
+                if (!y[1]) {
+                    if (x === "Loading: ") {
+                        return x + paramTrans.get(y[0]);
+                    }
+                    else {
+                        return x + ", " + paramTrans.get(y[0]);
+                    }   
+                }
+                else {
+                    return x;
+                }
+            }, "Loading: ")
+        }
+    }, [appReadyParams])
+
     return (
-        <div className="loading-screen">
+        <div className={"loading-screen " + (context.appSettings.showDebug ? "show-debug" : "")}>
                 <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                     width="300px" height="300px" viewBox="0 0 1035 900" enableBackground="new 0 0 1035 900">
                     <g>
@@ -41,6 +82,7 @@ const LoadingScreen: FC = () => {
                     </g>
                 </svg>
             <ProgressSpinner className="loading-screen-spinner" strokeWidth="10px"/>
+            {context.appSettings.showDebug && <span className="loading-screen-text">{progressionText}</span>}
         </div>
         
     )

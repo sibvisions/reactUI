@@ -290,6 +290,41 @@ export default abstract class BaseContentStore {
         }
     }
 
+    handleModalPanel(existingComp:IPanel|undefined, newComp:IPanel) {
+        if (existingComp) {
+            const popup = this.getExistingComponent(existingComp.id + "-popup");
+            if (newComp["~remove"] !== true) {
+                if (this.isRemovedComponent(existingComp.id)) {
+                    if (popup) {
+                        this.removedContent.delete(existingComp.id + "-popup");
+                        this.flatContent.set(existingComp.id + "-popup", popup);
+                    }
+                }
+            }
+            else {
+                if (popup) {
+                    this.flatContent.delete(existingComp.id + "-popup");
+                    this.removedContent.set(existingComp.id + "-popup", popup);
+                }
+            }
+
+            if (newComp["~destroy"]) {
+                this.flatContent.delete(existingComp.id + "-popup");
+                this.removedContent.delete(existingComp.id + "-popup");
+            }
+        }
+        else {
+            const popup:BaseComponent = {
+                id: newComp.id + "-popup",
+                name: newComp.name + "-popup",
+                className: "PopupWrapper",
+                constraints: ""
+            }
+            newComp.parent = popup.id;
+            this.flatContent.set(popup.id, popup);
+        }
+    }
+
     /**
      * Handles adding removing of the toolbar sub elements
      * @param existingComp - the existing component already in contentstore

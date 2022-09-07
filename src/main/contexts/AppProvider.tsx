@@ -161,7 +161,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
         const authKey = localStorage.getItem("authKey");
         let themeToSet = "";
         let schemeToSet = "";
-        let designToSet = "";
         let baseUrlToSet = "";
         let timeoutToSet = 10000;
         let aliveIntervalToSet:number|undefined = undefined;
@@ -359,9 +358,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     if (data.theme) {
                         themeToSet = data.theme;
                     }
-    
-                    if (data.design) {
-                        designToSet = data.design;
+
+                    if (data.debug) {
+                        contextState.appSettings.showDebug = (data.debug === 'true');
                     }
 
                     if (data.designer) {
@@ -477,20 +476,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.subscriptions.emitThemeChanged(themeToSet);
             }
 
-            if (convertedOptions.has("design")) {
-                designToSet = convertedOptions.get("design");
-                convertedOptions.delete("design");
-            }
-
-            if (props.design) {
-                designToSet = props.design;
-            }
-
-            if (designToSet) {
-                contextState.appSettings.setApplicationDesign(designToSet);
-                addCSSDynamically('design/' + designToSet + ".css", "designCSS", () => contextState.appSettings.setAppReadyParam("designCSS"));
-            }
-
             if (convertedOptions.has("transferType")) {
                 if (convertedOptions.get("transferType") === "full") {
                     contextState.transferType = convertedOptions.get("transferType");
@@ -534,10 +519,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("wsPingInterval");
             }
 
-            if (convertedOptions.has("designer")) {
-                if (convertedOptions.get("designer") === "true" || convertedOptions.get("designer") === "false") {
-                    contextState.appSettings.showDesigner = convertedOptions.get("designer");
+            if (convertedOptions.has("debug")) {
+                if (convertedOptions.get("debug") === "true" || convertedOptions.get("debug") === "false") {
+                    contextState.appSettings.showDebug = (convertedOptions.get("debug") === 'true');
                 }
+                convertedOptions.delete("debug");
             }
 
             if (wsPingIntervalToSet) {

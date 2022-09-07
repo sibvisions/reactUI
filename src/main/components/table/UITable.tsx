@@ -422,7 +422,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 }  
             }    
         }
-    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible]);
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, providerData]);
 
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
