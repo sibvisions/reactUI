@@ -109,18 +109,18 @@ export function panelReportSize(id: string,
 export function panelGetStyle(group: boolean, layoutStyle?: CSSProperties, prefSize?: Dimension, modal?: boolean, modalSize?: string, version?: "partial"|"full") {
     let s: CSSProperties = {};
     /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-    if (modal && version !== "full") {
-        const screenSize = parsePrefSize(modalSize);
-        if (screenSize) {
-            s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
-        }
-        else if (prefSize) {
-            s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
-        }
-    }
-    else {
+    // if (modal && version !== "full") {
+    //     const screenSize = parsePrefSize(modalSize);
+    //     if (screenSize) {
+    //         s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
+    //     }
+    //     else if (prefSize) {
+    //         s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
+    //     }
+    // }
+    // else {
         s = { ...layoutStyle }
-    }
+    //}
 
     if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
         s.top = undefined;
@@ -148,7 +148,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
@@ -175,7 +175,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
             props.maximumSize, 
             onLoadCallback
         )
-    }, [onLoadCallback])
+    }, [onLoadCallback]);
 
     return (
         <>
@@ -188,6 +188,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 ref={panelRef}
                 id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {
+                    ...layoutStyle,
                     height: prefSize?.height,
                     width: prefSize?.width,
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})

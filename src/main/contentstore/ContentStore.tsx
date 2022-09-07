@@ -25,6 +25,7 @@ import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperTy
 import AppSettings from "../AppSettings";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import Server from "../server/Server";
+import { IPanel } from "../components/panels/panel/UIPanel";
 
 /** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: partial*/
 export default class ContentStore extends BaseContentStore {
@@ -119,6 +120,10 @@ export default class ContentStore extends BaseContentStore {
 
             if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL && !isCustom) {
                 this.handleToolBarComponent(existingComponent as IToolBarPanel, newComponent as IToolBarPanel);
+            }
+
+            if (newComponent.className === COMPONENT_CLASSNAMES.PANEL && ((newComponent as IPanel).screen_modal_ || (newComponent as IPanel).content_modal_)) {
+                this.handleModalPanel(existingComponent as IPanel, newComponent as IPanel);
             }
             
             if (existingComponent) {
