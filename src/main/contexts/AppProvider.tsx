@@ -279,17 +279,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     if (data.wsPingInterval) {
                         wsPingIntervalToSet = parseInt(data.wsPingInterval);
                     }
-                    resolve({});
-                })
-                .catch(() => reject("app.json not found"))
-            });
-        }
 
-        // Fetches the app-config file which contains the transfertype
-        const fetchAppConfig = () => {
-            return new Promise<any>((resolve, reject) => {
-                fetch('assets/config/app_config.json').then((r) => r.json())
-                .then((data) => {
                     if (data.transferType) {
                         if (data.transferType === "full") {
                             contextState.transferType = "full"
@@ -303,7 +293,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                     resolve({});
                 })
-                .catch(() => reject("app_version.json not found"));
+                .catch(() => reject("app.json not found"))
             });
         }
 
@@ -625,14 +615,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
 
         if (process.env.NODE_ENV === "development") {
-            Promise.all([fetchConfig(), fetchApp(), fetchAppConfig()])
+            Promise.all([fetchConfig(), fetchApp()])
             .then(() => afterConfigFetch())
             .catch(() => afterConfigFetch())
         }
         else {
-            Promise.all([fetchApp(), fetchAppConfig()])
-            .then(() => afterConfigFetch())
-            .catch(() => afterConfigFetch())
+            fetchApp().then(() => afterConfigFetch()).catch(() => afterConfigFetch())
         }
     }, [restart])
 
