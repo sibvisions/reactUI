@@ -108,6 +108,8 @@ export default abstract class BaseServer {
     /** The navigation-name of a screen if the app was directly launched by a link */
     linkOpen = "";
 
+    designerUrl = "";
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance

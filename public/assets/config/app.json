@@ -1,5 +1,7 @@
 {
     "timeout": "20000",
     "aliveInterval": "30000",
-    "wsPingInterval": "10000"
+    "wsPingInterval": "10000",
+    "useDesigner": "true",
+    "designerUploadUrl": "xxx"
 }

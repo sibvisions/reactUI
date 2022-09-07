@@ -291,6 +291,16 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         }
 
                     }
+
+                    if (data.useDesigner) {
+                        if (data.useDesigner === "true" || data.useDesigner === "false") {
+                            contextState.appSettings.showDesigner = (data.useDesigner === 'true');
+                        }
+                    }
+
+                    if (data.designerUploadUrl) {
+                        contextState.server.designerUrl = data.designerUploadUrl;
+                    }
                     resolve({});
                 })
                 .catch(() => reject("app.json not found"))
@@ -353,9 +363,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showDebug = (data.debug === 'true');
                     }
 
-                    if (data.designer) {
-                        contextState.appSettings.showDesigner = data.designer;
-                    }
                     resolve({})
                 })
                 .catch(() => reject("config.json not found"))
