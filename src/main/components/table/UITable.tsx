@@ -188,7 +188,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     /** The amount of virtual rows loaded */
     const rows = useMemo(() => {
-        if (metaData && metaData.columnView_table_.length > 20) {
+        if (metaData && props.columnLabels.length > 20) {
             if (getNumberOfRowsPerPage()) {
                 return getNumberOfRowsPerPage() + 3
             }
@@ -197,7 +197,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
         }
         return 40;
-    }, [metaData?.columnView_table_, getNumberOfRowsPerPage])
+    }, [props.columnLabels.length, getNumberOfRowsPerPage])
 
     /** Virtual scrolling is enabled (lazy loading), if the provided data is greater than 2 times the row value*/
     const virtualEnabled = useMemo(() => {
@@ -221,7 +221,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const [sortDefinitions] = useSortDefinitions(screenName, props.dataBook);
 
     /** The current order of the columns */
-    const [columnOrder, setColumnOrder] = useState<string[]|undefined>(metaData?.columnView_table_);
+    const [columnOrder, setColumnOrder] = useState<string[]|undefined>(props.columnLabels || props.columnNames);
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(screenName, props.dataBook);
@@ -524,8 +524,11 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
         }
 
-        if (metaData?.columnView_table_) {
-            setColumnOrder(metaData.columnView_table_);
+        if (props.columnLabels) {
+            setColumnOrder(props.columnLabels);
+        }
+        else {
+            setColumnOrder(props.columnNames)
         }
     },[metaData])
 
