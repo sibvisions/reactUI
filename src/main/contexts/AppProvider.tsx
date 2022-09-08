@@ -162,6 +162,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let themeToSet = "";
         let schemeToSet = "";
         let baseUrlToSet = "";
+        let designerUrlToSet = "";
         let timeoutToSet = 10000;
         let aliveIntervalToSet:number|undefined = undefined;
         let wsPingIntervalToSet:number|undefined = undefined;
@@ -292,14 +293,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
                     }
 
-                    if (data.useDesigner) {
-                        if (data.useDesigner === "true" || data.useDesigner === "false") {
-                            contextState.appSettings.showDesigner = (data.useDesigner === 'true');
-                        }
+                    if (data.useDesigner === true) {
+                        contextState.appSettings.showDesigner = true;
                     }
 
+                    console.log(data.designerUploadUrl)
                     if (data.designerUploadUrl) {
-                        contextState.server.designerUrl = data.designerUploadUrl;
+                        designerUrlToSet = data.designerUploadUrl;
                     }
                     resolve({});
                 })
@@ -359,8 +359,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         themeToSet = data.theme;
                     }
 
-                    if (data.debug) {
-                        contextState.appSettings.showDebug = (data.debug === 'true');
+                    if (data.debug && data.debug === true) {
+                        contextState.appSettings.showDebug = true;
                     }
 
                     resolve({})
@@ -516,10 +516,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("wsPingInterval");
             }
 
-            if (convertedOptions.has("debug")) {
-                if (convertedOptions.get("debug") === "true" || convertedOptions.get("debug") === "false") {
-                    contextState.appSettings.showDebug = (convertedOptions.get("debug") === 'true');
-                }
+            if (convertedOptions.has("debug") && convertedOptions.get("debug") === true) {
+                contextState.appSettings.showDebug = true;
                 convertedOptions.delete("debug");
             }
 
@@ -570,7 +568,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
             }
             contextState.server.BASE_URL = baseUrlToSet;
-            contextState.server.timeoutMs = timeoutToSet
+            contextState.server.timeoutMs = timeoutToSet;
+            contextState.server.designerUrl = designerUrlToSet;
 
             startUpRequest.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2);
 

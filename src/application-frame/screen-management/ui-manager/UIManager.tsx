@@ -213,7 +213,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     return (
         (showDesignerView) ?
-            <ReactUIDesigner isCorporation={isCorporation(appLayout, appTheme)}>
+            <ReactUIDesigner uploadUrl={context.server.designerUrl} isCorporation={isCorporation(appLayout, appTheme)}>
                 {content}
             </ReactUIDesigner> 
             :
