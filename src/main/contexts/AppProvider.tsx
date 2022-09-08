@@ -297,7 +297,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showDesigner = true;
                     }
 
-                    console.log(data.designerUploadUrl)
                     if (data.designerUploadUrl) {
                         designerUrlToSet = data.designerUploadUrl;
                     }
