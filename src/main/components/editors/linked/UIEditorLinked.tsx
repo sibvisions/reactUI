@@ -258,7 +258,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (props.selectedRow && lastValue.current !== props.selectedRow.data) {
             if (isDisplayRefColNameOrConcat) {
                 if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
-                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, cellEditorMetaData.linkReference), props.cellEditor.linkReference.referencedColumnNames);
+                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference), props.cellEditor.linkReference.referencedColumnNames);
                     setText(getDisplayValue(extractedObject))
                     lastValue.current = props.selectedRow.data;
                 }
@@ -291,9 +291,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 return result;
             }
             else {
-                const colNameIndex = cellEditorMetaData ? 
-                cellEditorMetaData.linkReference.columnNames.findIndex(columnName => columnName === props.columnName) 
-                : props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
+                const colNameIndex = props.cellEditor.linkReference.columnNames.findIndex(columnName => columnName === props.columnName);
                 return value[colNameIndex];
             }
         } else {
@@ -418,7 +416,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
      * if the corresponding row is found in its databook. if it isn't, the state is set back to its previous value
      */
      const handleInput = () => {
-        const linkReference = cellEditorMetaData ? cellEditorMetaData.linkReference : props.cellEditor.linkReference;
+        const linkReference = props.cellEditor.linkReference;
 
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
@@ -519,6 +517,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 400 new rows
     const handleLazyLoad = (event:any) => {
+        console.log(event.last, providedData.length)
         if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
@@ -540,7 +539,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 const cellStyle: CSSProperties = {}
                 let icon:JSX.Element | null = null;
 
-                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name][i]) {
+                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name] && providedData[index].__recordFormats[props.name].length && providedData[index].__recordFormats[props.name][i]) {
                     const format = providedData[index].__recordFormats[props.name][i]
 
                     if (format.background) {
@@ -579,10 +578,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         }
                     }
                 }
+                console.log('test')
                 return <div style={cellStyle} key={i}>{icon ?? d}</div>
             }
             else {
-                if (cellEditorMetaData?.linkReference.columnNames[i] === props.columnName) {
+                if (props.cellEditor.linkReference.columnNames[i] === props.columnName) {
                     if (props.cellEditor.displayReferencedColumnName) {
                         return providedData[index][props.cellEditor.displayReferencedColumnName]
                     }
