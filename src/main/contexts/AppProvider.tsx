@@ -349,8 +349,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         themeToSet = data.theme;
                     }
 
-                    if (data.debug) {
-                        contextState.appSettings.showDebug = (data.debug === 'true');
+                    if (data.debug && data.debug === true) {
+                        contextState.appSettings.showDebug = true;
                     }
                     resolve({})
                 })
@@ -505,10 +505,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("wsPingInterval");
             }
 
-            if (convertedOptions.has("debug")) {
-                if (convertedOptions.get("debug") === "true" || convertedOptions.get("debug") === "false") {
-                    contextState.appSettings.showDebug = (convertedOptions.get("debug") === 'true');
-                }
+            if (convertedOptions.has("debug") && convertedOptions.get("debug") === true) {
+                contextState.appSettings.showDebug = true;
                 convertedOptions.delete("debug");
             }
 
