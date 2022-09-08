@@ -454,7 +454,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             if (schemeToSet) {
                 contextState.appSettings.setApplicationColorSchemeByURL(schemeToSet);
-                addCSSDynamically('color-schemes/' + schemeToSet + '-scheme.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
+                addCSSDynamically('color-schemes/' + schemeToSet + '.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
             }
 
             if (convertedOptions.has("theme")) {
@@ -595,7 +595,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (response.applicationColorScheme && !schemeToSet) {
-                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '-scheme.css', "schemeCSS", () => {});
+                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '.css', "schemeCSS", () => {});
                     }
 
                     if (response.applicationTheme && !themeToSet) {

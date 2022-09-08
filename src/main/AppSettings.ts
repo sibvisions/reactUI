@@ -238,10 +238,10 @@ export default class AppSettings {
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {
             if (appMetaData.applicationColorScheme) {
                 this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
-                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '-scheme.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
+                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
             }
             else {
-                addCSSDynamically('color-schemes/default-scheme.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
+                addCSSDynamically('color-schemes/default.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
             }
         }
         
