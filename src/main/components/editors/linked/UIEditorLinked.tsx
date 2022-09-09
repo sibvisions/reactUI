@@ -505,14 +505,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             });
         }
 
-        if(props.cellEditor.columnView?.columnCount > 1) {
-            return [{
-                label: props.cellEditor.columnView.columnNames,
-                items: suggestions
-            }]
-        } else {
+        // if(props.cellEditor.columnView?.columnCount > 1) {
+        //     return [{
+        //         label: props.cellEditor.columnView.columnNames,
+        //         items: suggestions
+        //     }]
+        // } else {
             return suggestions
-        }
+        //}
     }
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 400 new rows
@@ -578,7 +578,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         }
                     }
                 }
-                console.log('test')
                 return <div style={cellStyle} key={i}>{icon ?? d}</div>
             }
             else {
@@ -704,8 +703,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 tooltipOptions={{ position: "left" }}
                 itemTemplate={itemTemplate}
                 {...(tableOptions ? {
-                    optionGroupLabel: "label",
-                    optionGroupChildren: "items",
+                    //optionGroupLabel: "label",
+                    //optionGroupChildren: "items",
                     optionGroupTemplate: groupedItemTemplate
                 } : {})}
                 placeholder={props.cellEditor_placeholder_}
