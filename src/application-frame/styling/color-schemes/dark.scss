@@ -679,7 +679,7 @@ body {
                 &:hover {
                     background: var(--menubar-hover-background);
                     color: var(--menubar-text-color);
-                    .p-menuitem-text, .p-submenu-icon, .p-menuitem-icon {
+                    .p-menuitem-text, .p-submenu-icon, .p-menuitem-icon:not(.profile-image-null) {
                         color: var(--menubar-text-color);
                     }
                 }
