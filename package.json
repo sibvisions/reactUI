@@ -11,6 +11,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@react-leaflet/core": "^1.0.2",
+    "@sibvisions/reactui-designer": "^0.1.2",
     "@types/babel__generator": "^7.6.4",
     "@types/googlemaps": "^3.40.3",
     "@types/jest": "^24.9.1",
