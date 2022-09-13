@@ -51,6 +51,7 @@ export interface IMenu extends IForwardRef {
     showMenuMini?:boolean,
     menuOptions:MenuOptions,
     designerViewCallback:React.Dispatch<React.SetStateAction<boolean>>
+    screenTitle: string
 }
 
 /** Interface for profile-menu */
@@ -185,9 +186,6 @@ const Menu: FC<IMenu> = (props) => {
 
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
-
-    /** Current state of screen title, displays the screen title */
-    const screenTitle = useScreenTitle();
 
     /** Reference for logo container element*/
     const menuLogoRef = useRef<HTMLDivElement>(null);
@@ -417,7 +415,7 @@ const Menu: FC<IMenu> = (props) => {
                                     className="menu-topbar-buttons menu-toggler"
                                     onClick={() => handleToggleClick()}
                                     style={{ marginRight: "4px", marginLeft: "10px" }} />
-                                <span className="menu-screen-title">{screenTitle}</span>
+                                <span className="menu-screen-title">{props.screenTitle}</span>
                             </div>
                             <div className="menu-topbar-right">
                                 <ProfileMenu showButtons designerViewCallback={props.designerViewCallback}  />

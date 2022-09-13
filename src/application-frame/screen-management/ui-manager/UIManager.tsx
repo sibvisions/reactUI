@@ -34,6 +34,7 @@ import { ReactUIDesigner } from '@sibvisions/reactui-designer/dist/moduleIndex'
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
+import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -78,6 +79,9 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
 
     const embeddedContext = useContext(EmbeddedContext);
+
+    /** Current state of screen title, displays the screen title */
+    const screenTitle = useScreenTitle();
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -173,10 +177,12 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
             {isCorporation(appLayout, appTheme) ?
                 <CorporateMenu
+                    screenTitle={screenTitle}
                     menuOptions={menuOptions}
                     designerViewCallback={setShowDesignerView} />
                 :
                 <Menu
+                    screenTitle={screenTitle}
                     forwardedRef={menuRef}
                     showMenuMini={menuMini}
                     menuOptions={menuOptions}

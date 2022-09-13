@@ -41,9 +41,6 @@ const CorporateMenu:FC<IMenu> = (props) => {
     /** True, if the application is embedded, then don't display the menu */
     const embeddedContext = useContext(EmbeddedContext);
 
-    /** Current state of screen title, displays the screen title */
-    const screenTitle = useScreenTitle();
-
     /** get menu items */
     const menuItems = useMenuItems();
 
@@ -123,7 +120,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
                                     draggable="false"
                                     src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
                             </div>
-                            <span className="menu-screen-title">{screenTitle}</span>
+                            <span className="menu-screen-title">{props.screenTitle}</span>
                             <div className="profile-menu">
                                 <ProfileMenu showButtons designerViewCallback={props.designerViewCallback} />
                             </div>
