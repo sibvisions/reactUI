@@ -477,7 +477,7 @@ class Server extends BaseServer {
      * Downloads the file
      * @param downloadData - the downloadResponse
      */
-    download(downloadData: DownloadResponse){
+    download(downloadData: DownloadResponse) {
         const a = document.createElement('a');
         a.href = downloadData.url.split(';')[0];
         a.setAttribute('download', downloadData.fileName);
