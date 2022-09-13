@@ -190,6 +190,9 @@ body {
   background: var(--screen-background);
   color: var(--text-color); }
 
+.reactUI {
+  background: var(--screen-background); }
+
 .login-form {
   background: var(--login-mask-background);
   border-radius: var(--login-border-radius);
