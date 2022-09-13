@@ -209,8 +209,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                             width: "4rem",
                             height: "4rem",
                             position: "absolute", 
-                            top: "90%", 
-                            right: "2%", 
+                            top: "calc(100% - 100px)", 
+                            left: "calc(100% - 90px)", 
                             opacity: "0.8",
                             fontSize: "1.825rem"
                         } as CSSProperties}
