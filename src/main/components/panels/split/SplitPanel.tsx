@@ -13,12 +13,13 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, ReactElement, useCallback, useLayoutEffect, useRef, useState } from "react";
 import * as _ from 'underscore'
 import { IForwardRef } from "../../../IForwardRef";
 import { Tooltip } from "primereact/tooltip";
 import Dimension from "../../../util/types/Dimension";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { parseMaxSize, parseMinSize } from "../../../util/component-util/SizeUtil";
 
 /** Type for ResizeEvent */
 type onResizeEvent = (firstSize: Dimension, secondSize: Dimension) => void;
@@ -35,8 +36,8 @@ interface ISplitPanel extends IForwardRef {
     dividerPosition: number
     orientation: 0|1
     forwardedRef?: any
-    leftComponent?: ReactNode
-    rightComponent?: ReactNode
+    leftComponent?: ReactElement
+    rightComponent?: ReactElement
     onResizeStart?: onResizeEvent
     onResize?: onResizeEvent
     onResizeEnd?: onResizeEvent
@@ -56,8 +57,56 @@ interface ISplitPanel extends IForwardRef {
  * @param props - Props received by UISplitPanel which is the "wrapper" of this component
  */
 const SplitPanel: FC<ISplitPanel> = (props) => {
+    const getInitFirstPosition = useCallback(() => {
+        let pos:number|undefined = undefined;
+        if (props.dividerPosition !== -1) {
+            const minSize = parseMinSize(props.leftComponent?.props.minimumSize);
+            const maxSize = parseMaxSize(props.leftComponent?.props.maximumSize);
+            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
+                if (minSize) {
+                    if (props.dividerPosition < minSize.width) {
+                        pos = minSize.width;
+                    }
+                    else {
+                        pos = props.dividerPosition;
+                    }
+                }
+
+                if (maxSize) {
+                    if (props.dividerPosition > maxSize.width) {
+                        pos = maxSize.width;
+                    }
+                    else {
+                        pos = props.dividerPosition
+                    }
+                }
+            }
+            else {
+                if (minSize) {
+                    if (props.dividerPosition < minSize.height) {
+                        pos = minSize.height;
+                    }
+                    else {
+                        pos = props.dividerPosition;
+                    }
+                }
+
+                if (maxSize) {
+                    if (props.dividerPosition > maxSize.height) {
+                        pos = maxSize.height;
+                    }
+                    else {
+                        pos = props.dividerPosition
+                    }
+                }
+            }
+
+            return pos;
+        }
+    }, [props.dividerPosition, props.orientation, props.leftComponent, props.rightComponent])
+
     /** State of the position of the first component in the splitPanel */
-    const [firstPosition, setFirstPosition] = useState<number | undefined>(props.dividerPosition !== -1 ? props.dividerPosition : undefined);
+    const [firstPosition, setFirstPosition] = useState<number | undefined>(getInitFirstPosition());
 
     /** Reference for the first component */
     const firstRef = useRef<HTMLDivElement>(null);
@@ -229,8 +278,12 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
                     ref={firstRef}
                     className={props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? "first-split-h" : "first-split-v"}
                     style={{
-                        width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ?
-                            firstPosition : undefined, height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined
+                        width: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? firstPosition : undefined, 
+                        height: props.orientation === ORIENTATIONSPLIT.VERTICAL ? firstPosition : undefined,
+                        minWidth: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? props.leftComponent?.props.minimumSize ? parseMinSize(props.leftComponent?.props.minimumSize)?.width : undefined : undefined,
+                        minHeight: props.orientation === ORIENTATIONSPLIT.VERTICAL ? props.leftComponent?.props.minimumSize ? parseMinSize(props.leftComponent?.props.minimumSize)?.height : undefined : undefined,
+                        maxWidth: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? props.leftComponent?.props.maximumSize ? parseMaxSize(props.leftComponent?.props.maximumSize)?.width : undefined : undefined,
+                        maxHeight: props.orientation === ORIENTATIONSPLIT.VERTICAL ? props.leftComponent?.props.maximumSize ? parseMaxSize(props.leftComponent?.props.maximumSize)?.height : undefined : undefined,
                     }}>
                     {props.leftComponent}
                 </div>
@@ -239,7 +292,15 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
                     onMouseDown={dragStart}
                     onTouchStart={dragTouchStart}>
                 </div>
-                <div ref={secondRef} className={"second-split"}>
+                <div 
+                    ref={secondRef} 
+                    className={"second-split"}
+                    style={{ 
+                        minWidth: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? props.rightComponent?.props.minimumSize ? parseMinSize(props.rightComponent?.props.minimumSize)?.width : undefined : undefined,
+                        minHeight: props.orientation === ORIENTATIONSPLIT.VERTICAL ? props.rightComponent?.props.minimumSize ? parseMinSize(props.rightComponent?.props.minimumSize)?.height : undefined : undefined,
+                        maxWidth: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? props.rightComponent?.props.maximumSize ? parseMaxSize(props.rightComponent?.props.maximumSize)?.width : undefined : undefined,
+                        maxHeight: props.orientation === ORIENTATIONSPLIT.VERTICAL ? props.rightComponent?.props.maximumSize ? parseMaxSize(props.rightComponent?.props.maximumSize)?.height : undefined : undefined,
+                     }} >
                     {props.rightComponent}
                 </div>
             </div>
