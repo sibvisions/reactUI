@@ -38,7 +38,7 @@
   --topbar-button-background: transparent;
   --topbar-button-hover-background: #d67b13;
   --topbar-button-text-color: var(--topbar-text-color);
-  --profile-background: #f78500;
+  --profile-background: transparent;
   --profile-hover-background: #d67b13;
   --profile-text-color: #ffffff;
   --profile-separator: 2px solid #d67b13;
