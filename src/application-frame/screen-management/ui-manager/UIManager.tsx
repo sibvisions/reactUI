@@ -205,7 +205,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                             position: "absolute", 
                             top: "90%", 
                             right: "2%", 
-                            opacity: "0.8"
+                            opacity: "0.8",
+                            fontSize: "1.825rem"
                         } as CSSProperties}
                         onClick={() => setShowDesignerView(prevState => !prevState)} />}
             </div>
