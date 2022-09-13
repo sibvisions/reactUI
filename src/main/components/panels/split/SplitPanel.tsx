@@ -292,7 +292,15 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
                     onMouseDown={dragStart}
                     onTouchStart={dragTouchStart}>
                 </div>
-                <div ref={secondRef} className={"second-split"}>
+                <div 
+                    ref={secondRef} 
+                    className={"second-split"}
+                    style={{ 
+                        minWidth: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? props.rightComponent?.props.minimumSize ? parseMinSize(props.rightComponent?.props.minimumSize)?.width : undefined : undefined,
+                        minHeight: props.orientation === ORIENTATIONSPLIT.VERTICAL ? props.rightComponent?.props.minimumSize ? parseMinSize(props.rightComponent?.props.minimumSize)?.height : undefined : undefined,
+                        maxWidth: props.orientation === ORIENTATIONSPLIT.HORIZONTAL ? props.rightComponent?.props.maximumSize ? parseMaxSize(props.rightComponent?.props.maximumSize)?.width : undefined : undefined,
+                        maxHeight: props.orientation === ORIENTATIONSPLIT.VERTICAL ? props.rightComponent?.props.maximumSize ? parseMaxSize(props.rightComponent?.props.maximumSize)?.height : undefined : undefined,
+                     }} >
                     {props.rightComponent}
                 </div>
             </div>
