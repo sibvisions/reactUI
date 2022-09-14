@@ -14,10 +14,11 @@
  */
 
 import { useContext } from "react";
+import { IAPI } from "../../API";
 import { appContext } from "../../contexts/AppProvider";
 
 /** This hook gives users access to the api functions */
-const useAPI = () => {
+const useAPI = (): IAPI => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 

@@ -22,7 +22,7 @@ export interface BaseMenuButton {
     image:string,
     enabled?: boolean,
     className?: string
-    navigationName:string
+    navigationName?:string
     action?: () => Promise<any>
 }
 

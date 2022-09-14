@@ -386,7 +386,9 @@ export default class ContentStore extends BaseContentStore {
             this.menuItems.set(menuItem.group, [menuItem]);
         }
 
-        this.setNavigationName(menuItem.navigationName + getNavigationIncrement(menuItem.navigationName, this.navigationNames), menuItem.componentId);
+        if (menuItem.navigationName) {
+            this.setNavigationName(menuItem.navigationName + getNavigationIncrement(menuItem.navigationName, this.navigationNames), menuItem.componentId);
+        }
     }
 
     /**
@@ -410,7 +412,6 @@ export default class ContentStore extends BaseContentStore {
     registerCustomOfflineScreen(title: string, group: string, customScreen: ReactElement, icon?:string){
         const menuButton: ServerMenuButtons = {
             group: group,
-            navigationName: "",
             componentId: "",
             image: icon ? icon.substring(0,2) + " " + icon : "",
             text: title,

@@ -18,7 +18,7 @@ type CustomMenuItem = {
     id: string,
     text: string,
     menuGroup: string,
-    navigationName: string,
+    navigationName?: string,
     icon?: string,
 }
 export default CustomMenuItem;

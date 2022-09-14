@@ -33,9 +33,36 @@ import { ServerMenuButtons } from "./response/data/MenuResponse";
 import EditableMenuItem from "./util/types/custom-types/EditableMenuItem";
 import CustomToolbarItem from "./util/types/custom-types/CustomToolbarItem";
 import CustomStartupProps from "./util/types/custom-types/CustomStartupProps";
+import UserData from "./model/UserData";
+
+export interface IAPI {
+    sendRequest: (req: any, keyword: string) => void,
+    sendOpenScreenRequest: (id:string, parameter?: { [key: string]: any }) => Promise<any>,
+    sendScreenParameter: (screenName: string, parameter: { [key: string]: any }) => void,
+    sendCloseScreenRequest: (id: string, parameter?: { [key: string]: any }, popup?:boolean) => void,
+    insertRecord: (id:string, dataProvider:string) => void,
+    deleteRecord: (id:string, name:string, dataProvider:string) => void,
+    addCustomScreen: (id:string, screen:ReactElement) => void,
+    addReplaceScreen: (id:string, screen:ReactElement) => void,
+    addScreenWrapper: (id:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) => void
+    addMenuItem: (menuItem: CustomMenuItem) => void,
+    editMenuItem: (editItem: EditableMenuItem) => void,
+    removeMenuItem: (id:string) => void,
+    addToolbarItem: (toolbarItem: CustomToolbarItem) => void,
+    editToolbarItem: (editItem:EditableMenuItem) => void,
+    removeToolbarItem: (id:string) => void,
+    addStartupProperties: (startupProps:CustomStartupProps[]) => void,
+    addCustomComponent: (name:string, customComp:ReactElement) => void,
+    removeComponent: (name:string) => void
+    getUser: () => UserData,
+    addGlobalComponent: (name:string, comp:ReactElement) => void,
+    addCSSToHeadBefore: (path:string) => void,
+    addCSSToHeadAfter: (path:string) => void,
+    extendComponent: (name: string, component: ReactElement) => void
+}
 
 /** Contains the API functions */
-class API {
+class API implements IAPI {
     /**
      * @constructor constructs api instance
      * @param server - server instance
@@ -72,10 +99,10 @@ class API {
     /**
      * Sends a request to the server
      * @param req - the request you want to send to the server
-     * @param endpoint - the endpoint to send the request to
+     * @param keyword - the keyword to the endpoint to send the request to
      */
-    sendRequest(req: any, endpoint: string) {
-        this.#server.sendRequest(req, endpoint);
+    sendRequest(req: any, keyword: string) {
+        this.#server.sendRequest(req, keyword);
     }
 
     /**
@@ -159,7 +186,7 @@ class API {
     }
 
     /**
-     * Deletes a record from the given dataprovider
+     * Deletes the current selected record from the given dataprovider
      * @param id - the id of the screen
      * @param name - the name of the component
      * @param dataProvider - the dataprovider which should be used
@@ -215,7 +242,6 @@ class API {
             const newItem: ServerMenuButtons = {
                 componentId: menuItem.id,
                 text: menuItem.text,
-                navigationName: menuItem.navigationName,
                 group: menuItem.menuGroup,
                 image: menuItem.icon ? menuItem.icon.substring(0, 2) + " " + menuItem.icon : "",
                 action: itemAction
@@ -294,7 +320,6 @@ class API {
             }
         }
         (this.#contentStore as ContentStore).addToolbarItem({ 
-            navigationName: toolbarItem.navigationName,
             componentId: toolbarItem.id, 
             text: toolbarItem.title, 
             image: toolbarItem.icon.substring(0, 2) + " " + toolbarItem.icon, 

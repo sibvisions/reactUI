@@ -34,8 +34,9 @@ export { default as useAllRowSelect } from './main/hooks/data-hooks/useAllRowSel
 
 // Requests
 export * from './main/factories/RequestFactory';
+export { default as REQUEST_KEYWORDS } from './main/request/REQUEST_KEYWORDS';
 
 // Extendable Components
-export * from './main/extend-components'
+export * from './main/extend-components';
 
 //export { appContext } from './main/contexts/AppProvider';

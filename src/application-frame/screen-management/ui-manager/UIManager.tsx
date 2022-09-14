@@ -35,6 +35,7 @@ import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
 import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
+import { useAPI } from "../../../moduleIndex";
 
 // Interface for UIManager
 export interface IUIManagerProps {
