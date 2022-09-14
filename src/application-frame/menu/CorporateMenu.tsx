@@ -23,7 +23,6 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import ContentStore from "../../main/contentstore/ContentStore";
 import { EmbeddedContext } from "../../main/contexts/EmbedProvider";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
-import useScreenTitle from "../../main/hooks/app-hooks/useScreenTitle";
 import useMenuItems from "../../main/hooks/data-hooks/useMenuItems";
 import { parseIconData } from "../../main/components/comp-props/ComponentProperties";
 import { BaseMenuButton } from "../../main/response/data/MenuResponse";

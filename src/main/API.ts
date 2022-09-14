@@ -145,14 +145,14 @@ class API implements IAPI {
 
     /**
      * Sends a closeScreenRequest to the server for the given screen.
-     * @param id - the component id of the screen
+     * @param screenName - the component id of the screen
      * @param parameter - the screen-parameters
      * @param popup - true, if the screen to close is a popup
      */
-    sendCloseScreenRequest(id: string, parameter?: { [key: string]: any }, popup?:boolean) {
+    sendCloseScreenRequest(screenName: string, parameter?: { [key: string]: any }, popup?:boolean) {
         if (this.#appSettings.transferType !== "full") {
             const csRequest = createCloseScreenRequest();
-            csRequest.componentId = id;
+            csRequest.componentId = screenName;
             if (parameter) {
                 csRequest.parameter = parameter;
             }
@@ -165,7 +165,7 @@ class API implements IAPI {
                     else {
                         (this.#server as Server).lastClosedWasPopUp = false;
                     }
-                    this.#contentStore.closeScreen(id, false);
+                    this.#contentStore.closeScreen(screenName, false);
                     this.history?.push("/home")
                 }
             });
@@ -175,11 +175,11 @@ class API implements IAPI {
 
     /**
      * Inserts a record into the given dataprovider
-     * @param id - the id of the screen
+     * @param screenName - the id of the screen
      * @param dataProvider - the dataprovider which should be used
      */
-    insertRecord(id:string, dataProvider:string) {
-        this.#contentStore.insertDataProviderData(id, dataProvider);
+    insertRecord(screenName:string, dataProvider:string) {
+        this.#contentStore.insertDataProviderData(screenName, dataProvider);
         const insertReq = createInsertRecordRequest();
         insertReq.dataProvider = dataProvider;
         this.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD);
@@ -187,44 +187,42 @@ class API implements IAPI {
 
     /**
      * Deletes the current selected record from the given dataprovider
-     * @param id - the id of the screen
-     * @param name - the name of the component
+     * @param screenName - the id of the screen
      * @param dataProvider - the dataprovider which should be used
      */
-    deleteRecord(id:string, name:string, dataProvider:string) {
-        this.#contentStore.deleteDataProviderData(id, dataProvider);
+    deleteRecord(screenName:string, dataProvider:string) {
+        this.#contentStore.deleteDataProviderData(screenName, dataProvider);
         const deleteReq = createSelectRowRequest();
         deleteReq.dataProvider = dataProvider;
-        deleteReq.componentId = name;
         this.sendRequest(deleteReq, REQUEST_KEYWORDS.DELETE_RECORD);
     }
 
     /**
      * Adds a custom-screen to the application.
-     * @param id - the id/name of the custom-screen
+     * @param screenName - the id/name of the custom-screen
      * @param screen - the custom-screen to be added
      */
-    addCustomScreen(id:string, screen:ReactElement) {
-        this.#contentStore.customScreens.set(id, () => screen);
+    addCustomScreen(screenName:string, screen:ReactElement) {
+        this.#contentStore.customScreens.set(screenName, () => screen);
     }
 
     /**
-     * Replaces a current screen sent by the server, based on the given id, with a custom-screen.
-     * @param id - the id of the screen which will be replaced
+     * Replaces a current screen sent by the server, based on the given screenName, with a custom-screen.
+     * @param screenName - the id of the screen which will be replaced
      * @param screen - the custom-screen which will replace the screen
      */
-    addReplaceScreen(id:string, screen:ReactElement) {
-        this.#contentStore.replaceScreens.set(id, (x:any) => React.cloneElement(screen, x));
+    addReplaceScreen(screenName:string, screen:ReactElement) {
+        this.#contentStore.replaceScreens.set(screenName, (x:any) => React.cloneElement(screen, x));
     }
 
     /**
      * Adds a screen-wrapper to a workscreen.
-     * @param id - the id of the screen which will receive a screen-wrapper
+     * @param screenName - the id of the screen which will receive a screen-wrapper
      * @param wrapper - the screen-wrapper which will be added
      * @param pOptions - options of the screen-wrapper currently global:boolean
      */
-    addScreenWrapper(id:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
-        this.#contentStore.screenWrappers.set(id, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }});
+    addScreenWrapper(screenName:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
+        this.#contentStore.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }});
     }
 
     /**
@@ -491,7 +489,6 @@ class API implements IAPI {
             }
             this.#subManager.propertiesSubscriber.get(existingComp.id)?.apply(undefined, [existingComp]);
         }
-
     }
 }
 export default API

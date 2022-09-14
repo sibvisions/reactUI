@@ -17,12 +17,9 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../contexts/AppProvider";
 
 /**
- * This hook returns the current state of either the entire selectedRow or the value of the column of the selectedRow 
- * of the databook sent by the server for the given component
+ * This hook returns the current state of either the selectedRow of the databook sent by the server for the given dataprovider
  * @param screenName - the name of the screen
  * @param dataProvider - the dataprovider
- * @param column - the column
- * @param showIndex - true, if you want to see the entire selectedRow object
  * @param rowIndex - the index of the row
  */
 const useRowSelect = (screenName:string, dataProvider: string, rowIndex?:number) => {

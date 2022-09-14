@@ -31,7 +31,6 @@ import useConstants from "../../main/hooks/components-hooks/useConstants";
 import useProfileMenuItems from "../../main/hooks/data-hooks/useProfileMenuItems";
 import useMenuCollapser from "../../main/hooks/event-hooks/useMenuCollapser";
 import useDeviceStatus from "../../main/hooks/event-hooks/useDeviceStatus";
-import useScreenTitle from "../../main/hooks/app-hooks/useScreenTitle";
 import useMenuItems from "../../main/hooks/data-hooks/useMenuItems";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
