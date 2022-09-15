@@ -118,6 +118,11 @@ export const createComponentRequest = (values?: ComponentRequest): ComponentRequ
     return req;
 }
 
+/**
+ * Returns a dataProvider-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the dataProvider-request
+ * @returns a dataProvider-request object
+ */
 export const createDataProviderRequest = (values?: DataProviderRequest): DataProviderRequest => {
     const req: DataProviderRequest = {
         clientId: values?.clientId || getClientId(),
@@ -157,6 +162,11 @@ export const createPressButtonRequest = (values?: PressButtonRequest): PressButt
     return req;
 }
 
+/**
+ * Returns a dispatchActionRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the dispatchActionRequest
+ * @returns a dispatchActionRequest object
+ */
 export const createDispatchActionRequest = (values?:DispatchActionRequest): DispatchActionRequest => {
     const req: DispatchActionRequest = {
         clientId: values?.clientId || getClientId(),

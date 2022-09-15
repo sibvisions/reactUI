@@ -366,12 +366,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     // Handles the selection event
     const handleSelect = (value: string[]) => {
+        
         const linkReference = props.cellEditor.linkReference;
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
         const columnNames = (colNames.length === 0 && refColNames.length === 1) ? props.columnName : colNames;
-
         let inputObj:any|any[] = {}
         linkReference.referencedColumnNames.forEach((key, i) => {
             if (i < value.length) {
@@ -495,7 +495,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (values.length > 0) {
             values.forEach((value:any) => {
                 let suggestion : string | string[] = ""
-                const objectKeys = Object.keys(value).filter(key => key !== "__recordFormats" && key !== "recordStatus");
+                const objectKeys = Object.keys(value).filter(key => key !== "__recordFormats" && key !== "recordStatus" && props.cellEditor.linkReference.referencedColumnNames.includes(key));
                 if (props.cellEditor.displayReferencedColumnName) {
                     objectKeys.push(props.cellEditor.displayReferencedColumnName)
                 }
@@ -517,7 +517,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 400 new rows
     const handleLazyLoad = (event:any) => {
-        console.log(event.last, providedData.length)
         if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
@@ -582,7 +581,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                             }
                         }
                     }
-                    console.log("div", d);
                     return <div style={cellStyle} key={i}>{icon ?? d}</div>
                 }
             })
