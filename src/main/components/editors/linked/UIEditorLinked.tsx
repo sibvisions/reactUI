@@ -534,61 +534,60 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     // Creates an item-template when linked-overlay is displayed as table
     const itemTemplate = useCallback((d:any[], index) => {
-        return d.map((d, i) => {
-            if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], Object.keys(providedData[index]).filter(key => key !== "__recordFormats" && key !== "recordStatus")))[i])) {
-                const cellStyle: CSSProperties = {}
-                let icon:JSX.Element | null = null;
-
-                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name] && providedData[index].__recordFormats[props.name].length && providedData[index].__recordFormats[props.name][i]) {
-                    const format = providedData[index].__recordFormats[props.name][i]
-
-                    if (format.background) {
-                        cellStyle.background = format.background;
-                    }
-
-                    if (format.foreground) {
-                        cellStyle.color = format.foreground;
-                    }
-
-                    if (format.font) {
-                        const font = getFont(format.font);
-                        if (font) {
-                            cellStyle.fontFamily = font.fontFamily;
-                            cellStyle.fontWeight = font.fontWeight;
-                            cellStyle.fontStyle = font.fontStyle;
-                            cellStyle.fontSize = font.fontSize;
+        if (props.cellEditor.displayReferencedColumnName) {
+            return providedData[index][props.cellEditor.displayReferencedColumnName];
+        }
+        else {
+            return d.map((d, i) => {
+                if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], Object.keys(providedData[index]).filter(key => key !== "__recordFormats" && key !== "recordStatus")))[i])) {
+                    const cellStyle: CSSProperties = {}
+                    let icon:JSX.Element | null = null;
+    
+                    if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name] && providedData[index].__recordFormats[props.name].length && providedData[index].__recordFormats[props.name][i]) {
+                        const format = providedData[index].__recordFormats[props.name][i]
+    
+                        if (format.background) {
+                            cellStyle.background = format.background;
                         }
-                    }
-
-                    if (format.image) {
-                        const iconData = parseIconData(format.foreground, format.image);
-                        if (iconData.icon) {
-                            if (isFAIcon(iconData.icon)) {
-                                icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+    
+                        if (format.foreground) {
+                            cellStyle.color = format.foreground;
+                        }
+    
+                        if (format.font) {
+                            const font = getFont(format.font);
+                            if (font) {
+                                cellStyle.fontFamily = font.fontFamily;
+                                cellStyle.fontWeight = font.fontWeight;
+                                cellStyle.fontStyle = font.fontStyle;
+                                cellStyle.fontSize = font.fontSize;
+                            }
+                        }
+    
+                        if (format.image) {
+                            const iconData = parseIconData(format.foreground, format.image);
+                            if (iconData.icon) {
+                                if (isFAIcon(iconData.icon)) {
+                                    icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+                                }
+                                else {
+                                    icon = <img
+                                    alt="icon"
+                                    src={props.context.server.RESOURCE_URL + iconData.icon}
+                                    style={{width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                                }
                             }
                             else {
-                                icon = <img
-                                alt="icon"
-                                src={props.context.server.RESOURCE_URL + iconData.icon}
-                                style={{width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                                icon = null;
                             }
                         }
-                        else {
-                            icon = null;
-                        }
                     }
+                    console.log("div", d);
+                    return <div style={cellStyle} key={i}>{icon ?? d}</div>
                 }
-                return <div style={cellStyle} key={i}>{icon ?? d}</div>
-            }
-            else {
-                if (props.cellEditor.linkReference.columnNames[i] === props.columnName) {
-                    if (props.cellEditor.displayReferencedColumnName) {
-                        return providedData[index][props.cellEditor.displayReferencedColumnName]
-                    }
-                    return d;
-                }
-            }
-        })
+            })
+        }
+
     }, [providedData]);
 
     // Creates a header for the table when linked-overlay is in table-mode
