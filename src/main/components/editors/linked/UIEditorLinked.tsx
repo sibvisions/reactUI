@@ -538,7 +538,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         else {
             return d.map((d, i) => {
-                if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], Object.keys(providedData[index]).filter(key => key !== "__recordFormats" && key !== "recordStatus")))[i])) {
+                if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], Object.keys(providedData[index]).filter(key => key !== "__recordFormats" && key !== "recordStatus" && props.cellEditor.linkReference.referencedColumnNames.includes(key))))[i])) {
                     const cellStyle: CSSProperties = {}
                     let icon:JSX.Element | null = null;
     
