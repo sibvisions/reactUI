@@ -41,7 +41,7 @@ export interface IAPI {
     sendScreenParameter: (screenName: string, parameter: { [key: string]: any }) => void,
     sendCloseScreenRequest: (id: string, parameter?: { [key: string]: any }, popup?:boolean) => void,
     insertRecord: (id:string, dataProvider:string) => void,
-    deleteRecord: (id:string, name:string, dataProvider:string) => void,
+    deleteRecord: (id:string, dataProvider:string) => void,
     addCustomScreen: (id:string, screen:ReactElement) => void,
     addReplaceScreen: (id:string, screen:ReactElement) => void,
     addScreenWrapper: (id:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) => void
