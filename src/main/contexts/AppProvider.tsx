@@ -341,9 +341,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.LOGO_LOGIN = data.logoBig;
                     }
     
-                    if (data.langCode) {
-                        contextState.appSettings.language = data.langCode;
-                        contextState.appSettings.locale = data.langCode;
+                    if (data.language) {
+                        contextState.appSettings.language = data.language;
+                        contextState.appSettings.locale = data.language;
                     }
     
                     if (data.timezone) {
@@ -424,11 +424,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("layout");
             }
 
-            if (convertedOptions.has("langCode")) {
-                contextState.appSettings.language = convertedOptions.get("langCode");
-                contextState.appSettings.locale = convertedOptions.get("langCode");
-                startUpRequest.langCode = convertedOptions.get("langCode");
-                convertedOptions.delete("langCode");
+            if (convertedOptions.has("language")) {
+                contextState.appSettings.language = convertedOptions.get("language");
+                contextState.appSettings.locale = convertedOptions.get("language");
+                startUpRequest.langCode = convertedOptions.get("language");
+                convertedOptions.delete("language");
             }
 
             if (convertedOptions.has("timezone")) {
