@@ -75,7 +75,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
+    "build": "CI=false && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
     "clean": "if exist dist rmdir /S /Q dist",
     "pre-package": "npm run build && npm run clean && npm run bundle && node dist/SetupPackage.js",
     "build-patch": "npm run pre-package && npm version patch && node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts && cd dist && npm version patch && npm publish",
