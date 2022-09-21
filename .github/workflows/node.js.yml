@@ -27,23 +27,23 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run build-patch --if-present
-      env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-    - name: Commit files
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Updated version" -a
+    - run: npm run build --if-present
+      # env:
+          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    # - name: Commit files
+      # run: |
+        # git config --local user.email "action@github.com"
+        # git config --local user.name "GitHub Action"
+        # git commit -m "Updated version" -a
         
-    - name: get version
-      id: version
-      uses: notiz-dev/github-action-json-property@release
-      with:
-        path: "package.json"
-        prop_path: "version"
+    # - name: get version
+      # id: version
+      # uses: notiz-dev/github-action-json-property@release
+      # with:
+        # path: "package.json"
+        # prop_path: "version"
         
     - uses: actions/upload-artifact@v3
       with:
-        name: ${{ format('{0}_{1}', 'reactBuild', steps.version.outputs.prop) }}
+        name: ${{ format('{0}_{1}', 'reactBuild', 'test') }}
         path: build
