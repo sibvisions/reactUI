@@ -27,7 +27,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm install
-    - run: npm run build-patch --if-present
+    - run: npm run build-patch-ci --if-present
       env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     - name: Commit files
