@@ -5,6 +5,9 @@
   "main": "moduleIndex.js",
   "types": "moduleIndex.d.ts",
   "license": "Apache-2.0 license",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-react": "^7.10.4",
