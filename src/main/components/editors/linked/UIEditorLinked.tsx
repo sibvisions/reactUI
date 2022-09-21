@@ -680,6 +680,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                                 }
                                 focused.current = false
                             }
+                            (linkedRef.current as any).hideOverlay();
                         }
                         else if (!linkedRef.current.container.contains(event.relatedTarget)) {
                             if (props.eventFocusLost) {
