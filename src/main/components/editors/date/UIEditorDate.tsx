@@ -104,7 +104,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     const [visible, setVisible] = useState<boolean>(false);
 
     /** The month/year which is currently displayed */
-    const [viewDate, setViewDate] = useState<any>(props.selectedRow ? new Date(props.selectedRow.data[props.columnName]) : new Date());
+    const [viewDate, setViewDate] = useState<any>(props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : new Date());
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -186,8 +186,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
 
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
-        setDateValue(props.selectedRow ? new Date(props.selectedRow.data[props.columnName]) : undefined);
-        setViewDate(props.selectedRow ? new Date(props.selectedRow.data[props.columnName]) : new Date());
+        setDateValue(props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : undefined);
+        setViewDate(props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : new Date());
         lastValue.current = props.selectedRow ? props.selectedRow.data[props.columnName] : undefined;
         
     },[props.selectedRow]);
