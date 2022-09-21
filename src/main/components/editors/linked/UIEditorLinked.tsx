@@ -366,7 +366,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     // Handles the selection event
     const handleSelect = (value: string[]) => {
-        
         const linkReference = props.cellEditor.linkReference;
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
@@ -494,8 +493,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         let suggestions:any = [];
         if (values.length > 0) {
             values.forEach((value:any) => {
-                let suggestion : string | string[] = ""
-                const objectKeys = Object.keys(value).filter(key => key !== "__recordFormats" && key !== "recordStatus" && props.cellEditor.linkReference.referencedColumnNames.includes(key));
+                let suggestion : string | string[] = "";
+                const objectKeys: string[] = [];
+                props.cellEditor.linkReference.referencedColumnNames.forEach((d, i) => {
+                    objectKeys.push(d)
+                })
+                //const objectKeys = Object.keys(value).filter(key => key !== "__recordFormats" && key !== "recordStatus" && props.cellEditor.linkReference.referencedColumnNames.includes(key));
                 if (props.cellEditor.displayReferencedColumnName) {
                     objectKeys.push(props.cellEditor.displayReferencedColumnName)
                 }
@@ -537,8 +540,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             return providedData[index][props.cellEditor.displayReferencedColumnName];
         }
         else {
+            const objectKeys: string[] = [];
+            props.cellEditor.linkReference.referencedColumnNames.forEach((d, i) => {
+                objectKeys.push(d)
+            })
             return d.map((d, i) => {
-                if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], Object.keys(providedData[index]).filter(key => key !== "__recordFormats" && key !== "recordStatus" && props.cellEditor.linkReference.referencedColumnNames.includes(key))))[i])) {
+                if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], objectKeys))[i])) {
                     const cellStyle: CSSProperties = {}
                     let icon:JSX.Element | null = null;
     
@@ -678,9 +685,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                                 if (props.eventFocusLost) {
                                     onFocusLost(props.name, props.context.server);
                                 }
-                                focused.current = false
+                                focused.current = false;
+                                (linkedRef.current as any).hideOverlay();
                             }
-                            (linkedRef.current as any).hideOverlay();
+                            
                         }
                         else if (!linkedRef.current.container.contains(event.relatedTarget)) {
                             if (props.eventFocusLost) {
