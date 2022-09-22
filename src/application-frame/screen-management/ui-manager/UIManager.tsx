@@ -201,7 +201,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 </ResizeProvider>
                 {context.appSettings.showDesigner && 
                     <Button 
-                        className="p-button-raised p-button-rounded rc-button" 
+                        className="p-button-raised p-button-rounded rc-button designer-button" 
                         icon="fas fa-palette"
                         style={{ 
                             "--background": window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), 
