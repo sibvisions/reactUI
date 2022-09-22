@@ -4,8 +4,10 @@
 name: Node.js CI
 
 on:
-  schedule:
-  - cron: "55 23 * * 1-5"
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -38,7 +40,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
+        tag_name: build-${{ steps.date.outputs.date }}
         release_name: reactUI-build ${{ steps.date.outputs.date }}
         draft: false
         prerelease: true
