@@ -38,7 +38,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
+        tag_name: build-${{ steps.date.outputs.date }}
         release_name: reactUI-build ${{ steps.date.outputs.date }}
         draft: false
         prerelease: true
