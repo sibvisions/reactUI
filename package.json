@@ -79,7 +79,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "CI=false && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
-    "build-ci": "CI=false && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes && zip reactBuild build",
+    "build-ci": "CI=false && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes && zip -r reactBuild build",
     "clean": "if exist dist rmdir /S /Q dist",
     "clean-ci": "rm -rf dist",
     "pre-package": "npm run build && npm run clean && npm run bundle && node dist/SetupPackage.js",
