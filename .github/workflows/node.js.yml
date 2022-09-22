@@ -4,10 +4,8 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  schedule:
+  - cron: "55 23 * * 1-5"
 
 jobs:
   build:
@@ -28,23 +26,17 @@ jobs:
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
     - run: npm install
-    - run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-    - run: npm run build-patch-ci --if-present
-      env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-    - name: Commit files
-      run: git commit -m "Updated version" -a
+    - run: npm run build --if-present
         
-    - name: get version
-      id: version
-      uses: notiz-dev/github-action-json-property@release
-      with:
-        path: "package.json"
-        prop_path: "version"
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%d_%m_%Y')"
         
-    - uses: actions/upload-artifact@v3
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
       with:
-        name: ${{ format('{0}_{1}', 'reactBuild', steps.version.outputs.prop) }}
-        path: build
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build
+        asset_name: ${{ format('{0}_{1}', 'reactBuild', ${{ steps.date.outputs.date }}) }}
+        tag: ${{ github.ref }}
+        overwrite: true
