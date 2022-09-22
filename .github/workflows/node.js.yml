@@ -4,10 +4,8 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  schedule:
+  - cron: "55 23 * * 1-5"
 
 jobs:
   build:
@@ -43,7 +41,7 @@ jobs:
         tag_name: ${{ github.ref }}
         release_name: reactUI-build ${{ steps.date.outputs.date }}
         draft: false
-        prerelease: false
+        prerelease: true
         
     - name: Upload Release Asset
       id: upload-release-asset 
