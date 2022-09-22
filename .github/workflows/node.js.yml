@@ -39,6 +39,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build
-        asset_name: ${{ format('{0}_{1}', 'reactBuild', ${{ steps.date.outputs.date }}) }}
+        asset_name: ${{ format('{0}_{1}', 'reactBuild', steps.date.outputs.date) }}
         tag: ${{ github.ref }}
         overwrite: true
