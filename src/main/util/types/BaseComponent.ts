@@ -56,5 +56,6 @@ interface BaseComponent {
     toolTipText?: string,
     classNameEventSourceRef?:string,
     enabled?: boolean
+    requestFocus?: boolean
 }
 export default BaseComponent
