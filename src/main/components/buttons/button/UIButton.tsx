@@ -31,6 +31,7 @@ import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableButton } from "../../../extend-components/buttons/ExtendButton";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /**
  * This component displays a basic button
@@ -54,6 +55,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
 
     /** Hook to display mouseOverImages and mousePressedImage */
     useButtonMouseImages(btnStyle.iconProps, btnStyle.pressedIconProps, btnStyle.mouseOverIconProps, buttonRef.current ? buttonRef.current : undefined);
+
+    useRequestFocus(id, props.requestFocus, buttonRef.current, context);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

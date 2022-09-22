@@ -34,6 +34,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableTextEditor } from "../../../extend-components/editors/ExtendTextEditor";
 import CELLEDITOR_CLASSNAMES from "../CELLEDITOR_CLASSNAMES";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {
@@ -231,6 +232,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
+    //useRequestFocus(id, props.requestFocus, textRef.current, props.context)
+
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -332,7 +335,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                 stopCellEditing(event);
             }
         }
-    },[name, stopCellEditing, props.isCellEditor])
+    },[name, stopCellEditing, props.isCellEditor]);
 
     // Similar to tfOnKeyDown but blurring doesn't work like in textfield
     const pwOnKeyDown = useCallback((event:any) => {

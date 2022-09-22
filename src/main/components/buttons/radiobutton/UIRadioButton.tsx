@@ -27,6 +27,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { sendSetValue } from "../../../util/server-util/SendSetValues";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableSelectable } from "../../../extend-components/buttons/ExtendCheckbox";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /**
  * This component displays a RadioButton and its label
@@ -53,6 +54,8 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
 
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, rbRef.current ? rbRef.current.inputRef ? rbRef.current.inputRef.current : undefined : undefined, context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

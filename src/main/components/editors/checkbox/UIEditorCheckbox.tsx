@@ -29,6 +29,7 @@ import { getFocusComponent } from "../../../util/html-util/GetFocusComponent";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableCheckboxEditor } from "../../../extend-components/editors/ExtendCheckboxEditor";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -50,6 +51,9 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
     /** Reference for the span that is wrapping the button containing layout information */
     const wrapRef = useRef<any>(null);
 
+    /** Reference for the CheckBox element */
+    const cbRef = useRef<any>(null);
+
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
@@ -61,6 +65,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
+
+    useRequestFocus(id, props.requestFocus, cbRef.current ? cbRef.current.inputRef ? cbRef.current.inputRef.current : undefined : undefined, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -175,6 +181,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
             {...usePopupMenu(props)} >
             <Checkbox
                 inputId={id}
+                ref={cbRef}
                 trueValue={props.cellEditor.selectedValue}
                 falseValue={props.cellEditor.deselectedValue}
                 checked={checked}

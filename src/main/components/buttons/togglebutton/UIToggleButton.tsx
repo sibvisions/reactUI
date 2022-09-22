@@ -29,6 +29,7 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/compone
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { IExtendableToggleButton } from "../../../extend-components/buttons/ExtendToggleButton";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /**
  * This component displays a Button which can be toggled on and off
@@ -55,6 +56,8 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
 
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.container : undefined, context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

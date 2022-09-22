@@ -29,6 +29,7 @@ import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableText } from "../../extend-components/text/ExtendText";
+import useRequestFocus from "../../hooks/event-hooks/useRequestFocus";
 
 /**
  * This component displays an input field of password type not linked to a databook
@@ -52,6 +53,8 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
     
     /** Hook for MouseListener */
     useMouseListener(props.name, passwordRef.current ? passwordRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, passwordRef.current, context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

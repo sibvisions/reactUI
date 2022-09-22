@@ -31,6 +31,7 @@ import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { IExtendableChoiceEditor } from "../../../extend-components/editors/ExtendChoiceEditor";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor {
@@ -64,6 +65,8 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, wrapRef.current ? wrapRef.current as HTMLElement : undefined, props.context);
 
     /** Returns the given value as string */
     const getValAsString = useCallback((val) => val === null ? "null" : val.toString(), [])

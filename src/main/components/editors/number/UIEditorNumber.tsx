@@ -31,6 +31,7 @@ import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { IExtendableNumberEditor } from "../../../extend-components/editors/ExtendNumberEditor";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -77,6 +78,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, numberInput.current as HTMLElement|undefined, props.context);
 
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);

@@ -29,6 +29,7 @@ import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableText } from "../../extend-components/text/ExtendText";
+import useRequestFocus from "../../hooks/event-hooks/useRequestFocus";
 
 /** Interface for TextAreas */
 interface ITextArea extends ITextField {
@@ -57,6 +58,8 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
 
     /** Hook for MouseListener */
     useMouseListener(props.name, inputRef.current ? inputRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, inputRef.current, context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

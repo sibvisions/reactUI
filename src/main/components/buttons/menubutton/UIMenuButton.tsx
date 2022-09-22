@@ -29,11 +29,11 @@ import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { parseIconData } from "../../comp-props/ComponentProperties";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
-import { getFocusComponent } from "../../../util/html-util/GetFocusComponent";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { IExtendableMenuButton } from "../../../extend-components/buttons/ExtendMenuButton";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -65,6 +65,8 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
 
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.defaultButton : undefined, context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -147,17 +149,6 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
             }
         }
     );
-
-    // useEventHandler(
-    //     buttonRef.current ? buttonRef.current.defaultButton : undefined,
-    //     "blur",
-    //     (event) => {
-    //         console.log(event)
-    //         if ((event as FocusEvent).relatedTarget === buttonWrapperRef.current) {
-    //             getFocusComponent(props.name + "-wrapper", false)?.focus();
-    //         }
-    //     }
-    // )
 
     return (
         <span

@@ -42,6 +42,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableLinkedEditor } from "../../../extend-components/editors/ExtendLinkedEditor";
 import _ from "underscore";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 type LinkReference = {
     referencedDataBook: string
@@ -221,6 +222,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, linkedInput.current, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -543,9 +546,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             const objectKeys: string[] = [];
             props.cellEditor.linkReference.referencedColumnNames.forEach((d, i) => {
                 objectKeys.push(d)
-            })
+            });
+
+            const columnView = props.cellEditor.columnView || metaData.columnView_table_;
+            const columnNames = props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaData.columnView_table_;
             return d.map((d, i) => {
-                if (props.cellEditor.columnView && props.cellEditor.columnView.columnNames.includes(Object.keys(getExtractedObject(providedData[index], objectKeys))[i])) {
+                if (columnView && columnNames.includes(Object.keys(getExtractedObject(providedData[index], objectKeys))[i])) {
                     const cellStyle: CSSProperties = {}
                     let icon:JSX.Element | null = null;
     
@@ -593,7 +599,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             })
         }
 
-    }, [providedData]);
+    }, [providedData, metaData]);
 
     // Creates a header for the table when linked-overlay is in table-mode
     const groupedItemTemplate = useCallback(d => {

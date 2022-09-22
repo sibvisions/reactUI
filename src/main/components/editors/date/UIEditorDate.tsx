@@ -31,6 +31,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { IExtendableDateEditor } from "../../../extend-components/editors/ExtendDateEditor";
+import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {
@@ -148,6 +149,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
 
     /** Hook for MouseListener */ //@ts-ignore
     useMouseListener(props.name, calendar.current ? calendar.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    useRequestFocus(id, props.requestFocus, calendarInput.current as HTMLElement|undefined, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
