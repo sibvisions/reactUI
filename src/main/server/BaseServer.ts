@@ -35,9 +35,8 @@ import MetaDataResponse from "../response/data/MetaDataResponse";
 import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
 import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
 import { translation } from "../util/other-util/Translation";
-import { bn } from "date-fns/locale";
 import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
-import { convertColNamesToReferenceColNames, getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
+import { getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 
 export enum RequestQueueMode {
     QUEUE = "queue",

@@ -63,7 +63,8 @@ export interface ICellEditorLinked extends ICellEditor {
     clearColumns:Array<string>
     displayReferencedColumnName?:string
     tableHeaderVisible?:boolean
-    displayConcatMask?: string
+    displayConcatMask?: string,
+    validationEnabled?: boolean
 }
 
 /** Interface for LinkedCellEditor */
@@ -466,7 +467,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             else {
                 if (colNames.length > 1) {
                     let tempValues = Object.values(extractedData)
-                    if (colNames.length > Object.values(extractedData).length) {
+                    if (colNames.length > tempValues.length) {
                         for (let i = tempValues.length; i < linkReference.referencedColumnNames.length; i++) {
                             tempValues[i] = (extractedData as any)[linkReference.referencedColumnNames[i]]
                         }
@@ -483,7 +484,23 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         /** If there is no match found set the old value */
         else {
-            setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference) : extractedLastValue));
+            if (props.cellEditor.validationEnabled === false) {
+                let tempArray = [];
+                for (let i = 0; i < colNames.length; i++) {
+                    if (colNames[i] !== props.columnName) {
+                        tempArray.push(null);
+                    }
+                    else {
+                        tempArray.push(text);
+                    }
+                }
+                console.log(tempArray);
+                sendSetValues(props.dataRow, props.name, colNames, tempArray, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+            }
+            else {
+                setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference) : extractedLastValue));
+            }
+            
         }
     }
 
