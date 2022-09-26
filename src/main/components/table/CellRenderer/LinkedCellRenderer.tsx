@@ -70,7 +70,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     /** The displayValue to display */ 
     const linkedDisplayValue = useMemo(() => {
         if (castedCellEditor && castedCellEditor.linkReference.dataToDisplayMap?.size) {
-            return getDisplayValue(getExtractedObject(convertColNamesToReferenceColNames(props.rowData, castedCellEditor.linkReference), castedCellEditor.linkReference.referencedColumnNames))
+            return getDisplayValue(getExtractedObject(convertColNamesToReferenceColNames(props.rowData, castedCellEditor.linkReference, props.colName), castedCellEditor.linkReference.referencedColumnNames))
         }
         else {
             return getDisplayValue(props.rowData)

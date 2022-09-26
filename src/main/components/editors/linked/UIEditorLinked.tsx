@@ -112,15 +112,16 @@ export function getExtractedObject(value:any|undefined, keys:string[]):any {
  * @param value - the object to be converted
  * @param linkReference - the linkReference of the editor
  */
-export function convertColNamesToReferenceColNames(value:any, linkReference: LinkReference) {
+export function convertColNamesToReferenceColNames(value:any, linkReference: LinkReference, colName: string) {
     if (value) {
-        const extractedObject = getExtractedObject(value, linkReference.columnNames);
+        const columnNames = linkReference.columnNames.length ? linkReference.columnNames : [colName]
+        const extractedObject = getExtractedObject(value, columnNames);
         if (extractedObject 
-            && linkReference.columnNames.length 
+            && columnNames.length
             && linkReference.referencedColumnNames.length
-            && linkReference.columnNames.length === linkReference.referencedColumnNames.length) {
+            && columnNames.length === linkReference.referencedColumnNames.length) {
             const newVal:any = {}
-            linkReference.columnNames.forEach((colNames, i) => {
+            columnNames.forEach((colNames, i) => {
                 newVal[linkReference.referencedColumnNames[i]] = extractedObject[colNames];
             });
             return newVal
@@ -190,9 +191,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
-    /** True, if the dropdown should be displayed as table */
-    const tableOptions = props.cellEditor.columnView?.columnCount > 1;
-
     /** True, if the CellEditor is currently focused */
     const focused = useRef<boolean>(false);
 
@@ -211,6 +209,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         return undefined
     }, [props.columnName, metaData]);
+
+    /** True, if the dropdown should be displayed as table */
+    const tableOptions = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnCount > 1 : metaData.columnView_table_.length > 1, [props.cellEditor.columnView, metaData]); 
+
+    const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaData.columnView_table_, [props.cellEditor.columnView, metaData.columnView_table_]);
 
     const getDisplayValue = useCallback((value:any) => {
         if (isDisplayRefColNameOrConcat) {
@@ -262,7 +265,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (props.selectedRow && lastValue.current !== props.selectedRow.data) {
             if (isDisplayRefColNameOrConcat) {
                 if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
-                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference), props.cellEditor.linkReference.referencedColumnNames);
+                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference, props.columnName), props.cellEditor.linkReference.referencedColumnNames);
                     setText(getDisplayValue(extractedObject))
                     lastValue.current = props.selectedRow.data;
                 }
@@ -327,7 +330,41 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 setInitialFilter(true);
             }
         });
-    }, [props.context.contentStore, props.context.server, props.cellEditor, props.name])
+    }, [props.context.contentStore, props.context.server, props.cellEditor, props.name]);
+
+    const buildSuggestionArray = (value:any) => {
+        const arr:any[] = [];
+        props.cellEditor.linkReference.referencedColumnNames.forEach((d) => {
+            arr.push(value[d]);
+        });
+
+        columnViewNames.forEach((d) => {
+            arr.push(value[d]);
+        })
+        return arr;
+    }
+
+    const unpackSuggestionArray = (value: any[], display: boolean) => {
+        if (value) {
+            if (display) {
+                let displayObj: any = {}
+                let j = 0;
+                for (let i = props.cellEditor.linkReference.referencedColumnNames.length; i < value.length; i++) {
+                    displayObj[columnViewNames[j]] = value[i];
+                    j++;
+                }
+                return displayObj;
+            }
+            else {
+                let sendObj: any = {}
+                for (let i = 0; i < props.cellEditor.linkReference.referencedColumnNames.length; i++) {
+                    sendObj[props.cellEditor.linkReference.referencedColumnNames[i]] = value[i];
+                }
+                return sendObj
+            }
+        }
+        return undefined
+    }
 
     // If autoOpenPopup is true and preferredEditorMode is 1 (singleclick) and it is a table-cell-editor, open the overlay directly and send an empty filter
     useEffect(() => {
@@ -375,19 +412,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
         const columnNames = (colNames.length === 0 && refColNames.length === 1) ? props.columnName : colNames;
-        let inputObj:any|any[] = {}
-        linkReference.referencedColumnNames.forEach((key, i) => {
-            if (i < value.length) {
-                inputObj[key] = value[i]
-            }
-        });
+        let inputObj:any|any[] = unpackSuggestionArray(value, false);
         
         const convertedColNamesObj = convertReferenceColNamesToColNames(inputObj, props.cellEditor.linkReference);
         const extractedLastValue = getExtractedObject(lastValue.current, colNames);
 
         if (_.isEqual(convertedColNamesObj, extractedLastValue)) {
             // lastvalue needs to be converted to referenceColumnNames because dataToDisplay Map is built from referenceColumnNames
-            setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference) : extractedLastValue));
+            setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
         }
         else {
             if (colNames.length > 1) {
@@ -403,8 +435,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             }
             else {
                 if (props.cellEditor.displayReferencedColumnName) {
-                    setText(getDisplayValue(inputObj))
-                    sendSetValues(props.dataRow, props.name, columnNames, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference)[refColNames[0]], props.topbar, props.rowNumber);
+                    setText(getDisplayValue(inputObj));
+                    sendSetValues(props.dataRow, props.name, columnNames, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName)[refColNames[0]], props.topbar, props.rowNumber);
                 }
                 else {
                     setText(getDisplayValue(inputObj))
@@ -460,9 +492,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         /** If there is a match found send the value to the server */
         if (foundData.length === 1) {
             const extractedData = getExtractedObject(foundData[0], refColNames) as any;
-            if (_.isEqual(extractedData, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference))) {
+            if (_.isEqual(extractedData, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName))) {
                 // lastvalue needs to be converted to referenceColumnNames because dataToDisplay Map is built from referenceColumnNames
-                setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference) : extractedLastValue));
+                setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
             }
             else {
                 if (colNames.length > 1) {
@@ -477,7 +509,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 }
                 else {
                     setText(getDisplayValue(extractedData))
-                    sendSetValues(props.dataRow, props.name, colNames, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference), props.topbar, props.rowNumber);
+                    sendSetValues(props.dataRow, props.name, colNames, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName), props.topbar, props.rowNumber);
                 }
 
             }
@@ -494,11 +526,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         tempArray.push(text);
                     }
                 }
-                console.log(tempArray);
                 sendSetValues(props.dataRow, props.name, colNames, tempArray, props.context.server, lastValue.current, props.topbar, props.rowNumber)
             }
             else {
-                setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference) : extractedLastValue));
+                setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
             }
             
         }
@@ -513,18 +544,21 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         let suggestions:any = [];
         if (values.length > 0) {
             values.forEach((value:any) => {
-                let suggestion : string | string[] = "";
-                const objectKeys: string[] = [];
-                props.cellEditor.linkReference.referencedColumnNames.forEach((d, i) => {
-                    objectKeys.push(d)
-                })
-                //const objectKeys = Object.keys(value).filter(key => key !== "__recordFormats" && key !== "recordStatus" && props.cellEditor.linkReference.referencedColumnNames.includes(key));
-                if (props.cellEditor.displayReferencedColumnName) {
-                    objectKeys.push(props.cellEditor.displayReferencedColumnName)
-                }
-                const extractedObject = getExtractedObject(value, objectKeys)
-                suggestion = Array.from(Object.values(extractedObject));
-                suggestions.push(suggestion)
+                //let suggestion : string | string[] = "";
+                //const objectKeys: string[] = [];
+
+                // props.cellEditor.columnView.columnNames.forEach((d, i) => {
+                //     objectKeys.push(d)
+                // })
+
+                // //const objectKeys = Object.keys(value).filter(key => key !== "__recordFormats" && key !== "recordStatus" && props.cellEditor.linkReference.referencedColumnNames.includes(key));
+                // if (props.cellEditor.displayReferencedColumnName) {
+                //     objectKeys.push(props.cellEditor.displayReferencedColumnName)
+                // }
+                // const extractedObject = getExtractedObject(value, objectKeys)
+                // suggestion = Array.from(Object.values(extractedObject));
+                // suggestions.push(suggestion)
+                suggestions.push(buildSuggestionArray(value));
             });
         }
 
@@ -560,59 +594,51 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             return providedData[index][props.cellEditor.displayReferencedColumnName];
         }
         else {
-            const objectKeys: string[] = [];
-            props.cellEditor.linkReference.referencedColumnNames.forEach((d, i) => {
-                objectKeys.push(d)
-            });
+            const suggestionObj = unpackSuggestionArray(d, true);
+            return Object.values(suggestionObj).map((d:any, i:number) => {
+                const cellStyle: CSSProperties = {}
+                let icon: JSX.Element | null = null;
 
-            const columnView = props.cellEditor.columnView || metaData.columnView_table_;
-            const columnNames = props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaData.columnView_table_;
-            return d.map((d, i) => {
-                if (columnView && columnNames.includes(Object.keys(getExtractedObject(providedData[index], objectKeys))[i])) {
-                    const cellStyle: CSSProperties = {}
-                    let icon:JSX.Element | null = null;
-    
-                    if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name] && providedData[index].__recordFormats[props.name].length && providedData[index].__recordFormats[props.name][i]) {
-                        const format = providedData[index].__recordFormats[props.name][i]
-    
-                        if (format.background) {
-                            cellStyle.background = format.background;
-                        }
-    
-                        if (format.foreground) {
-                            cellStyle.color = format.foreground;
-                        }
-    
-                        if (format.font) {
-                            const font = getFont(format.font);
-                            if (font) {
-                                cellStyle.fontFamily = font.fontFamily;
-                                cellStyle.fontWeight = font.fontWeight;
-                                cellStyle.fontStyle = font.fontStyle;
-                                cellStyle.fontSize = font.fontSize;
-                            }
-                        }
-    
-                        if (format.image) {
-                            const iconData = parseIconData(format.foreground, format.image);
-                            if (iconData.icon) {
-                                if (isFAIcon(iconData.icon)) {
-                                    icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
-                                }
-                                else {
-                                    icon = <img
-                                    alt="icon"
-                                    src={props.context.server.RESOURCE_URL + iconData.icon}
-                                    style={{width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
-                                }
-                            }
-                            else {
-                                icon = null;
-                            }
+                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name] && providedData[index].__recordFormats[props.name].length && providedData[index].__recordFormats[props.name][i]) {
+                    const format = providedData[index].__recordFormats[props.name][i]
+
+                    if (format.background) {
+                        cellStyle.background = format.background;
+                    }
+
+                    if (format.foreground) {
+                        cellStyle.color = format.foreground;
+                    }
+
+                    if (format.font) {
+                        const font = getFont(format.font);
+                        if (font) {
+                            cellStyle.fontFamily = font.fontFamily;
+                            cellStyle.fontWeight = font.fontWeight;
+                            cellStyle.fontStyle = font.fontStyle;
+                            cellStyle.fontSize = font.fontSize;
                         }
                     }
-                    return <div style={cellStyle} key={i}>{icon ?? d}</div>
+
+                    if (format.image) {
+                        const iconData = parseIconData(format.foreground, format.image);
+                        if (iconData.icon) {
+                            if (isFAIcon(iconData.icon)) {
+                                icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+                            }
+                            else {
+                                icon = <img
+                                    alt="icon"
+                                    src={props.context.server.RESOURCE_URL + iconData.icon}
+                                    style={{ width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                            }
+                        }
+                        else {
+                            icon = null;
+                        }
+                    }
                 }
+                return <div style={cellStyle} key={i}>{icon ?? d}</div>
             })
         }
 
@@ -709,7 +735,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                                     onFocusLost(props.name, props.context.server);
                                 }
                                 focused.current = false;
-                                (linkedRef.current as any).hideOverlay();
+                                //(linkedRef.current as any).hideOverlay();
                             }
                             
                         }
