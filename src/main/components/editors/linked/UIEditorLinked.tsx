@@ -655,8 +655,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 return (providedData.length * 38 > 200) ? "200px" : `${providedData.length * 38}px`
             }
             else {
-                // +44 for table header
-                return ((providedData.length) * 38 + 44) > 200 ? "200px" : `${(providedData.length) * 38 + 44}px`
+                // +44 for table header uncomment, when table header is available again
+                //return ((providedData.length) * 38 + 44) > 200 ? "200px" : `${(providedData.length) * 38 + 44}px`
+                return ((providedData.length) * 38 + 44) > 200 ? "200px" : `${(providedData.length) * 38}px`
             }
         }
         else {
