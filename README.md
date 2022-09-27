@@ -68,5 +68,5 @@ After you logged in or if you have a valid username, password combination you wi
 - [Available hooks](src/readme-files/hooks)
 - [Available requests](src/readme-files/requests)
 
-# Customizing
+# Examples & Customizing
 More information about customizing screens, components and more can be found [here](https://github.com/sibvisions/reactUI.example#features)
