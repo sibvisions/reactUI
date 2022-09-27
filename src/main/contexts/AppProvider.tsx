@@ -260,6 +260,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }, contextState.server.aliveInterval)
 
                 initWS(contextState.server.BASE_URL);
+
+                if (props.onStartup) {
+                    props.onStartup();
+                }
             })
             .catch(() => {});
         }
@@ -408,9 +412,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
             }
 
-            if (convertedOptions.has("username")) {
-                startUpRequest.username = convertedOptions.get("username");
-                convertedOptions.delete("username");
+            if (convertedOptions.has("userName")) {
+                startUpRequest.userName = convertedOptions.get("userName");
+                convertedOptions.delete("userName");
             }
 
             if (convertedOptions.has("password")) {

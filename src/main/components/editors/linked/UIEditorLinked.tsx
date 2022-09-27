@@ -211,9 +211,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     }, [props.columnName, metaData]);
 
     /** True, if the dropdown should be displayed as table */
-    const tableOptions = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnCount > 1 : metaData.columnView_table_.length > 1, [props.cellEditor.columnView, metaData]); 
+    const tableOptions = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnCount > 1 : metaData ? metaData.columnView_table_.length > 1 : false, [props.cellEditor.columnView, metaData]); 
 
-    const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaData.columnView_table_, [props.cellEditor.columnView, metaData.columnView_table_]);
+    const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaData ? metaData.columnView_table_ : [], [props.cellEditor.columnView, metaData]);
 
     const getDisplayValue = useCallback((value:any) => {
         if (isDisplayRefColNameOrConcat) {
