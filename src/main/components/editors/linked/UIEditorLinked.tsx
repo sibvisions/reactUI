@@ -463,7 +463,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             providedData.filter((data: any) => {
                 if (isDisplayRefColNameOrConcat) {
                     const extractedData = getExtractedObject(data, refColNames);
-                    return getDisplayValue(extractedData).toString().includes(text);
+                    if (getDisplayValue(extractedData)) {
+                        return getDisplayValue(extractedData).toString().includes(text);
+                    }
+                    return !text;
                 }
                 else {
                     if (data && data[refColNames[index]]) {
