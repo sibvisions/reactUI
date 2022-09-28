@@ -20,7 +20,6 @@ const useRequestFocus = (id: string, requestFocus: boolean|undefined, elem: HTML
     useEffect(() => {
         if (requestFocus && elem && document.activeElement !== elem) {
             setTimeout(() => {
-                console.log(elem)
                 elem.focus();
                 const existingComp = context.contentStore.getComponentById(id);
                 if (existingComp) {

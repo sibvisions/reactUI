@@ -148,7 +148,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
         }
     }
 
-    /** When dragging, calcuate the new separator position based on mouseposition and set it, resize is also called throttled while dragging */
+    /** When dragging, calcuate the new separator position based on mouseposition and set it, resize is also called debounced while dragging */
     const dragging = (event: MouseEvent) => {
         if (props.onResizeExtend) {
             props.onResizeExtend(event);
@@ -160,7 +160,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
         else
             newSeparatorPosition = event.clientY - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
-            _.throttle(callOnResize, 50)()
+            _.debounce(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
         }
     }
@@ -215,7 +215,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
         document.removeEventListener("touchmove", touchDragging);
     }
 
-    /** When touch-dragging, calcuate the new separator position based on mouseposition and set it, resize is also called throttled while dragging */
+    /** When touch-dragging, calcuate the new separator position based on mouseposition and set it, resize is also called debounced while dragging */
     const touchDragging = (event: TouchEvent) => {
         if (props.onResizeExtend) {
             props.onResizeExtend(event);
@@ -223,7 +223,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
         const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absolutePosition;
         if(newSeparatorPosition > 0){
-            _.throttle(callOnResize, 50)()
+            _.debounce(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
         }
     }

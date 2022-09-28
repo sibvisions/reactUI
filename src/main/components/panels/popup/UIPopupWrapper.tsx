@@ -43,14 +43,16 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, componentSizes] = useComponents(baseProps.id + "-popup", baseProps.className);
+    const [children, components, componentSizes] = useComponents(baseProps.id + "-popup", baseProps.className);
 
     /** Current state of the size of the popup-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
     const popupRef = useRef<any>(null)
 
-    //const [initialFlag, setInitialFlag] = useState<boolean>(false);
+    const [initialisePopup, setInitialisePopup] = useState<boolean>(false);
+
+    const [initialiseCompSizes, setInitialiseCompSizes] = useState<boolean>(false);
 
     /** Subscribes the resize-handler to the theme */
     useEffect(() => {
@@ -98,13 +100,26 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (popupRef.current && popupRef.current.contentEl) {
             const sizeMap = new Map<string, CSSProperties>();
             let popupSize:Dimension = { height: 400, width: 600 } 
-            if (componentSizes && componentSizes.has(baseProps.id)) {
-                popupSize.height = componentSizes.get(baseProps.id)!.preferredSize.height;
-                popupSize.width = componentSizes.get(baseProps.id)!.preferredSize.width;
-            }
+            // if (componentSizes && componentSizes.has(baseProps.id)) {
+            //     popupSize.height = componentSizes.get(baseProps.id)!.preferredSize.height;
+            //     popupSize.width = componentSizes.get(baseProps.id)!.preferredSize.width;
+            // }
+            sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+            setComponentSize(sizeMap);
+            setInitialisePopup(true)
+        }
+    }
+
+    const handleAfterInitial = () => {
+        const sizeMap = new Map<string, CSSProperties>();
+        if (componentSizes && componentSizes.has(baseProps.id)) {
+            let popupSize:Dimension = { height: 400, width: 600 } 
+            popupSize.height = componentSizes.get(baseProps.id)!.preferredSize.height;
+            popupSize.width = componentSizes.get(baseProps.id)!.preferredSize.width;
             sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }
+        setInitialiseCompSizes(true);
     }
 
     const handlePopupResize = () => {
@@ -116,10 +131,15 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         }
     }
 
-    const handleResize = useCallback(_.throttle(handlePopupResize, 50), [handlePopupResize, popupRef.current]);
+    const handleResize = useCallback(_.debounce(handlePopupResize, 50), [handlePopupResize, popupRef.current]);
 
     useEffect(() => {
-        handleInitialSize();
+        if (!initialisePopup) {
+            handleInitialSize();
+        }
+        else if (!initialiseCompSizes && componentSizes) {
+            handleAfterInitial();
+        }
     }, [componentSizes])
 
     // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any

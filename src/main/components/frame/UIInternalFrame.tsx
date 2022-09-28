@@ -285,8 +285,8 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         setFrameStyle(styleCopy);
     }, [frameStyle]);
 
-    //Resizing-throttle for performance
-    const handleResize = useCallback(_.throttle(doResize, 23),[doResize]);
+    //Resizing-debounce for performance
+    const handleResize = useCallback(_.debounce(doResize, 50),[doResize]);
 
     // init style for InternalFrame
     const style = {
