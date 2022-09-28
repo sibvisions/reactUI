@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
 import { ILoginForm } from "./LoginForm";
@@ -41,6 +41,10 @@ const MFAURL: FC<ILoginForm> = (props) => {
 
     /** State of the lapsed time during the wait */
     const [remainingTime, setRemainingTime] = useState<number>(loginTimeout);
+
+    const [restart, setRestart] = useState<boolean|undefined>(undefined);
+
+    const intervalId = useRef<any>(null);
 
     /** Sets the style for the iFrame, default or based on the link state */
     const iFrameStyle: CSSProperties = useMemo(() => {
@@ -101,15 +105,29 @@ const MFAURL: FC<ILoginForm> = (props) => {
             }
         });
 
-        const intervalId = setInterval(() => {
+        intervalId.current = setInterval(() => {
             setRemainingTime(prevTime => prevTime - 1000);
         }, 1000);
 
         return () => {
             context.subscriptions.unsubscribeFromMFAURL();
-            clearInterval(intervalId);
+            clearInterval(intervalId.current);
         }
     }, []);
+
+    useEffect(() => {
+        if ((typeof link === "object" && link.url !== "") || link !== "") {
+            clearInterval(intervalId.current)
+            setRemainingTime(loginTimeout);
+            setRestart(prevState => prevState === undefined ? true : !prevState);
+        }
+    }, [link])
+
+    useEffect(() => {
+        if (restart !== undefined) {
+            intervalId.current = setInterval(() => setRemainingTime(prevTime => prevTime - 1000), 1000);
+        }
+    }, [restart])
 
     return (
         <div className="login-form">
