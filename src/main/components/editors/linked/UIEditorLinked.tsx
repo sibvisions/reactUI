@@ -215,14 +215,21 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaData ? metaDataReferenced.columnView_table_ : [], [props.cellEditor.columnView, metaData]);
 
+    const textCopy = useRef<any>(text)
+
     const getDisplayValue = useCallback((value:any) => {
         if (isDisplayRefColNameOrConcat) {
             if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.has(JSON.stringify(value))) {
                 return cellEditorMetaData.linkReference.dataToDisplayMap!.get(JSON.stringify(value))
             }
         }
+
+        if (props.selectedRow && props.selectedRow.data[props.columnName]) {
+            return props.selectedRow.data[props.columnName]
+        }
+
         return value[props.columnName]
-    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, cellEditorMetaData])
+    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, cellEditorMetaData, props.selectedRow])
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -246,7 +253,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (props.isCellEditor && props.passedKey) {
             setText("");
         }
+
+        return () => {
+            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && linkedInput.current && props.isCellEditor) {
+                handleInput(textCopy.current)
+            }
+        }
     }, []);
+
+    useEffect(() => {
+        textCopy.current = text
+    }, [text])
 
     /** If there is a selectedRow to display, a display-referenced-column and it hasn't been fetched yet, then fetch the reference-databook */
     useEffect(() => {
@@ -263,9 +280,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useEffect(() => {
         if (props.selectedRow && lastValue.current !== props.selectedRow.data) {
+            console.log(props.selectedRow.data, props.columnName)
             if (isDisplayRefColNameOrConcat) {
                 if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
                     const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference, props.columnName), props.cellEditor.linkReference.referencedColumnNames);
+                    console.log(extractedObject)
                     setText(getDisplayValue(extractedObject))
                     lastValue.current = props.selectedRow.data;
                 }
@@ -389,8 +408,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
      * When enter is pressed "submit" the value
      */
     useEventHandler(linkedInput.current || undefined, "keydown", (event) => {
-        event.stopPropagation();
-        if((event as KeyboardEvent).key === "Enter") {
+        if((event as KeyboardEvent).key === "Enter" && !document.querySelector('.p-autocomplete-item.p-highlight')) {
             (linkedRef.current as any).hideOverlay();
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
         }
@@ -450,12 +468,18 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
      * Handles the input, when the text is entered manually and sends the value to the server
      * if the corresponding row is found in its databook. if it isn't, the state is set back to its previous value
      */
-     const handleInput = () => {
+     const handleInput = (value?:string) => {
         const linkReference = props.cellEditor.linkReference;
 
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
+
+        let checkText = text;
+
+        if (value) {
+            checkText = value;
+        }
 
         /** Returns the values, of the databook, that match the input of the user */
         // check if providedData has entries of text
@@ -464,17 +488,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 if (isDisplayRefColNameOrConcat) {
                     const extractedData = getExtractedObject(data, refColNames);
                     if (getDisplayValue(extractedData)) {
-                        return getDisplayValue(extractedData).toString().includes(text);
+                        return getDisplayValue(extractedData).toString().includes(checkText);
                     }
-                    return !text;
+                    return !checkText;
                 }
                 else {
                     if (data && data[refColNames[index]]) {
                         if (typeof data[refColNames[index]] !== "string") {
-                            data[refColNames[index]].toString().includes(text);
+                            data[refColNames[index]].toString().includes(checkText);
                         }
                         else {
-                            return data[refColNames[index]].includes(text);
+                            return data[refColNames[index]].includes(checkText);
                         }
                     }
                     else {
@@ -489,7 +513,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const extractedLastValue = getExtractedObject(lastValue.current, colNames);
 
         /** If the text is empty, send null to the server */
-        if (!text) {
+        if (!checkText) {
             sendSetValues(props.dataRow, props.name, colNames, null, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
         }
         /** If there is a match found send the value to the server */
@@ -526,7 +550,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         tempArray.push(null);
                     }
                     else {
-                        tempArray.push(text);
+                        tempArray.push(checkText);
                     }
                 }
                 sendSetValues(props.dataRow, props.name, colNames, tempArray, props.context.server, lastValue.current, props.topbar, props.rowNumber)
