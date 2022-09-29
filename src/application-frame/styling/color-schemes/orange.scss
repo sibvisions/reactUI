@@ -119,7 +119,7 @@
     --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
 
     /// Orange button color
-    --button-background:#f78500;
+    --primary-color:#f78500;
 
     /// Orange component background
     --input-background:#ffffff;
@@ -221,6 +221,8 @@
 
     /// LinkedCellEditor hover text-color
     --linked-item-hover-text-color:#000000;
+
+    --linked-highlighted-color: #E3F2FD;
 
     /// Orange overlay background for popupmenubuttons
     --popupmenubutton-panel-background:#ffffff;
@@ -717,8 +719,8 @@ body {
 .reactUI.basti_mobile {
     .p-inputtext:enabled:focus {
         & + .p-autocomplete-dropdown, & + .p-datepicker-trigger {
-            border-color: var(--button-background);
-            color: var(--button-background);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
     }
 
@@ -726,13 +728,13 @@ body {
         &:hover {
             .p-button.p-button-icon-only {
                 &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-                    border-color: var(--button-background);
-                    color: var(--button-background);
+                    border-color: var(--primary-color);
+                    color: var(--primary-color);
                 }
             }
 
             .p-inputtext {
-                border-color: var(--button-background);
+                border-color: var(--primary-color);
             }
         }
 
@@ -830,8 +832,8 @@ body {
 
 /// PopupMenuButton
 .rc-popupmenubutton {
-    background: var(--button-background);
-    border-color: var(--button-background);
+    background: var(--primary-color);
+    border-color: var(--primary-color);
     border-radius: var(--button-border-radius);
 
     &:focus-within {
@@ -1017,12 +1019,30 @@ body {
                 &:hover {
                     background: var(--table-row-hover-background);
                 }
+
+                &.p-highlight {
+                    background: var(--linked-highlighted-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--table-row-hover-background);
+                    }
+                }
             }
 
             & li:nth-child(even) {
                 background: var(--table-row-odd-background);
                 &:hover {
                     background: var(--table-row-hover-background);
+                }
+
+                &.p-highlight {
+                    background: var(--linked-highlighted-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--table-row-hover-background);
+                    }
                 }
             }
         }

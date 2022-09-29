@@ -222,6 +222,8 @@
     /// LinkedCellEditor hover text-color
     --linked-item-hover-text-color:#000000;
 
+    --linked-highlighted-color: #E3F2FD;
+
     /// Default overlay background for popupmenubuttons
     --popupmenubutton-panel-background:#ffffff;
 
@@ -1017,12 +1019,30 @@ body {
                 &:hover {
                     background: var(--table-row-hover-background);
                 }
+
+                &.p-highlight {
+                    background: var(--linked-highlighted-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--table-row-hover-background);
+                    }
+                }
             }
 
             & li:nth-child(even) {
                 background: var(--table-row-odd-background);
                 &:hover {
                     background: var(--table-row-hover-background);
+                }
+
+                &.p-highlight {
+                    background: var(--linked-highlighted-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--table-row-hover-background);
+                    }
                 }
             }
         }

@@ -222,6 +222,8 @@
     /// LinkedCellEditor hover text-color
     --linked-item-hover-text-color:#ffffff;
 
+    --linked-highlighted-color: #205e8f;
+
     /// Darkmode overlay background for popupmenubuttons
     --popupmenubutton-panel-background:#3f4b5b;
 
@@ -1017,12 +1019,30 @@ body {
                 &:hover {
                     background: var(--table-row-hover-background);
                 }
+
+                &.p-highlight {
+                    background: var(--linked-highlighted-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--table-row-hover-background);
+                    }
+                }
             }
 
             & li:nth-child(even) {
                 background: var(--table-row-odd-background);
                 &:hover {
                     background: var(--table-row-hover-background);
+                }
+
+                &.p-highlight {
+                    background: var(--linked-highlighted-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--table-row-hover-background);
+                    }
                 }
             }
         }

@@ -61,7 +61,7 @@
   --corp-menu-speeddial-background:#ffffff;
   --corp-menu-speeddial-color:#495057;
   --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
-  --button-background:#f78500;
+  --primary-color:#f78500;
   --input-background:#ffffff;
   --input-border:1px solid #ced4da;
   --input-placeholder-color:#6c757d;
@@ -96,6 +96,7 @@
   --linked-panel-background:#ffffff;
   --linked-item-hover-background:#e9ecef;
   --linked-item-hover-text-color:#000000;
+  --linked-highlighted-color: #E3F2FD;
   --popupmenubutton-panel-background:#ffffff;
   --popupmenubutton-item-hover-background:#e9ecef;
   --popupmenubutton-item-hover-text-color:#000000;
@@ -329,15 +330,15 @@ body {
           color: var(--menubar-item-hover-text-color); }
 
 .reactUI.basti_mobile .p-inputtext:enabled:focus + .p-autocomplete-dropdown, .reactUI.basti_mobile .p-inputtext:enabled:focus + .p-datepicker-trigger {
-  border-color: var(--button-background);
-  color: var(--button-background); }
+  border-color: var(--primary-color);
+  color: var(--primary-color); }
 
 .reactUI.basti_mobile .rc-editor-linked:hover .p-button.p-button-icon-only.p-autocomplete-dropdown, .reactUI.basti_mobile .rc-editor-linked:hover .p-button.p-button-icon-only.p-datepicker-trigger, .reactUI.basti_mobile .rc-editor-date:hover .p-button.p-button-icon-only.p-autocomplete-dropdown, .reactUI.basti_mobile .rc-editor-date:hover .p-button.p-button-icon-only.p-datepicker-trigger {
-  border-color: var(--button-background);
-  color: var(--button-background); }
+  border-color: var(--primary-color);
+  color: var(--primary-color); }
 
 .reactUI.basti_mobile .rc-editor-linked:hover .p-inputtext, .reactUI.basti_mobile .rc-editor-date:hover .p-inputtext {
-  border-color: var(--button-background); }
+  border-color: var(--primary-color); }
 
 .reactUI.basti_mobile .rc-editor-linked .p-autocomplete-dropdown, .reactUI.basti_mobile .rc-editor-linked .p-datepicker-trigger, .reactUI.basti_mobile .rc-editor-date .p-autocomplete-dropdown, .reactUI.basti_mobile .rc-editor-date .p-datepicker-trigger {
   color: var(--text-color); }
@@ -395,8 +396,8 @@ body {
   background: var(--radiobutton-inner-color); }
 
 .rc-popupmenubutton {
-  background: var(--button-background);
-  border-color: var(--button-background);
+  background: var(--primary-color);
+  border-color: var(--primary-color);
   border-radius: var(--button-border-radius); }
   .rc-popupmenubutton:focus-within {
     box-shadow: var(--focus-box-shadow); }
@@ -503,10 +504,20 @@ body {
     background: var(--table-row-even-background); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd):hover {
       background: var(--table-row-hover-background); }
+    .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd).p-highlight {
+      background: var(--linked-highlighted-color);
+      color: var(--text-color); }
+      .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd).p-highlight:hover {
+        background: var(--table-row-hover-background); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even) {
     background: var(--table-row-odd-background); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even):hover {
       background: var(--table-row-hover-background); }
+    .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even).p-highlight {
+      background: var(--linked-highlighted-color);
+      color: var(--text-color); }
+      .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even).p-highlight:hover {
+        background: var(--table-row-hover-background); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item-group > * {
     background: var(--table-header-background);
     color: var(--text-color);

@@ -96,6 +96,7 @@
   --linked-panel-background:#3f4b5b;
   --linked-item-hover-background:#303a48;
   --linked-item-hover-text-color:#ffffff;
+  --linked-highlighted-color: #205e8f;
   --popupmenubutton-panel-background:#3f4b5b;
   --popupmenubutton-item-hover-background:#303a48;
   --popupmenubutton-item-hover-text-color:#ffffff;
@@ -501,10 +502,20 @@ body {
     background: var(--table-row-even-background); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd):hover {
       background: var(--table-row-hover-background); }
+    .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd).p-highlight {
+      background: var(--linked-highlighted-color);
+      color: var(--text-color); }
+      .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd).p-highlight:hover {
+        background: var(--table-row-hover-background); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even) {
     background: var(--table-row-odd-background); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even):hover {
       background: var(--table-row-hover-background); }
+    .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even).p-highlight {
+      background: var(--linked-highlighted-color);
+      color: var(--text-color); }
+      .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even).p-highlight:hover {
+        background: var(--table-row-hover-background); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item-group > * {
     background: var(--table-header-background);
     color: var(--text-color);
