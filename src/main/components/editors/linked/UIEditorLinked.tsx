@@ -211,9 +211,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     }, [props.columnName, metaData]);
 
     /** True, if the dropdown should be displayed as table */
-    const tableOptions = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnCount > 1 : metaData ? metaDataReferenced.columnView_table_.length > 1 : false, [props.cellEditor.columnView, metaData]); 
+    const tableOptions = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnCount > 1 : metaDataReferenced ? metaDataReferenced.columnView_table_.length > 1 : false, [props.cellEditor.columnView, metaDataReferenced]); 
 
-    const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaData ? metaDataReferenced.columnView_table_ : [], [props.cellEditor.columnView, metaData]);
+    const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaDataReferenced ? metaDataReferenced.columnView_table_ : [], [props.cellEditor.columnView, metaDataReferenced]);
 
     // Helper to set the text on unmount
     const textCopy = useRef<any>(text)
