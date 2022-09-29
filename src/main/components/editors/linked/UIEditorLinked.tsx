@@ -283,11 +283,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useEffect(() => {
         if (props.selectedRow && lastValue.current !== props.selectedRow.data) {
-            console.log(props.selectedRow.data, props.columnName)
             if (isDisplayRefColNameOrConcat) {
                 if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
                     const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference, props.columnName), props.cellEditor.linkReference.referencedColumnNames);
-                    console.log(extractedObject)
                     setText(getDisplayValue(extractedObject))
                     lastValue.current = props.selectedRow.data;
                 }
