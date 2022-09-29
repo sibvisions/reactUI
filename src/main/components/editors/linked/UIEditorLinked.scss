@@ -35,6 +35,10 @@
     max-width: 400px;
 }
 
+.rc-editor-linked-dropdown:not(.linked-min-width) .p-virtualscroller {
+    max-width: 100%;
+}
+
 .rc-editor-linked-dropdown .p-virtualscroller-content {
     position: relative;
 }
