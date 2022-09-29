@@ -215,6 +215,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaData ? metaDataReferenced.columnView_table_ : [], [props.cellEditor.columnView, metaData]);
 
+    // Helper to set the text on unmount
     const textCopy = useRef<any>(text)
 
     const getDisplayValue = useCallback((value:any) => {
@@ -254,6 +255,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             setText("");
         }
 
+        // on unmount save the value, use textcopy because text would be empty
         return () => {
             if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && linkedInput.current && props.isCellEditor) {
                 handleInput(textCopy.current)
@@ -261,6 +263,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
     }, []);
 
+    // Sets the textCopy to the text so textCopy isn't empty on celleditor unmount
     useEffect(() => {
         textCopy.current = text
     }, [text])
