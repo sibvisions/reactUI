@@ -122,8 +122,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     const decimalLength = useMemo(() => props.columnMetaData ? getDecimalLength((props.columnMetaData as NumericColumnDescription).precision, (props.columnMetaData as NumericColumnDescription).scale) : undefined, [props.columnMetaData]);
 
     /** Returns true if the caret is before the comma */
-    const isSelectedBeforeComma = () => {
-        if (numberRef.current) {
+    const isSelectedBeforeComma = (value: string) => {
+        if (numberInput.current) {
             //@ts-ignore
             return numberInput.current.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
         }
@@ -175,11 +175,11 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
      * When a value is pasted check if the value isn't too big for the max length
      * @param e - the browser event
      */
-    const handlePaste = (e:ClipboardEvent) => {
+    const handlePaste = (e:any) => {
         if (e.clipboardData && decimalLength) {
             const pastedValue = parseInt(e.clipboardData.getData('text'));
             if (!isNaN(pastedValue)) {
-                if (isSelectedBeforeComma() && (value ? value.toString().split('.')[0] : "").length + pastedValue.toString().length > decimalLength) {
+                if (isSelectedBeforeComma(e.target.value) && e.target.value.split('.')[0].length + pastedValue.toString().length > decimalLength) {
                     e.stopPropagation();
                     e.preventDefault();
                 }
@@ -208,7 +208,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 }
             }
             // Checks if the decimal length limit is hit and when it is don't allow more inputs
-            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {
+            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma(event.target.value)) {
                 event.preventDefault();
                 return false;
             }
