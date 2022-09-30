@@ -335,14 +335,14 @@ class Server extends BaseServer {
         this.appSettings.setLoginProperties(login.mode, login.errorMessage);
 
         if (login.mode === "mFWait") {
-            if (login.confirmationCode && login.timeout) {
-                this.subManager.emitMFAWaitChanged(login.confirmationCode, login.timeout);
+            if (login.confirmationCode !== undefined && login.timeout) {
+                this.subManager.emitMFAWaitChanged(login.confirmationCode, login.timeout, login.timeoutReset);
             }
         }
 
         if (login.mode === "mFURL") {
             if (login.link && login.timeout) {
-                this.subManager.emitMFAURLChanged(login.link, login.timeout)
+                this.subManager.emitMFAURLChanged(login.link, login.timeout, login.timeoutReset);
             }
         }
 

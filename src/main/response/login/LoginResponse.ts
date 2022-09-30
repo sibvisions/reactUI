@@ -33,6 +33,7 @@ interface LoginResponse extends BaseResponse {
     confirmationCode?: string;
     link?:string | MFAURLType;
     timeout?:number;
+    timeoutReset?:boolean
     errorMessage?: string
 }
 export default LoginResponse;

@@ -41,7 +41,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
     /** State of the lapsed time during the wait */
     const [remainingTime, setRemainingTime] = useState<number>(loginTimeout);
 
-    const [restart, setRestart] = useState<boolean|undefined>(undefined);
+    const [timeoutReset, setTimeoutReset] = useState<boolean|undefined>(undefined);
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
@@ -50,12 +50,13 @@ const MFAWait:FC<ILoginForm> = (props) => {
 
     // Subscribes to the code and the timeout. And starts the timer
     useLayoutEffect(() => {
-        context.subscriptions.subscribeToMFAWait((code:string, timeout:number) => {
+        context.subscriptions.subscribeToMFAWait((code:string, timeout:number, timeoutReset?:boolean) => {
             setCode(code);
 
-            if (timeout !== loginTimeout) {
-                setLoginTimeout(timeout);
-                setRemainingTime(timeout);
+            setLoginTimeout(timeout);
+
+            if (timeoutReset) {
+                setTimeoutReset(prevState => prevState === undefined ? true : !prevState);
             }
         });
 
@@ -68,18 +69,16 @@ const MFAWait:FC<ILoginForm> = (props) => {
     }, []);
 
     useEffect(() => {
-        if (code !== "") {
-            clearInterval(intervalId.current)
-            setRemainingTime(loginTimeout);
-            setRestart(prevState => prevState === undefined ? true : !prevState);
-        }
-    }, [code])
+        setRemainingTime(loginTimeout)
+    }, [loginTimeout])
 
     useEffect(() => {
-        if (restart !== undefined) {
+        if (timeoutReset !== undefined) {
+            clearInterval(intervalId.current)
+            setRemainingTime(loginTimeout);
             intervalId.current = setInterval(() => setRemainingTime(prevTime => prevTime - 1000), 1000);
         }
-    }, [restart])
+    }, [timeoutReset])
 
     return (
         <div className="login-form">

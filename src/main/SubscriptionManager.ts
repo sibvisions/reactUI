@@ -1004,8 +1004,8 @@ export class SubscriptionManager {
      * @param code - the new mfa code
      * @param timeout - the mfa timeout
      */
-    emitMFAWaitChanged(code: string, timeout: number) {
-        this.MFAWaitSubscriber.apply(undefined, [code, timeout]);
+    emitMFAWaitChanged(code: string, timeout: number, timeoutReset?: boolean) {
+        this.MFAWaitSubscriber.apply(undefined, [code, timeout, timeoutReset]);
     }
 
     /**
@@ -1013,7 +1013,7 @@ export class SubscriptionManager {
      * @param link - the new mfa link
      * @param timeout - the mfa timeout
      */
-    emitMFAURLChanged(link: string|MFAURLType, timeout:number) {
-        this.MFAURLSubscriber.apply(undefined, [link, timeout]);
+    emitMFAURLChanged(link: string|MFAURLType, timeout:number, timeoutReset?: boolean) {
+        this.MFAURLSubscriber.apply(undefined, [link, timeout, timeoutReset]);
     }
 }

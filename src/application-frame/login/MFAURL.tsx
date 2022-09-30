@@ -42,7 +42,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
     /** State of the lapsed time during the wait */
     const [remainingTime, setRemainingTime] = useState<number>(loginTimeout);
 
-    const [restart, setRestart] = useState<boolean|undefined>(undefined);
+    const [timeoutReset, setTimeoutReset] = useState<boolean|undefined>(undefined);
 
     const intervalId = useRef<any>(null);
 
@@ -76,7 +76,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
 
     // Subscribes to the link object and timeout sent by the server. And starts the MFA timer
     useLayoutEffect(() => {
-        context.subscriptions.subscribeToMFAURL((pLink: string | MFAURLType, timeout: number) => {
+        context.subscriptions.subscribeToMFAURL((pLink: string | MFAURLType, timeout: number, timeoutReset?:boolean) => {
             if (typeof link === "object") {
                 const newLink:MFAURLType = {...link};
                 const castedParameter = pLink as MFAURLType
@@ -99,10 +99,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
                 setLink(pLink);
             }
             
-            if (timeout !== loginTimeout) {
-                setLoginTimeout(timeout);
-                setRemainingTime(timeout);
-            }
+            setLoginTimeout(timeout);
         });
 
         intervalId.current = setInterval(() => {
@@ -116,19 +113,17 @@ const MFAURL: FC<ILoginForm> = (props) => {
     }, []);
 
     useEffect(() => {
-        if ((typeof link === "object" && link.url !== "") || link !== "") {
-            clearInterval(intervalId.current)
-            setRemainingTime(loginTimeout);
-            setRestart(prevState => prevState === undefined ? true : !prevState);
-        }
-    }, [link])
+        setRemainingTime(loginTimeout)
+    }, [loginTimeout])
 
     useEffect(() => {
-        if (restart !== undefined) {
+        if (timeoutReset !== undefined) {
+            clearInterval(intervalId.current)
+            setRemainingTime(loginTimeout);
             intervalId.current = setInterval(() => setRemainingTime(prevTime => prevTime - 1000), 1000);
         }
-    }, [restart])
-
+    }, [timeoutReset])
+    
     return (
         <div className="login-form">
             <div className="login-logo-wrapper">
