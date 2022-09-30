@@ -208,7 +208,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 }
             }
             // Checks if the decimal length limit is hit and when it is don't allow more inputs
-            if (decimalLength && parseInt((value ? value.toString().split('.')[0] : "") + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {
+            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma()) {
                 event.preventDefault();
                 return false;
             }
