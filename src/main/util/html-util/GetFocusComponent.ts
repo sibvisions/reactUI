@@ -21,7 +21,7 @@
 export function getFocusComponent(name:string, next:boolean):HTMLElement|undefined {
     //get all focusable elements, filter out negativ tabindex/disabled/td's sort by tabindex
     let focusable = Array.from(document.getElementById("reactUI-main")!.querySelectorAll("a, button, input, select, textarea, [tabindex], [contenteditable], #" + name)).filter((e: any) => {
-        if (e.disabled || (e.getAttribute("tabindex") && parseInt(e.getAttribute("tabindex")) < 0) || e.tagName === "TD" || e.classNames.includes("designer-button")) return false
+        if (e.disabled || (e.getAttribute("tabindex") && parseInt(e.getAttribute("tabindex")) < 0) || e.tagName === "TD" || e.classList.contains("designer-button")) return false
         return true;
     }).sort((a: any, b: any) => {
         return (parseFloat(a.getAttribute("tabindex") || 99999) || 99999) - (parseFloat(b.getAttribute("tabindex") || 99999) || 99999);
