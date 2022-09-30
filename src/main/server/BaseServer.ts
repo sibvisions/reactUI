@@ -613,7 +613,11 @@ export default abstract class BaseServer {
 
         // Combine changedColumnNames and changedValues and update the dataprovider-data
         if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
-            const changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
+            const dataRow = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.dataRow;
+            let changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
+            if (dataRow) {
+                changedData = { ...dataRow, ...changedData }
+            }
             this.contentStore.updateDataProviderData(screenName, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
             const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn
             this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
