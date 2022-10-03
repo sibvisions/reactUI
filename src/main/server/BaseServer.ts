@@ -518,7 +518,6 @@ export default abstract class BaseServer {
                                         builtData.forEach((data) => {
                                             if (data) {
                                                 const referencedData = getExtractedObject(data, castedColumn.linkReference.referencedColumnNames);
-                                                console.log(data, dataBook.metaData)
                                                 const columnViewData = getExtractedObject(data, Object.keys(data).filter(key => key !== "__recordFormats" && key !== "recordStatus"));
                                                 const columnViewNames = castedColumn.columnView ? castedColumn.columnView.columnNames : dataBook.metaData!.columnView_table_;
                                                 if (castedColumn.displayReferencedColumnName) {
@@ -530,7 +529,6 @@ export default abstract class BaseServer {
                                                     if (castedColumn.displayConcatMask.includes("*")) {
                                                         displayString = castedColumn.displayConcatMask
                                                         const count = (castedColumn.displayConcatMask.match(/\*/g) || []).length;
-                                                        console.log(castedColumn, referencedToDataBook.metaData)
                                                         for (let i = 0; i < count; i++) {
                                                             displayString = displayString.replace('*', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
                                                         }
