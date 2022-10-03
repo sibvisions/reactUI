@@ -518,7 +518,9 @@ export default abstract class BaseServer {
                                         builtData.forEach((data) => {
                                             if (data) {
                                                 const referencedData = getExtractedObject(data, castedColumn.linkReference.referencedColumnNames);
-                                                const columnViewData = getExtractedObject(data, Object.keys(data).filter(key => key !== "__recordFormats" && key !== "recordStatus"))
+                                                console.log(data, dataBook.metaData)
+                                                const columnViewData = getExtractedObject(data, Object.keys(data).filter(key => key !== "__recordFormats" && key !== "recordStatus"));
+                                                const columnViewNames = castedColumn.columnView ? castedColumn.columnView.columnNames : dataBook.metaData!.columnView_table_;
                                                 if (castedColumn.displayReferencedColumnName) {
                                                     const extractDisplayRef = getExtractedObject(data, [...castedColumn.linkReference.referencedColumnNames, castedColumn.displayReferencedColumnName]);
                                                     dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[castedColumn.displayReferencedColumnName as string]);
@@ -528,13 +530,14 @@ export default abstract class BaseServer {
                                                     if (castedColumn.displayConcatMask.includes("*")) {
                                                         displayString = castedColumn.displayConcatMask
                                                         const count = (castedColumn.displayConcatMask.match(/\*/g) || []).length;
+                                                        console.log(castedColumn, referencedToDataBook.metaData)
                                                         for (let i = 0; i < count; i++) {
-                                                            displayString = displayString.replace('*', columnViewData[castedColumn.columnView.columnNames[i]] !== undefined ? columnViewData[castedColumn.columnView.columnNames[i]] : "");
+                                                            displayString = displayString.replace('*', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
                                                         }
                                                     }
                                                     else {
                                                         castedColumn.columnView.columnNames.forEach((column, i) => {
-                                                            displayString += columnViewData[column] + (i !== castedColumn.columnView.columnNames.length - 1 ? castedColumn.displayConcatMask : "");
+                                                            displayString += columnViewData[column] + (i !== columnViewData.length - 1 ? castedColumn.displayConcatMask : "");
                                                         });
                                                     }
                                                     dataToDisplayMap.set(JSON.stringify(referencedData), displayString);
