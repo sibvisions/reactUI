@@ -195,92 +195,109 @@ export default abstract class BaseServer {
             ) {
                 reject("Component doesn't exist: " + request.componentId);
             }
-            else if (request.dataProvider && !this.contentStore.dataBooks.get(this.getScreenName(request.dataProvider))?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
-                reject("Dataprovider doesn't exist: " + request.dataProvider)
-            }
-            else if (this.errorIsDisplayed) {
-                reject("Not sending request while an error is active");
-            } else {
-                if (queueMode === RequestQueueMode.IMMEDIATE) {
-                    let finalEndpoint = this.endpointMap.get(endpoint);
+            if (request.dataProvider) {
+                if (Array.isArray(request.dataProvider)) {
+                    let exist = true;
+                    request.dataProvider.forEach((dataProvider:string) => {
+                        if (!this.contentStore.dataBooks.get(this.getScreenName(dataProvider))?.has(dataProvider) && !this.missingDataFetches.includes(dataProvider)) {
+                            exist = false;
+                        }
+                    });
 
-                    if (endpoint === REQUEST_KEYWORDS.UI_REFRESH) {
-                        this.uiRefreshInProgress = true;
+                    if (!exist) {
+                        reject("Dataproviders don't exist: " + request.dataProvider);
+                        return
                     }
-                    this.timeoutRequest(
-                        fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
-                        this.timeoutMs, 
-                        () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse)
-                    )
-                        .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
-                        .then(result => {
-                            this.lastRequestTimeStamp = Date.now();
-                            
-                            if (result.code) {
-                                if (400 <= result.code && result.code <= 599) {
-                                    return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
-                                }
+                }
+                else if (!this.contentStore.dataBooks.get(this.getScreenName(request.dataProvider))?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                    reject("Dataprovider doesn't exist: " + request.dataProvider);
+                    return
+                }
+            }
+            if (this.errorIsDisplayed) {
+                reject("Not sending request while an error is active");
+                return;
+            } 
+
+            if (queueMode === RequestQueueMode.IMMEDIATE) {
+                let finalEndpoint = this.endpointMap.get(endpoint);
+
+                if (endpoint === REQUEST_KEYWORDS.UI_REFRESH) {
+                    this.uiRefreshInProgress = true;
+                }
+                this.timeoutRequest(
+                    fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
+                    this.timeoutMs, 
+                    () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse)
+                )
+                    .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
+                    .then(result => {
+                        this.lastRequestTimeStamp = Date.now();
+                        
+                        if (result.code) {
+                            if (400 <= result.code && result.code <= 599) {
+                                return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
                             }
-                            return result;
-                        }, (err) => Promise.reject(err))
-                        .then((results) => handleResponse ? this.responseHandler.bind(this)(results) : results, (err) => Promise.reject(err))
-                        .then(results => {
-                            if (fn) {
-                                fn.forEach(func => func.apply(undefined, []))
+                        }
+                        return result;
+                    }, (err) => Promise.reject(err))
+                    .then((results) => handleResponse ? this.responseHandler.bind(this)(results) : results, (err) => Promise.reject(err))
+                    .then(results => {
+                        if (fn) {
+                            fn.forEach(func => func.apply(undefined, []))
+                        }
+
+                        if (!job) {
+                            for (let [, value] of this.subManager.jobQueue.entries()) {
+                                value();
                             }
-    
-                            if (!job) {
-                                for (let [, value] of this.subManager.jobQueue.entries()) {
-                                    value();
-                                }
-                                this.subManager.jobQueue.clear()
-                            }
-                            return results;
-                        })
-                        .then(results => {
-                            resolve(results)
-                        }, (err) => Promise.reject(err))
-                        .catch(error => {
-                            if (typeof error === "string") {
-                                const splitErr = error.split(".");
-                                const code = error.substring(0, 3);
-                                if (code === "410") {
-                                    this.subManager.emitErrorBarProperties(false, true, splitErr[0], splitErr[1]);
-                                }
-                                else {
-                                    this.subManager.emitErrorBarProperties(false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
-                                }
+                            this.subManager.jobQueue.clear()
+                        }
+                        return results;
+                    })
+                    .then(results => {
+                        resolve(results)
+                    }, (err) => Promise.reject(err))
+                    .catch(error => {
+                        if (typeof error === "string") {
+                            const splitErr = error.split(".");
+                            const code = error.substring(0, 3);
+                            if (code === "410") {
+                                this.subManager.emitErrorBarProperties(false, true, splitErr[0], splitErr[1]);
                             }
                             else {
-                                this.subManager.emitErrorBarProperties(false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                                this.subManager.emitErrorBarProperties(false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
-                            if (error !== "no valid json") {
-                                this.subManager.emitErrorBarVisible(true);
-                            }
-                            reject(error);
-                            console.error(error);
-                        }).finally(() => {
-                            if (this.uiRefreshInProgress) {
-                                this.uiRefreshInProgress = false;
-                            }
+                        }
+                        else {
+                            this.subManager.emitErrorBarProperties(false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                        }
+                        if (error !== "no valid json") {
+                            this.subManager.emitErrorBarVisible(true);
+                        }
+                        reject(error);
+                        console.error(error);
+                    }).finally(() => {
+                        if (this.uiRefreshInProgress) {
+                            this.uiRefreshInProgress = false;
+                        }
 
-                            this.openRequests.delete(request);
-                        });
-                } else {
-                    // If the RequestMode is Queue, add the request to the queue and advance the queue
-                    this.requestQueue.push(() => this.sendRequest(
-                        request, 
-                        endpoint,
-                        fn,
-                        job,
-                        waitForOpenRequests,
-                        RequestQueueMode.IMMEDIATE,
-                        handleResponse
-                    ).then(results => {
-                        resolve(results)
-                    }).catch(() => resolve(null)))
-                    this.advanceRequestQueue();
-                }
+                        this.openRequests.delete(request);
+                    });
+            } else {
+                // If the RequestMode is Queue, add the request to the queue and advance the queue
+                this.requestQueue.push(() => this.sendRequest(
+                    request, 
+                    endpoint,
+                    fn,
+                    job,
+                    waitForOpenRequests,
+                    RequestQueueMode.IMMEDIATE,
+                    handleResponse
+                ).then(results => {
+                    resolve(results)
+                }).catch(() => resolve(null)))
+                this.advanceRequestQueue();
             }
         })
 
