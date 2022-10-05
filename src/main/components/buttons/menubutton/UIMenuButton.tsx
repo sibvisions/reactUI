@@ -198,7 +198,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                 disabled={isCompDisabled(props)}
                 //tabIndex={-1}
                 model={items}
-                onClick={(e) => buttonRef.current.show()}
+                onClick={() => buttonRef.current.show()}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }} />
         </span>
