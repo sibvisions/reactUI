@@ -52,6 +52,12 @@ export interface ScaleType {
     maxScale:number,
 }
 
+function getNumberSeparators(locale: string) {
+    const numberWithDecimalSeparator = 100000.1;
+    const parts = Intl.NumberFormat(locale).formatToParts(numberWithDecimalSeparator);
+    return { decimal: parts.find(part => part.type === 'decimal')!.value, group: parts.find(part => part.type === 'group')!.value};
+}
+
 /**
  * NumberCellEditor is an inputfield which only displays numbers, 
  * when the value is changed the databook on the server is changed
@@ -80,6 +86,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     useRequestFocus(id, props.requestFocus, numberInput.current as HTMLElement|undefined, props.context);
+
+    const numberSeperators = getNumberSeparators(props.context.appSettings.locale);
+
+    const parseNumber = (value: string) => {
+        return parseFloat(value.replace(numberSeperators.group, '').replace(numberSeperators.decimal, '.'))
+    }
 
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
@@ -125,7 +137,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     const isSelectedBeforeComma = (value: string) => {
         if (numberInput.current) {
             //@ts-ignore
-            return numberInput.current.selectionStart <= (value && value.toString().indexOf('.') !== -1 ? value.toString().indexOf('.') : decimalLength)
+            return numberInput.current.selectionStart <= (value && value.toString().indexOf(numberSeperators.decimal) !== -1 ? value.toString().indexOf(numberSeperators.decimal) : decimalLength)
         }
         else {
             return false
@@ -231,13 +243,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     minFractionDigits={scaleDigits.minScale}
                     maxFractionDigits={scaleDigits.maxScale}
                     tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                    value={(typeof value === 'string' && value !== "-") ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value as number | null | undefined}
+                    value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
                         ...textAlignment, 
                         ...props.cellStyle
                     }}
                     onValueChange={event => {
+                        
                         if (props.onInput) {
                             props.onInput(event);
                         }
@@ -253,7 +266,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             if (props.onBlur) {
                                 props.onBlur(event)
                             }
-                            sendSetValues(props.dataRow, props.name, props.columnName, typeof event.target.value === 'string' ? parseFloat((event.target.value as string).replace(/\./g, '').replace(',', '.')) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                            sendSetValues(props.dataRow, props.name, props.columnName, typeof event.target.value === 'string' ? parseNumber(event.target.value) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                         }
                     }}
                     disabled={props.isReadOnly}
@@ -274,7 +287,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}
-                value={(typeof value === 'string' && value !== "-") ? parseFloat((value as string).replace(/\./g, '').replace(',', '.')) : value as number | null | undefined}
+                value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
                 style={props.layoutStyle}
                 inputStyle={{ 
                     ...textAlignment, 
@@ -282,7 +295,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onValueChange={event => setValue(event.value)}
-                onBlur={(event) => sendSetValues(props.dataRow, props.name, props.columnName, typeof event.target.value === 'string' ? parseFloat((event.target.value as string).replace(/\./g, '').replace(',', '.')) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
+                onBlur={(event) => sendSetValues(props.dataRow, props.name, props.columnName, typeof event.target.value === 'string' ? parseNumber(event.target.value) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
                 disabled={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}
