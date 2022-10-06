@@ -30,11 +30,12 @@ import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useRespons
 import ChildWithProps from "../../../main/util/types/ChildWithProps";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
-import { ReactUIDesigner } from '@sibvisions/reactui-designer'
+import { ReactUIDesigner } from '@sibvisions/reactui-designer/dist'
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
 import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
+import useDesignerImages from "../../../main/hooks/style-hooks/useDesignerImages";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -80,10 +81,10 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const embeddedContext = useContext(EmbeddedContext);
 
-    const [reloadImages, setReloadImages] = useState<boolean>(false);
-
     /** Current state of screen title, displays the screen title */
     const screenTitle = useScreenTitle();
+
+    const setImagesChanged = useDesignerImages('man');
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -180,15 +181,13 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             {isCorporation(appLayout, appTheme) ?
                 <CorporateMenu
                     screenTitle={screenTitle}
-                    menuOptions={menuOptions}
-                    designerViewCallback={setShowDesignerView} />
+                    menuOptions={menuOptions} />
                 :
                 <Menu
                     screenTitle={screenTitle}
                     forwardedRef={menuRef}
                     showMenuMini={menuMini}
-                    menuOptions={menuOptions}
-                    designerViewCallback={setShowDesignerView} />}
+                    menuOptions={menuOptions} />}
             <div id="reactUI-main" className={concatClassnames(
                 "main",
                 isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
@@ -222,7 +221,14 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     return (
         (showDesignerView) ?
-            <ReactUIDesigner reloadImages={() => setReloadImages(prevState => !prevState)} uploadUrl={context.server.designerUrl} isCorporation={isCorporation(appLayout, appTheme)}>
+            <ReactUIDesigner 
+                isLogin={false} 
+                changeImages={() => setImagesChanged(prevState => !prevState)} 
+                uploadUrl={context.server.designerUrl} 
+                isCorporation={isCorporation(appLayout, appTheme)}
+                logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
+                logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
+                logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}>
                 {content}
             </ReactUIDesigner> 
             :

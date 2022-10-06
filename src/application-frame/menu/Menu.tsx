@@ -49,7 +49,6 @@ export interface MenuItemCustom extends MenuItem {
 export interface IMenu extends IForwardRef {
     showMenuMini?:boolean,
     menuOptions:MenuOptions,
-    designerViewCallback:React.Dispatch<React.SetStateAction<boolean>>
     screenTitle: string
 }
 
@@ -57,7 +56,6 @@ export interface IMenu extends IForwardRef {
 interface IProfileMenu {
     showButtons?: boolean,
     visibleButtons?: VisibleButtons,
-    designerViewCallback:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -405,7 +403,7 @@ const Menu: FC<IMenu> = (props) => {
                 )}>
                     <div className={"menu-header"}>
                         <div className="menu-logo-wrapper" ref={menuLogoRef}>
-                            <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL + '?v=' + Date.now() : context.appSettings.LOGO_BIG + '?v=' + Date.now())} alt="logo" />
+                            <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                         </div>
                         <div className="menu-topbar">
                             <div className="menu-topbar-left">
@@ -417,7 +415,7 @@ const Menu: FC<IMenu> = (props) => {
                                 <span className="menu-screen-title">{props.screenTitle}</span>
                             </div>
                             <div className="menu-topbar-right">
-                                <ProfileMenu showButtons designerViewCallback={props.designerViewCallback}  />
+                                <ProfileMenu showButtons  />
                             </div>
                         </div>
                     </div>
