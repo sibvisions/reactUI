@@ -220,8 +220,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     const getDisplayValue = useCallback((value:any) => {
         if (isDisplayRefColNameOrConcat) {
-            if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.has(JSON.stringify(value))) {
-                return cellEditorMetaData.linkReference.dataToDisplayMap!.get(JSON.stringify(value))
+            const getCorrectLinkReference = () => {
+                if (cellEditorMetaData && cellEditorMetaData.linkReference) {
+                    return cellEditorMetaData.linkReference
+                }
+                return props.cellEditor.linkReference;
+            }
+
+            const linkReference = getCorrectLinkReference()
+            if (linkReference.dataToDisplayMap?.has(JSON.stringify(value))) {
+                return linkReference.dataToDisplayMap!.get(JSON.stringify(value))
             }
         }
 
@@ -230,7 +238,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
 
         return value[props.columnName]
-    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, cellEditorMetaData, props.selectedRow])
+    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, props.cellEditor, cellEditorMetaData, props.selectedRow])
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -284,10 +292,25 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     useEffect(() => {
         if (props.selectedRow && lastValue.current !== props.selectedRow.data) {
             if (isDisplayRefColNameOrConcat) {
-                if (cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
-                    const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference, props.columnName), props.cellEditor.linkReference.referencedColumnNames);
-                    setText(getDisplayValue(extractedObject))
-                    lastValue.current = props.selectedRow.data;
+                if (cellEditorMetaData) {
+                    if (cellEditorMetaData.linkReference) {
+                        if (cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
+                            const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference, props.columnName), props.cellEditor.linkReference.referencedColumnNames);
+                            setText(getDisplayValue(extractedObject))
+                            lastValue.current = props.selectedRow.data;
+                        }
+                    }
+                    else {
+                        const refDB = props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook);
+                        if (refDB) {
+                            if (refDB.referencedCellEditors) {
+                                refDB.referencedCellEditors.push(props.cellEditor);
+                            }
+                            else {
+                                refDB.referencedCellEditors = [props.cellEditor];
+                            }
+                        }
+                    }
                 }
             }
             else {

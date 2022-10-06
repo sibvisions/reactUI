@@ -519,50 +519,43 @@ export default abstract class BaseServer {
             dataBook.allFetched = fetchData.isAllFetched;
 
             if (dataBook.metaData) {
-                if (dataBook.isLinkedReferenceTo?.length) {
-                    dataBook.isLinkedReferenceTo.forEach((linkedDB) => {
-                        if (this.contentStore.getDataBook(screenName, linkedDB)) {
-                            const referencedToDataBook = this.contentStore.getDataBook(screenName, linkedDB) as IDataBook;
-                            if (referencedToDataBook.metaData) {
-                                referencedToDataBook.metaData.columns.forEach((column) => {
-                                    if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
-                                        const castedColumn = column.cellEditor as ICellEditorLinked;
-                                        let dataToDisplayMap = new Map<string, string>();
-                                        if (castedColumn.linkReference.dataToDisplayMap) {
-                                            dataToDisplayMap = castedColumn.linkReference.dataToDisplayMap
-                                        }
-                
-                                        builtData.forEach((data) => {
-                                            if (data) {
-                                                const referencedData = getExtractedObject(data, castedColumn.linkReference.referencedColumnNames);
-                                                const columnViewData = getExtractedObject(data, Object.keys(data).filter(key => key !== "__recordFormats" && key !== "recordStatus"));
-                                                const columnViewNames = castedColumn.columnView ? castedColumn.columnView.columnNames : dataBook.metaData!.columnView_table_;
-                                                if (castedColumn.displayReferencedColumnName) {
-                                                    const extractDisplayRef = getExtractedObject(data, [...castedColumn.linkReference.referencedColumnNames, castedColumn.displayReferencedColumnName]);
-                                                    dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[castedColumn.displayReferencedColumnName as string]);
-                                                }
-                                                else if (castedColumn.displayConcatMask) {
-                                                    let displayString = "";
-                                                    if (castedColumn.displayConcatMask.includes("*")) {
-                                                        displayString = castedColumn.displayConcatMask
-                                                        const count = (castedColumn.displayConcatMask.match(/\*/g) || []).length;
-                                                        for (let i = 0; i < count; i++) {
-                                                            displayString = displayString.replace('*', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
-                                                        }
-                                                    }
-                                                    else {
-                                                        castedColumn.columnView.columnNames.forEach((column, i) => {
-                                                            displayString += columnViewData[column] + (i !== columnViewData.length - 1 ? castedColumn.displayConcatMask : "");
-                                                        });
-                                                    }
-                                                    dataToDisplayMap.set(JSON.stringify(referencedData), displayString);
-                                                }
-                                            }  
-                                        });
-                                        castedColumn.linkReference.dataToDisplayMap = dataToDisplayMap
-                                    }
-                                })
+                if (dataBook.referencedCellEditors?.length) {
+                    dataBook.referencedCellEditors.forEach((cellEditor) => {
+                        if (cellEditor.linkReference) {
+                            const castedColumn = cellEditor as ICellEditorLinked;
+                            let dataToDisplayMap = new Map<string, string>();
+                            if (castedColumn.linkReference.dataToDisplayMap) {
+                                dataToDisplayMap = castedColumn.linkReference.dataToDisplayMap
                             }
+    
+                            builtData.forEach((data) => {
+                                if (data) {
+                                    const referencedData = getExtractedObject(data, castedColumn.linkReference.referencedColumnNames);
+                                    const columnViewData = getExtractedObject(data, Object.keys(data).filter(key => key !== "__recordFormats" && key !== "recordStatus"));
+                                    const columnViewNames = castedColumn.columnView ? castedColumn.columnView.columnNames : dataBook.metaData!.columnView_table_;
+                                    if (castedColumn.displayReferencedColumnName) {
+                                        const extractDisplayRef = getExtractedObject(data, [...castedColumn.linkReference.referencedColumnNames, castedColumn.displayReferencedColumnName]);
+                                        dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[castedColumn.displayReferencedColumnName as string]);
+                                    }
+                                    else if (castedColumn.displayConcatMask) {
+                                        let displayString = "";
+                                        if (castedColumn.displayConcatMask.includes("*")) {
+                                            displayString = castedColumn.displayConcatMask
+                                            const count = (castedColumn.displayConcatMask.match(/\*/g) || []).length;
+                                            for (let i = 0; i < count; i++) {
+                                                displayString = displayString.replace('*', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
+                                            }
+                                        }
+                                        else {
+                                            castedColumn.columnView.columnNames.forEach((column, i) => {
+                                                displayString += columnViewData[column] + (i !== columnViewData.length - 1 ? castedColumn.displayConcatMask : "");
+                                            });
+                                        }
+                                        dataToDisplayMap.set(JSON.stringify(referencedData), displayString);
+                                    }
+                                }  
+                            });
+                            castedColumn.linkReference.dataToDisplayMap = dataToDisplayMap;
                         }
                     })
                 }

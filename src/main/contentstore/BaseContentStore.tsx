@@ -62,7 +62,7 @@ export interface IDataBook {
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
     readOnly?: boolean,
-    isLinkedReferenceTo?: string[]
+    referencedCellEditors?: any[]
 }
 
 /** The ContentStore stores active content like user, components and data*/
@@ -808,24 +808,23 @@ export default abstract class BaseContentStore {
             const castedCellEditor = column.cellEditor as ICellEditorLinked;
             const linkReference = castedCellEditor.linkReference;
             if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
-                
                 if (existingMapModified) {
                     if (existingMapModified.has(linkReference.referencedDataBook)) {
                         const dataBook = (existingMapModified.get(linkReference.referencedDataBook) as IDataBook)
-                        if (!dataBook.isLinkedReferenceTo) {
-                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).isLinkedReferenceTo = [metaData.dataProvider];
+                        if (!dataBook.referencedCellEditors) {
+                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).referencedCellEditors = [column.cellEditor];
                         }
-                        else if (dataBook.isLinkedReferenceTo && !dataBook.isLinkedReferenceTo.includes(metaData.dataProvider)) {
-                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).isLinkedReferenceTo?.push(metaData.dataProvider);
+                        else {
+                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).referencedCellEditors?.push(column.cellEditor);
                         }
                     }
                     else {
-                        existingMapModified.set(linkReference.referencedDataBook, {isLinkedReferenceTo: [metaData.dataProvider]});
+                        existingMapModified.set(linkReference.referencedDataBook, {referencedCellEditors: [column.cellEditor]});
                     }
                 }
                 else {
                     const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
-                    tempMap.set(linkReference.referencedDataBook, {isLinkedReferenceTo: [metaData.dataProvider]});
+                    tempMap.set(linkReference.referencedDataBook, {referencedCellEditors: [column.cellEditor]});
                     this.dataBooks.set(screenName, tempMap);
                 }
 
