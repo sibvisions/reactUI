@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useLayoutEffect, useState } from 'react';
+import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import PrimeReact, { addLocale, locale } from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
@@ -30,6 +30,7 @@ import tinycolor from 'tinycolor2';
 
 const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unknown>) => void }> = ({ error, resetErrorBoundary }) => {
     const [showDetails, setShowDetails] = useState<boolean>();
+
     return (
         <div className='crash-main'>
             <div className='crash-banner'>

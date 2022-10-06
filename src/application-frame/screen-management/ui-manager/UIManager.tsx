@@ -80,6 +80,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const embeddedContext = useContext(EmbeddedContext);
 
+    const [reloadImages, setReloadImages] = useState<boolean>(false);
+
     /** Current state of screen title, displays the screen title */
     const screenTitle = useScreenTitle();
 
@@ -220,7 +222,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     return (
         (showDesignerView) ?
-            <ReactUIDesigner uploadUrl={context.server.designerUrl} isCorporation={isCorporation(appLayout, appTheme)}>
+            <ReactUIDesigner reloadImages={() => setReloadImages(prevState => !prevState)} uploadUrl={context.server.designerUrl} isCorporation={isCorporation(appLayout, appTheme)}>
                 {content}
             </ReactUIDesigner> 
             :

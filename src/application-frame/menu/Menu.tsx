@@ -405,7 +405,7 @@ const Menu: FC<IMenu> = (props) => {
                 )}>
                     <div className={"menu-header"}>
                         <div className="menu-logo-wrapper" ref={menuLogoRef}>
-                            <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+                            <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL + '?v=' + Date.now() : context.appSettings.LOGO_BIG + '?v=' + Date.now())} alt="logo" />
                         </div>
                         <div className="menu-topbar">
                             <div className="menu-topbar-left">
