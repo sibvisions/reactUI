@@ -228,11 +228,9 @@ export default class AppSettings {
         if (!this.applicationMetaData.applicationLayout.urlSet) {
             this.applicationMetaData.applicationLayout.layout = appMetaData.applicationLayout
         }
-
+        
         if (appMetaData.applicationName) {
             this.applicationMetaData.applicationName = appMetaData.applicationName;
-            this.#subManager.notifyAppNameChanged(appMetaData.applicationName);
-            this.#subManager.notifyScreenTitleChanged(appMetaData.applicationName);
         }
 
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {

@@ -133,6 +133,12 @@ export default abstract class BaseContentStore {
     //Maybe unnecessary in the future
     timer:Timer|undefined;
 
+    tabTitle: string = "";
+
+    topbarTitleSetByServer: string = "";
+
+    isTopbarTitleSetByServer: boolean = false;
+
     constructor(history?:History<any>) {
         this.history = history;
     }

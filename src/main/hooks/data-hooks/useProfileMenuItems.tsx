@@ -102,11 +102,11 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             }
         })
 
-        profileMenuItems.push({
-            separator: true
-        })
-
         if (logoutVisible !== false) {
+            profileMenuItems.push({
+                separator: true
+            })
+
             profileMenuItems.push({
                 label: translation.get("Logout"),
                 icon: "pi pi-power-off",

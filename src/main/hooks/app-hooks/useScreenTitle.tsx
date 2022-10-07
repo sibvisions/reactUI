@@ -19,16 +19,16 @@ import { appContext } from "../../contexts/AppProvider";
 /**
  * This Hook returns the screenTitle of either the application if no screen is active or the currently active screen.
  */
-const useScreenTitle = () => {
+const useScreenTitle = (init:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** Current state of screen title, displays the screen title */
-    const [screenTitle, setScreenTitle] = useState<string>("");
+    const [screenTitle, setScreenTitle] = useState<string>(init);
 
     // Subscribes to the screen-title
     useEffect(() => {
-        context.subscriptions.subscribeToScreenTitle((appName: string) => setScreenTitle(appName));
+        context.subscriptions.subscribeToScreenTitle((screenTitle: string) => setScreenTitle(screenTitle));
 
         return () => context.subscriptions.unsubscribeFromScreenTitle();
     }, [context.subscriptions]);

@@ -17,6 +17,8 @@ import BaseResponse from "../BaseResponse"
 
 /** Interface for ApplicationParametersResponse */
 interface ApplicationParametersResponse extends BaseResponse {
-    [key:string]: any
+    [key:string]: any,
+    Application_title_web?: string,
+    Application_title_name?: string
 }
 export default ApplicationParametersResponse

@@ -79,6 +79,7 @@ const api = new API(server, contentStore, appSettings, subscriptions);
 
 contentStore.setSubscriptionManager(subscriptions);
 contentStore.setServer(server);
+contentStore.setAppSettings(appSettings)
 
 server.setAPI(api);
 

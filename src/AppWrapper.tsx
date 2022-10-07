@@ -43,8 +43,8 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** If the confirm-dialog is visible and the message-properties */
     const [messageVisible, messageProps] = useConfirmDialogProps();
 
-    /** The state of the app-name */
-    const [appName, setAppName] = useState<string>(context.appSettings.applicationMetaData.applicationName);
+    /** The state of the tab-title */
+    const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
     /** The state of the css-version */
     const [cssVersion, setCssVersion] = useState<string>("");
@@ -74,14 +74,14 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
-        context.subscriptions.subscribeToAppName((newAppName: string) => setAppName(newAppName));
+        context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
 
         context.subscriptions.subscribeToCssVersion((version: string) => setCssVersion(version));
 
         context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
 
         return () => {
-            context.subscriptions.unsubscribeFromAppName((newAppName: string) => setAppName(newAppName));
+            context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
             context.subscriptions.unsubscribeFromCssVersion();
             context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
         }
@@ -132,7 +132,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     return (
         <>
             <Helmet>
-                <title>{appName ? appName : "<App-Name>"}</title>
+                <title>{tabTitle ? tabTitle : "<App-Name>"}</title>
             </Helmet>
             <ErrorDialog />
             <UIToast />

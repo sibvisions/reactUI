@@ -160,8 +160,8 @@ export class SubscriptionManager {
     /** An array of function to subscribe components to app restart */
     restartSubscriber = new Array<Function>();
 
-    /** An array of functions to subscribes components to the app-name */
-    appNameSubscriber = new Array<Function>();
+    /** An array of functions to subscribes components to the tab-title */
+    tabTitleSubscriber = new Array<Function>();
 
     /** A function that subscribes the AppWrapper to the css-version of application.css */
     cssVersionSubscriber:Function = () => {};
@@ -489,11 +489,11 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes to app-name
+     * Subscribes to tab-title
      * @param fn - the function to update the state
      */
-    subscribeToAppName(fn: Function) {
-        this.appNameSubscriber.push(fn);
+    subscribeToTabTitle(fn: Function) {
+        this.tabTitleSubscriber.push(fn);
     }
 
     /**
@@ -744,11 +744,11 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes from appname
+     * Unsubscribes from tab-title
      * @param fn - the function to update the state
      */
-    unsubscribeFromAppName(fn:Function) {
-        this.appNameSubscriber.splice(this.appNameSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    unsubscribeFromTabTitle(fn:Function) {
+        this.tabTitleSubscriber.splice(this.tabTitleSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
     /**
@@ -833,8 +833,8 @@ export class SubscriptionManager {
         this.screenTitleSubscriber.apply(undefined, [screenTitle])
     }
 
-    notifyAppNameChanged(appName:string) {
-        this.appNameSubscriber.forEach(subFunction => subFunction.apply(undefined, [appName]));
+    notifyTabTitleChanged(tabTitle:string) {
+        this.tabTitleSubscriber.forEach(subFunction => subFunction.apply(undefined, [tabTitle]));
     }
 
     /**

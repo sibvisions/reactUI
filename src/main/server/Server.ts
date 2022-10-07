@@ -304,8 +304,21 @@ class Server extends BaseServer {
      */
     applicationParameters(appParams:ApplicationParametersResponse) {
         for (const [key, value] of Object.entries(appParams)) {
-            if (key !== "name")
+            if (["name", "Application_title_web", "Application_title_name"].indexOf(key) === -1) {
                 (this.contentStore as ContentStore).handleCustomProperties(key, value);
+            }
+        }
+
+        if (appParams.Application_title_web) {
+            this.contentStore.tabTitle = appParams.Application_title_web;
+            this.subManager.notifyTabTitleChanged(appParams.Application_title_web);
+        }
+
+        if (appParams.Application_title_name) {
+            this.contentStore.topbarTitleSetByServer = appParams.Application_title_name;
+            this.contentStore.isTopbarTitleSetByServer = true;
+            this.subManager.notifyScreenTitleChanged(appParams.Application_title_name);
+            
         }
     }
 

@@ -82,7 +82,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const embeddedContext = useContext(EmbeddedContext);
 
     /** Current state of screen title, displays the screen title */
-    const screenTitle = useScreenTitle();
+    const screenTitle = useScreenTitle(context.contentStore.topbarTitleSetByServer);
 
     const setImagesChanged = useDesignerImages('man');
 
@@ -141,17 +141,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
             context.subscriptions.unsubscribeFromTheme("uimanager");
         }
     }, [context.subscriptions])
-
-    /** At the first render or when a screen is changing, call notifyScreenNameChanged, that screenName gets updated */
-    useEffect(() => {
-        let screenTitle = context.appSettings.applicationMetaData.applicationName;
-        Children.forEach(props.children,child => {
-            const childWithProps = (child as ChildWithProps);
-            if (childWithProps && childWithProps.props && childWithProps.props.screen_title_)
-                screenTitle = childWithProps.props.screen_title_;
-        })      
-        context.subscriptions.notifyScreenTitleChanged(screenTitle)
-    }, [props.children, context.subscriptions]);
 
     const CustomWrapper = props.customAppWrapper;
 
