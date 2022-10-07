@@ -30,6 +30,7 @@ import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { IExtendableToggleButton } from "../../../extend-components/buttons/ExtendToggleButton";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 
 /**
  * This component displays a Button which can be toggled on and off
@@ -105,7 +106,8 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
                     props.focusable === false ? "no-focus-rect" : "",
-                    props.style
+                    props.style,
+                    isCompDisabled(props) ? "togglebutton-disabled" : ""
                 )}
                 style={{
                     ...btnStyle.style,

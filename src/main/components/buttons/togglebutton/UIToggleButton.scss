@@ -38,5 +38,10 @@
         border-color: transparent;
     }
 
+    &.togglebutton-disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
     @include toggleBtnHover;
 }
