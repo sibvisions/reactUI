@@ -235,7 +235,7 @@ body {
 .basti .rc-button {
   padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem)); }
 
-.basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
+.basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton) {
   padding: var(--btnPadding, var(--button-icon-only-padding, 0.5rem 0.5rem)); }
 
 .basti .p-button.p-button-icon-only.p-autocomplete-dropdown, .basti .p-button.p-button-icon-only.p-datepicker-trigger {

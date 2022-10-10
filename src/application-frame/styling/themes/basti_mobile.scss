@@ -500,7 +500,7 @@ body {
     }
     
     .p-button.p-button-icon-only {
-        &:not(.rc-toolbar-button):not(.p-speeddial-button) {
+        &:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton) {
             padding: var(--btnPadding, var(--button-icon-only-padding, 0.5rem 0.5rem));
         }
 

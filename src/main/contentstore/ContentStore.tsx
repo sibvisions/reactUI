@@ -56,7 +56,6 @@ export default class ContentStore extends BaseContentStore {
      * @param popup - true, if the newly opened screen is a popup
      */
     setActiveScreen(screenInfo?:ActiveScreen, popup?:boolean) {
-        console.log(this.appSettings)
         if (screenInfo) {
             if (popup) {
                 const popupScreen:ActiveScreen = {...screenInfo};

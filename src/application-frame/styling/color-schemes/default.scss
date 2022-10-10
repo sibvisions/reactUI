@@ -227,6 +227,8 @@
     /// Default overlay background for popupmenubuttons
     --popupmenubutton-panel-background:#ffffff;
 
+    --popupmenubutton-item-color:var(--text-color);
+
     /// Default popupmenu item hover background
     --popupmenubutton-item-hover-background:#e9ecef;
 
@@ -850,13 +852,13 @@ body {
         &:not(.p-disabled):hover {
             background: var(--popupmenubutton-item-hover-background);
             
-            .p-menuitem-text {
+            .p-menuitem-text, .p-menuitem-icon {
                 color: var(--popupmenubutton-item-hover-text-color);
             }
         }
 
-        .p-menuitem-text{
-            color: var(--text-color);
+        .p-menuitem-text, .p-menuitem-icon {
+            color: var(--popupmenubutton-item-color);
         }
     }
 

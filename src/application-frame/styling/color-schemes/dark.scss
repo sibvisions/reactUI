@@ -227,6 +227,8 @@
     /// Darkmode overlay background for popupmenubuttons
     --popupmenubutton-panel-background:#3f4b5b;
 
+    --popupmenubutton-item-color:var(--text-color);
+
     /// Darkmode popupmenu item hover background
     --popupmenubutton-item-hover-background:#303a48;
 
@@ -850,13 +852,13 @@ body {
         &:not(.p-disabled):hover {
             background: var(--popupmenubutton-item-hover-background);
             
-            .p-menuitem-text {
+            .p-menuitem-text, .p-menuitem-icon {
                 color: var(--popupmenubutton-item-hover-text-color);
             }
         }
 
-        .p-menuitem-text{
-            color: var(--text-color);
+        .p-menuitem-text, .p-menuitem-icon {
+            color: var(--popupmenubutton-item-color);
         }
     }
 

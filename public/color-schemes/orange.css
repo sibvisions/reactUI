@@ -98,6 +98,7 @@
   --linked-item-hover-text-color:#000000;
   --linked-highlighted-color: #E3F2FD;
   --popupmenubutton-panel-background:#ffffff;
+  --popupmenubutton-item-color:var(--text-color);
   --popupmenubutton-item-hover-background:#e9ecef;
   --popupmenubutton-item-hover-text-color:#000000;
   --date-panel-background:#ffffff;
@@ -407,11 +408,11 @@ body {
 
 .p-menu .p-menuitem-link:not(.p-disabled):hover {
   background: var(--popupmenubutton-item-hover-background); }
-  .p-menu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text {
+  .p-menu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text, .p-menu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-icon {
     color: var(--popupmenubutton-item-hover-text-color); }
 
-.p-menu .p-menuitem-link .p-menuitem-text {
-  color: var(--text-color); }
+.p-menu .p-menuitem-link .p-menuitem-text, .p-menu .p-menuitem-link .p-menuitem-icon {
+  color: var(--popupmenubutton-item-color); }
 
 .p-menu .p-menuitem-text {
   color: var(--text-color); }
