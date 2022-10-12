@@ -168,6 +168,9 @@
 
     --toolbar-separator-color:#bbbbbb;
 
+    /// table unselected border
+    --table-border:1px solid #ced4da;
+
     /// Blue table-header background
     --table-header-background:#ffffff;
 
@@ -216,6 +219,8 @@
     /// Blue LinkedCellEditor panel background
     --linked-panel-background:#ffffff;
 
+    --linked-item-color:var(--text-color);
+
     /// Blue LinkedCellEditor item hover background
     --linked-item-hover-background:#e9ecef;
 
@@ -237,6 +242,8 @@
 
     /// Blue DateCellEditor panel background
     --date-panel-background:#ffffff;
+
+    --date-panel-color:var(--text-color);
 
     /// Blue DateCellEditor header border
     --date-panel-header-border:1px solid #dee2e6;
@@ -296,6 +303,8 @@
 
     /// Blue HTMLEditor toolbar border
     --html-toolbar-border:1px solid #dee2e6;
+
+    --html-toolbar-button-background:var(--text-color);
 
     /// Blue HTMLEditor button hover colors
     --html-toolbar-button-hover-background:#000000;
@@ -768,9 +777,14 @@ body {
 }
 
 /// Checkbox & Radiobutton
-.p-checkbox .p-checkbox-box, .p-radiobutton .p-radiobutton-box {
-    background: var(--input-background);
-    border: var(--input-border);
+.p-checkbox .p-checkbox-box {
+    background: var(--checkbox-background);
+    border: var(--checkbox-border);
+}
+
+.p-radiobutton .p-radiobutton-box {
+    background: var(--radiobutton-background);
+    border: var(--radiobutton-border);
 }
 
 .p-checkbox {
@@ -939,7 +953,7 @@ body {
     &:not(.p-datepicker-inline) {
         &, .p-datepicker-header {
             background: var(--date-panel-background);
-            color: var(--text-color);
+            color: var(--date-panel-color);
         }
     }
 
@@ -948,7 +962,7 @@ body {
         .p-datepicker-title {
             .p-datepicker-month, .p-datepicker-year {
                 background-color: var(--date-panel-background);
-                color: var(--text-color);
+                color: var(--date-panel-color);
             }
 
             select:focus {
@@ -1004,7 +1018,7 @@ body {
     .p-autocomplete-items {
         .p-autocomplete-item {
             background: var(--linked-panel-background);
-            color: var(--text-color);
+            color: var(--linked-item-color);
 
             &:hover {
                 background: var(--linked-item-hover-background);
@@ -1024,7 +1038,7 @@ body {
 
                 &.p-highlight {
                     background: var(--linked-highlighted-color);
-                    color: var(--text-color);
+                    color: var(--linked-item-color);
 
                     &:hover {
                         background: var(--table-row-hover-background);
@@ -1040,7 +1054,7 @@ body {
 
                 &.p-highlight {
                     background: var(--linked-highlighted-color);
-                    color: var(--text-color);
+                    color: var(--linked-item-color);
 
                     &:hover {
                         background: var(--table-row-hover-background);
@@ -1050,7 +1064,7 @@ body {
         }
         .p-autocomplete-item-group > * {
             background: var(--table-header-background);
-            color: var(--text-color);
+            color: var(--linked-item-color);
             border-bottom: var(--table-header-border);
         }
 
@@ -1077,7 +1091,7 @@ body {
 
             .ql-formats {
                 .ql-picker .ql-picker-label, button {
-                    color: var(--text-color);
+                    color: var(--html-toolbar-button-background);
 
                     &:hover {
                         color: var(--html-toolbar-button-hover-background);
@@ -1091,13 +1105,13 @@ body {
     
                     svg {
                         polygon, path, line, rect, polyline {
-                            stroke: var(--text-color);
+                            stroke: var(--html-toolbar-button-background);
                         }
                     }
 
                     &.ql-source {
                         svg path {
-                            fill: var(--text-color);
+                            fill: var(--html-toolbar-button-background);
                         }
 
                         &:hover {
@@ -1150,7 +1164,7 @@ body {
 
 /// Table
 .rc-table {
-    border: var(--input-border);
+    border: var(--table-border);
 
     table {
         border-style: hidden;

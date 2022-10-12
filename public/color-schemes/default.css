@@ -78,6 +78,7 @@
   --toolbar-background:#f8f9fa;
   --toolbar-border-color:#dee2e6;
   --toolbar-separator-color:#bbbbbb;
+  --table-border:1px solid #ced4da;
   --table-header-background:#ffffff;
   --table-header-border:1px solid #e9ecef;
   --table-header-hover-background:#e9ecef;
@@ -94,6 +95,7 @@
   --table-readonly-odd-background:rgb(239, 239, 239);
   --table-sort-color:#2196F3;
   --linked-panel-background:#ffffff;
+  --linked-item-color:var(--text-color);
   --linked-item-hover-background:#e9ecef;
   --linked-item-hover-text-color:#000000;
   --linked-highlighted-color: #E3F2FD;
@@ -102,6 +104,7 @@
   --popupmenubutton-item-hover-background:#e9ecef;
   --popupmenubutton-item-hover-text-color:#000000;
   --date-panel-background:#ffffff;
+  --date-panel-color:var(--text-color);
   --date-panel-header-border:1px solid #dee2e6;
   --date-panel-hover-color:var(--text-color);
   --date-selected-background:#e3f2fd;
@@ -122,6 +125,7 @@
   --tree-even-background:var(--table-row-odd-background);
   --html-toolbar-background:#f8f9fa;
   --html-toolbar-border:1px solid #dee2e6;
+  --html-toolbar-button-background:var(--text-color);
   --html-toolbar-button-hover-background:#000000;
   --html-picker-expanded-background:#ffffff;
   --html-picker-item-hover-background:#e9ecef;
@@ -356,9 +360,13 @@ body {
 .border-notpainted:not(.p-button-link), .border-notpainted:enabled:hover:not(.p-button-link) {
   color: var(--text-color); }
 
-.p-checkbox .p-checkbox-box, .p-radiobutton .p-radiobutton-box {
-  background: var(--input-background);
-  border: var(--input-border); }
+.p-checkbox .p-checkbox-box {
+  background: var(--checkbox-background);
+  border: var(--checkbox-border); }
+
+.p-radiobutton .p-radiobutton-box {
+  background: var(--radiobutton-background);
+  border: var(--radiobutton-border); }
 
 .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover {
   border-color: var(--border-color-hover); }
@@ -461,12 +469,12 @@ body {
   border-radius: var(--date-border-radius); }
   .p-datepicker:not(.p-datepicker-inline), .p-datepicker:not(.p-datepicker-inline) .p-datepicker-header {
     background: var(--date-panel-background);
-    color: var(--text-color); }
+    color: var(--date-panel-color); }
   .p-datepicker .p-datepicker-header {
     border-bottom: var(--date-panel-header-border); }
     .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-month, .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-year {
       background-color: var(--date-panel-background);
-      color: var(--text-color); }
+      color: var(--date-panel-color); }
     .p-datepicker .p-datepicker-header .p-datepicker-title select:focus {
       box-shadow: var(--focus-box-shadow);
       border-color: var(--border-color-hover); }
@@ -497,7 +505,7 @@ body {
   border-radius: var(--linked-border-radius); }
   .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
     background: var(--linked-panel-background);
-    color: var(--text-color); }
+    color: var(--linked-item-color); }
     .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:hover {
       background: var(--linked-item-hover-background);
       color: var(--linked-item-hover-text-color); }
@@ -507,7 +515,7 @@ body {
       background: var(--table-row-hover-background); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd).p-highlight {
       background: var(--linked-highlighted-color);
-      color: var(--text-color); }
+      color: var(--linked-item-color); }
       .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd).p-highlight:hover {
         background: var(--table-row-hover-background); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even) {
@@ -516,12 +524,12 @@ body {
       background: var(--table-row-hover-background); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even).p-highlight {
       background: var(--linked-highlighted-color);
-      color: var(--text-color); }
+      color: var(--linked-item-color); }
       .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(even).p-highlight:hover {
         background: var(--table-row-hover-background); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item-group > * {
     background: var(--table-header-background);
-    color: var(--text-color);
+    color: var(--linked-item-color);
     border-bottom: var(--table-header-border); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item > * {
     border-bottom: var(--table-row-border); }
@@ -536,15 +544,15 @@ body {
   .p-editor-container .p-editor-toolbar.ql-snow {
     border: var(--input-border); }
     .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button {
-      color: var(--text-color); }
+      color: var(--html-toolbar-button-background); }
       .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label:hover, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button:hover {
         color: var(--html-toolbar-button-hover-background); }
         .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label:hover svg polygon, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label:hover svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label:hover svg line, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label:hover svg rect, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label:hover svg polyline, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button:hover svg polygon, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button:hover svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button:hover svg line, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button:hover svg rect, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button:hover svg polyline {
           stroke: var(--html-toolbar-button-hover-background); }
       .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg polygon, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg line, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg rect, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg polyline, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg polygon, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg line, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg rect, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg polyline {
-        stroke: var(--text-color); }
+        stroke: var(--html-toolbar-button-background); }
       .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.ql-source svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.ql-source svg path {
-        fill: var(--text-color); }
+        fill: var(--html-toolbar-button-background); }
       .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.ql-source:hover svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.ql-source:hover svg path {
         fill: var(--html-toolbar-button-hover-background); }
     .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker.ql-expanded .ql-picker-options {
@@ -571,7 +579,7 @@ body {
   border: var(--input-border) !important; }
 
 .rc-table {
-  border: var(--input-border); }
+  border: var(--table-border); }
   .rc-table table {
     border-style: hidden;
     box-shadow: 0 0 0 1px #e9ecef; }
