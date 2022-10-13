@@ -236,11 +236,10 @@ body {
 
 .basti_small .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton) {
   padding: var(--btnPadding, var(--button-icon-only-padding, 0.25rem 0.25rem)); }
-
-.basti_small .p-button.p-button-icon-only.p-autocomplete-dropdown, .basti_small .p-button.p-button-icon-only.p-datepicker-trigger {
-  padding: var(--input-button-padding); }
-  .basti_small .p-button.p-button-icon-only.p-autocomplete-dropdown > .p-button-icon, .basti_small .p-button.p-button-icon-only.p-datepicker-trigger > .p-button-icon {
-    font-size: var(--input-button-icon-size); }
+  .basti_small .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-autocomplete-dropdown, .basti_small .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-datepicker-trigger {
+    padding: var(--input-button-padding); }
+    .basti_small .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-autocomplete-dropdown > .p-button-icon, .basti_small .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-datepicker-trigger > .p-button-icon {
+      font-size: var(--input-button-icon-size); }
 
 .basti_small .open-cell-editor .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
   padding: 0px; }

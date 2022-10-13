@@ -427,12 +427,12 @@ body {
     .p-button.p-button-icon-only {
         &:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton) {
             padding: var(--btnPadding, var(--button-icon-only-padding, 0.25rem 0.25rem));
-        }
-        
-        &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-            padding: var(--input-button-padding);
-            > .p-button-icon {
-                font-size: var(--input-button-icon-size);
+
+            &.p-autocomplete-dropdown, &.p-datepicker-trigger {
+                padding: var(--input-button-padding);
+                > .p-button-icon {
+                    font-size: var(--input-button-icon-size);
+                }
             }
         }
     }
