@@ -257,10 +257,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const autoRef: any = linkedRef.current
         if (autoRef) {
             autoRef.dropdownButton.tabIndex = -1;
-
-            if (props.isReadOnly) {
-                autoRef.dropdownButton.disabled = true;
-            }
         }
 
         if (props.isCellEditor && props.passedKey) {
@@ -274,6 +270,21 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             }
         }
     }, []);
+
+    useEffect(() => {
+        const autoRef: any = linkedRef.current
+        if (autoRef) {
+            if (props.isReadOnly) {
+                if (!autoRef.dropdownButton.disabled) {
+                    autoRef.dropdownButton.disabled = true;
+                }
+                
+            }
+            else if (autoRef.dropdownButton.disabled) {
+                autoRef.dropdownButton.disabled = false;
+            }
+        }
+    }, [props.isReadOnly])
 
     // Sets the textCopy to the text so textCopy isn't empty on celleditor unmount
     useEffect(() => {

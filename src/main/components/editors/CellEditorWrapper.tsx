@@ -58,9 +58,8 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
 
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataRow);
-
     /** If the CellEditor is read-only */
-    const isReadOnly = useMemo(() => (props.isReadOnly !== undefined && props.isCellEditor) ? props.isReadOnly : isCellEditorReadOnly(props), [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled]);
+    const isReadOnly = useMemo(() => (props.isReadOnly !== undefined && props.isCellEditor) ? props.isReadOnly : isCellEditorReadOnly(props), [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled, props.isReadOnly]);
 
     return createEditor(
         {
