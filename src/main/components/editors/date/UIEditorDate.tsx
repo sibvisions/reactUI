@@ -180,17 +180,27 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
             }
         },0);
 
-        if (calendar.current && props.isReadOnly) {
-            //@ts-ignore
-            calendar.current.container.querySelector("button").disabled = true;
-        }
-
         return () => {
             if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor) {
                 handleDateInput();
             }
         }
     },[])
+
+    useEffect(() => {
+        if (calendar.current) {
+            //@ts-ignore
+            const btnElem = calendar.current.container.querySelector("button");
+            if (props.isReadOnly) {
+                if (!btnElem.disabled) {
+                    btnElem.disabled = true;
+                }
+            }
+            else if (btnElem.disable) {
+                btnElem.disabled = false;
+            }
+        }
+    }, [props.isReadOnly])
 
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
