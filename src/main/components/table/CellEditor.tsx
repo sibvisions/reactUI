@@ -122,7 +122,8 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 passedKey: passedValues,
                 isCellEditor: true,
                 cellScreenName: props.dataProvider.split("/")[1],
-                rowNumber: props.rowNumber
+                rowNumber: props.rowNumber,
+                isReadOnly: props.isReadOnly
             }} />
     }
     return editor
@@ -339,39 +340,33 @@ export const CellEditor: FC<ICellEditor> = (props) => {
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
-        isEditable ?
-            (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
-                ((edit && !waiting) ?
-                    <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                        {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
-                    </div>
-                    :
-                    <div
-                        style={cellStyle}
-                        className={cellClassNames.join(' ') + " " + isEditable}
-                        onClick={() => {
-                            if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
-                                setWaiting(true);
-                                setEdit(true);
-                            }
-                        }}>
-                        <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
-                    </div>
-                ) : (!edit ?
-                    <div
-                        style={cellStyle}
-                        className={cellClassNames.join(' ')}
-                        onDoubleClick={handleDoubleClick}>
-                        <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
-                    </div>
-                    :
-                    <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                        {displayEditor(columnMetaData, props, stopCellEditing, passRef.current)}
-                    </div>)
-            : <div
-                style={cellStyle}
-                className={cellClassNames.join(' ')}>
-                <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
-            </div>
+        (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
+            ((edit && !waiting) ?
+                <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
+                    {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable}, stopCellEditing, passRef.current)}
+                </div>
+                :
+                <div
+                    style={cellStyle}
+                    className={cellClassNames.join(' ') + " " + isEditable}
+                    onClick={() => {
+                        if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
+                            setWaiting(true);
+                            setEdit(true);
+                        }
+                    }}>
+                    <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
+                </div>
+            ) : (!edit ?
+                <div
+                    style={cellStyle}
+                    className={cellClassNames.join(' ')}
+                    onDoubleClick={handleDoubleClick}>
+                    <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
+                </div>
+                :
+                <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
+                    {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable}, stopCellEditing, passRef.current)}
+                </div>)
     )
 }

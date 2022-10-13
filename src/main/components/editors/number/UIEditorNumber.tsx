@@ -103,6 +103,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             props.columnMetaData?.nullable === false ? "required-field" : "",
             props.isCellEditor ? "open-cell-editor" : undefined,
             props.focusable === false ? "no-focus-rect" : "",
+            props.isReadOnly ? "rc-input-readonly" : "",
             props.style
         )
     }, [props.columnMetaData?.nullable]);
@@ -269,7 +270,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             sendSetValues(props.dataRow, props.name, props.columnName, typeof event.target.value === 'string' ? parseNumber(event.target.value) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                         }
                     }}
-                    disabled={props.isReadOnly}
+                    readOnly={props.isReadOnly}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                     tooltip={props.toolTipText}
                     tooltipOptions={{position: "left"}}
@@ -296,7 +297,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onValueChange={event => setValue(event.value)}
                 onBlur={(event) => sendSetValues(props.dataRow, props.name, props.columnName, typeof event.target.value === 'string' ? parseNumber(event.target.value) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
-                disabled={props.isReadOnly}
+                readOnly={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}
                 tooltipOptions={{position: "left"}}

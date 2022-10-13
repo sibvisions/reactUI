@@ -257,6 +257,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const autoRef: any = linkedRef.current
         if (autoRef) {
             autoRef.dropdownButton.tabIndex = -1;
+
+            if (props.isReadOnly) {
+                autoRef.dropdownButton.disabled = true;
+            }
         }
 
         if (props.isCellEditor && props.passedKey) {
@@ -742,6 +746,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     props.focusable === false ? "no-focus-rect" : "",
                     props.style
                 )}
+                inputClassName={props.isReadOnly ? "rc-input-readonly" : ""}
                 panelClassName={concatClassnames(
                     "rc-editor-linked-dropdown",
                     "dropdown-" + props.name, props.isCellEditor ? "dropdown-celleditor" : "", 
@@ -755,7 +760,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     ...props.cellStyle,
                     borderRight: "none" 
                 }}
-                disabled={props.isReadOnly}
+                readOnly={props.isReadOnly}
                 dropdown
                 completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}

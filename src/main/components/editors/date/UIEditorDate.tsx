@@ -180,6 +180,11 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
             }
         },0);
 
+        if (calendar.current && props.isReadOnly) {
+            //@ts-ignore
+            calendar.current.container.querySelector("button").disabled = true;
+        }
+
         return () => {
             if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor) {
                 handleDateInput();
@@ -318,6 +323,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                     props.style
                 )}
                 panelClassName="rc-editor-date-panel"
+                inputClassName={props.isReadOnly ? "rc-input-readonly" : ""}
                 style={{
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
@@ -377,7 +383,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                     }
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                disabled={props.isReadOnly}
+                readOnlyInput={props.isReadOnly}
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {
