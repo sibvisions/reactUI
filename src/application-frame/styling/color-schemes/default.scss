@@ -315,6 +315,10 @@
     /// Default HTMLEditor picker item hover background
     --html-picker-item-hover-background:#e9ecef;
 
+    --html-picker-item-color:var(--text-color);
+
+    --html-picker-item-hover-color:#000000;
+
     /// Default Message info background
     --message-info-header-background:var(--primary-color);
 
@@ -1087,7 +1091,7 @@ body {
         border-top-right-radius: var(--editor-border-radius);
 
         &.ql-snow {
-            border: var(--input-border);
+            border: var(--html-toolbar-border);
 
             .ql-formats {
                 .ql-picker .ql-picker-label, button {
@@ -1126,10 +1130,11 @@ body {
                     background: var(--html-picker-expanded-background);
 
                     .ql-picker-item {
-                        color: var(--text-color);
+                        color: var(--html-picker-item-color);
 
                         &:hover {
                             background: var(--html-picker-item-hover-background);
+                            color: var(--html-picker-item-hover-color);
                         }
                     }
                 }

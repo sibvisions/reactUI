@@ -129,6 +129,8 @@
   --html-toolbar-button-hover-background:#000000;
   --html-picker-expanded-background:#ffffff;
   --html-picker-item-hover-background:#e9ecef;
+  --html-picker-item-color:var(--text-color);
+  --html-picker-item-hover-color:#000000;
   --message-info-header-background:var(--primary-color);
   --message-info-header-close-hover:#276b96;
   --message-info-header-color:#ffffff;
@@ -542,7 +544,7 @@ body {
   border-top-left-radius: var(--editor-border-radius);
   border-top-right-radius: var(--editor-border-radius); }
   .p-editor-container .p-editor-toolbar.ql-snow {
-    border: var(--input-border); }
+    border: var(--html-toolbar-border); }
     .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button {
       color: var(--html-toolbar-button-background); }
       .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label:hover, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button:hover {
@@ -558,9 +560,10 @@ body {
     .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker.ql-expanded .ql-picker-options {
       background: var(--html-picker-expanded-background); }
       .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker.ql-expanded .ql-picker-options .ql-picker-item {
-        color: var(--text-color); }
+        color: var(--html-picker-item-color); }
         .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker.ql-expanded .ql-picker-options .ql-picker-item:hover {
-          background: var(--html-picker-item-hover-background); }
+          background: var(--html-picker-item-hover-background);
+          color: var(--html-picker-item-hover-color); }
 
 .p-editor-container .p-editor-content {
   border: var(--input-border);
