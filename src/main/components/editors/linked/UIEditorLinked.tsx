@@ -226,10 +226,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 }
                 return props.cellEditor.linkReference;
             }
-
-            const linkReference = getCorrectLinkReference()
-            if (linkReference.dataToDisplayMap?.has(JSON.stringify(value))) {
-                return linkReference.dataToDisplayMap!.get(JSON.stringify(value))
+            
+            const linkReference = getCorrectLinkReference();
+            const index = props.cellEditor.linkReference.columnNames.findIndex(colName => colName === props.columnName);
+            const extractedObject = getExtractedObject(value, [linkReference.referencedColumnNames[index]]);
+            if (linkReference.dataToDisplayMap?.has(JSON.stringify(extractedObject))) {
+                return linkReference.dataToDisplayMap!.get(JSON.stringify(extractedObject))
             }
         }
 
@@ -310,7 +312,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 if (cellEditorMetaData) {
                     if (cellEditorMetaData.linkReference) {
                         if (cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
-                            const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference, props.columnName), props.cellEditor.linkReference.referencedColumnNames);
+                            const index = props.cellEditor.linkReference.columnNames.findIndex(colName => colName === props.columnName);
+                            const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference, props.columnName), [props.cellEditor.linkReference.referencedColumnNames[index]]);
                             setText(getDisplayValue(extractedObject))
                             lastValue.current = props.selectedRow.data;
                         }
@@ -319,10 +322,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         const refDB = props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook);
                         if (refDB) {
                             if (refDB.referencedCellEditors) {
-                                refDB.referencedCellEditors.push(props.cellEditor);
+                                refDB.referencedCellEditors.push({cellEditor: props.cellEditor, columnName: props.columnName});
                             }
                             else {
-                                refDB.referencedCellEditors = [props.cellEditor];
+                                refDB.referencedCellEditors = [{cellEditor: props.cellEditor, columnName: props.columnName}];
                             }
                         }
                     }

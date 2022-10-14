@@ -520,9 +520,9 @@ export default abstract class BaseServer {
 
             if (dataBook.metaData) {
                 if (dataBook.referencedCellEditors?.length) {
-                    dataBook.referencedCellEditors.forEach((cellEditor) => {
-                        if (cellEditor.linkReference) {
-                            const castedColumn = cellEditor as ICellEditorLinked;
+                    dataBook.referencedCellEditors.forEach((column) => {
+                        if (column.cellEditor.linkReference) {
+                            const castedColumn = column.cellEditor as ICellEditorLinked;
                             let dataToDisplayMap = new Map<string, string>();
                             if (castedColumn.linkReference.dataToDisplayMap) {
                                 dataToDisplayMap = castedColumn.linkReference.dataToDisplayMap
@@ -530,7 +530,8 @@ export default abstract class BaseServer {
     
                             builtData.forEach((data) => {
                                 if (data) {
-                                    const referencedData = getExtractedObject(data, castedColumn.linkReference.referencedColumnNames);
+                                    const index = castedColumn.linkReference.columnNames.findIndex(colName => colName === column.columnName);
+                                    const referencedData = getExtractedObject(data, [castedColumn.linkReference.referencedColumnNames[index]]);
                                     const columnViewData = getExtractedObject(data, Object.keys(data).filter(key => key !== "__recordFormats" && key !== "recordStatus"));
                                     const columnViewNames = castedColumn.columnView ? castedColumn.columnView.columnNames : dataBook.metaData!.columnView_table_;
                                     if (castedColumn.displayReferencedColumnName) {
