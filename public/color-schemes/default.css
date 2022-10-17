@@ -89,12 +89,14 @@
   --table-row-even-background:#ffffff;
   --table-row-hover-background:#e9ecef;
   --table-row-border:1px solid #e9ecef;
+  --table-text-color:var(--text-color);
   --table-cell-hover-color:rgb(131, 131, 131);
   --table-required-even-background:rgb(253, 238, 195);
   --table-required-odd-background:rgb(255, 244, 210);
   --table-required-color:var(--text-color);
   --table-readonly-even-background:rgb(230, 230, 230);
   --table-readonly-odd-background:rgb(239, 239, 239);
+  --table-readonly-color:var(--text-color);
   --table-sort-color:#2196F3;
   --linked-panel-background:#ffffff;
   --linked-item-color:var(--text-color);
@@ -650,22 +652,23 @@ body {
         color: var(--table-sort-color); }
   .rc-table .p-datatable-tbody > tr {
     background: var(--table-row-even-background);
-    color: var(--text-color); }
+    color: var(--table-text-color); }
     .rc-table .p-datatable-tbody > tr > td {
       border: var(--table-row-border); }
       .rc-table .p-datatable-tbody > tr > td.p-highlight {
-        color: var(--text-color); }
+        color: var(--table-text-color); }
       .rc-table .p-datatable-tbody > tr > td.cell-required {
         background: var(--table-required-even-background);
         color: var(--table-required-color); }
       .rc-table .p-datatable-tbody > tr > td.cell-readonly {
-        background: var(--table-readonly-even-background); }
+        background: var(--table-readonly-even-background);
+        color: var(--table-readonly-color); }
     .rc-table .p-datatable-tbody > tr.p-highlight {
-      color: var(--text-color);
+      color: var(--table-text-color);
       background: var(--table-selected-row-background) !important; }
       .rc-table .p-datatable-tbody > tr.p-highlight > td .open-cell-editor {
         box-shadow: none;
-        color: var(--text-color); }
+        color: var(--table-text-color); }
         .rc-table .p-datatable-tbody > tr.p-highlight > td .open-cell-editor .p-inputtext:enabled:focus {
           box-shadow: none; }
       .rc-table .p-datatable-tbody > tr.p-highlight > td.cell-required {
@@ -689,7 +692,7 @@ body {
         opacity: 0.8; }
   .rc-table.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):not(.p-datatable-emptymessage):hover {
     background: var(--table-row-hover-background);
-    color: var(--text-color); }
+    color: var(--table-text-color); }
 
 .p-datatable.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row.p-row-odd > td.p-selectable-cell:not(.p-highlight):hover {
   background: initial;

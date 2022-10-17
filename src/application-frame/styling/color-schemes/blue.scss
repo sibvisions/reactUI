@@ -199,6 +199,8 @@
     /// Blue table-row border
     --table-row-border:1px solid #e9ecef;
 
+    --table-text-color:var(--text-color);
+
     /// Blue cell hover color
     --table-cell-hover-color:rgb(131, 131, 131);
 
@@ -216,6 +218,8 @@
 
     /// Blue cell background for readonly fields on odd rows
     --table-readonly-odd-background:rgb(239, 239, 239);
+
+    --table-readonly-color:var(--text-color);
 
     /// Blue table-header sort color
     --table-sort-color:#2196F3;
@@ -1299,13 +1303,13 @@ body {
 
     .p-datatable-tbody > tr {
         background: var(--table-row-even-background);
-        color: var(--text-color);
+        color: var(--table-text-color);
 
         > td {
             border: var(--table-row-border);
 
             &.p-highlight {
-                color: var(--text-color);
+                color: var(--table-text-color);
             }
 
             &.cell-required {
@@ -1315,16 +1319,17 @@ body {
 
             &.cell-readonly {
                 background: var(--table-readonly-even-background);
+                color: var(--table-readonly-color);
             }
         }
 
         &.p-highlight {
-            color: var(--text-color);
+            color: var(--table-text-color);
             background: var(--table-selected-row-background) !important;
 
             > td {
                 .open-cell-editor {
-                    color: var(--text-color);
+                    color: var(--table-text-color);
                 }
 
                 &.cell-required {
@@ -1371,7 +1376,7 @@ body {
 
     &.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):not(.p-datatable-emptymessage):hover {
         background: var(--table-row-hover-background);
-        color: var(--text-color);
+        color: var(--table-text-color);
     }
 }
 
