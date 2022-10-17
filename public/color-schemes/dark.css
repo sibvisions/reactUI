@@ -82,6 +82,8 @@
   --table-header-background:#20262e;
   --table-header-border:1px solid #3f4b5b;
   --table-header-hover-background:#1c283a;
+  --table-header-color:var(--text-color);
+  --table-header-hover-color:#ffffff;
   --table-selected-row-background:linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%);
   --table-row-odd-background:#2a323d;
   --table-row-even-background:#272c33;
@@ -631,14 +633,15 @@ body {
       border-top-right-radius: var(--table-border-radius); }
   .rc-table .p-datatable-thead > tr > th {
     background: var(--table-header-background);
-    border: var(--table-header-border); }
+    border: var(--table-header-border);
+    color: var(--table-header-color); }
     .rc-table .p-datatable-thead > tr > th.sort-asc, .rc-table .p-datatable-thead > tr > th.sort-des {
       color: var(--table-sort-color); }
     .rc-table .p-datatable-thead > tr > th .p-sortable-column-icon {
       color: var(--table-sort-color); }
   .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
     background: var(--table-header-hover-background);
-    color: var(--text-color); }
+    color: var(--table-header-hover-color); }
     .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-asc, .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-des {
       color: var(--table-sort-color); }
       .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-asc .p-sortable-column-icon, .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-des .p-sortable-column-icon {

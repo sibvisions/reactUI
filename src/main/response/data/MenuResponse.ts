@@ -20,6 +20,8 @@ export interface BaseMenuButton {
     componentId: string,
     text: string,
     image:string,
+    quickBarText?: string,
+    sideBarText?: string,
     enabled?: boolean,
     className?: string
     navigationName?:string

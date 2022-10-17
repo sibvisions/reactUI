@@ -180,6 +180,10 @@
     /// Background when hovering a table header column
     --table-header-hover-background:#e9ecef;
 
+    --table-header-color:var(--text-color);
+
+    --table-header-hover-color:#000000;
+
     /// Blue table selected row background
     --table-selected-row-background:linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%) !important;
 
@@ -1269,6 +1273,7 @@ body {
     .p-datatable-thead > tr > th {
         background: var(--table-header-background);
         border: var(--table-header-border);
+        color: var(--table-header-color);
 
         &.sort-asc, &.sort-des {
             color: var(--table-sort-color);
@@ -1281,7 +1286,7 @@ body {
 
     .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
         background: var(--table-header-hover-background);
-        color: var(--text-color);
+        color: var(--table-header-hover-color);
 
         &.sort-asc, &.sort-des {
             color: var(--table-sort-color);

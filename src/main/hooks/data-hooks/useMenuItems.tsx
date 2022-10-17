@@ -49,9 +49,21 @@ const useMenuItems = (menus?:string[]) => {
 
             const iconData = parseIconData(undefined, item.image)
 
+            const getItemLabel = (item:ServerMenuButtons|BaseComponent) => {
+                if (!isBaseComp(item)) {
+                    if (item.quickBarText) {
+                        return item.quickBarText;
+                    }
+                    else if (item.sideBarText) {
+                        return item.sideBarText;
+                    }
+                }
+                return item.text
+            }
+
             // Setting initial menu-item properties
             const menuItem:MenuItem = {
-                label: item.text,
+                label: getItemLabel(item),
                 icon: iconData.icon,
                 style: {...(!isFAIcon(iconData.icon) ? {
                     '--iconWidth': `${iconData.size?.width}px`,
