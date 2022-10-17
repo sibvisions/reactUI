@@ -80,7 +80,8 @@
   --toolbar-separator-color:#bbbbbb;
   --table-border:1px solid #ced4da;
   --table-header-background:#ffffff;
-  --table-header-border:1px solid #e9ecef;
+  --table-header-border-color:#e9ecef;
+  --table-header-border-width:0px 1px 1px 1px;
   --table-header-hover-background:#e9ecef;
   --table-header-color:var(--text-color);
   --table-header-hover-color:#000000;
@@ -88,7 +89,8 @@
   --table-row-odd-background:#fafafa;
   --table-row-even-background:#ffffff;
   --table-row-hover-background:#e9ecef;
-  --table-row-border:1px solid #e9ecef;
+  --table-row-border-color:#e9ecef;
+  --table-row-border-width:0px 0px 1px 0px;
   --table-text-color:var(--text-color);
   --table-cell-hover-color:rgb(131, 131, 131);
   --table-required-even-background:rgb(253, 238, 195);
@@ -536,11 +538,14 @@ body {
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item-group > * {
     background: var(--table-header-background);
     color: var(--linked-item-color);
-    border-bottom: var(--table-header-border); }
+    border-color: var(--table-header-border-color);
+    border-width: 0px 0px 1px 0px; }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item > * {
-    border-bottom: var(--table-row-border); }
+    border-color: var(--table-row-border-color);
+    border-width: 0px 0px 1px 0px; }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-item > *:not(:first-child) {
-      border-left: var(--table-row-border); }
+      border-color: var(--table-row-border-color);
+      border-width: 0px 1px 0px 0px; }
 
 .p-editor-container .p-editor-toolbar {
   background: var(--html-toolbar-background);
@@ -635,13 +640,14 @@ body {
     .rc-table:not(.navtable-north):not(.navtable-west):not(.navtable-east):not(.navtable-south):not(.p-datatable-scrollable) .p-datatable-thead > tr > th:only-child {
       border-top-left-radius: var(--table-border-radius);
       border-top-right-radius: var(--table-border-radius); }
-  .rc-table .p-datatable-thead > tr > th {
+  .rc-table.p-datatable-selectable-cell .p-datatable-thead > tr > th {
     background: var(--table-header-background);
-    border: var(--table-header-border);
+    border-color: var(--table-header-border-color);
+    border-width: var(--table-header-border-width);
     color: var(--table-header-color); }
-    .rc-table .p-datatable-thead > tr > th.sort-asc, .rc-table .p-datatable-thead > tr > th.sort-des {
+    .rc-table.p-datatable-selectable-cell .p-datatable-thead > tr > th.sort-asc, .rc-table.p-datatable-selectable-cell .p-datatable-thead > tr > th.sort-des {
       color: var(--table-sort-color); }
-    .rc-table .p-datatable-thead > tr > th .p-sortable-column-icon {
+    .rc-table.p-datatable-selectable-cell .p-datatable-thead > tr > th .p-sortable-column-icon {
       color: var(--table-sort-color); }
   .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
     background: var(--table-header-hover-background);
@@ -654,7 +660,8 @@ body {
     background: var(--table-row-even-background);
     color: var(--table-text-color); }
     .rc-table .p-datatable-tbody > tr > td {
-      border: var(--table-row-border); }
+      border-color: var(--table-row-border-color);
+      border-width: var(--table-row-border-width); }
       .rc-table .p-datatable-tbody > tr > td.p-highlight {
         color: var(--table-text-color); }
       .rc-table .p-datatable-tbody > tr > td.cell-required {
@@ -667,7 +674,10 @@ body {
       color: var(--table-text-color);
       background: var(--table-selected-row-background) !important; }
       .rc-table .p-datatable-tbody > tr.p-highlight > td .open-cell-editor {
+        box-shadow: none;
         color: var(--table-text-color); }
+        .rc-table .p-datatable-tbody > tr.p-highlight > td .open-cell-editor .p-inputtext:enabled:focus {
+          box-shadow: none; }
       .rc-table .p-datatable-tbody > tr.p-highlight > td.cell-required {
         background: var(--table-required-even-background);
         opacity: 0.8; }
@@ -687,7 +697,7 @@ body {
       .rc-table .p-datatable-tbody > tr.p-row-odd.p-highlight td.cell-readonly {
         background: var(--table-readonly-odd-background);
         opacity: 0.8; }
-  .rc-table.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):not(.p-datatable-emptymessage):hover {
+  .rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr:not(.p-highlight):not(.p-datatable-emptymessage):hover {
     background: var(--table-row-hover-background);
     color: var(--table-text-color); }
 
@@ -779,6 +789,16 @@ body {
   border-bottom-right-radius: var(--dialog-border-radius);
   background: var(--dialog-content-background);
   color: var(--text-color); }
+
+.error-dialog .p-listbox .p-listbox-list .p-listbox-item {
+  border-color: var(--table-row-border-color);
+  border-width: var(--table-row-border-width); }
+  .error-dialog .p-listbox .p-listbox-list .p-listbox-item:nth-child(odd) {
+    background: var(--table-row-odd-background); }
+  .error-dialog .p-listbox .p-listbox-list .p-listbox-item:nth-child(even) {
+    background: var(--table-row-even-background); }
+  .error-dialog .p-listbox .p-listbox-list .p-listbox-item.p-highlight {
+    background: var(--table-selected-row-background); }
 
 .rc-message-dialog .p-dialog-header {
   border-top-left-radius: var(--dialog-border-radius);
