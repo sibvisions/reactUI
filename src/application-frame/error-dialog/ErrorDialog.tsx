@@ -83,7 +83,18 @@ const ErrorDialog:FC = () => {
         }
     }, [showDetails]);
 
-    const handleOnHide = () => setVisible(false)    
+    useEffect(() => {
+        if (errorItems.length) {
+            if (errorItems[0].items[0]) {
+                setSelectedError(errorItems[0].items[0])
+            }
+        }
+    }, [errorItems])
+
+    const handleOnHide = () => {
+        setVisible(false);
+        setShowDetails(false);
+    }    
 
     // Build footer based on showDetails
     const errorFooter = useCallback(() => {
