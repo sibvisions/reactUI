@@ -118,7 +118,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
             props.maximumSize, 
             onLoadCallback
         )
-    }, [onLoadCallback])  
+    }, [onLoadCallback])
     
     return (
         <>

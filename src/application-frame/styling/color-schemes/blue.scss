@@ -166,7 +166,7 @@
     /// Blue toolbar border
     --toolbar-border-color:#dee2e6;
 
-    --toolbar-separator-color:#bbbbbb;
+    --toolbar-separator:1px solid #bbbbbb;
 
     /// table unselected border
     --table-border:1px solid #ced4da;
@@ -1478,6 +1478,14 @@ body {
         border-bottom-left-radius: var(--toolbar-border-radius);
         border-bottom-right-radius: var(--toolbar-border-radius);
     }
+
+    .rc-toolbar-border-right {
+        border-right: var(--toolbar-separator);
+    }
+
+    .rc-toolbar-border-bottom {
+        border-bottom: var(--toolbar-separator);
+    }
 }
 
 /// Dialogs
@@ -1850,6 +1858,14 @@ body {
                 color: var(--launcher-toolbar-button-hover-text-color);
             }
         }
+
+        .rc-toolbar-border-right {
+            border-right: var(--toolbar-separator);
+        }
+    
+        .rc-toolbar-border-bottom {
+            border-bottom: var(--toolbar-separator);
+        }
     }
 }
 
@@ -1933,6 +1949,14 @@ body {
                 border-color: var(--frame-toolbar-button-hover-background);
                 color: var(--frame-toolbar-button-hover-text-color);
             }
+        }
+
+        .rc-toolbar-border-right {
+            border-right: var(--toolbar-separator);
+        }
+    
+        .rc-toolbar-border-bottom {
+            border-bottom: var(--toolbar-separator);
         }
     }
 

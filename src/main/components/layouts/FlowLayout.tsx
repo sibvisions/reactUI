@@ -303,12 +303,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 top: top + y,
                                 width: size.width * fW / fPW,
                                 height: flowLayoutInfo.gridHeight * fH / fPH,
-                                position: "absolute",
-                                borderRight: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
-                                ? 
-                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(!component.parent?.includes("TBP") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
-                                : 
-                                    ""
+                                position: "absolute"
                             });
                         }
                         else {
@@ -317,12 +312,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 top: top + y + ((flowLayoutInfo.gridHeight - size.height) * getAlignmentFactor(innerAlignment)) * fH / fPH,
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
-                                position: "absolute",
-                                borderRight: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
-                                ? 
-                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(!component.parent?.includes("TBP") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
-                                : 
-                                    ""
+                                position: "absolute"
                             });
                         }
 
@@ -345,11 +335,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 width: flowLayoutInfo.gridWidth * fW / fPW,
                                 height: size.height * fH / fPH,
                                 position: "absolute",
-                                borderBottom: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
-                                ? 
-                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(!component.parent?.includes("TBP") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
-                                : 
-                                    ""
                             });
                         }
                         else {
@@ -358,12 +343,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                                 top: (top + y * fH / fPH) + (!bFirst ? toolbarGap : 0),
                                 width: size.width * fW / fPW,
                                 height: size.height * fH / fPH,
-                                position: "absolute",
-                                borderBottom: (id.includes("-tbMain") || component.className === COMPONENT_CLASSNAMES.TOOLBAR) && !isLastToolBar(component.id) 
-                                ? 
-                                    "1px solid" + window.getComputedStyle(document.documentElement).getPropertyValue(!component.parent?.includes("TBP") ? '--frame-toolbar-separator-color' : '--toolbar-separator-color')
-                                : 
-                                    ""
+                                position: "absolute"
                             });
                         }
 

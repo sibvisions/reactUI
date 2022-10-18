@@ -77,7 +77,7 @@
   --radiobutton-inner-color:#ffffff;
   --toolbar-background:#f8f9fa;
   --toolbar-border-color:#dee2e6;
-  --toolbar-separator-color:#bbbbbb;
+  --toolbar-separator:1px solid #bbbbbb;
   --table-border:1px solid #ced4da;
   --table-header-background:#ffffff;
   --table-header-border-color:#e9ecef;
@@ -754,6 +754,10 @@ body {
   .rc-toolbar.toolbar-south {
     border-bottom-left-radius: var(--toolbar-border-radius);
     border-bottom-right-radius: var(--toolbar-border-radius); }
+  .rc-toolbar .rc-toolbar-border-right {
+    border-right: var(--toolbar-separator); }
+  .rc-toolbar .rc-toolbar-border-bottom {
+    border-bottom: var(--toolbar-separator); }
 
 .rc-popup .p-dialog-header, .error-dialog .p-dialog-header {
   background: var(--dialog-header-background);
@@ -961,6 +965,10 @@ body {
       background: var(--launcher-toolbar-button-hover-background);
       border-color: var(--launcher-toolbar-button-hover-background);
       color: var(--launcher-toolbar-button-hover-text-color); }
+  .mobile-launcher-menu .rc-frame-toolbar .rc-toolbar-border-right {
+    border-right: var(--toolbar-separator); }
+  .mobile-launcher-menu .rc-frame-toolbar .rc-toolbar-border-bottom {
+    border-bottom: var(--toolbar-separator); }
 
 .rc-frame {
   box-shadow: var(--frame-shadow);
@@ -1009,6 +1017,10 @@ body {
         background: var(--frame-toolbar-button-hover-background);
         border-color: var(--frame-toolbar-button-hover-background);
         color: var(--frame-toolbar-button-hover-text-color); }
+    .rc-frame .rc-frame-toolbar .rc-toolbar-border-right {
+      border-right: var(--toolbar-separator); }
+    .rc-frame .rc-frame-toolbar .rc-toolbar-border-bottom {
+      border-bottom: var(--toolbar-separator); }
   .rc-frame .rc-frame-menu {
     border-width: 0 var(--frame-border-width) 0 var(--frame-border-width); }
   .rc-frame .rc-frame-content {

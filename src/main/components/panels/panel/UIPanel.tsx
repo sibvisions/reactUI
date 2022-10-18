@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useRef } from "react";
+import React, { CSSProperties, FC, useCallback, useMemo, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
 import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
@@ -159,6 +159,18 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    const isLastToolBar = useMemo(() => {
+        if (id.includes("TB") && props.parent) {
+            const tbChildren = [...context.contentStore.getChildren(props.parent + "-tbMain", COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN)];
+            if (tbChildren.length) {
+                return tbChildren.findIndex(entry => entry[1].id === id) === tbChildren.length - 1 ? true : false;
+            }
+        }
+        return false;
+    }, [id, props.parent]);
+
+    const isToolBar = useMemo(() => props.className === COMPONENT_CLASSNAMES.TOOLBAR, [props.className]);
+
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
@@ -177,13 +189,27 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         )
     }, [onLoadCallback]);
 
+    const getToolBarClassName = useCallback(() => {
+        console.log(isToolBar, isLastToolBar)
+        if (isToolBar && !isLastToolBar) {
+            switch (parseInt(props.layout.split(",")[7])) {
+                case 0:
+                    return "rc-toolbar-border-right";
+                case 1:
+                    return "rc-toolbar-border-bottom";
+            }
+        }
+        return ""
+    }, [props.layout, isToolBar, isLastToolBar])
+
     return (
         <>
             <Tooltip target={"#" + props.name} />
             <div
                 className={concatClassnames(
                     "rc-panel",
-                    props.style
+                    props.style,
+                    getToolBarClassName()
                 )}
                 ref={panelRef}
                 id={props.name}
@@ -220,7 +246,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                         props.screen_size_,
                         context.transferType
                     )}
-                    isToolBar={props.className === COMPONENT_CLASSNAMES.TOOLBAR}
+                    isToolBar={isToolBar}
                     parent={props.parent} />
             </div>
         </>
