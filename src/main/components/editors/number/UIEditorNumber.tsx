@@ -168,14 +168,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     // When the cell-editor is in a table and the passed-key is not a number set null as value. On unmount of the in-table cell-editor blur.
     useEffect(() => {
-        if (props.isCellEditor && props.passedKey) {
-            if (!/^[0-9]$/i.test(props.passedKey)) {
-                setValue(null as any)
-            }
-            else {
-                setValue(props.passedKey)
-            }
-        }
+        // if (props.isCellEditor && props.passedKey) {
+        //     if (!/^[0-9]$/i.test(props.passedKey)) {
+        //         setValue(null as any)
+        //     }
+        //     else {
+        //         setValue(props.passedKey)
+        //     }
+        // }
 
         return () => {
             if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor && numberInput.current) {

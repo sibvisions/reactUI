@@ -166,6 +166,8 @@
     /// Orange toolbar border
     --toolbar-border-color:#dee2e6;
 
+    --toolbar-color:var(--text-color);
+
     --toolbar-separator:1px solid #bbbbbb;
 
     /// table unselected border
@@ -1485,6 +1487,10 @@ body {
 
     .rc-toolbar-border-bottom {
         border-bottom: var(--toolbar-separator);
+    }
+
+    .rc-button.mouse-border {
+        color: var(--toolbar-color);
     }
 }
 

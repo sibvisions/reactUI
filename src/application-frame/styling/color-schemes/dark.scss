@@ -166,6 +166,8 @@
     /// Darkmode toolbar border
     --toolbar-border-color:#3f4b5b;
 
+    --toolbar-color:var(--text-color);
+
     --toolbar-separator:1px solid #bbbbbb;
 
     /// table unselected border
@@ -1485,6 +1487,10 @@ body {
 
     .rc-toolbar-border-bottom {
         border-bottom: var(--toolbar-separator);
+    }
+
+    .rc-button.mouse-border {
+        color: var(--toolbar-color);
     }
 }
 
