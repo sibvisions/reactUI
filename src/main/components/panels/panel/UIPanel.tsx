@@ -190,7 +190,6 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     }, [onLoadCallback]);
 
     const getToolBarClassName = useCallback(() => {
-        console.log(isToolBar, isLastToolBar)
         if (isToolBar && !isLastToolBar) {
             switch (parseInt(props.layout.split(",")[7])) {
                 case 0:
