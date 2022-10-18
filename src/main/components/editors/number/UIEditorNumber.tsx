@@ -226,6 +226,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 return false;
             }
         }
+        else {
+            event.stopPropagation();
+        }
 
     });
 
@@ -243,7 +246,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     prefix={prefixLength}
                     minFractionDigits={scaleDigits.minScale}
                     maxFractionDigits={scaleDigits.maxScale}
-                    tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
+                    //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                     value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
@@ -285,7 +288,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 useGrouping={useGrouping}
                 locale={props.context.appSettings.locale}
                 prefix={prefixLength}
-                tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
+                //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={scaleDigits.minScale}
                 maxFractionDigits={scaleDigits.maxScale}
                 value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}

@@ -87,7 +87,8 @@ export interface ICellEditor {
     rowNumber: number
     colIndex: number
     filter?: Function
-    rowData: any
+    rowData: any,
+    setIsEditing: Function
 }
 
 /** 
@@ -337,6 +338,10 @@ export const CellEditor: FC<ICellEditor> = (props) => {
             setEdit(true)
         }
     }, [setWaiting, setEdit]);
+
+    useEffect(() => {
+        props.setIsEditing(edit);
+    }, [edit])
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (

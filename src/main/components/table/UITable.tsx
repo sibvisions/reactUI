@@ -377,6 +377,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
 
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+
     /** The navigation-mode for the enter key sent by the server default: cell and focus */
     const enterNavigationMode = props.enterNavigationMode || Navigation.NAVIGATION_CELL_AND_FOCUS;
 
@@ -875,6 +877,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         updateEnabled={metaData?.updateEnabled}
                         deleteEnabled={metaData?.deleteEnabled}
                         dataProviderReadOnly={metaData?.readOnly}
+                        setIsEditing={setIsEditing}
                         stopEditing={() => {
                             const table = context.contentStore.flatContent.get(id);
                             if (table) {
@@ -1064,64 +1067,66 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Keylistener for the table
      * @param event - the keyboardevent
      */
-    const handleTableKeys = (event:React.KeyboardEvent<HTMLDivElement>) => {
-        switch(event.key) {
-            case "Enter":
-                if (event.shiftKey) {
-                    selectPrevious.current && selectPrevious.current(enterNavigationMode);
-                }
-                else {
-                    selectNext.current && selectNext.current(enterNavigationMode);
-                }
-                break;
-            case "Tab":
-                event.preventDefault();
-                if (event.shiftKey) {
-                    selectPrevious.current && selectPrevious.current(tabNavigationMode);
-                }
-                else {
-                    selectNext.current && selectNext.current(tabNavigationMode);
-                }
-                break;
-            case "PageUp":
-                pageKeyPressed.current = true;
-                event.preventDefault();
-                selectPreviousPage(false);
-                break;
-            case "PageDown":
-                pageKeyPressed.current = true;
-                event.preventDefault();
-                selectNextPage(false);
-                break;
-            case "ArrowUp":
-                selectPreviousRow(false);
-                break;
-            case "ArrowDown":
-                selectNextRow(false);
-                break;
-            case "ArrowLeft":
-                selectPreviousCell(false);
-                break;
-            case "ArrowRight":
-                selectNextCell(false);
-                break;
-            case "Insert":
-                if (metaData?.insertEnabled) {
-                    context.contentStore.insertDataProviderData(screenName, props.dataBook);
-                    const insertReq = createInsertRecordRequest();
-                    insertReq.dataProvider = props.dataBook;
-                    showTopBar(context.server.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD), topbar);
-                }
-                break;
-            case "Delete":
-                if (metaData?.deleteEnabled) {
-                    context.contentStore.deleteDataProviderData(screenName, props.dataBook);
-                    const selectReq = createSelectRowRequest();
-                    selectReq.dataProvider = props.dataBook;
-                    selectReq.componentId = props.name;
-                    selectReq.rowNumber = selectedRow && selectedRow.index !== undefined ? selectedRow.index : undefined;
-                    showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), topbar)
-                }
+    const handleTableKeys = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!isEditing) {
+            switch (event.key) {
+                case "Enter":
+                    if (event.shiftKey) {
+                        selectPrevious.current && selectPrevious.current(enterNavigationMode);
+                    }
+                    else {
+                        selectNext.current && selectNext.current(enterNavigationMode);
+                    }
+                    break;
+                case "Tab":
+                    event.preventDefault();
+                    if (event.shiftKey) {
+                        selectPrevious.current && selectPrevious.current(tabNavigationMode);
+                    }
+                    else {
+                        selectNext.current && selectNext.current(tabNavigationMode);
+                    }
+                    break;
+                case "PageUp":
+                    pageKeyPressed.current = true;
+                    event.preventDefault();
+                    selectPreviousPage(false);
+                    break;
+                case "PageDown":
+                    pageKeyPressed.current = true;
+                    event.preventDefault();
+                    selectNextPage(false);
+                    break;
+                case "ArrowUp":
+                    selectPreviousRow(false);
+                    break;
+                case "ArrowDown":
+                    selectNextRow(false);
+                    break;
+                case "ArrowLeft":
+                    selectPreviousCell(false);
+                    break;
+                case "ArrowRight":
+                    selectNextCell(false);
+                    break;
+                case "Insert":
+                    if (metaData?.insertEnabled) {
+                        context.contentStore.insertDataProviderData(screenName, props.dataBook);
+                        const insertReq = createInsertRecordRequest();
+                        insertReq.dataProvider = props.dataBook;
+                        showTopBar(context.server.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD), topbar);
+                    }
+                    break;
+                case "Delete":
+                    if (metaData?.deleteEnabled) {
+                        context.contentStore.deleteDataProviderData(screenName, props.dataBook);
+                        const selectReq = createSelectRowRequest();
+                        selectReq.dataProvider = props.dataBook;
+                        selectReq.componentId = props.name;
+                        selectReq.rowNumber = selectedRow && selectedRow.index !== undefined ? selectedRow.index : undefined;
+                        showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), topbar)
+                    }
+            }
         }
     }
 
