@@ -457,12 +457,12 @@ class Server extends BaseServer {
      * @returns 
      */
     getScreenName(dataProvider:string) {
-        if (this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1]) {
-            const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
-            if (activeScreen && (activeScreen as IPanel).content_modal_ !== true) {
-                return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
-            }
-        }
+        // if (this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1]) {
+        //     const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
+        //     if (activeScreen && (activeScreen as IPanel).content_modal_ !== true) {
+        //         return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
+        //     }
+        // }
         return dataProvider.split("/")[1];
     }
 
