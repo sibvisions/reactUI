@@ -232,7 +232,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
-    //useRequestFocus(id, props.requestFocus, textRef.current, props.context)
+    useRequestFocus(id, props.requestFocus, textRef.current, props.context)
 
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
