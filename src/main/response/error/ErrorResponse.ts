@@ -13,6 +13,7 @@
  * the License.
  */
 
+import ComponentResponse from "../ComponentResponse"
 import MessageResponse from "../ui/MessageResponse"
 
 
@@ -20,6 +21,7 @@ import MessageResponse from "../ui/MessageResponse"
 interface ErrorResponse extends MessageResponse {
     details?: string,
     silentAbort?: boolean
-    exceptions?: { message:string, exception:string }[]
+    exceptions?: { message:string, exception:string }[],
+    componentId?: string
 }
 export default ErrorResponse

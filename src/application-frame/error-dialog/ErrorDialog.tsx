@@ -23,6 +23,8 @@ import useConstants from "../../main/hooks/components-hooks/useConstants";
 import ErrorResponse from "../../main/response/error/ErrorResponse";
 import { translation } from "../../main/util/other-util/Translation";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
+import { createChangesRequest, createCloseFrameRequest } from "../../main/factories/RequestFactory";
+import REQUEST_KEYWORDS from '../../main/request/REQUEST_KEYWORDS'
 
 /** Displays an error-message as dialog */
 const ErrorDialog:FC = () => {
@@ -46,6 +48,7 @@ const ErrorDialog:FC = () => {
 
     // Builds the error-causes as items to show in the Listbox 
     const errorItems = useMemo(() => {
+        
         if (errorProps && errorProps.exceptions) {
             return [{
                 label: translation.get("Cause(s) of failure") as string,
@@ -94,6 +97,11 @@ const ErrorDialog:FC = () => {
     const handleOnHide = () => {
         setVisible(false);
         setShowDetails(false);
+        if (errorProps && errorProps.componentId) {
+            const closeFrameReq = createCloseFrameRequest();
+            closeFrameReq.componentId = errorProps.componentId
+            context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME);
+        }
     }    
 
     // Build footer based on showDetails
