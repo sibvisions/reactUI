@@ -127,8 +127,12 @@
   --tab-border-color:#dee2e6;
   --tree-background:#ffffff;
   --tree-border:1px solid #dee2e6;
+  --tree-color:var(--text-color);
   --tree-item-hover-background:#e9ecef;
+  --tree-item-hover-color:var(--table-cell-hover-color);
   --tree-selected-item-background:#E3F2FD;
+  --tree-selected-item-color:var(--text-color);
+  --tree-odd-background:var(--table-row-even-background);
   --tree-even-background:var(--table-row-odd-background);
   --html-toolbar-background:#f8f9fa;
   --html-toolbar-border:1px solid #dee2e6;
@@ -905,31 +909,40 @@ body {
 .p-tree {
   background: var(--tree-background);
   border: var(--tree-border);
-  color: var(--text-color);
+  color: var(--tree-color);
   border-radius: var(--table-border-radius); }
   .p-tree .p-tree-container > .p-treenode:nth-child(odd) {
-    background: var(--tree-background); }
+    background: var(--tree-odd-background); }
   .p-tree .p-tree-container > .p-treenode:nth-child(even) {
     background: var(--tree-even-background); }
   .p-tree .p-tree-container .p-treenode .p-treenode-children .p-treenode:nth-child(odd) {
-    background: var(--tree-background); }
+    background: var(--tree-odd-background); }
   .p-tree .p-tree-container .p-treenode .p-treenode-children .p-treenode:nth-child(even) {
     background: var(--tree-even-background); }
   .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover {
     background: var(--tree-item-hover-background);
-    color: var(--text-color); }
+    color: var(--tree-item-hover-color); }
+    .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover .p-tree-toggler, .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover .p-tree-toggler:enabled, .p-tree .p-tree-container .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover .p-treenode-icon {
+      color: var(--tree-item-hover-color); }
   .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler {
-    color: var(--text-color); }
-    .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled {
-      color: var(--text-color); }
-      .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled:hover {
-        color: var(--text-color);
-        background: var(--tree-selected-item-background); }
+    color: var(--tree-color); }
     .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:focus {
       box-shadow: none; }
+    .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled {
+      color: var(--tree-color); }
+      .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled:hover {
+        background: transparent; }
   .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight {
     background: var(--tree-selected-item-background);
-    color: var(--text-color); }
+    color: var(--tree-selected-item-color); }
+    .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight .p-tree-toggler, .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight .p-tree-toggler:enabled, .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight .p-treenode-icon {
+      color: var(--tree-selected-item-color); }
+    .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight:hover {
+      color: var(--tree-item-hover-color); }
+      .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight:hover .p-tree-toggler {
+        background: transparent; }
+      .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight:hover .p-tree-toggler, .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight:hover .p-tree-toggler:enabled, .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight:hover .p-treenode-icon {
+        color: var(--tree-item-hover-color); }
 
 .loading-screen {
   background: -webkit-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);

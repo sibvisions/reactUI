@@ -304,11 +304,19 @@
     /// Darkmode Tree border
     --tree-border:1px solid #2a323d;
 
+    --tree-color:var(--text-color);
+
     /// Darkmode Tree item hover background
     --tree-item-hover-background:#303a48;
 
+    --tree-item-hover-color:var(--table-cell-hover-color);
+
     /// Darkmode Tree selected item background
     --tree-selected-item-background:#3f4b5b;
+
+    --tree-selected-item-color:var(--text-color);
+
+    --tree-odd-background:var(--table-row-even-background);
 
     --tree-even-background:var(--table-row-odd-background);
 
@@ -1749,13 +1757,13 @@ body {
 .p-tree {
     background: var(--tree-background);
     border: var(--tree-border);
-    color: var(--text-color);
+    color: var(--tree-color);
     border-radius: var(--table-border-radius);
 
     .p-tree-container {
         >.p-treenode {
             &:nth-child(odd) {
-                background: var(--tree-background);
+                background: var(--tree-odd-background);
             }
     
             &:nth-child(even) {
@@ -1766,7 +1774,7 @@ body {
         .p-treenode {
             .p-treenode-children {
                 & .p-treenode:nth-child(odd) {
-                    background: var(--tree-background);
+                    background: var(--tree-odd-background);
                 }
         
                 & .p-treenode:nth-child(even) {
@@ -1777,29 +1785,46 @@ body {
             .p-treenode-content {
                 &.p-treenode-selectable:not(.p-highlight):hover {
                     background: var(--tree-item-hover-background);
-                    color: var(--text-color);
+                    color: var(--tree-item-hover-color);
+
+                    .p-tree-toggler, .p-tree-toggler:enabled, .p-treenode-icon {
+                        color: var(--tree-item-hover-color);
+                    }
                 }
         
                 .p-tree-toggler {
-                    color: var(--text-color);
-        
-                    &:enabled {
-                        color: var(--text-color);
-        
-                        &:hover {
-                            color: var(--text-color);
-                            background: var(--tree-selected-item-background);
-                        }
-                    }
+                    color: var(--tree-color);
 
                     &:focus {
                         box-shadow: none;
+                    }
+                    &:enabled {
+                        color: var(--tree-color);
+
+                        &:hover {
+                            background: transparent;
+                        }
                     }
                 }
         
                 &.p-highlight {
                     background: var(--tree-selected-item-background);
-                    color: var(--text-color);
+                    color: var(--tree-selected-item-color);
+
+                    .p-tree-toggler, .p-tree-toggler:enabled, .p-treenode-icon {
+                        color: var(--tree-selected-item-color);
+                    }
+
+                    &:hover {
+                        color: var(--tree-item-hover-color);
+                        .p-tree-toggler {
+                            background: transparent;
+                        }
+
+                        .p-tree-toggler, .p-tree-toggler:enabled, .p-treenode-icon {
+                            color: var(--tree-item-hover-color);
+                        }
+                    }
                 }
             }
         }
