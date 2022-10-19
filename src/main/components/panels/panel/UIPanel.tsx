@@ -90,7 +90,7 @@ export function panelReportSize(id: string,
             className,
             propPref ? parsePrefSize(propPref) : adjustedSize,
             parseMaxSize(propMax),
-            calcMin ? calcMin : parseMinSize(propMin),
+            parseMinSize(propMin),
             undefined,
             onLoadCallback
         )
@@ -171,6 +171,18 @@ const UIPanel: FC<IPanel> = (baseProps) => {
 
     const isToolBar = useMemo(() => props.className === COMPONENT_CLASSNAMES.TOOLBAR, [props.className]);
 
+    const isOverflowHidden = useMemo(() => {
+        if (props.parent) {
+            const parentComp = context.contentStore.getComponentById(props.parent);
+            if (parentComp) {
+                if (parentComp.className === COMPONENT_CLASSNAMES.SCROLLPANEL) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }, [props.parent])
+
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
@@ -208,7 +220,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 className={concatClassnames(
                     "rc-panel",
                     props.style,
-                    getToolBarClassName()
+                    getToolBarClassName(),
+                    isOverflowHidden ? "panel-hide-overflow" : ""
                 )}
                 ref={panelRef}
                 id={props.name}
