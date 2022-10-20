@@ -117,11 +117,11 @@
   --date-selected-background:#e3f2fd;
   --dialog-header-background:#ffffff;
   --dialog-header-text-color:var(--text-color);
-  --dialog-icon-hover-color:var(--text-color);
+  --dialog-header-close-hover-background:#e9ecef;
+  --dialog-header-close-hover-color:#000000;
   --dialog-header-border:1px solid rgba(0, 0, 0, 0.15);
   --dialog-content-background:#ffffff;
   --tab-navbar-background:#ffffff;
-  --tab-navbar-border-color:#dee2e6;
   --tab-selected-color:#2196fe;
   --tab-hover-background:#ffffff;
   --tab-border-color:#dee2e6;
@@ -179,7 +179,6 @@
   --readonly-background:rgb(239, 239, 239);
   --invalid-background:rgb(209, 51, 51);
   --gone-background:#ffcf40bb;
-  --signature-pad-background:var(--screen-background);
   --launcher-toolbar-background:var(--topbar-background);
   --launcher-toolbar-separator-color:#f8f9fa;
   --launcher-toolbar-button-text-color:var(--topbar-text-color);
@@ -779,6 +778,12 @@ body {
   border-bottom-left-radius: var(--dialog-border-radius);
   border-bottom-right-radius: var(--dialog-border-radius); }
 
+.rc-popup .p-dialog-header .p-dialog-header-icon {
+  color: var(--dialog-header-text-color); }
+  .rc-popup .p-dialog-header .p-dialog-header-icon:enabled:hover {
+    background: var(--dialog-header-close-hover-background);
+    color: var(--dialog-header-close-hover-color); }
+
 .error-dialog .p-dialog-header {
   background: var(--message-error-header-background);
   color: var(--message-error-header-color); }
@@ -884,7 +889,6 @@ body {
 .p-tabview .p-tabview-nav {
   background: var(--tab-navbar-background);
   color: var(--text-color);
-  border-color: var(--tab-navbar-border-color);
   border-radius: var(--tab-border-radius);
   padding: 0 var(--tab-border-radius); }
   .p-tabview .p-tabview-nav li:not(.p-highlight) .p-tabview-nav-link {
@@ -1043,9 +1047,6 @@ body {
     border-width: 0 var(--frame-border-width) var(--frame-border-width) var(--frame-border-width); }
   .rc-frame .rc-frame-content, .rc-frame .rc-frame-menu {
     border-color: var(--frame-header-background); }
-
-.rc-signature-pad {
-  background: var(--signature-pad-background); }
 
 .crash-banner {
   background: var(--error-bar-background); }

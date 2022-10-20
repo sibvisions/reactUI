@@ -174,10 +174,6 @@
 
     --dialog-header-padding:1rem;
 
-    --error-dialog-min-width:205px;
-
-    --error-dialog-details-gap:1rem;
-
     --error-dialog-textarea-height:6rem;
 
     --error-dialog-icon-size:1.5rem;
@@ -504,20 +500,15 @@ body {
 }
 
 .error-dialog {
-    min-width: var(--error-dialog-min-width);
-
-    .error-dialog-details-caption {
-        margin-top: var(--error-dialog-details-gap);
-        text-align: "left";
-    }
-
     .error-dialog-listbox {
-        margin-top: var(--error-dialog-details-gap);
+        .p-listbox-item {
+            height: calc(8px + var(--table-data-height));
+            padding: var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right) var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right);
+            line-height: var(--table-data-height);
+        }
     }
 
     .error-dialog-textarea {
-        margin-top: var(--error-dialog-details-gap);
-        width: 100%;
         height: var(--error-dialog-textarea-height);
     }
 

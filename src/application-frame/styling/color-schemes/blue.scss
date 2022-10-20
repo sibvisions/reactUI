@@ -274,8 +274,9 @@
     /// Dialog header text-color
     --dialog-header-text-color:var(--text-color);
 
-    /// Blue 'x' color when hovering
-    --dialog-icon-hover-color:var(--text-color);
+    --dialog-header-close-hover-background:#e9ecef;
+
+    --dialog-header-close-hover-color:#000000;
 
     /// Blue Dialog header border
     --dialog-header-border:1px solid rgba(0, 0, 0, 0.15);
@@ -285,9 +286,6 @@
 
     /// Blue TabSet navbar background
     --tab-navbar-background:#ffffff;
-
-    /// Blue TabSet navbar border
-    --tab-navbar-border-color:#dee2e6;
 
     /// Blue border and color of a selected tab
     --tab-selected-color:#2196fe;
@@ -449,8 +447,6 @@
     --invalid-background:rgb(209, 51, 51);
 
     --gone-background:#ffcf40bb;
-
-    --signature-pad-background:var(--screen-background);
 
     //V2 Variables
 
@@ -1513,11 +1509,6 @@ body {
 
         .p-dialog-header-icon {
             color: var(--text-color);
-
-            &:enabled:hover {
-                background: #e9ecef;
-                color: var(--dialog-icon-hover-color);
-            }
         }
     }
 
@@ -1526,6 +1517,17 @@ body {
         color: var(--text-color);
         border-bottom-left-radius: var(--dialog-border-radius);
         border-bottom-right-radius: var(--dialog-border-radius);
+    }
+}
+
+.rc-popup {
+    .p-dialog-header .p-dialog-header-icon {
+        color: var(--dialog-header-text-color);
+
+        &:enabled:hover {
+            background: var(--dialog-header-close-hover-background);
+            color: var(--dialog-header-close-hover-color);
+        }
     }
 }
 
@@ -1715,7 +1717,6 @@ body {
 .p-tabview .p-tabview-nav {
     background: var(--tab-navbar-background);
     color: var(--text-color);
-    border-color: var(--tab-navbar-border-color);
     border-radius: var(--tab-border-radius);
     padding: 0 var(--tab-border-radius);
 
@@ -2000,10 +2001,6 @@ body {
     .rc-frame-content, .rc-frame-menu {
         border-color: var(--frame-header-background);
     }
-}
-
-.rc-signature-pad {
-    background: var(--signature-pad-background);
 }
 
 .crash-banner {

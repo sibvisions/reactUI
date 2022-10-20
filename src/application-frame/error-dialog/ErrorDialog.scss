@@ -16,6 +16,7 @@
 .error-dialog {
     width: 600px;
     min-height: 230px;
+    min-width: 205px;
 
     .p-dialog-content {
         display: flex;
@@ -39,10 +40,16 @@
         }
     }
 
+    .error-dialog-details-caption {
+        margin-top: 1rem;
+        text-align: "left";
+    }
+
     .p-listbox {
         flex: 1 0 82px;
         max-height: 155px;
         text-align: left;
+        margin-top: 1rem;
 
         .p-listbox-list-wrapper {
             height: 100%;
@@ -107,6 +114,17 @@
 
             .error-dialog-textarea {
                 flex: 1 0 100px;
+                margin-top: 1rem;
+                width: 100%;
+
+                &:hover {
+                    border: var(--input-border);
+                }
+                
+                &:focus {
+                    box-shadow: none;
+                    border: var(--input-border);
+                }
             }
         }
     }
