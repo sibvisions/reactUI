@@ -66,16 +66,18 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (!props.cellEditor.defaultImageName || !props.selectedRow || !props.selectedRow.data[props.columnName]) {
-            const prefSize:Dimension = {width: 0, height: 0}
+            const prefSize:Dimension = wrapRef.current ? { width: wrapRef.current.offsetWidth, height: wrapRef.current.offsetHeight } : { width: 0, height: 0 }
             if (props.preferredSize) {
                 const parsedSize = parsePrefSize(props.preferredSize) as Dimension
                 prefSize.height = parsedSize.height;
                 prefSize.width = parsedSize.width;
             }
-            if (onLoadCallback)
+            if (onLoadCallback) {
                 sendOnLoadCallback(id, props.cellEditor.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
+            }
+                
         }
-    },[onLoadCallback, id, props.cellEditor.defaultImageName, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[id, onLoadCallback, props.cellEditor.defaultImageName, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     /**
      * When the image is loaded, measure the image and then report its preferred-, minimum-, maximum and measured-size to the layout
