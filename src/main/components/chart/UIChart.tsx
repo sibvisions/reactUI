@@ -16,7 +16,7 @@
 // API docs for ChartJS Version used in Prime React - https://www.chartjs.org/docs/2.7.3/
 // https://github.com/chartjs/Chart.js/issues/5224
 
-import React, { FC, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
 import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
 import BaseComponent from "../../util/types/BaseComponent";
@@ -31,6 +31,12 @@ import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { translation } from "../../util/other-util/Translation";
+import * as _ from 'underscore';
+import { createSelectRowRequest } from "../../factories/RequestFactory";
+import useMetaData from "../../hooks/data-hooks/useMetaData";
+import MetaDataResponse from "../../response/data/MetaDataResponse";
+import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -193,6 +199,11 @@ const UIChart: FC<IChart> = (baseProps) => {
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
+
+    const metaData:MetaDataResponse = useMetaData(screenName, props.dataBook) as MetaDataResponse
+
+    /** topbar context to show progress */
+    const topbar = useContext(TopBarContext);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, chartRef.current ? chartRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -414,12 +425,13 @@ const UIChart: FC<IChart> = (baseProps) => {
                     lineTension: 0,
                     pointStyle: getPointStyle(idx, points),
                     pointRadius: CHART_STYLES.LINES === chartStyle ? 4 : 0,
-                    pointHitRadius: CHART_STYLES.LINES === chartStyle ? 7 : 0,
+                    pointHitRadius: 7,
                     stepped: CHART_STYLES.STEPLINES === chartStyle,
                     barPercentage: hasStringLabels && overlapped ? (0.9 - (idx * 0.15)) : 0.9,
                     categoryPercentage: 0.8,
                 }
-            })
+            }),
+            labels: yColumnNames
         }
         return primeChart
     },[providerData, props.chartStyle, props.yColumnLabels]);
@@ -556,6 +568,30 @@ const UIChart: FC<IChart> = (baseProps) => {
                 aspectRatio,
                 labels: {
                     usePointStyle: true,
+                },
+                onClick: (e:any) => {
+                    var elementArr = e.chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
+                    if (elementArr.length) {
+                        const firstPoint = elementArr[0];
+                        const label = e.chart.data.labels[firstPoint.datasetIndex];
+                        const value = e.chart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                        const obj:any = {}
+                        obj[label] = value.y;
+                        obj[xColumnName] = value.x;
+                        const foundData = providerData.find(data => data[label] === obj[label] && data[xColumnName] === obj[xColumnName]);
+                        if (foundData) {
+                            const selectReq = createSelectRowRequest();
+                            selectReq.componentId = props.name;
+                            selectReq.dataProvider = props.dataBook;
+                            selectReq.filter = {
+                                columnNames: metaData.primaryKeyColumns,
+                                values: Object.values(_.pick(foundData, metaData.primaryKeyColumns))
+                            }
+                            selectReq.selectedColumn = label
+                            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), topbar);
+                        }
+
+                    }
                 },
                 scales: {
                     ...axes.reduce((agg, axis) => {
