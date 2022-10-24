@@ -43,3 +43,24 @@
 .loading-screen-text {
     color: #a5a5a5
 }
+
+.loading-screen-spinner {
+    animation: progress-spinner-color 3s;
+}
+
+@keyframes p-progress-spinner-color {
+    100%,
+    0% {
+        stroke: #b3ec23;;
+    }
+    40% {
+        stroke: #95c41f;
+    }
+    66% {
+        stroke: #8bb61d;
+    }
+    80%,
+    90% {
+        stroke: #80a818;
+    }
+}

@@ -378,20 +378,17 @@
     /// Orange error-bar background
     --error-bar-background:rgba(255, 255, 255, 0.8);
 
+    --error-bar-color:var(--text-color);
+
+    --gone-background:#ffcf40bb;
+
+    --gone-color:var(--text-color);
+
     /// Orange loading-screen background left
     --loading-screen-left-background:#ffffff;
 
     /// Orange loading-screen background right
     --loading-screen-right-background:#f1f1f1;
-
-    /// Orange loading-screen spinner colors
-    --loading-spinner-color-1:#b3ec23;
-
-    --loading-spinner-color-2:#95c41f;
-
-    --loading-spinner-color-3:#8bb61d;
-
-    --loading-spinner-color-4:#80a818;
 
     /// Orange tab close button color
     --tab-close-color:#cdcfd1;
@@ -1692,10 +1689,11 @@ body {
 /// Error Dialog
 .rc-error-bar {
     background: var(--error-bar-background);
-    color: var(--text-color);
+    color: var(--error-bar-color);
 
     &.app-gone {
         background: var(--gone-background);
+        color: var(--gone-color);
     }
 }
 
@@ -1851,23 +1849,6 @@ body {
         > .p-menuitem {
             background: var(--topbar-background);
         }
-    }
-}
-
-@keyframes p-progress-spinner-color {
-    100%,
-    0% {
-        stroke: var(--loading-spinner-color-1);
-    }
-    40% {
-        stroke: var(--loading-spinner-color-2);
-    }
-    66% {
-        stroke: var(--loading-spinner-color-3);
-    }
-    80%,
-    90% {
-        stroke: var(--loading-spinner-color-4);
     }
 }
 
