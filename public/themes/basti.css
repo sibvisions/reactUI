@@ -50,7 +50,8 @@
   --corp-speeddial-size:2rem;
   --corp-menu-header-padding:0.75rem 1rem;
   --corp-menu-item-padding:0.75rem 1rem;
-  --input-padding:0.5rem 0.5rem;
+  --input-padding-tb: 0.5rem;
+  --input-padding-lr: 0.5rem;
   --input-button-padding:0rem 0.5rem;
   --input-button-icon-size:14px;
   --button-padding:0.5rem 1rem;
@@ -64,7 +65,7 @@
   --table-cell-padding-top-bottom:0.2rem;
   --table-cell-padding-left-right:0.4rem;
   --table-data-height:27px;
-  --label-padding:9px;
+  --label-padding:calc(var(--input-padding-tb) + var(--input-border-width));
   --menubar-height:40px;
   --menuicon-size:14px;
   --dialog-header-padding:1rem;
@@ -228,7 +229,7 @@ body {
   font-size: var(--font-size); }
 
 .basti .p-inputtext {
-  padding: var(--input-padding); }
+  padding: var(--input-padding-tb) var(--input-padding-lr); }
 
 .basti .rc-button {
   padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem)); }

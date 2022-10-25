@@ -63,15 +63,19 @@
   --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
   --primary-color:#f78500;
   --input-background:#ffffff;
-  --input-border:1px solid #ced4da;
+  --input-border-width:1px;
+  --input-border-color: #ced4da;
+  --input-border-hover-color:#f78500;
   --input-placeholder-color:#6c757d;
   --checkbox-background:#ffffff;
   --checkbox-border:1px solid #ced4da;
+  --checkbox-border-hover-color:#f78500;
   --checkbox-selected-background:#f78500;
   --checkbox-selected-hover-background:#db7500;
   --checkbox-color:#ffffff;
   --radiobutton-background:#ffffff;
   --radiobutton-border:1px solid #ced4da;
+  --radiobutton-border-hover-color:#f78500;
   --radiobutton-selected-outer-background:#f78500;
   --radiobutton-selected-outer-hover-background:#db7500;
   --radiobutton-inner-color:#ffffff;
@@ -163,9 +167,9 @@
   --tab-close-color:#cdcfd1;
   --tab-close-hover-color:#6f757a;
   --focus-box-shadow:0 0 0 0.2rem #ffe69c;
-  --border-color-hover:#f78500;
   --login-border-radius:6px;
   --button-border-radius:3px;
+  --checkbox-border-radius:3px;
   --editor-border-radius:3px;
   --date-border-radius:3px;
   --linked-border-radius:3px;
@@ -380,7 +384,7 @@ body {
   border: var(--radiobutton-border); }
 
 .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover {
-  border-color: var(--border-color-hover); }
+  border-color: var(--checkbox-border-hover-color); }
 
 .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus {
   box-shadow: var(--focus-box-shadow);
@@ -391,7 +395,7 @@ body {
   border-color: var(--checkbox-selected-hover-background); }
 
 .p-checkbox .p-checkbox-box {
-  border-radius: var(--button-border-radius); }
+  border-radius: var(--checkbox-border-radius); }
   .p-checkbox .p-checkbox-box.p-highlight {
     background: var(--checkbox-selected-background);
     border-color: var(--checkbox-selected-background); }
@@ -403,7 +407,7 @@ body {
   box-shadow: var(--focus-box-shadow); }
 
 .p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight):hover {
-  border-color: var(--radiobutton-selected-outer-hover-background); }
+  border-color: var(--radiobutton-border-hover-color); }
 
 .p-radiobutton .p-radiobutton-box.p-highlight {
   background: var(--radiobutton-selected-outer-background);
@@ -444,15 +448,15 @@ body {
 
 .p-inputtext {
   background: var(--input-background);
-  border: var(--input-border);
+  border: var(--input-border-width) solid var(--input-border-color);
   border-radius: var(--editor-border-radius); }
   .p-inputtext:not(.required-field) {
     color: var(--text-color); }
   .p-inputtext:enabled:focus {
     box-shadow: var(--focus-box-shadow);
-    border-color: var(--border-color-hover); }
+    border-color: var(--input-border-hover-color); }
   .p-inputtext:enabled:hover {
-    border-color: var(--border-color-hover); }
+    border-color: var(--input-border-hover-color); }
   .p-inputtext::placeholder {
     color: var(--input-placeholder-color); }
 
@@ -488,7 +492,7 @@ body {
       color: var(--date-panel-color); }
     .p-datepicker .p-datepicker-header .p-datepicker-title select:focus {
       box-shadow: var(--focus-box-shadow);
-      border-color: var(--border-color-hover); }
+      border-color: var(--input-border-hover-color); }
   .p-datepicker:not(.p-disabled) table td span:not(.p-highlight):not(.p-disabled):hover {
     color: var(--date-panel-hover-color); }
   .p-datepicker table td > span.p-highlight {
@@ -578,7 +582,7 @@ body {
           color: var(--html-picker-item-hover-color); }
 
 .p-editor-container .p-editor-content {
-  border: var(--input-border);
+  border: var(--input-border-width) solid var(--input-border-color);
   border-bottom-left-radius: var(--editor-border-radius);
   border-bottom-right-radius: var(--editor-border-radius); }
   .p-editor-container .p-editor-content .ql-editor {
@@ -587,11 +591,11 @@ body {
     border-bottom-left-radius: var(--editor-border-radius);
     border-bottom-right-radius: var(--editor-border-radius); }
   .p-editor-container .p-editor-content.ql-snow {
-    border: var(--input-border);
+    border: var(--input-border-width) solid var(--input-border-color);
     border-top: 0px; }
 
 .rc-editor-html textarea.p-inputtext {
-  border: var(--input-border) !important; }
+  border: var(--input-border-width) solid var(--input-border-color) !important; }
 
 .rc-table {
   border: var(--table-border); }
@@ -886,7 +890,7 @@ body {
     color: #495057; }
 
 .rc-panel-group-caption {
-  border-bottom: var(--input-border); }
+  border-bottom: var(--input-border-width) solid var(--input-border-color); }
 
 .p-tabview .p-tabview-nav {
   background: var(--tab-navbar-background);

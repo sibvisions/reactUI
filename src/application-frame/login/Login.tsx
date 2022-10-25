@@ -188,7 +188,9 @@ const Login: FC = () => {
                 isCorporation={isCorporation(appLayout, appTheme)}
                 logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
                 logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
-                logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}>
+                logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
+                buttonCallback={() => context.subscriptions.notifyDesignerBtnBgdChanged()}
+                topbarCallback={() => context.subscriptions.notifyDesignerTopbarChanged()}>
                 {content}
             </ReactUIDesigner> 
             :

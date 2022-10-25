@@ -183,6 +183,10 @@ export class SubscriptionManager {
 
     appReadyParamsSubscriber: Function = () => {};
 
+    designerBtnBgdSubscriber: Function[] = [];
+
+    designerTopbarSubscriber: Function = () => {}
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -540,6 +544,14 @@ export class SubscriptionManager {
         this.appReadyParamsSubscriber = fn;
     }
 
+    subscribeToDesignerBtnBgd(fn: Function) {
+        this.designerBtnBgdSubscriber.push(fn);
+    }
+
+    subscribeToDesignerTopbar(fn: Function) {
+        this.designerTopbarSubscriber = fn;
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -791,6 +803,14 @@ export class SubscriptionManager {
         this.MFAURLSubscriber = () => {};
     }
 
+    unsubscribeFromDesignerBtnBgd(fn: Function) {
+        this.designerBtnBgdSubscriber.splice(this.designerBtnBgdSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    unsubscribeFromDesignerTopbar() {
+        this.designerTopbarSubscriber = () => {};
+    }
+
     /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param screenName 
@@ -856,6 +876,14 @@ export class SubscriptionManager {
 
     notifyAppReadyParamsChange() {
         this.appReadyParamsSubscriber.apply(undefined, [this.appSettings.appReadyParams])
+    }
+
+    notifyDesignerBtnBgdChanged() {
+        this.designerBtnBgdSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    notifyDesignerTopbarChanged() {
+        this.designerTopbarSubscriber.apply(undefined, []);
     }
 
     /**

@@ -52,7 +52,8 @@
   --corp-speeddial-size:2rem;
   --corp-menu-header-padding:0.75rem 1rem;
   --corp-menu-item-padding:0.75rem 1rem;
-  --input-padding:0.5rem 0.5rem;
+  --input-padding-tb: 0.5rem;
+  --input-padding-lr: 0.5rem;
   --input-button-padding:0rem 0.5rem;
   --input-button-icon-size:14px;
   --button-padding:0.5rem 1rem;
@@ -274,7 +275,7 @@ body {
   border-radius: 0; }
 
 .basti_mobile .p-inputtext {
-  padding: var(--input-padding); }
+  padding: var(--input-padding-tb) var(--input-padding-lr); }
 
 .basti_mobile .rc-button {
   padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem)); }

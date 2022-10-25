@@ -13,8 +13,9 @@
  * the License.
  */
 
-import React, { FC, useState, createContext } from "react";
+import React, { FC, useState, createContext, useMemo, useEffect, useContext } from "react";
 import TopBarProgress from "react-topbar-progress-indicator";
+import { appContext } from "../../contexts/AppProvider";
 import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
 
 // Interface for the topbar-context
@@ -42,30 +43,44 @@ export function showTopBar(promise: Promise<any>, topbar: TopBarContextType) {
 
 // Shows a topbar at the top of the browser when a promise is being processed.
 const TopBar:FC = ({children}) => {
+    const context = useContext(appContext);
+
     const [show, setShow] = useState(false);
 
-    const { barColors, shadowBlur, barThickness, shadowColor } = getSettingsFromCSSVar({
-        barColors: {
-            cssVar: '--topbar-colors',
-            transform: 'csv'
-        },
-        shadowBlur: {
-            cssVar: '--topbar-shadow-blur',
-            transform: 'float'
-        },
-        barThickness: {
-            cssVar: '--topbar-thickness',
-            transform: 'float'
-        },
-        shadowColor: '--topbar-shadow-color'
-    })
+    const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
 
-    TopBarProgress.config({
-        barColors: Object.fromEntries((barColors as string[]).map((v, idx, a) => [idx / (a.length - 1), v])),
-        shadowBlur,
-        barThickness,
-        shadowColor
-    });
+    useEffect(() => {
+        context.subscriptions.subscribeToDesignerTopbar(() => setDesignerTopbarChanged(prevState => !prevState))
+
+        return () => context.subscriptions.unsubscribeFromDesignerTopbar();
+    }, [context.subscriptions])
+
+    const topbarSettings = useMemo(() => {
+        return getSettingsFromCSSVar({
+            barColors: {
+                cssVar: '--topbar-colors',
+                transform: 'csv'
+            },
+            shadowBlur: {
+                cssVar: '--topbar-shadow-blur',
+                transform: 'float'
+            },
+            barThickness: {
+                cssVar: '--topbar-thickness',
+                transform: 'float'
+            },
+            shadowColor: '--topbar-shadow-color'
+        })
+    }, [designerTopbarChanged])
+
+    useEffect(() => {
+        TopBarProgress.config({
+            barColors: Object.fromEntries((topbarSettings.barColors as string[]).map((v, idx, a) => [idx / (a.length - 1), v])),
+            shadowBlur: topbarSettings.shadowBlur,
+            barThickness: topbarSettings.barThickness,
+            shadowColor: topbarSettings.shadowColor
+        });
+    }, [topbarSettings])
 
     return <TopBarContext.Provider value={{
         show: () => setShow(true),

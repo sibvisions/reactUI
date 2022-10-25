@@ -123,8 +123,9 @@
     /// Padding of a menu-item for corporation menu.
     --corp-menu-item-padding:0.25rem 0.5rem;
 
-    /// Padding of input fields
-    --input-padding:0.125rem 0.125rem;
+    --input-padding-tb: 0.125rem;
+
+    --input-padding-lr: 0.125rem;
 
     /// Padding for buttons next to input fields. e.g. LinkedCellEditor, DateCellEditor
     --input-button-padding:0rem 0.125rem;
@@ -413,7 +414,7 @@ body {
     }
 
     .p-inputtext {
-        padding: var(--input-padding);
+        padding: var(--input-padding-tb) var(--input-padding-lr);
     }
 
     .rc-button {

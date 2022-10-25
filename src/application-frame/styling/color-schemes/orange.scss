@@ -124,8 +124,11 @@
     /// Orange component background
     --input-background:#ffffff;
 
-    /// Orange component border
-    --input-border:1px solid #ced4da;
+    --input-border-width:1px;
+
+    --input-border-color: #ced4da;
+
+    --input-border-hover-color:#f78500;
 
     /// Orange input placeholder color;
     --input-placeholder-color:#6c757d;
@@ -135,6 +138,8 @@
 
     /// checkbox unselected border
     --checkbox-border:1px solid #ced4da;
+
+    --checkbox-border-hover-color:#f78500;
 
     /// checkbox selected outer background
     --checkbox-selected-background:#f78500;
@@ -150,6 +155,8 @@
 
     /// checkbox unselected border
     --radiobutton-border:1px solid #ced4da;
+
+    --radiobutton-border-hover-color:#f78500;
 
     /// checkbox selected outer background
     --radiobutton-selected-outer-background:#f78500;
@@ -399,14 +406,13 @@
     /// Orange focus border/shadow
     --focus-box-shadow:0 0 0 0.2rem #ffe69c;
 
-    /// Orange hover border-color
-    --border-color-hover:#f78500;
-
     /// Orange border-radius for login
     --login-border-radius:6px;
 
     /// Orange border-radius for buttons
     --button-border-radius:3px;
+
+    --checkbox-border-radius:3px;
 
     /// Orange border-radius for editors
     --editor-border-radius:3px;
@@ -809,7 +815,7 @@ body {
 .p-checkbox {
     &:not(.p-checkbox-disabled) .p-checkbox-box {
         &:hover {
-            border-color: var(--border-color-hover);
+            border-color: var(--checkbox-border-hover-color);
         }
     
         &.p-focus {
@@ -824,7 +830,7 @@ body {
     }
     
     .p-checkbox-box {
-        border-radius: var(--button-border-radius);
+        border-radius: var(--checkbox-border-radius);
 
         &.p-highlight {
             background: var(--checkbox-selected-background);
@@ -845,7 +851,7 @@ body {
             }
 
             &:not(.p-highlight):hover {
-                border-color: var(--radiobutton-selected-outer-hover-background);
+                border-color: var(--radiobutton-border-hover-color);
             }
         }
 
@@ -913,7 +919,7 @@ body {
 /// Inputfields
 .p-inputtext {
     background: var(--input-background);
-    border: var(--input-border);
+    border: var(--input-border-width) solid var(--input-border-color);
     border-radius: var(--editor-border-radius);
 
     &:not(.required-field) {
@@ -923,11 +929,11 @@ body {
     &:enabled {
         &:focus {
             box-shadow: var(--focus-box-shadow);
-            border-color: var(--border-color-hover);
+            border-color: var(--input-border-hover-color);
         }
 
         &:hover {
-            border-color: var(--border-color-hover);
+            border-color: var(--input-border-hover-color);
         }
     }
 
@@ -986,7 +992,7 @@ body {
 
             select:focus {
                 box-shadow: var(--focus-box-shadow);
-                border-color: var(--border-color-hover);
+                border-color: var(--input-border-hover-color);
             }
         }
     } 
@@ -1161,7 +1167,7 @@ body {
     }
 
     .p-editor-content {
-        border: var(--input-border);
+        border: var(--input-border-width) solid var(--input-border-color);
         border-bottom-left-radius: var(--editor-border-radius);
         border-bottom-right-radius: var(--editor-border-radius);
 
@@ -1173,7 +1179,7 @@ body {
         }
 
         &.ql-snow {
-            border: var(--input-border);
+            border: var(--input-border-width) solid var(--input-border-color);
             border-top: 0px;
         }
     }
@@ -1181,7 +1187,7 @@ body {
 
 .rc-editor-html {
     textarea.p-inputtext {
-        border: var(--input-border) !important;
+        border: var(--input-border-width) solid var(--input-border-color) !important;
     }
 }
 
@@ -1708,7 +1714,7 @@ body {
 
 /// GroupPanel
 .rc-panel-group-caption {
-    border-bottom: var(--input-border);
+    border-bottom: var(--input-border-width) solid var(--input-border-color);
 }
 
 /// TabSetPanel

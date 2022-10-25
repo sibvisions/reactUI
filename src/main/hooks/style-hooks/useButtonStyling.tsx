@@ -13,12 +13,13 @@
  * the License.
  */
 
-import { CSSProperties, useMemo } from "react";
+import { CSSProperties, useContext, useEffect, useMemo, useState } from "react";
 import { IButton } from "../../components/buttons/IButton";
 import { getMargins, parseIconData } from "../../components/comp-props/ComponentProperties";
 import { getAlignments } from "../../components/comp-props/GetAlignments";
 import IconProps from "../../components/comp-props/IconProps";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
+import { appContext } from "../../contexts/AppProvider";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 
 // Interface for button-style
@@ -44,8 +45,18 @@ interface IButtonStyle {
  * @returns style properties used by all button components
  */
 const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle?: CSSProperties, ref?: HTMLElement, ref2?: HTMLElement): IButtonStyle => {
+    const context = useContext(appContext);
+
     /** The margins of a button */
     const margins = useMemo(() => getMargins(props.margins), [props.margins]);
+
+    const [designerBgdChanged, setDesignerBgdChanged] = useState<boolean>(false);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToDesignerBtnBgd(() => setDesignerBgdChanged(prevState => !prevState));
+
+        return () => context.subscriptions.unsubscribeFromDesignerBtnBgd(() => setDesignerBgdChanged(prevState => !prevState));
+    },[context.subscriptions])
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
@@ -89,7 +100,7 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
             alignItems: btnAlign,
             padding: margins ? margins.marginTop + 'px ' + margins.marginRight + 'px ' + margins.marginBottom + 'px ' + margins.marginLeft + 'px' : undefined,
         }
-    }, [compStyle, props.horizontalTextPosition, margins]);
+    }, [compStyle, props.horizontalTextPosition, margins, designerBgdChanged]);
 
     /** The image property parsed as usable icon props */
     const iconProps = useMemo(() => parseIconData(compStyle?.color as string, props.image), [compStyle?.color, props.image]);
