@@ -103,8 +103,8 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 onClick={() => {
                     //Either opens the basic "home" or a welcome screen if there is one.
                     const openWelcomeOrHome = () => {
-                        if (context.appSettings.welcomeScreen) {
-                            return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen);
+                        if (context.appSettings.welcomeScreen.name) {
+                            return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen.name);
                         }
                         else {
                             context.contentStore.setActiveScreen();
@@ -123,7 +123,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
                                 if (res[0] === undefined || res[0].name !== "message.error") {
                                     (context.server as Server).lastClosedWasPopUp = false;
-                                    context.contentStore.closeScreen(screenName, undefined, context.appSettings.welcomeScreen ? true : false);
+                                    context.contentStore.closeScreen(screenName, undefined, context.appSettings.welcomeScreen.name ? true : false);
                                     showTopBar(openWelcomeOrHome(), topbar);
                                 }
                             });

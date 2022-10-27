@@ -158,7 +158,7 @@ export default class AppSettings {
     menuCollapsed:boolean = ["Small", "Mini"].indexOf(this.deviceStatus) !== -1;
 
     /** The welcome screen of the app */
-    welcomeScreen:string = "";
+    welcomeScreen:{name: string, initOpened: boolean} = { name: "", initOpened: false};
 
     /** The desktop-panel of the app, undefined if there is no desktop-screen */
     desktopPanel:BaseComponent|undefined;
@@ -342,7 +342,7 @@ export default class AppSettings {
 
     /** Sets the welcome-screen */
     setWelcomeScreen(welcomeScreen:string) {
-        this.welcomeScreen = welcomeScreen;
+        this.welcomeScreen.name = welcomeScreen;
     }
 
     /** Sets the desktop-panel */

@@ -101,7 +101,6 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
                             if (navValue && navValue.componentId && context.contentStore.activeScreens && context.contentStore.activeScreens[0].name !== navValue.screenId) {
                                 const openReq = createOpenScreenRequest();
                                 openReq.componentId = navValue.componentId;
-
                                 showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
 
                                 currentlyOpening = true;

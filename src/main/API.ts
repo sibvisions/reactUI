@@ -116,7 +116,6 @@ class API implements IAPI {
         if (parameter) {
             openReq.parameter = parameter;
         }
-
         return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
 
@@ -127,7 +126,6 @@ class API implements IAPI {
     sendOpenScreenIntern(id:string) {
         const openReq = createOpenScreenRequest();
         openReq.componentId = id;
-
         return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
 

@@ -124,6 +124,8 @@ class Server extends BaseServer {
     // True, if the last closed screen was a popup
     lastClosedWasPopUp = false;
 
+    noWelcomeRoute = false;
+
     // Sets the onMenu Function
     setOnMenuFunction(fn:Function) {
         this.onMenuFunction = fn;
@@ -368,39 +370,58 @@ class Server extends BaseServer {
      * @param genericData - the genericResponse
      */
     generic(genericData: GenericResponse) {
-        if (genericData.changedComponents && genericData.changedComponents.length && (!this.linkOpen || !genericData.home)) {
-            this.contentStore.updateContent(genericData.changedComponents, false);
-        }
-        if (!genericData.update) {
-            let workScreen:IPanel|undefined
-            if(genericData.changedComponents && genericData.changedComponents.length) {
-                if (genericData.changedComponents[0].className === COMPONENT_CLASSNAMES.PANEL) {
-                    workScreen = genericData.changedComponents[0] as IPanel;
 
-                    /** 
-                     * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
-                     * to the navigation-name, if not, don't add anything, and call setNavigationName
-                     */
-                    if (workScreen.screen_navigationName_) {
-                        const increment = getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames)
-                        if (this.contentStore.navigationNames.has(workScreen.screen_navigationName_ + increment)) {
-                            const foundNavName = this.contentStore.navigationNames.get(workScreen.screen_navigationName_ + increment) as { screenId: string, componentId: string };
-                            foundNavName.screenId = workScreen.name;
-
-                            if (workScreen.screen_navigationName_ + increment === this.linkOpen) {
-                                this.linkOpen = "";
+        const openScreen = () => {
+            if (genericData.changedComponents && genericData.changedComponents.length && (!this.linkOpen || !genericData.home)) {
+                this.contentStore.updateContent(genericData.changedComponents, false);
+            }
+            if (!genericData.update) {
+                let workScreen:IPanel|undefined
+                if(genericData.changedComponents && genericData.changedComponents.length) {
+                    if (genericData.changedComponents[0].className === COMPONENT_CLASSNAMES.PANEL) {
+                        workScreen = genericData.changedComponents[0] as IPanel;
+    
+                        /** 
+                         * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
+                         * to the navigation-name, if not, don't add anything, and call setNavigationName
+                         */
+                        if (workScreen.screen_navigationName_) {
+                            const increment = getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames)
+                            if (this.contentStore.navigationNames.has(workScreen.screen_navigationName_ + increment)) {
+                                const foundNavName = this.contentStore.navigationNames.get(workScreen.screen_navigationName_ + increment) as { screenId: string, componentId: string };
+                                foundNavName.screenId = workScreen.name;
+    
+                                if (workScreen.screen_navigationName_ + increment === this.linkOpen) {
+                                    this.linkOpen = "";
+                                }
                             }
                         }
-                    }
-                    
-                    this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);
-
-                    if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
-                        this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
+                        
+                        this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);
+    
+                        if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
+                            this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
+                        }
                     }
                 }
+                this.onOpenScreenFunction();
             }
-            this.onOpenScreenFunction();
+        }
+
+        if (this.appSettings.welcomeScreen.name && !this.appSettings.welcomeScreen.initOpened) {
+            const pathName = (this.history as History).location.pathname as string;
+            // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
+            const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
+            if (!(screenToOpen && screenToOpen.split(":")[0] !== this.appSettings.welcomeScreen.name)) {
+                openScreen()
+            }
+            else {
+                this.noWelcomeRoute = true;
+            }
+            this.appSettings.welcomeScreen.initOpened = true;
+        }
+        else {
+            openScreen();
         }
     }
 
@@ -689,9 +710,13 @@ class Server extends BaseServer {
                     const increment = getNavigationIncrement(firstComp.screen_navigationName_, this.contentStore.navigationNames)
                     if (highestPriority < 2 
                         && this.contentStore.navigationNames.has(firstComp.screen_navigationName_ + increment)
-                        && (!this.linkOpen || this.linkOpen === firstComp.screen_navigationName_ + increment)) {
+                        && (!this.linkOpen || this.linkOpen === firstComp.screen_navigationName_ + increment)
+                        && !this.noWelcomeRoute) {
                         highestPriority = 2;
                         routeTo = "home/" + firstComp.screen_navigationName_ + increment;
+                    }
+                    else if (this.noWelcomeRoute) {
+                        this.noWelcomeRoute = false;
                     }
                 }
             }
