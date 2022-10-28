@@ -235,6 +235,10 @@
     line-height: 14px;
 }
 
+.rc-table table {
+    border-style: hidden;
+}
+
 @keyframes pulse {
     0% {
         background: rgba(165, 165, 165, 0.1)

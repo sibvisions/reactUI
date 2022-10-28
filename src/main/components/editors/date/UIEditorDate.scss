@@ -23,6 +23,21 @@
             -webkit-box-shadow: unset;
         }
     }
+
+    &:focus-within {
+        outline: 0 none;
+        outline-offset: 0;
+    }
+
+    input {
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
+    button {
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+    }
 }
 
 .rc-editor-date-panel.p-datepicker {

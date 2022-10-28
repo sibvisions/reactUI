@@ -235,13 +235,21 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         anchor.relative = anchor.autoSize;
                         anchor.autoSizeCalculated = false;
                         anchor.firstCalculation = true;
-                        if(anchor.autoSize){
+                        //anchor.used = false;
+                        if(anchor.autoSize) {
                             anchor.position = 0;
                         }
                     })
                 }
 
                 clearAutoSize();
+
+                // componentConstraints.forEach((val) => {
+                //     val.bottomAnchor.used = true;
+                //     val.leftAnchor.used = true;
+                //     val.rightAnchor.used = true;
+                //     val.topAnchor.used = true;
+                // })
 
                 /** Init autosize Anchor position */
                 anchors.forEach(anchor => {

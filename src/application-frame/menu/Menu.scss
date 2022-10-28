@@ -12,8 +12,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
-@import '../styling/scssutil/scrollbar.scss';
 @import '../styling/scssutil/variables.scss';
 
 /// Mixin for menu-transitions
@@ -171,11 +169,18 @@
 /// Panelmenu-wrapper styling & positioning
 .menu-panelmenu-wrapper {
     @include menuTransitions();
-    @include styledScrollbarPanelDefault();
     position: fixed;
     z-index: 10;
     height: var(--main-height);
     overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+        width: 7px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+    }
 
     /// Panelmenu styling, nesting needed because primereact nesting
     .p-panelmenu {

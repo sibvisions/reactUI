@@ -13,8 +13,6 @@
  * the License.
  */
 
-@import '../scssutil/scrollbar.scss';
-
 /// Default Scheme
 :root {
     /// Default login background
@@ -91,6 +89,12 @@
     /// Default fadeout background
     --std-menu-fadeout-background:linear-gradient(90deg, #fafafa00 0%, #fafafa 100%);
 
+    --menu-scrollbar-background:#ffffff;
+
+    --menu-scrollbar-color:rgb(230, 230, 230);
+
+    --menu-scrollbar-hover-color:rgb(202, 202, 202);
+
     /// menubar background
     --menubar-background:var(--topbar-background);
 
@@ -117,6 +121,8 @@
 
     /// Default shadow for corporation menu speeddial
     --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
+
+    --corp-scrollbar-background:#49525e
 
     /// Default button color
     --primary-color:#2196F3;
@@ -629,8 +635,22 @@ body {
 
 .menu-panelmenu-wrapper {
     background: var(--std-menu-background);
-    @include styledScrollbarPanelDefault();
     border-right: var(--std-menu-border);
+
+    &::-webkit-scrollbar-button:start:decrement {
+        height: var(--std-header-height)
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--menu-scrollbar-background);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--menu-scrollbar-color);
+        &:hover {
+            background: var(--menu-scrollbar-hover-color);
+        }
+    }
 }
 
 .p-panelmenu {
@@ -695,6 +715,23 @@ body {
 
 .corp-menu-menubar {
     background: var(--menubar-background);
+}
+
+.corp-menu-menubar, .mobile-launcher-menu {
+    .p-menubar .p-menubar-root-list {
+        &::-webkit-scrollbar-button:start:decrement {
+            height: var(--corp-header-height);
+        }
+        &::-webkit-scrollbar-track {
+            background: var(--corp-scrollbar-background); 
+        }
+        &::-webkit-scrollbar-thumb {
+            background: var(--menu-scrollbar-color);
+            &:hover {
+                background: var(--menu-scrollbar-hover-color);
+            }
+        }
+    }
 }
 
 .p-speeddial .p-speeddial-button.p-button.p-button-icon-only {
@@ -948,8 +985,6 @@ body {
 /// DateCellEditor
 .p-calendar {
     &:focus-within {
-        outline: 0 none;
-        outline-offset: 0;
         box-shadow: var(--focus-box-shadow);
         border-radius: var(--editor-border-radius);
     }
@@ -958,16 +993,6 @@ body {
         .p-inputtext {
             color: var(--table-required-color);
         }
-    }
-
-    input {
-        border-top-right-radius: 0px;
-        border-bottom-right-radius: 0px;
-    }
-
-    button {
-        border-top-left-radius: 0px;
-        border-bottom-left-radius: 0px;
     }
 }
 
@@ -1022,16 +1047,6 @@ body {
         .p-inputtext {
             color: var(--table-required-color);
         }
-    }
-
-    input {
-        border-top-right-radius: 0px;
-        border-bottom-right-radius: 0px;
-    }
-
-    button {
-        border-top-left-radius: 0px;
-        border-bottom-left-radius: 0px;
     }
 }
 
@@ -1090,16 +1105,13 @@ body {
             background: var(--table-header-background);
             color: var(--linked-item-color);
             border-color: var(--table-header-border-color);
-            border-width: 0px 0px 1px 0px;
         }
 
         .p-autocomplete-item > * {
             border-color: var(--table-row-border-color);
-            border-width: 0px 0px 1px 0px;
 
             &:not(:first-child) {
                 border-color: var(--table-row-border-color);
-                border-width: 0px 1px 0px 0px;
             }
         }
     }
@@ -1179,7 +1191,6 @@ body {
 
         &.ql-snow {
             border: var(--input-border-width) solid var(--input-border-color);
-            border-top: 0px;
         }
     }
 }
@@ -1195,8 +1206,7 @@ body {
     border: var(--table-border);
 
     table {
-        border-style: hidden;
-        box-shadow: 0 0 0 1px #e9ecef;
+        box-shadow: 0 0 0 1px var(--table-row-border-color);
     }
 
     &.navtable-north {

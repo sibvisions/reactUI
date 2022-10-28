@@ -12,20 +12,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-/* Copyright 2022 SIB Visions GmbH
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 :root {
   --login-mask-background:rgb(245, 245, 245, 0.93);
   --login-logo-background:#ffffff;
@@ -52,6 +38,9 @@
   --std-menu-activeitem-color:#2196F3;
   --std-menu-border:1px solid rgba(120,130,140,.13);
   --std-menu-fadeout-background:linear-gradient(90deg, #fafafa00 0%, #fafafa 100%);
+  --menu-scrollbar-background:#ffffff;
+  --menu-scrollbar-color:rgb(230, 230, 230);
+  --menu-scrollbar-hover-color:rgb(202, 202, 202);
   --menubar-background:var(--topbar-background);
   --menubar-hover-background:#454b52;
   --menubar-text-color:var(--topbar-text-color);
@@ -61,7 +50,10 @@
   --corp-menu-speeddial-background:#ffffff;
   --corp-menu-speeddial-color:#495057;
   --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
-  --primary-color:#2196F3;
+  --corp-scrollbar-background:#49525e
+
+    /// Default button color
+    --primary-color:#2196F3;
   --input-background:#ffffff;
   --input-border-width:1px;
   --input-border-color: #ced4da;
@@ -271,17 +263,14 @@ body {
 .menu-panelmenu-wrapper {
   background: var(--std-menu-background);
   border-right: var(--std-menu-border); }
-  .menu-panelmenu-wrapper::-webkit-scrollbar {
-    width: 7px; }
   .menu-panelmenu-wrapper::-webkit-scrollbar-button:start:decrement {
     height: var(--std-header-height); }
   .menu-panelmenu-wrapper::-webkit-scrollbar-track {
-    background: white; }
+    background: var(--menu-scrollbar-background); }
   .menu-panelmenu-wrapper::-webkit-scrollbar-thumb {
-    background: #e6e6e6;
-    border-radius: 10px; }
+    background: var(--menu-scrollbar-color); }
     .menu-panelmenu-wrapper::-webkit-scrollbar-thumb:hover {
-      background: #cacaca; }
+      background: var(--menu-scrollbar-hover-color); }
 
 .p-panelmenu .p-panelmenu-header > a {
   background: var(--std-menu-background);
@@ -318,6 +307,17 @@ body {
 
 .corp-menu-menubar {
   background: var(--menubar-background); }
+
+.corp-menu-menubar .p-menubar .p-menubar-root-list::-webkit-scrollbar-button:start:decrement, .mobile-launcher-menu .p-menubar .p-menubar-root-list::-webkit-scrollbar-button:start:decrement {
+  height: var(--corp-header-height); }
+
+.corp-menu-menubar .p-menubar .p-menubar-root-list::-webkit-scrollbar-track, .mobile-launcher-menu .p-menubar .p-menubar-root-list::-webkit-scrollbar-track {
+  background: var(--corp-scrollbar-background); }
+
+.corp-menu-menubar .p-menubar .p-menubar-root-list::-webkit-scrollbar-thumb, .mobile-launcher-menu .p-menubar .p-menubar-root-list::-webkit-scrollbar-thumb {
+  background: var(--menu-scrollbar-color); }
+  .corp-menu-menubar .p-menubar .p-menubar-root-list::-webkit-scrollbar-thumb:hover, .mobile-launcher-menu .p-menubar .p-menubar-root-list::-webkit-scrollbar-thumb:hover {
+    background: var(--menu-scrollbar-hover-color); }
 
 .p-speeddial .p-speeddial-button.p-button.p-button-icon-only {
   background: var(--corp-menu-speeddial-background);
@@ -463,21 +463,11 @@ body {
   color: var(--input-placeholder-color); }
 
 .p-calendar:focus-within {
-  outline: 0 none;
-  outline-offset: 0;
   box-shadow: var(--focus-box-shadow);
   border-radius: var(--editor-border-radius); }
 
 .p-calendar.required-field .p-inputtext {
   color: var(--table-required-color); }
-
-.p-calendar input {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px; }
-
-.p-calendar button {
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px; }
 
 .p-datepicker {
   border-radius: var(--date-border-radius); }
@@ -505,14 +495,6 @@ body {
 
 .rc-editor-linked.required-field .p-inputtext {
   color: var(--table-required-color); }
-
-.rc-editor-linked input {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px; }
-
-.rc-editor-linked button {
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px; }
 
 .p-autocomplete-panel {
   background: var(--linked-panel-background);
@@ -544,14 +526,11 @@ body {
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item-group > * {
     background: var(--table-header-background);
     color: var(--linked-item-color);
-    border-color: var(--table-header-border-color);
-    border-width: 0px 0px 1px 0px; }
+    border-color: var(--table-header-border-color); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item > * {
-    border-color: var(--table-row-border-color);
-    border-width: 0px 0px 1px 0px; }
+    border-color: var(--table-row-border-color); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-item > *:not(:first-child) {
-      border-color: var(--table-row-border-color);
-      border-width: 0px 1px 0px 0px; }
+      border-color: var(--table-row-border-color); }
 
 .p-editor-container .p-editor-toolbar {
   background: var(--html-toolbar-background);
@@ -590,8 +569,7 @@ body {
     border-bottom-left-radius: var(--editor-border-radius);
     border-bottom-right-radius: var(--editor-border-radius); }
   .p-editor-container .p-editor-content.ql-snow {
-    border: var(--input-border-width) solid var(--input-border-color);
-    border-top: 0px; }
+    border: var(--input-border-width) solid var(--input-border-color); }
 
 .rc-editor-html textarea.p-inputtext {
   border: var(--input-border-width) solid var(--input-border-color) !important; }
@@ -599,8 +577,7 @@ body {
 .rc-table {
   border: var(--table-border); }
   .rc-table table {
-    border-style: hidden;
-    box-shadow: 0 0 0 1px #e9ecef; }
+    box-shadow: 0 0 0 1px var(--table-row-border-color); }
   .rc-table.navtable-north {
     border-bottom-left-radius: var(--table-border-radius);
     border-bottom-right-radius: var(--table-border-radius); }

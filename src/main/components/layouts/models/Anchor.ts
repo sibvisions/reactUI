@@ -41,6 +41,8 @@ class Anchor{
     position: number;
     /** The orientation of this anchor. */
     orientation: number;
+    /** True, if the anchor is used by a visible component. **/
+    used: boolean
 
     /**
      * @constructor extracts and sets anchordata and default values
@@ -58,6 +60,7 @@ class Anchor{
         this.relative = false;
         this.position = parseInt(splitData[4]);
         this.orientation = this.getOrientationFromData(splitData[0]);
+        this.used = false;
     }
 
     /**
