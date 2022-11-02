@@ -219,6 +219,10 @@ body {
 
             .menu-panelmenu-wrapper {
                 width: var(--std-menu-collapsed-width);
+
+                &::-webkit-scrollbar-button:start:decrement {
+                    height: var(--std-header-height)
+                }
             }
 
             .menu-topbar {
@@ -338,6 +342,12 @@ body {
 
         .corp-menu-menubar .p-menubar {
             height: var(--corp-menubar-height);
+
+            .p-menubar .p-menubar-root-list {
+                &::-webkit-scrollbar-button:start:decrement {
+                    height: var(--corp-header-height);
+                }
+            }
 
             .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
                 padding: var(--corp-menu-header-padding);

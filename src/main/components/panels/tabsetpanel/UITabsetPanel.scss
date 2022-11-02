@@ -43,6 +43,10 @@
 
                     .p-tabview-close {
                         font-size: 12px;
+
+                        &:hover {
+                            font-weight: bold;
+                        }
                     }
                 }
                 .rc-tabset-tabicon {

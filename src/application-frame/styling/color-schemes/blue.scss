@@ -122,7 +122,7 @@
     /// Blue shadow for corporation menu speeddial
     --corp-menu-speeddial-shadow:0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.20);
 
-    --corp-scrollbar-background:#49525e
+    --corp-scrollbar-background:#49525e;
 
     /// Blue button color
     --primary-color:#2196F3;
@@ -255,7 +255,7 @@
     /// LinkedCellEditor hover text-color
     --linked-item-hover-text-color:#000000;
 
-    --linked-highlighted-color: #E3F2FD;
+    --linked-highlighted-color:#E3F2FD;
 
     /// Blue overlay background for popupmenubuttons
     --popupmenubutton-panel-background:#ffffff;
@@ -461,8 +461,7 @@
     /// The background color of the launcher toolbar
     --launcher-toolbar-background:var(--topbar-background);
 
-    /// The separator color of launcher toolbars
-    --launcher-toolbar-separator-color:#0f7bd3;
+    --launcher-toolbar-border:1px solid #0f7bd3;
 
     /// The text-color of buttons of the launcher
     --launcher-toolbar-button-text-color:var(--topbar-text-color);
@@ -494,8 +493,7 @@
     /// The background color of the frame toolbar
     --frame-toolbar-background:var(--topbar-background);
 
-    /// The separator color of frame toolbars
-    --frame-toolbar-separator-color:#0f7bd3;
+    --frame-toolbar-border:1px solid #0f7bd3;
 
     /// The text-color of buttons of the frame
     --frame-toolbar-button-text-color:var(--topbar-text-color);
@@ -637,10 +635,6 @@ body {
     background: var(--std-menu-background);
     border-right: var(--std-menu-border);
 
-    &::-webkit-scrollbar-button:start:decrement {
-        height: var(--std-header-height)
-    }
-
     &::-webkit-scrollbar-track {
         background: var(--menu-scrollbar-background);
     }
@@ -719,9 +713,6 @@ body {
 
 .corp-menu-menubar, .mobile-launcher-menu {
     .p-menubar .p-menubar-root-list {
-        &::-webkit-scrollbar-button:start:decrement {
-            height: var(--corp-header-height);
-        }
         &::-webkit-scrollbar-track {
             background: var(--corp-scrollbar-background); 
         }
@@ -1356,22 +1347,15 @@ body {
 
             > td {
                 .open-cell-editor {
-                    box-shadow: none;
                     color: var(--table-text-color);
-
-                    .p-inputtext:enabled:focus {
-                        box-shadow: none;
-                    }
                 }
 
                 &.cell-required {
                     background: var(--table-required-even-background);
-                    opacity: 0.8;
                 }
 
                 &.cell-readonly {
                     background: var(--table-readonly-even-background);
-                    opacity: 0.8;
                 }
             }
         }
@@ -1394,12 +1378,10 @@ body {
                 td {
                     &.cell-required {
                         background: var(--table-required-odd-background);
-                        opacity: 0.8;
                     }
     
                     &.cell-readonly {
                         background: var(--table-readonly-odd-background);
-                        opacity: 0.8;
                     }
                 }
             }
@@ -1416,7 +1398,6 @@ body {
     &.p-row-odd {
         > td.p-selectable-cell:not(.p-highlight) {
             &:hover {
-                background: initial;
                 color: var(--table-cell-hover-color);
             }
         
@@ -1428,14 +1409,12 @@ body {
             &.cell-readonly:hover {
                 background: var(--table-readonly-odd-background);
                 color: var(--table-cell-hover-color);
-                opacity: 0.8;
             }
         }
     }
 
     > td.p-selectable-cell:not(.p-highlight) {
         &:hover {
-            background: initial;
             color: var(--table-cell-hover-color);
         }
     
@@ -1447,7 +1426,6 @@ body {
         &.cell-readonly:hover {
             background: var(--table-readonly-even-background);
             color: var(--table-cell-hover-color);
-            opacity: 0.8;
         }
     }
 }
@@ -1518,10 +1496,6 @@ body {
         border-top-left-radius: var(--dialog-border-radius);
         border-top-right-radius: var(--dialog-border-radius);
         border-bottom: var(--dialog-header-border);
-
-        .p-dialog-header-icon {
-            color: var(--text-color);
-        }
     }
 
     .p-dialog-content {
@@ -1549,10 +1523,6 @@ body {
         color: var(--message-error-header-color);
 
         .p-dialog-header-icon {
-            &:focus {
-                box-shadow: none;
-            }
-
             &:enabled {
                 color: var(--message-error-header-color);
 
@@ -1685,14 +1655,10 @@ body {
     }
 
     .toast-header {
-        color: white;
-
         &.info {
             background: var(--message-info-header-background);
 
             .toast-header-close {
-                color: white;
-
                 &:hover {
                     background: var(--message-info-header-close-hover);
                 }
@@ -1709,15 +1675,6 @@ body {
     &.app-gone {
         background: var(--gone-background);
         color: var(--gone-color);
-    }
-}
-
-/// TagPanel
-.tagpanel {
-    color: #495057;
-
-    .rc-button.mouse-border {
-        color: #495057;
     }
 }
 
@@ -1762,7 +1719,6 @@ body {
     color: var(--tab-close-color);
 
     &:hover {
-        font-weight: bold;
         color: var(--tab-close-hover-color);
     }
 }
@@ -1809,15 +1765,8 @@ body {
                 .p-tree-toggler {
                     color: var(--tree-color);
 
-                    &:focus {
-                        box-shadow: none;
-                    }
                     &:enabled {
                         color: var(--tree-color);
-
-                        &:hover {
-                            background: transparent;
-                        }
                     }
                 }
         
@@ -1831,9 +1780,6 @@ body {
 
                     &:hover {
                         color: var(--tree-item-hover-color);
-                        .p-tree-toggler {
-                            background: transparent;
-                        }
 
                         .p-tree-toggler, .p-tree-toggler:enabled, .p-treenode-icon {
                             color: var(--tree-item-hover-color);
@@ -1853,10 +1799,6 @@ body {
     background: radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
 }
 
-.loading-screen-spinner {
-    animation: progress-spinner-color 3s;
-}
-
 @media screen and (max-width: 960px) {
     .p-menubar .p-menubar-root-list {
         background: var(--topbar-background);
@@ -1872,8 +1814,7 @@ body {
 .mobile-launcher-menu {
     .rc-frame-toolbar {
         background: var(--launcher-toolbar-background);
-        border-top: 1px solid;
-        border-color: var(--launcher-toolbar-separator-color);
+        border-top: var(--launcher-toolbar-border);
     
         .rc-button.mouse-border {
             color: var(--launcher-toolbar-button-text-color);
@@ -1906,12 +1847,9 @@ body {
     
         .rc-frame-header-close-button {
             color: var(--text-color);
-            background: transparent;
-            font-size: 12px;
         
             &:hover {
                 background: var(--frame-header-button-hover-background);
-                font-weight: bold;
                 color: var(--frame-header-button-hover-color);
             }
         }
@@ -1964,8 +1902,7 @@ body {
 
     .rc-frame-toolbar {
         background: var(--frame-toolbar-background);
-        border-top: 1px solid;
-        border-color: var(--frame-toolbar-separator-color);
+        border-top: var(--frame-toolbar-border);
     
         .rc-button.mouse-border {
             color: var(--frame-toolbar-button-text-color);

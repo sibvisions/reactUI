@@ -21,6 +21,20 @@
         .p-treenode {
             .p-treenode-content {
                 padding: 0;
+
+                .p-tree-toggler {
+                    &:focus {
+                        box-shadow: none;
+                    }
+
+                    &:enabled:hover {
+                        background: transparent;
+                    }
+                }
+
+                &.p-highlight:hover .p-tree-toggler {
+                    background: transparent;
+                }
             }
         }
     }

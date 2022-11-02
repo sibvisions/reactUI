@@ -91,6 +91,24 @@
                 .cell-editor-arrow {
                     visibility: visible;
                 }
+
+                > td {
+                    .open-cell-editor {
+                        box-shadow: none;
+
+                        .p-inputtext:enabled:focus {
+                            box-shadow: none;
+                        }
+                    }
+
+                    &.cell-required {
+                        opacity: 0.8;
+                    }
+
+                    &.cell-readonly {
+                        opacity: 0.8;
+                    }
+                }
             }
 
             &:not(.p-highlight) {
@@ -198,6 +216,20 @@
                     }
                 }
             }
+
+            &.p-row-odd {
+                &.p-highlight {
+                    td {
+                        &.cell-required {
+                            opacity: 0.8;
+                        }
+
+                        &.cell-readonly {
+                            opacity: 0.8;
+                        }
+                    }
+                }
+            }
         }
     }
     .p-inputtext {
@@ -218,6 +250,30 @@
 
     .p-virtualscroller-content {
         contain: unset;
+    }
+}
+
+.p-datatable.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row {
+    &.p-row-odd {
+        > td.p-selectable-cell:not(.p-highlight) {
+            &:hover {
+                background: initial;
+            }
+
+            &.cell-readonly:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+
+    > td.p-selectable-cell:not(.p-highlight) {
+        &:hover {
+            background: initial;
+        }
+
+        &.cell-readonly:hover {
+            opacity: 0.8;
+        }
     }
 }
 

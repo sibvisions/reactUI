@@ -96,6 +96,8 @@ body {
 
 .basti .std-menu.menu-collapsed .menu-panelmenu-wrapper {
   width: var(--std-menu-collapsed-width); }
+  .basti .std-menu.menu-collapsed .menu-panelmenu-wrapper::-webkit-scrollbar-button:start:decrement {
+    height: var(--std-header-height); }
 
 .basti .std-menu.menu-collapsed .menu-topbar {
   margin-left: var(--std-menu-collapsed-width); }
@@ -179,6 +181,8 @@ body {
 
 .basti .corp-menu .corp-menu-menubar .p-menubar {
   height: var(--corp-menubar-height); }
+  .basti .corp-menu .corp-menu-menubar .p-menubar .p-menubar .p-menubar-root-list::-webkit-scrollbar-button:start:decrement {
+    height: var(--corp-header-height); }
   .basti .corp-menu .corp-menu-menubar .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled) {
     padding: var(--corp-menu-header-padding); }
   .basti .corp-menu .corp-menu-menubar .p-menubar .p-menuitem-link {

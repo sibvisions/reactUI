@@ -51,9 +51,12 @@
             display: flex;
             justify-content: space-between;
             padding: 0.5rem;
+            color: white;
 
             &.info {
                 .toast-header-close {
+                    color: white;
+                    
                     &:hover {
                         border-radius: 50%;
                     }

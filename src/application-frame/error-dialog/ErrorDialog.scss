@@ -18,6 +18,10 @@
     min-height: 230px;
     min-width: 205px;
 
+    .p-dialog-header .p-dialog-header-icon:focus {
+        box-shadow: none;
+    }
+
     .p-dialog-content {
         display: flex;
         justify-content: flex-start;
