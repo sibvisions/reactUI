@@ -76,6 +76,7 @@ const useMouseListener = (
             pressReq.button = getMouseButton(event.button);
             pressReq.x = event.x;
             pressReq.y = event.y;
+            pressReq.clickCount = event.detail;
             const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_KEYWORDS.MOUSE_PRESSED), topbar);
             hold ? hold("pressed", release) : release();
         }
@@ -105,6 +106,7 @@ const useMouseListener = (
             releaseReq.button = getMouseButton(event.button);
             releaseReq.x = event.x;
             releaseReq.y = event.y;
+            releaseReq.clickCount = event.detail;
             const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_KEYWORDS.MOUSE_RELEASED), topbar);
             hold ? hold("released", release) : release();
         }

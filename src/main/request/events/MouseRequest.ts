@@ -19,6 +19,7 @@ import ComponentRequest from "../comp/ComponentRequest";
 interface MouseRequest extends ComponentRequest {
     button?: "Left"|"Middle"|"Right",
     x?: number,
-    y?: number
+    y?: number,
+    clickCount?: number
 }
 export default MouseRequest;

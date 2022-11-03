@@ -81,20 +81,18 @@ export interface IEditorLinked extends IRCCellEditor {
  * @param server - the server instance
  * @param contentStore - the contentStore instance
  */
-export function fetchLinkedRefDatabook(screenName:string, databook: string, selectedRecord:any, displayCol: string|null|undefined, concatMask:string|undefined, server: Server|ServerFull, contentStore: BaseContentStore) {
+export function fetchLinkedRefDatabook(screenName:string, databook: string, selectedRecord:any, displayCol: string|null|undefined, concatMask:string|undefined, server: Server|ServerFull, contentStore: BaseContentStore, name?:string) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook);
     if (selectedRecord
         && (displayCol || concatMask)
         && (!refDataBookInfo?.data)
         && !server.missingDataFetches.includes(databook)) {
         server.missingDataFetches.push(databook);
-        const fetchReq = createFetchRequest();
-        fetchReq.dataProvider = databook
-        if (refDataBookInfo?.metaData) {
-            fetchReq.includeMetaData = true;
-        }
-    
-        server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH);
+        const filterReq = createFilterRequest();
+        filterReq.dataProvider = databook;
+        filterReq.editorComponentId = name;
+        filterReq.value = "";
+        server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER)
     }
 }
 
@@ -302,7 +300,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             props.cellEditor.displayReferencedColumnName,
             props.cellEditor.displayConcatMask,
             props.context.server, 
-            props.context.contentStore);
+            props.context.contentStore, props.name);
     }, [props.selectedRow])
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
