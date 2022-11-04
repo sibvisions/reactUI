@@ -96,6 +96,10 @@
                     .open-cell-editor {
                         box-shadow: none;
 
+                        .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
+                            padding: 0px;
+                        }
+
                         .p-inputtext:enabled:focus {
                             box-shadow: none;
                         }

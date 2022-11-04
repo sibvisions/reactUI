@@ -105,6 +105,7 @@
     margin-right: 10px;
 
     .p-menubar  {
+        height: 100%;
         .p-menubar-root-list >.p-menuitem >.p-menuitem-link {
             .p-menuitem-text {
                 @extend %ellipsis-overflow;
@@ -120,6 +121,10 @@
 
         .p-menuitem-text {
             line-height: unset;
+        }
+
+        .p-submenu-list {
+            width: 100%;
         }
     }
 }

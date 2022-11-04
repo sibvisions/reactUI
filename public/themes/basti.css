@@ -86,7 +86,6 @@ body {
   padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2); }
 
 .basti .p-menubar {
-  padding: 0;
   height: var(--menubar-height); }
 
 .basti .std-menu.menu-collapsed .menu-logo-wrapper {
@@ -125,6 +124,15 @@ body {
   width: var(--std-topbar-button-size);
   height: var(--std-topbar-button-size); }
 
+.basti .std-menu .profile-menu {
+  height: var(--std-profile-height); }
+  .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+    height: var(--std-profile-height);
+    padding: var(--std-profile-padding); }
+
+.basti .std-menu .vl {
+  height: var(--std-profile-height); }
+
 .basti .std-menu .profile-image, .basti .std-menu .profile-image-null {
   width: var(--std-profile-pic);
   height: var(--std-profile-pic); }
@@ -161,19 +169,6 @@ body {
   width: var(--std-fadeout-width);
   margin-top: var(--std-header-height); }
 
-.basti .profile-menu {
-  height: var(--std-profile-height); }
-  .basti .profile-menu .p-menubar {
-    height: 100%; }
-    .basti .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-      height: var(--std-profile-height);
-      padding: var(--std-profile-padding); }
-    .basti .profile-menu .p-menubar .p-submenu-list {
-      width: 100%; }
-
-.basti .vl {
-  height: var(--std-profile-height); }
-
 .basti .corp-menu .corp-menu-header {
   height: var(--corp-header-height); }
   .basti .corp-menu .corp-menu-header .menu-screen-title {
@@ -200,8 +195,6 @@ body {
   .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
     height: var(--corp-profile-height);
     padding: var(--corp-profile-padding); }
-  .basti .corp-menu .profile-menu .p-menubar .p-submenu-list {
-    width: 100%; }
 
 .basti .corp-menu .vl {
   height: var(--corp-profile-height); }
@@ -244,9 +237,6 @@ body {
     padding: var(--input-button-padding); }
     .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-autocomplete-dropdown > .p-button-icon, .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-datepicker-trigger > .p-button-icon {
       font-size: var(--input-button-icon-size); }
-
-.basti .open-cell-editor .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
-  padding: 0px; }
 
 .basti .p-checkbox {
   width: var(--checkbox-size);
@@ -310,28 +300,23 @@ body {
 .crash-message-text {
   font-size: var(--crash-message-size); }
 
-.crash-input-stack {
-  max-height: 0rem; }
-  .crash-input-stack.show-crash-details {
-    max-height: var(--crash-stack-height); }
+.crash-input-stack.show-crash-details {
+  max-height: var(--crash-stack-height); }
 
 .crash-input-stack-textarea {
-  height: var(--crash-stack-height);
-  width: 100%; }
+  height: var(--crash-stack-height); }
 
 @media screen and (max-width: 960px) {
   .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
     width: var(--std-profile-submenu-width-small);
     left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-small)); }
   .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-    width: var(--std-profile-width-small);
-    padding: 0; }
+    width: var(--std-profile-width-small); }
   .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
     width: var(--corp-profile-submenu-width-small);
     left: calc(var(--corp-profile-width-small) - var(--corp-profile-submenu-width-small)); }
   .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-    width: var(--corp-profile-width-small);
-    padding: 0; } }
+    width: var(--corp-profile-width-small); } }
 
 @media screen and (max-width: 530px) {
   .basti .std-menu .menu-logo-mini-wrapper {

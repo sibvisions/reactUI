@@ -126,13 +126,9 @@ body {
 
 .basti_small .std-menu .profile-menu {
   height: var(--std-profile-height); }
-  .basti_small .std-menu .profile-menu .p-menubar {
-    height: 100%; }
-    .basti_small .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-      height: var(--std-profile-height);
-      padding: var(--std-profile-padding); }
-    .basti_small .std-menu .profile-menu .p-menubar .p-submenu-list {
-      width: 100%; }
+  .basti_small .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+    height: var(--std-profile-height);
+    padding: var(--std-profile-padding); }
 
 .basti_small .std-menu .vl {
   height: var(--std-profile-height); }
@@ -154,11 +150,6 @@ body {
 .basti_small .std-menu .menu-logo-mini {
   width: var(--std-logo-width); }
 
-.basti_small .std-menu .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {
-  min-width: var(--menuicon-size);
-  max-width: var(--menuicon-size);
-  font-size: var(--menuicon-size); }
-
 .basti_small .std-menu .p-panelmenu .p-panelmenu-header > a {
   padding: var(--std-menu-header-padding); }
 
@@ -167,6 +158,11 @@ body {
 
 .basti_small .std-menu .p-panelmenu .p-panelmenu-icon {
   left: calc(var(--std-menu-width) - 30px); }
+
+.basti_small .std-menu .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {
+  min-width: var(--menuicon-size);
+  max-width: var(--menuicon-size);
+  font-size: var(--menuicon-size); }
 
 .basti_small .std-menu .fadeout {
   left: var(--std-fadeout-left);
@@ -199,8 +195,6 @@ body {
   .basti_small .corp-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
     height: var(--corp-profile-height);
     padding: var(--corp-profile-padding); }
-  .basti_small .corp-menu .profile-menu .p-menubar .p-submenu-list {
-    width: 100%; }
 
 .basti_small .corp-menu .vl {
   height: var(--corp-profile-height); }
@@ -243,9 +237,6 @@ body {
     padding: var(--input-button-padding); }
     .basti_small .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-autocomplete-dropdown > .p-button-icon, .basti_small .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-datepicker-trigger > .p-button-icon {
       font-size: var(--input-button-icon-size); }
-
-.basti_small .open-cell-editor .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
-  padding: 0px; }
 
 .basti_small .p-checkbox {
   width: var(--checkbox-size);
@@ -300,34 +291,32 @@ body {
   min-width: var(--error-dialog-icon-size);
   font-size: var(--error-dialog-icon-size); }
 
+.p-autocomplete-panel.dropdown-table .p-autocomplete-item {
+  height: calc(8px + var(--table-data-height)); }
+
 .crash-message-icon {
   font-size: var(--crash-message-size); }
 
 .crash-message-text {
   font-size: var(--crash-message-size); }
 
-.crash-input-stack {
-  max-height: 0rem; }
-  .crash-input-stack.show-crash-details {
-    max-height: var(--crash-stack-height); }
+.crash-input-stack.show-crash-details {
+  max-height: var(--crash-stack-height); }
 
 .crash-input-stack-textarea {
-  height: var(--crash-stack-height);
-  width: 100%; }
+  height: var(--crash-stack-height); }
 
 @media screen and (max-width: 960px) {
   .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
     width: var(--std-profile-submenu-width-small);
     left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-small)); }
   .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-    width: var(--std-profile-width-small);
-    padding: 0; }
+    width: var(--std-profile-width-small); }
   .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {
     width: var(--corp-profile-submenu-width-small);
     left: calc(var(--corp-profile-width-small) - var(--corp-profile-submenu-width-small)); }
   .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
-    width: var(--corp-profile-width-small);
-    padding: 0; } }
+    width: var(--corp-profile-width-small); } }
 
 @media screen and (max-width: 530px) {
   .basti .std-menu .menu-logo-mini-wrapper {
