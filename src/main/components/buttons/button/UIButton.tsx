@@ -32,6 +32,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableButton } from "../../../extend-components/buttons/ExtendButton";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 
 /**
  * This component displays a basic button
@@ -61,13 +62,28 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    const designerUpdate = useDesignerUpdates("default-button");
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (buttonRef.current) {
+        if (buttonRef.current && buttonWrapperRef.current) {
+            buttonWrapperRef.current.style.removeProperty("top");
+            buttonWrapperRef.current.style.removeProperty("left");
+            buttonWrapperRef.current.style.removeProperty("width");
+            buttonWrapperRef.current.style.removeProperty("height");
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), buttonRef.current, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, designerUpdate]);
 
+    useLayoutEffect(() => {
+        if (buttonWrapperRef.current) {
+            const ref = buttonWrapperRef.current
+            ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
+            ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
+            ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
+            ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
+        }
+    }, [layoutStyle])
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = (event:any) => {

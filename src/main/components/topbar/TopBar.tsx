@@ -50,10 +50,10 @@ const TopBar:FC = ({children}) => {
     const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
 
     useEffect(() => {
-        context.subscriptions.subscribeToDesignerTopbar(() => setDesignerTopbarChanged(prevState => !prevState))
+        context.designerSubscriptions.subscribeToTopbarColor(() => setDesignerTopbarChanged(prevState => !prevState))
 
-        return () => context.subscriptions.unsubscribeFromDesignerTopbar();
-    }, [context.subscriptions])
+        return () => context.designerSubscriptions.unsubscribeFromTopbarColor();
+    }, [context.designerSubscriptions])
 
     const topbarSettings = useMemo(() => {
         return getSettingsFromCSSVar({

@@ -30,7 +30,7 @@ import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useRespons
 import ChildWithProps from "../../../main/util/types/ChildWithProps";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
-import { ReactUIDesigner } from '@sibvisions/reactui-designer'
+import { ReactUIDesigner } from '@sibvisions/reactui-designer/dist'
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
@@ -218,8 +218,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
                 logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
                 logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
-                buttonCallback={() => context.subscriptions.notifyDesignerBtnBgdChanged()}
-                topbarCallback={() => context.subscriptions.notifyDesignerTopbarChanged()}>
+                designerSubscription={context.designerSubscriptions}>
                 {content}
             </ReactUIDesigner> 
             :

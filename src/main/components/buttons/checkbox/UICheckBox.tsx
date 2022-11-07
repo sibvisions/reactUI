@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, SyntheticEvent, useEffect, useLayoutEffect, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
 import { Checkbox, CheckboxChangeParams } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
@@ -28,6 +28,7 @@ import { sendSetValue } from "../../../util/server-util/SendSetValues";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableSelectable } from "../../../extend-components/buttons/ExtendCheckbox";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 
 /**
  * This component displays a CheckBox and its label
@@ -56,14 +57,30 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     useRequestFocus(id, props.requestFocus, cbRef.current ? cbRef.current.inputRef ? cbRef.current.inputRef.current : undefined : undefined, context);
+
+    const designerUpdate = useDesignerUpdates("checkbox");
     
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const btnRef = buttonWrapperRef.current;
         if (btnRef) {
+            btnRef.style.removeProperty("top");
+            btnRef.style.removeProperty("left");
+            btnRef.style.removeProperty("width");
+            btnRef.style.removeProperty("height");
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), btnRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle, designerUpdate]);
+
+    useLayoutEffect(() => {
+        if (buttonWrapperRef.current) {
+            const ref = buttonWrapperRef.current
+            ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
+            ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
+            ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
+            ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
+        }
+    }, [layoutStyle])
 
     // If lib-user extends Checkbox with onChange, call it when selected changes
     useEffect(() => {

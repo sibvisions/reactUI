@@ -53,9 +53,9 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
     const [designerBgdChanged, setDesignerBgdChanged] = useState<boolean>(false);
 
     useEffect(() => {
-        context.subscriptions.subscribeToDesignerBtnBgd(() => setDesignerBgdChanged(prevState => !prevState));
+        context.designerSubscriptions.subscribeToButtonBackground(() => setDesignerBgdChanged(prevState => !prevState))
 
-        return () => context.subscriptions.unsubscribeFromDesignerBtnBgd(() => setDesignerBgdChanged(prevState => !prevState));
+        return () => context.designerSubscriptions.unsubscribeFromButtonBackground(() => setDesignerBgdChanged(prevState => !prevState));
     },[context.subscriptions])
 
     /** Various style properties which are set by the properties received from the server */

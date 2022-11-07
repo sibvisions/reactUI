@@ -38,6 +38,7 @@ import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
 import useEventHandler from "../hooks/event-hooks/useEventHandler";
 import Timer from "../util/other-util/Timer";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
+import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
     return (contentStore as ContentStore).menuItems !== undefined;
@@ -49,6 +50,7 @@ export type AppContextType = {
     server: Server,
     contentStore: ContentStore,
     subscriptions: SubscriptionManager,
+    designerSubscriptions: DesignerSubscriptionManager,
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
@@ -59,6 +61,7 @@ export type AppContextType = {
     server: ServerFull,
     contentStore: ContentStoreFull,
     subscriptions: SubscriptionManager,
+    designerSubscriptions: DesignerSubscriptionManager,
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
@@ -69,7 +72,9 @@ export type AppContextType = {
 /** Contentstore instance */
 const contentStore = new ContentStore();
 /** SubscriptionManager instance */
-const subscriptions = new SubscriptionManager(contentStore)
+const subscriptions = new SubscriptionManager(contentStore);
+/** DesignerSubscriptionManager instance */
+const designerSubscriptions = new DesignerSubscriptionManager(contentStore);
 /** AppSettings instance */
 const appSettings = new AppSettings(contentStore, subscriptions);
 /** Server instance */
@@ -95,6 +100,7 @@ const initValue: AppContextType = {
     api: api,
     appSettings: appSettings,
     subscriptions: subscriptions,
+    designerSubscriptions: designerSubscriptions,
     ctrlPressed: false,
     appReady: false
 }

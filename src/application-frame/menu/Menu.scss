@@ -103,6 +103,8 @@
 .profile-menu {
     margin-left: 0.5rem;
     margin-right: 10px;
+    display: flex;
+    align-items: center;
 
     .p-menubar  {
         height: 100%;

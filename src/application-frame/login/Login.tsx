@@ -28,7 +28,7 @@ import ResizeProvider from "../../main/contexts/ResizeProvider";
 import { LoginModeType } from "../../main/response/login/LoginResponse";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
-import { ReactUIDesigner } from "@sibvisions/reactui-designer";
+import { ReactUIDesigner } from "@sibvisions/reactui-designer/dist";
 import useDesignerImages from "../../main/hooks/style-hooks/useDesignerImages";
 import { isCorporation } from "../../main/util/server-util/IsCorporation";
 
@@ -43,7 +43,7 @@ const Login: FC = () => {
     const context = useContext(appContext);
 
     /** Reference for the screen-container */
-    const sizeRef = useRef<any>(null);
+    //const sizeRef = useRef<any>(null);
 
     /** State of the current login-mode to display */
     const [loginMode, setLoginMode] = useState<LoginMode>("default");
@@ -147,12 +147,10 @@ const Login: FC = () => {
             <ResizeProvider login={true}>
                 <ResizeHandler>
                     <div className="rc-glasspane login-glass" />
-                    <div className="login-container-with-desktop" ref={sizeRef}>
                         {componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)}
                         <div className="login-form-position-wrapper">
                             {getCorrectLoginForm()}
                         </div>
-                    </div>
                 </ResizeHandler>
             </ResizeProvider>
             {context.appSettings.showDesigner && 
@@ -189,8 +187,7 @@ const Login: FC = () => {
                 logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
                 logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
                 logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
-                buttonCallback={() => context.subscriptions.notifyDesignerBtnBgdChanged()}
-                topbarCallback={() => context.subscriptions.notifyDesignerTopbarChanged()}>
+                designerSubscription={context.designerSubscriptions}>
                 {content}
             </ReactUIDesigner> 
             :
