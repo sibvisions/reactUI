@@ -30,7 +30,7 @@ import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useRespons
 import ChildWithProps from "../../../main/util/types/ChildWithProps";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
-import { ReactUIDesigner } from '@sibvisions/reactui-designer/dist'
+import { ReactUIDesigner } from '@sibvisions/reactui-designer'
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";

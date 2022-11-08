@@ -28,7 +28,7 @@ import ResizeProvider from "../../main/contexts/ResizeProvider";
 import { LoginModeType } from "../../main/response/login/LoginResponse";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
-import { ReactUIDesigner } from "@sibvisions/reactui-designer/dist";
+import { ReactUIDesigner } from "@sibvisions/reactui-designer";
 import useDesignerImages from "../../main/hooks/style-hooks/useDesignerImages";
 import { isCorporation } from "../../main/util/server-util/IsCorporation";
 
