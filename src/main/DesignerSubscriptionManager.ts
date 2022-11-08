@@ -28,6 +28,12 @@ export class DesignerSubscriptionManager {
     /** An Array of functions which will update the button-padding of button-components */
     buttonPaddingSubscriber: Array<Function> = [];
 
+    /** An Array of functions which will update the button-padding of icon-only button-components */
+    buttonIconOnlyPaddingSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the button-padding of date/linked editor buttons */
+    inputButtonPaddingSubscriber: Array<Function> = [];
+
     /** An Array of functions which will update the button-background of button-components */
     buttonBackgroundSubscriber: Array<Function> = [];
 
@@ -36,6 +42,9 @@ export class DesignerSubscriptionManager {
 
     /** An Array of functions which will update the size of radiobuttons */
     radiobuttonSizeSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the padding of menubuttons */
+    menubuttonPaddingSubscriber: Array<Function> = [];
 
     /** A function which will update the topbar (loading-bar) color */
     topbarColorSubscriber: Function = () => {};
@@ -169,5 +178,68 @@ export class DesignerSubscriptionManager {
     /** Notifies the components that the radiobutton-size changed */
     notifyRadiobuttonSizeChanged() {
         this.radiobuttonSizeSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+
+    /**
+     * Subscribes a component to designer icon-only button-padding changes
+     * @param fn - the function to update the state
+     */
+     subscribeToIconOnlyPadding(fn: Function) {
+        this.buttonIconOnlyPaddingSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer icon-only button-padding changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromIconOnlyPadding(fn: Function) {
+        this.buttonIconOnlyPaddingSubscriber.splice(this.buttonIconOnlyPaddingSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the icon-only button-padding changed */
+    notifyIconOnlyPaddingChanged() {
+        this.buttonIconOnlyPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+    
+    /**
+     * Subscribes a component to designer input button-padding changes
+     * @param fn - the function to update the state
+     */
+     subscribeToInputButtonPadding(fn: Function) {
+        this.inputButtonPaddingSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer input button-padding changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromInputButtonPadding(fn: Function) {
+        this.inputButtonPaddingSubscriber.splice(this.inputButtonPaddingSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the input button-padding changed */
+    notifyInputButtonPaddingChanged() {
+        this.inputButtonPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+
+    /**
+     * Subscribes a component to designer menu-button-padding changes
+     * @param fn - the function to update the state
+     */
+     subscribeToMenuButtonPadding(fn: Function) {
+        this.menubuttonPaddingSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer menu-button-padding changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromMenuButtonPadding(fn: Function) {
+        this.menubuttonPaddingSubscriber.splice(this.menubuttonPaddingSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the menu-button-padding changed */
+    notifyMenuButtonPaddingChanged() {
+        this.menubuttonPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
     }
 }

@@ -43,6 +43,8 @@ import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableLinkedEditor } from "../../../extend-components/editors/ExtendLinkedEditor";
 import _ from "underscore";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 
 type LinkReference = {
     referencedDataBook: string
@@ -165,6 +167,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
 
+    const wrapperRef = useRef<HTMLSpanElement>(null);
+
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
 
@@ -194,8 +198,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
+    const designerUpdate = useDesignerUpdates("extra-button");
+
     /** Button background */
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]);
 
     const metaDataReferenced:MetaDataResponse = useMetaData(props.screenName, props.cellEditor.linkReference.referencedDataBook||"") as MetaDataResponse;
 
@@ -247,10 +253,25 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if(onLoadCallback && linkedRef.current) {
-            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), linkedRef.current.container, onLoadCallback)
+        if(onLoadCallback && wrapperRef.current) {
+            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        wrapperRef.current,
+        props.layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.cellEditor.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     /** disable dropdownbutton tabIndex */
     useEffect(() => {
@@ -734,6 +755,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     return (
         <span 
+            ref={wrapperRef}
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 
             style={{

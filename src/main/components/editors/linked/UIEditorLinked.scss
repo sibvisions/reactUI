@@ -97,13 +97,3 @@
         }
     }
 }
-
-.p-autocomplete-panel.dropdown-table {
-    .p-autocomplete-item-group > *, .p-autocomplete-item > * {
-        border-width: 0px 0px 1px 0px;
-    }
-
-    .p-autocomplete-item > *:not(:first-child) {
-        border-width: 0px 1px 0px 0px;
-    }
-}

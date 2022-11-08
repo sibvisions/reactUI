@@ -75,8 +75,7 @@
   --toolbar-separator:1px solid #bbbbbb;
   --table-border:1px solid #ced4da;
   --table-header-background:#ffffff;
-  --table-header-border-color:#e9ecef;
-  --table-header-border-width:0px 1px 1px 1px;
+  --table-header-border:1px solid #e9ecef;
   --table-header-hover-background:#e9ecef;
   --table-header-color:var(--text-color);
   --table-header-hover-color:#000000;
@@ -84,8 +83,7 @@
   --table-row-odd-background:#fafafa;
   --table-row-even-background:#ffffff;
   --table-row-hover-background:#e9ecef;
-  --table-row-border-color:#e9ecef;
-  --table-row-border-width:0px 0px 1px 0px;
+  --table-row-border:1px solid #e9ecef;
   --table-text-color:var(--text-color);
   --table-cell-hover-color:rgb(131, 131, 131);
   --table-required-even-background:rgb(253, 238, 195);
@@ -519,11 +517,11 @@ body {
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item-group > * {
     background: var(--table-header-background);
     color: var(--linked-item-color);
-    border-color: var(--table-header-border-color); }
+    border-bottom: var(--table-header-border); }
   .p-autocomplete-panel.dropdown-table .p-autocomplete-item > * {
-    border-color: var(--table-row-border-color); }
+    border-bottom: var(--table-row-border); }
     .p-autocomplete-panel.dropdown-table .p-autocomplete-item > *:not(:first-child) {
-      border-color: var(--table-row-border-color); }
+      border-left: var(--table-row-border); }
 
 .p-editor-container .p-editor-toolbar {
   background: var(--html-toolbar-background);
@@ -570,7 +568,7 @@ body {
 .rc-table {
   border: var(--table-border); }
   .rc-table table {
-    box-shadow: 0 0 0 1px var(--table-row-border-color); }
+    border-bottom: var(--table-row-border); }
   .rc-table.navtable-north {
     border-bottom-left-radius: var(--table-border-radius);
     border-bottom-right-radius: var(--table-border-radius); }
@@ -618,8 +616,7 @@ body {
       border-top-right-radius: var(--table-border-radius); }
   .rc-table.p-datatable-selectable-cell .p-datatable-thead > tr > th {
     background: var(--table-header-background);
-    border-color: var(--table-header-border-color);
-    border-width: var(--table-header-border-width);
+    border: var(--table-header-border);
     color: var(--table-header-color); }
     .rc-table.p-datatable-selectable-cell .p-datatable-thead > tr > th.sort-asc, .rc-table.p-datatable-selectable-cell .p-datatable-thead > tr > th.sort-des {
       color: var(--table-sort-color); }
@@ -636,8 +633,7 @@ body {
     background: var(--table-row-even-background);
     color: var(--table-text-color); }
     .rc-table .p-datatable-tbody > tr > td {
-      border-color: var(--table-row-border-color);
-      border-width: var(--table-row-border-width); }
+      border-bottom: var(--table-row-border); }
       .rc-table .p-datatable-tbody > tr > td.p-highlight {
         color: var(--table-text-color); }
       .rc-table .p-datatable-tbody > tr > td.cell-required {
@@ -761,8 +757,7 @@ body {
   color: var(--text-color); }
 
 .error-dialog .p-listbox .p-listbox-list .p-listbox-item {
-  border-color: var(--table-row-border-color);
-  border-width: var(--table-row-border-width); }
+  border-bottom: var(--table-row-border); }
   .error-dialog .p-listbox .p-listbox-list .p-listbox-item:nth-child(odd) {
     background: var(--table-row-odd-background); }
   .error-dialog .p-listbox .p-listbox-list .p-listbox-item:nth-child(even) {

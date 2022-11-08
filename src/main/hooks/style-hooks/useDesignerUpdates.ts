@@ -19,31 +19,53 @@ import { appContext } from "../../contexts/AppProvider";
 const useDesignerUpdates = (type:string) => {
     const context = useContext(appContext);
 
-    const [designerUpdate, setDesignerUpdate] = useState<boolean>(false);
+    const [designerUpdate, setDesignerUpdate] = useState<boolean|undefined>(undefined);
 
     useEffect(() => {
+        const updateFunc = () => setDesignerUpdate(prevState => prevState === undefined ? prevState = true : !prevState);
+
         switch (type) {
             case "default-button":
-                context.designerSubscriptions.subscribeToButtonPadding(() => setDesignerUpdate(prevState => !prevState));
+                context.designerSubscriptions.subscribeToButtonPadding(updateFunc);
+                break;
+            case "icon-only-button":
+                context.designerSubscriptions.subscribeToIconOnlyPadding(updateFunc);
+                break;
+            case "menubutton":
+                context.designerSubscriptions.subscribeToMenuButtonPadding(updateFunc);
+                break;
+            case "extra-button":
+                context.designerSubscriptions.subscribeToButtonBackground(updateFunc);
+                context.designerSubscriptions.subscribeToInputButtonPadding(updateFunc);
                 break;
             case "checkbox":
-                context.designerSubscriptions.subscribeToCheckboxSize(() => setDesignerUpdate(prevState => !prevState));
+                context.designerSubscriptions.subscribeToCheckboxSize(updateFunc);
                 break;
             case "radiobutton":
-                context.designerSubscriptions.subscribeToRadiobuttonSize(() => setDesignerUpdate(prevState => !prevState));
+                context.designerSubscriptions.subscribeToRadiobuttonSize(updateFunc);
                 break;
         }
 
         return () => {
             switch (type) {
                 case "default-button":
-                    context.designerSubscriptions.unsubscribeFromButtonPadding(() => setDesignerUpdate(prevState => !prevState));
+                    context.designerSubscriptions.unsubscribeFromButtonPadding(updateFunc);
+                    break;
+                case "icon-only-button":
+                    context.designerSubscriptions.unsubscribeFromIconOnlyPadding(updateFunc);
+                    break;
+                case "menubutton":
+                    context.designerSubscriptions.unsubscribeFromMenuButtonPadding(updateFunc);
+                    break;
+                case "extra-button":
+                    context.designerSubscriptions.unsubscribeFromButtonBackground(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromInputButtonPadding(updateFunc);
                     break;
                 case "checkbox":
-                    context.designerSubscriptions.unsubscribeFromCheckboxSize(() => setDesignerUpdate(prevState => !prevState));
+                    context.designerSubscriptions.unsubscribeFromCheckboxSize(updateFunc);
                     break;
                 case "radiobutton":
-                    context.designerSubscriptions.unsubscribeFromRadiobuttonSize(() => setDesignerUpdate(prevState => !prevState));
+                    context.designerSubscriptions.unsubscribeFromRadiobuttonSize(updateFunc);
                     break;
             }
         }

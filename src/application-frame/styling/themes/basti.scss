@@ -140,7 +140,7 @@
     --button-icon-only-padding:0.5rem 0.5rem;
 
     /// Padding for the left part of the menu-button
-    --menubtn-leftbtn-padding:0.5rem 0rem 0.5rem 1rem;
+    --menubtn-leftbtn-padding:0.5rem 0.5rem;
 
     /// Padding for the right part of the menu-button
     --menubtn-rightbtn-padding:0.5rem 0rem;
@@ -423,7 +423,7 @@ body {
     }
     
     .p-button.p-button-icon-only {
-        &:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton) {
+        &:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton):not(.p-splitbutton-defaultbutton) {
             padding: var(--btnPadding, var(--button-icon-only-padding, 0.5rem 0.5rem));
 
             &.p-autocomplete-dropdown, &.p-datepicker-trigger {

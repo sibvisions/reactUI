@@ -32,6 +32,7 @@ import { IExtendableToggleButton } from "../../../extend-components/buttons/Exte
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 
 /**
  * This component displays a Button which can be toggled on and off
@@ -61,29 +62,30 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
 
     useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.container : undefined, context);
 
-    const designerUpdate = useDesignerUpdates("default-button");
+    const designerUpdate = useDesignerUpdates(props.text ? "default-button" : "icon-only-button");
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
         if (wrapperRef) {
-            wrapperRef.style.removeProperty("top");
-            wrapperRef.style.removeProperty("left");
-            wrapperRef.style.removeProperty("width");
-            wrapperRef.style.removeProperty("height");
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    useLayoutEffect(() => {
-        if (buttonWrapperRef.current) {
-            const ref = buttonWrapperRef.current
-            ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
-            ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
-            ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
-            ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
-        }
-    }, [layoutStyle])
+    useHandleDesignerUpdate(
+        designerUpdate,
+        buttonWrapperRef.current,
+        layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     //If lib-user extends Togglebutton with onChange, call it when selected changes
     useEffect(() => {

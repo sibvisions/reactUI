@@ -191,9 +191,7 @@
     --table-header-background:#20262e;
 
     /// Darkmode table-header border
-    --table-header-border-color:#3f4b5b;
-
-    --table-header-border-width:0px 1px 1px 1px;
+    --table-header-border-color:1px solid #3f4b5b;
 
     /// Background when hovering a table header column
     --table-header-hover-background:#1c283a;
@@ -215,9 +213,7 @@
     --table-row-hover-background:#1c283a;
 
     /// Darkmode table-row border
-    --table-row-border-color:#3f4b5b;
-
-    --table-row-border-width:0px 0px 1px 0px;
+    --table-row-border:1px solid #3f4b5b;
 
     --table-text-color:var(--text-color);
 
@@ -1095,14 +1091,14 @@ body {
         .p-autocomplete-item-group > * {
             background: var(--table-header-background);
             color: var(--linked-item-color);
-            border-color: var(--table-header-border-color);
+            border-bottom: var(--table-header-border-color);
         }
 
         .p-autocomplete-item > * {
-            border-color: var(--table-row-border-color);
+            border-bottom: var(--table-row-border);
 
             &:not(:first-child) {
-                border-color: var(--table-row-border-color);
+                border-left: var(--table-row-border);
             }
         }
     }
@@ -1197,7 +1193,7 @@ body {
     border: var(--table-border);
 
     table {
-        box-shadow: 0 0 0 1px var(--table-row-border-color);
+        border-bottom: var(--table-row-border);
     }
 
     &.navtable-north {
@@ -1292,8 +1288,7 @@ body {
 
     &.p-datatable-selectable-cell .p-datatable-thead > tr > th {
         background: var(--table-header-background);
-        border-color: var(--table-header-border-color);
-        border-width: var(--table-header-border-width);
+        border: var(--table-header-border);
         color: var(--table-header-color);
 
         &.sort-asc, &.sort-des {
@@ -1323,8 +1318,7 @@ body {
         color: var(--table-text-color);
 
         > td {
-            border-color: var(--table-row-border-color);
-            border-width: var(--table-row-border-width);
+            border-bottom: var(--table-row-border);
 
             &.p-highlight {
                 color: var(--table-text-color);
@@ -1544,8 +1538,7 @@ body {
     .p-listbox {
         .p-listbox-list {
             .p-listbox-item {
-                border-color: var(--table-row-border-color);
-                border-width: var(--table-row-border-width);
+                border-bottom: var(--table-row-border);
 
 
                 &:nth-child(odd) {

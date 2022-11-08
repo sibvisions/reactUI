@@ -29,6 +29,7 @@ import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableSelectable } from "../../../extend-components/buttons/ExtendCheckbox";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 
 /**
  * This component displays a CheckBox and its label
@@ -64,23 +65,24 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
     useLayoutEffect(() => {
         const btnRef = buttonWrapperRef.current;
         if (btnRef) {
-            btnRef.style.removeProperty("top");
-            btnRef.style.removeProperty("left");
-            btnRef.style.removeProperty("width");
-            btnRef.style.removeProperty("height");
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), btnRef, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle, designerUpdate]);
 
-    useLayoutEffect(() => {
-        if (buttonWrapperRef.current) {
-            const ref = buttonWrapperRef.current
-            ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
-            ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
-            ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
-            ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
-        }
-    }, [layoutStyle])
+    useHandleDesignerUpdate(
+        designerUpdate,
+        buttonWrapperRef.current,
+        layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     // If lib-user extends Checkbox with onChange, call it when selected changes
     useEffect(() => {

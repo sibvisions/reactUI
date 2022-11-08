@@ -34,6 +34,8 @@ import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { IExtendableMenuButton } from "../../../extend-components/buttons/ExtendMenuButton";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -68,13 +70,29 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
 
     useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.defaultButton : undefined, context);
 
+    const designerUpdate = useDesignerUpdates("menubutton");
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        buttonWrapperRef.current,
+        layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback)
+    );
 
     useLayoutEffect(() => {
         //TODO: Maybe it'll be possible to change the tabindex of the menubutton without dom manipulation in PrimeReact

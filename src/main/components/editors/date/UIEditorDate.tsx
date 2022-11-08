@@ -32,6 +32,8 @@ import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { IExtendableDateEditor } from "../../../extend-components/editors/ExtendDateEditor";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {
@@ -95,6 +97,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
 
+    const wrapperRef = useRef<HTMLSpanElement>(null);
+
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
 
@@ -134,8 +138,10 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
 
+    const designerUpdate = useDesignerUpdates("extra-button");
+
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]); 
 
     //setDateLocale(props.context.appSettings.locale);
 
@@ -154,19 +160,33 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (onLoadCallback && calendar.current) {
+        if (onLoadCallback && wrapperRef.current) {
             sendOnLoadCallback(
                 id,
                 props.cellEditor.className,
                 parsePrefSize(props.preferredSize), 
                 parseMaxSize(props.maximumSize), 
                 parseMinSize(props.minimumSize), 
-                //@ts-ignore
-                calendar.current.container, 
+                wrapperRef.current, 
                 onLoadCallback
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        wrapperRef.current,
+        props.layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.cellEditor.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     // When the cell-editor is opened focus the input and forward the pressed key when opening, on unmount save the date-input if the screen is still opened
     useEffect(() => {
@@ -314,6 +334,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
 
     return (
         <span 
+            ref={wrapperRef}
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 
             aria-expanded={visible} 

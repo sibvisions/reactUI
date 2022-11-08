@@ -56,7 +56,7 @@
   --input-button-icon-size:14px;
   --button-padding:0.5rem 1rem;
   --button-icon-only-padding:0.5rem 0.5rem;
-  --menubtn-leftbtn-padding:0.5rem 0rem 0.5rem 1rem;
+  --menubtn-leftbtn-padding:0.5rem 0.5rem;
   --menubtn-rightbtn-padding:0.5rem 0rem;
   --checkbox-size:20px;
   --radiobutton-size:20px;
@@ -231,11 +231,11 @@ body {
 .basti .rc-button {
   padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem)); }
 
-.basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton) {
+.basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton):not(.p-splitbutton-defaultbutton) {
   padding: var(--btnPadding, var(--button-icon-only-padding, 0.5rem 0.5rem)); }
-  .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-autocomplete-dropdown, .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-datepicker-trigger {
+  .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton):not(.p-splitbutton-defaultbutton).p-autocomplete-dropdown, .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton):not(.p-splitbutton-defaultbutton).p-datepicker-trigger {
     padding: var(--input-button-padding); }
-    .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-autocomplete-dropdown > .p-button-icon, .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton).p-datepicker-trigger > .p-button-icon {
+    .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton):not(.p-splitbutton-defaultbutton).p-autocomplete-dropdown > .p-button-icon, .basti .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton):not(.p-splitbutton-defaultbutton).p-datepicker-trigger > .p-button-icon {
       font-size: var(--input-button-icon-size); }
 
 .basti .p-checkbox {
