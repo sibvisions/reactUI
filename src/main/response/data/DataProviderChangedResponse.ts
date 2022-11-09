@@ -13,6 +13,7 @@
  * the License.
  */
 
+import { ICellEditor } from "../../components/editors/IEditor"
 import BaseResponse from "../BaseResponse"
 
 // Type for changed-columns
@@ -22,6 +23,7 @@ export type IChangedColumns = {
     readonly?: boolean
     movable?: boolean
     sortable?: boolean
+    cellEditor?: ICellEditor
 }
 
 /** Interface for DataProviderChangedResponse */

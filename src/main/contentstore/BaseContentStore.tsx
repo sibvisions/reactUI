@@ -920,6 +920,11 @@ export default abstract class BaseContentStore {
                             currentCol.sortable = changedColumn.sortable;
                             changed = true;
                         }
+
+                        if (changedColumn.cellEditor !== undefined) {
+                            currentCol.cellEditor = changedColumn.cellEditor;
+                            changed = true;
+                        }
                     } 
                 })
             }
