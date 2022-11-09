@@ -170,7 +170,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<TableProps & IExtendableTable>(baseProps);
 
     /** Name of the screen */
-    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id]);
+    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id, props.dataBook]);
 
     /** Metadata of the databook */
     const metaData = useMetaData(screenName, props.dataBook, undefined);
@@ -441,7 +441,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor')) {
                                 tempWidth = cellDatas[j].getBoundingClientRect().width + 30;
                             }
-                            else if (cellDatas[j].parentElement?.classList.contains('ChoiceCellEditor')) {
+                            else if (cellDatas[j].parentElement?.classList.contains('ChoiceCellEditor') || cellDatas[j].parentElement?.classList.contains('CheckBoxCellEditor')) {
                                 tempWidth = 24;
                             }
                             else {
@@ -500,7 +500,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         }
                         theader[i].style.setProperty('width', w);
                     }
-
                     /** set EstTableWidth for size reporting */
                     setEstTableWidth(tempWidth);
                 }
@@ -1184,8 +1183,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             //resize columns
             if(props.autoResize === false) {
                 let widths:number[] = [];
-                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
-                headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
+                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th .p-column-title');
+                headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false) + 32));
                 const totalWidth = widths.reduce((agg, w) => agg + w, 0);
                 const tableWidth = table.table.offsetWidth;
 

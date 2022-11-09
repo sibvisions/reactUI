@@ -24,6 +24,7 @@
     justify-content: var(--checkJustify);
     align-items: var(--checkAlign);
     padding: var(--checkPadding);
+    height: inherit;
 
     .p-checkbox {
         //width: 20px;

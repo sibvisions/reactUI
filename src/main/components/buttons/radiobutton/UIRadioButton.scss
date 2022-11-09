@@ -27,6 +27,7 @@
     justify-content: var(--radioJustify);
     align-items: var(--radioAlign);
     padding: var(--radioPadding);
+    height: inherit;
 
     .p-radiobutton-label {
         overflow: hidden;

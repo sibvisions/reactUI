@@ -26,6 +26,8 @@ import AppSettings from "../AppSettings";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import Server from "../server/Server";
 import { IPanel } from "../components/panels/panel/UIPanel";
+import { createFetchRequest } from "../factories/RequestFactory";
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
 
 /** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: partial*/
 export default class ContentStore extends BaseContentStore {
@@ -87,6 +89,20 @@ export default class ContentStore extends BaseContentStore {
     updateExistingComponent(existingComp:BaseComponent|undefined, newComp:BaseComponent) {
         if (existingComp) {
             for (let newPropName in newComp) {
+                // @ts-ignore  
+                let existingProp = existingComp[newPropName];
+                // @ts-ignore  
+                let newProp = newComp[newPropName];
+                if (["dataBook", "dataRow"].indexOf(newPropName) !== -1 && existingProp === newProp) {
+                    if (existingProp && this.getDataBook((existingProp as string).split("/")[1], existingProp)) {
+                        this.dataBooks.get((existingProp as string).split("/")[1])?.delete(existingProp)
+                        const fetchReq = createFetchRequest();
+                        fetchReq.dataProvider = existingProp;
+                        fetchReq.includeMetaData = true;
+                        this.server.missingDataFetches.push(existingProp)
+                        this.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
+                    }
+                }
                 // @ts-ignore
                 existingComp[newPropName] = newComp[newPropName];
 

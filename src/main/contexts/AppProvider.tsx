@@ -559,6 +559,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+                contextState.contentStore.setServer(contextState.server);
                 if (history.location.pathname.includes("#/home")) {
                     contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "#home") - 1);
                 }

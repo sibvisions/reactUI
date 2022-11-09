@@ -47,6 +47,6 @@ const useFetchMissingData = (screenName:string, dataProvider:string) => {
                 showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar)
             }
         }
-    }, []);
+    }, [dataProvider]);
 }
 export default useFetchMissingData

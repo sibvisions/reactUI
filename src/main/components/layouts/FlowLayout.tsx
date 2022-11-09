@@ -172,7 +172,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 /** If the current component is the first */
                 let bFirst = true;
 
-                let tbExtraSize = toolBarsFiltered ? !isLastToolBar(id) ? 5 : 0 : 0;
+                let tbExtraSize = toolBarsFiltered ? 5 : 0
 
                 childrenSorted.forEach(component => {
                     if (component.visible !== false) {
@@ -220,7 +220,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     }
                 });
                 if (tbExtraSize !== 0) {
-                    isRowOrientation ? width += tbExtraSize : height += tbExtraSize;
+                    isRowOrientation ? width += tbExtraSize : height += tbExtraSize * 2;
                 }
                 const grid:FlowGrid = {columns: anzCols, rows: anzRows, gridWidth: width, gridHeight: height}
                 return grid;
