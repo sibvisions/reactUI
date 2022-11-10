@@ -24,7 +24,7 @@ import { IToolBarHelper } from "../components/panels/toolbarPanel/UIToolBarHelpe
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { componentHandler } from "../factories/UIFactory";
 import { IChangedColumns } from "../response/data/DataProviderChangedResponse";
-import MetaDataResponse, { MetaDataReference } from "../response/data/MetaDataResponse";
+import MetaDataResponse, { LengthBasedColumnDescription, MetaDataReference } from "../response/data/MetaDataResponse";
 import { SortDefinition } from "../request/data/SortRequest";
 import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperType";
 import CustomStartupProps from "../util/types/custom-types/CustomStartupProps";
@@ -925,7 +925,11 @@ export default abstract class BaseContentStore {
                             currentCol.cellEditor = changedColumn.cellEditor;
                             changed = true;
                         }
-                    } 
+                    }
+                    else {
+                        metaData.columns.push(changedColumn as LengthBasedColumnDescription);
+                        changed = true;
+                    }
                 })
             }
         }
