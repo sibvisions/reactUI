@@ -49,7 +49,9 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
                 castedCellEditor.displayReferencedColumnName,
                 castedCellEditor.displayConcatMask,
                 context.server,
-                context.contentStore
+                context.contentStore,
+                undefined,
+                (databook:string) => props.decreaseCallback ? props.decreaseCallback(databook) : undefined
             );
         }
     }, []);

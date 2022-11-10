@@ -83,7 +83,7 @@ export interface IEditorLinked extends IRCCellEditor {
  * @param server - the server instance
  * @param contentStore - the contentStore instance
  */
-export function fetchLinkedRefDatabook(screenName:string, databook: string, selectedRecord:any, displayCol: string|null|undefined, concatMask:string|undefined, server: Server|ServerFull, contentStore: BaseContentStore, name?:string) {
+export function fetchLinkedRefDatabook(screenName:string, databook: string, selectedRecord:any, displayCol: string|null|undefined, concatMask:string|undefined, server: Server|ServerFull, contentStore: BaseContentStore, name?:string, decreaseCallback?:Function) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook);
     if (selectedRecord
         && (displayCol || concatMask)
@@ -94,7 +94,7 @@ export function fetchLinkedRefDatabook(screenName:string, databook: string, sele
         filterReq.dataProvider = databook;
         filterReq.editorComponentId = name;
         filterReq.value = "";
-        server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER)
+        server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => decreaseCallback ? decreaseCallback(databook) : undefined )
     }
 }
 

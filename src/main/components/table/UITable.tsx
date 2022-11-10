@@ -39,7 +39,7 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { getFocusComponent } from "../../util/html-util/GetFocusComponent";
-import { CellEditor } from "./CellEditor";
+import { CellEditor, ICellEditor } from "./CellEditor";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
@@ -47,7 +47,7 @@ import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import Dimension from "../../util/types/Dimension";
 import { IExtendableTable } from "../../extend-components/table/ExtendTable";
-import { ENETUNREACH } from "constants";
+import { ICellEditorLinked } from "../editors/linked/UIEditorLinked";
 
 
 /** Interface for Table */
@@ -264,6 +264,11 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
 
+    /** A counter which indicates how many linkedReference still need to be fetched (concatmask). Used for column width measurement */
+    const linkedRefFetchList = useRef<string[]>([]);
+
+    const [measureFlag, setMeasureFlag] = useState<boolean>(false);
+
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataBook);
 
@@ -439,13 +444,13 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         if (cellDatas[j] !== undefined) {
                             /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
                             if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor')) {
-                                tempWidth = cellDatas[j].getBoundingClientRect().width + 30;
+                                tempWidth = (cellDatas[j].querySelector(".cell-data-content") as HTMLElement).scrollWidth + 30;
                             }
                             else if (cellDatas[j].parentElement?.classList.contains('ChoiceCellEditor') || cellDatas[j].parentElement?.classList.contains('CheckBoxCellEditor')) {
                                 tempWidth = 24;
                             }
                             else {
-                                tempWidth = cellDatas[j].getBoundingClientRect().width;
+                                tempWidth = (cellDatas[j].querySelector(".cell-data-content") as HTMLElement).scrollWidth;
                             }
 
                             /** If the measured width is greater than the current widest width for the column, replace it */
@@ -457,14 +462,18 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 }
             }
             setTimeout(() => {
+                const table = tableRef.current as any;
                 //@ts-ignore
                 const currentTable:HTMLTableElement = tableRef?.current?.table;
                 if (currentTable) {
                     const theader = currentTable.querySelectorAll('th');
                     const trows = currentTable.querySelectorAll('tbody > tr');
 
+                    table.destroyStyleElement();
+
                     /** First set width of headers for columns then rows */
                     for (let i = 0; i < theader.length; i++) {
+                        theader[i].style.removeProperty('width')
                         const newCellWidth = { widthPreSet: false, width: 0 }
                         const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
                         const columnMetaData = getColMetaData(colName, metaData)
@@ -508,7 +517,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 }
             }, 0);
         }
-    }, [metaData]);
+    }, [metaData, measureFlag]);
 
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
@@ -834,6 +843,11 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         return props.columnNames.map((colName, colIndex) => {
             const columnMetaData = getColMetaData(colName, metaData)
             const className = columnMetaData?.cellEditor?.className;
+            if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED 
+                && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask 
+                && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
+                    linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
+            }
             return <Column
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
@@ -858,8 +872,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         cellData={rowData[colName]}
                         cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                         resource={context.server.RESOURCE_URL}
-                        cellId={() => ({ 
-                            selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString() 
+                        cellId={() => ({
+                            selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()
                         })}
                         tableContainer={wrapRef.current ? wrapRef.current : undefined}
                         selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
@@ -892,9 +906,25 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                 columnNames: primaryKeys,
                                 values: primaryKeys.map(pk => currDataRow[pk])
                             }
-                        }} />
+                        }}
+                        removeTableLinkRef={
+                            (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
+                            && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
+                            ?
+                                (linkedReferenceDatabook:string) => {
+                                    if (linkedRefFetchList.current.includes(linkedReferenceDatabook)) {
+                                        linkedRefFetchList.current.splice(linkedRefFetchList.current.findIndex(linkedRef => linkedRef === linkedReferenceDatabook), 1);
+
+                                        if (linkedRefFetchList.current.length === 0) {
+                                            setMeasureFlag(prevState => !prevState);
+                                        }
+                                    }
+                                }
+                            :
+                                undefined
+                        } />
                 }}
-                style={{ whiteSpace: 'nowrap' }}
+                style={{ whiteSpace: 'nowrap', '--colName': colName }}
                 bodyClassName={concatClassnames(
                     className,
                     !columnMetaData?.resizable ? "cell-not-resizable" : "",
@@ -1183,8 +1213,11 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             //resize columns
             if(props.autoResize === false) {
                 let widths:number[] = [];
-                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th .p-column-title');
-                headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false) + 32));
+                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+                headers.forEach(header => {
+                    const width = header.style.getPropertyValue('width') || DomHandler.getOuterWidth(header, false);
+                    widths.push(parseFloat(width))
+                });
                 const totalWidth = widths.reduce((agg, w) => agg + w, 0);
                 const tableWidth = table.table.offsetWidth;
 
@@ -1208,7 +1241,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 table.styleElement.innerHTML = innerHTML;
             }
         }
-    }, [layoutStyle?.width]);
+    }, [layoutStyle?.width, estTableWidth]);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>

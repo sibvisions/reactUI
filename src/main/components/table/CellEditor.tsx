@@ -54,7 +54,8 @@ export interface CellFormatting {
 export interface ICellRender extends ICellEditor {
     columnMetaData: ColumnDescription,
     icon: JSX.Element|null,
-    stateCallback?: Function
+    stateCallback?: Function,
+    decreaseCallback?: Function
 }
 
 /** Type for CellEditor */
@@ -88,7 +89,8 @@ export interface ICellEditor {
     colIndex: number
     filter?: Function
     rowData: any,
-    setIsEditing: Function
+    setIsEditing: Function,
+    removeTableLinkRef?: Function
 }
 
 /** 
@@ -322,7 +324,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
             case CELLEDITOR_CLASSNAMES.IMAGE:
                 return [ ImageCellRenderer ]
             case CELLEDITOR_CLASSNAMES.LINKED:
-                return [ LinkedCellRenderer, {stateCallback: () => { setWaiting(true); setEdit(true) }} ]
+                return [ LinkedCellRenderer, {stateCallback: () => { setWaiting(true); setEdit(true) }, decreaseCallback: (linkDatabook:string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}]
             case CELLEDITOR_CLASSNAMES.NUMBER:
                 return [ NumberCellRenderer ]
             case CELLEDITOR_CLASSNAMES.TEXT:
