@@ -219,7 +219,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             return value[props.columnName]
         }
         return ""
-    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, props.cellEditor, cellEditorMetaData, props.selectedRow, props.selectedRow.data, props.columnName])
+    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, props.cellEditor, cellEditorMetaData, props.selectedRow, props.columnName])
 
     /** Current state of text value of input element */
     const [text, setText] = useState(getDisplayValue(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined));
