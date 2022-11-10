@@ -677,7 +677,6 @@ class Server extends BaseServer {
         const pathName = (this.history as History).location.pathname as string
 
         responses.forEach(response => {
-
             if (response.name === RESPONSE_NAMES.USER_DATA) {
                 if (highestPriority < 1) {
                     highestPriority = 1;

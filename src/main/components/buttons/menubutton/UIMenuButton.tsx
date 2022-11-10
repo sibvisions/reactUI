@@ -39,7 +39,12 @@ import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
-    popupMenu: string;
+    popupMenu: string
+    defaultMenuItem: string
+}
+
+interface IMenuButtonItem extends MenuItem {
+    id: string
 }
 
 /**
@@ -105,15 +110,17 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
     /** Builds the menuitems and sets the state */
     useEffect(() => {
         const buildMenu = (foundItems: Map<string, BaseComponent>) => {
-            let tempItems: Array<MenuItem> = [];
+            let tempItems: Array<IMenuButtonItem> = [];
             foundItems.forEach(item => {
                 let iconProps = parseIconData(props.foreground, item.image);
                 tempItems.push({
+                    id: item.id,
                     label: item.text,
                     icon: iconProps.icon ? iconProps.icon : undefined,
                     style: {
                         color: iconProps.color
                     },
+                    separator: item.className === "Separator",
                     template: (iconProps.icon && !iconProps.icon?.includes('fa')) ? (item, options) => {
                         return (
                             <a className="p-menuitem-link" role="menuitem" onClick={options.onClick}>
@@ -216,7 +223,17 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                 disabled={isCompDisabled(props)}
                 //tabIndex={-1}
                 model={items}
-                onClick={() => buttonRef.current.show()}
+                onClick={(e) => {
+                    if (props.defaultMenuItem && items?.length) {
+                        const foundItem = items.find(item => item.id === props.defaultMenuItem);
+                        if (foundItem && foundItem.command) {
+                            foundItem.command({ item: foundItem, originalEvent: e })
+                        }
+                    }
+                    else {
+                        buttonRef.current.show()
+                    }
+                }}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }} />
         </span>
