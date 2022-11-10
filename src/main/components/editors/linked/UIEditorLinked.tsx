@@ -178,14 +178,51 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
+    const metaDataReferenced:MetaDataResponse = useMetaData(props.screenName, props.cellEditor.linkReference.referencedDataBook||"") as MetaDataResponse;
+
+    const metaData:MetaDataResponse = useMetaData(props.screenName, props.dataRow||"") as MetaDataResponse;
+
+    const cellEditorMetaData = useMemo(() => {
+        if (metaData && metaData.columns.find(column => column.name === props.columnName)) {
+            return metaData.columns.find(column => column.name === props.columnName)?.cellEditor as ICellEditorLinked
+        }
+        return undefined
+    }, [props.columnName, metaData]);
+
     /** True, if there is a displayReferencedColumnName or a displayConcatMask */
     const isDisplayRefColNameOrConcat = useMemo(() => props.cellEditor.displayReferencedColumnName || props.cellEditor.displayConcatMask, [props.cellEditor.displayReferencedColumnName, props.cellEditor.displayConcatMask])
 
-    /** Current state of text value of input element */
-    const [text, setText] = useState("");
-
     /** True if the linkRef has already been fetched */
     const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
+
+    const getDisplayValue = useCallback((value:any) => {
+        if (value) {
+            if (isDisplayRefColNameOrConcat) {
+                const getCorrectLinkReference = () => {
+                    if (cellEditorMetaData && cellEditorMetaData.linkReference) {
+                        return cellEditorMetaData.linkReference
+                    }
+                    return props.cellEditor.linkReference;
+                }
+                
+                const linkReference = getCorrectLinkReference();
+                const index = props.cellEditor.linkReference.columnNames.findIndex(colName => colName === props.columnName);
+                const extractedObject = getExtractedObject(value, [linkReference.referencedColumnNames[index]]);
+                if (linkReference.dataToDisplayMap?.has(JSON.stringify(extractedObject))) {
+                    return linkReference.dataToDisplayMap!.get(JSON.stringify(extractedObject))
+                }
+            }
+    
+            if (props.selectedRow && props.selectedRow.data[props.columnName]) {
+                return props.selectedRow.data[props.columnName]
+            }
+            return value[props.columnName]
+        }
+        return ""
+    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, props.cellEditor, cellEditorMetaData, props.selectedRow, props.selectedRow.data, props.columnName])
+
+    /** Current state of text value of input element */
+    const [text, setText] = useState(getDisplayValue(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined));
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -203,17 +240,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Button background */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]);
 
-    const metaDataReferenced:MetaDataResponse = useMetaData(props.screenName, props.cellEditor.linkReference.referencedDataBook||"") as MetaDataResponse;
-
-    const metaData:MetaDataResponse = useMetaData(props.screenName, props.dataRow||"") as MetaDataResponse;
-
-    const cellEditorMetaData = useMemo(() => {
-        if (metaData && metaData.columns.find(column => column.name === props.columnName)) {
-            return metaData.columns.find(column => column.name === props.columnName)?.cellEditor as ICellEditorLinked
-        }
-        return undefined
-    }, [props.columnName, metaData]);
-
     /** True, if the dropdown should be displayed as table */
     const tableOptions = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnCount > 1 : metaDataReferenced ? metaDataReferenced.columnView_table_.length > 1 : false, [props.cellEditor.columnView, metaDataReferenced]); 
 
@@ -221,30 +247,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     // Helper to set the text on unmount
     const textCopy = useRef<any>(text)
-
-    const getDisplayValue = useCallback((value:any) => {
-        if (isDisplayRefColNameOrConcat) {
-            const getCorrectLinkReference = () => {
-                if (cellEditorMetaData && cellEditorMetaData.linkReference) {
-                    return cellEditorMetaData.linkReference
-                }
-                return props.cellEditor.linkReference;
-            }
-            
-            const linkReference = getCorrectLinkReference();
-            const index = props.cellEditor.linkReference.columnNames.findIndex(colName => colName === props.columnName);
-            const extractedObject = getExtractedObject(value, [linkReference.referencedColumnNames[index]]);
-            if (linkReference.dataToDisplayMap?.has(JSON.stringify(extractedObject))) {
-                return linkReference.dataToDisplayMap!.get(JSON.stringify(extractedObject))
-            }
-        }
-
-        if (props.selectedRow && props.selectedRow.data[props.columnName]) {
-            return props.selectedRow.data[props.columnName]
-        }
-
-        return value[props.columnName]
-    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, props.cellEditor, cellEditorMetaData, props.selectedRow])
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -330,7 +332,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             if (isDisplayRefColNameOrConcat) {
                 if (cellEditorMetaData) {
                     if (cellEditorMetaData.linkReference) {
-                        if (cellEditorMetaData.linkReference.dataToDisplayMap?.size) {
+                        if (cellEditorMetaData.linkReference.dataToDisplayMap?.size || props.cellEditor.displayReferencedColumnName) {
                             const index = props.cellEditor.linkReference.columnNames.findIndex(colName => colName === props.columnName);
                             const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, props.cellEditor.linkReference, props.columnName), [props.cellEditor.linkReference.referencedColumnNames[index]]);
                             setText(getDisplayValue(extractedObject))
