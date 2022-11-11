@@ -496,6 +496,7 @@ class Server extends BaseServer {
     upload(uploadData: UploadResponse) {
         const inputElem = document.createElement('input');
         inputElem.type = 'file';
+        //@ts-ignore
         inputElem.showPicker();
         inputElem.onchange = (e) => {
             const formData = new FormData();
