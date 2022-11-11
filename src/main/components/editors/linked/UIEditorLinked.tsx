@@ -435,7 +435,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     }
 
     const unpackSuggestionArray = (value: any[], display: boolean) => {
-        console.log(value, display, metaDataReferenced, props.cellEditor.columnView)
         if (value) {
             if (display) {
                 let displayObj: any = {}
@@ -694,7 +693,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         else {
             const suggestionObj = unpackSuggestionArray(d, true);
-            console.log(suggestionObj)
             return Object.values(suggestionObj).map((d:any, i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;

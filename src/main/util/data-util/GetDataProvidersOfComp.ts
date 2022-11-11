@@ -22,8 +22,8 @@ import { IDataBook, ISelectedRow } from "../../contentstore/BaseContentStore";
  * @param dataBooks - the databooks of the component
  * @returns dataProviders and their data in a Map of a component, empty Map if no dataproviders for component
  */
-export function getScreensData(dataProviderMap:Map<string, IDataBook>|undefined, dataBooks:string[], column?:string) {
-    if (dataProviderMap !== undefined) {
+export function getScreensData(dataProviderMap:Map<string, IDataBook>|undefined, dataBooks?:string[], column?:string) {
+    if (dataProviderMap !== undefined && dataBooks) {
         const tempMap = new Map();
         for (let [key, value] of dataProviderMap.entries()) {
             if (dataBooks.includes(key)) {
@@ -45,8 +45,8 @@ export function getScreensData(dataProviderMap:Map<string, IDataBook>|undefined,
  * @param pMap - the databook map of a screen
  * @param dataBooks - the databooks of a screen
  */
-export function getScreenSelectedRows(pMap:Map<string, IDataBook>|undefined, dataBooks:string[]): Map<string, ISelectedRow | undefined> {
-    if (pMap !== undefined) {
+export function getScreenSelectedRows(pMap:Map<string, IDataBook>|undefined, dataBooks?:string[]): Map<string, ISelectedRow | undefined> {
+    if (pMap !== undefined && dataBooks) {
         const tempMap = new Map();
         for (let [key, value] of pMap.entries()) {
             if (dataBooks.includes(key)) {

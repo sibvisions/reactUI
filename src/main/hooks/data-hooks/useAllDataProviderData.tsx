@@ -23,7 +23,7 @@ import { getScreensData } from "../../util/data-util/GetDataProvidersOfComp";
  * @param dataBooks - the databooks of the component
  * @returns the current data of all dataproviders of a component as Map
  */
-const useAllDataProviderData = (screenName:string, dataBooks:string[]): Map<string, any> => {
+const useAllDataProviderData = (screenName:string, dataBooks?:string[]): Map<string, any> => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of dataMap */

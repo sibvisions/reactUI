@@ -48,7 +48,7 @@ export interface ITree extends BaseComponent {
 type TreeMap = Map<string, { [key: string]: number }>;
 
 /**
- * Returns the referenced node based on the given path
+ * Returns the referenced node based on the given pathdFilter
  * @param path - the path
  * @returns the referenced node based on the given path
  */
@@ -72,7 +72,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree & IExtendableTree>(baseProps);
 
     /** Name of the screen */
-    const screenName = context.contentStore.getScreenName(props.id, props.dataBooks[0]) as string;
+    const screenName = context.contentStore.getScreenName(props.id, props.dataBooks && props.dataBooks.length ? props.dataBooks[0] : undefined) as string;
 
     /** The data provided by the databooks */
     const providedData = useAllDataProviderData(screenName, props.dataBooks);
@@ -210,7 +210,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 if (!nodeReference.children.some((child:any) => child.key === childPath.toString())) {
                     nodeReference.children.push({
                         key: childPath.toString(),
-                        label: data[metaData!.columnView_table_[0]],
+                        label: metaData!.columnView_table_.length ? data[metaData!.columnView_table_[0]] : undefined,
                         leaf: childPath.length() === props.dataBooks.length
                     });
                 }
@@ -233,9 +233,11 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     }
                     await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, undefined, false)
                         .then((fetchResponse:FetchResponse[]) => {
-                            const builtData = context.server.buildDatasets(fetchResponse[0]);
-                            context.server.processFetch(fetchResponse[0], pkObjStringified);
-                            addNodesToParent(builtData);
+                            if (fetchResponse && fetchResponse.length) {
+                                const builtData = context.server.buildDatasets(fetchResponse[0]);
+                                context.server.processFetch(fetchResponse[0], pkObjStringified);
+                                addNodesToParent(builtData);
+                            }
                         }), topbar)
                 } else {
                     //the data is already fetched so don't send a fetch and get the data by pkObjStringified
@@ -252,7 +254,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         context.server, 
         screenName, 
         getDataBookName, 
-        props.dataBooks.length, 
+        props.dataBooks, 
         providedData
     ]);
 
@@ -333,9 +335,15 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         const updateRebuildTree = () => {
             setExpandedKeys(prevKeys => ({...prevKeys}));
         }
-
-        context.subscriptions.subscribeToTreeChange(props.dataBooks[0], updateRebuildTree);
-        return () => context.subscriptions.unsubscribeFromTreeChange(props.dataBooks[0], updateRebuildTree);
+        if (props.dataBooks && props.dataBooks.length) {
+            context.subscriptions.subscribeToTreeChange(props.dataBooks[0], updateRebuildTree);
+        }
+        
+        return () => {
+            if (props.dataBooks && props.dataBooks.length) {
+                context.subscriptions.unsubscribeFromTreeChange(props.dataBooks[0], updateRebuildTree);
+            }
+        }
     }, [
         context.subscriptions, 
         props.dataBooks
@@ -346,62 +354,67 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
      * calls fetches if necessary and sets the treedata
      */
     useEffect(() => {
-        const firstLvlDataBook = props.dataBooks[0];
-        const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
+        if (props.dataBooks && props.dataBooks.length) {
+            const firstLvlDataBook = props.dataBooks[0];
+            const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
 
-        let tempTreeMap = treeData.current;
+            let tempTreeMap = treeData.current;
 
-        /**
-         * When the first databook is self-joined, the root page must be fetched always.
-         * Sets self-joined "null" datapage in dataprovider map
-         * @returns the datarows of the root page
-         */
-        const fetchSelfJoinedRoot = async () => {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = firstLvlDataBook;
-            fetchReq.filter = {
-                columnNames: metaData!.masterReference!.referencedColumnNames,
-                values: [null]
-            }
-            const fetchResponse = await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, undefined, false), topbar)
-            context.server.processFetch(fetchResponse[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
-            const builtData = context.server.buildDatasets(fetchResponse[0])
-            return builtData;
-        }
-
-        const buildNodes = async (data:any[] = []) => {
-            const newNodes = [...nodes];
-            await Promise.allSettled(data.map(async (dataRow, i) => {
-                const path = new TreePath(i);
-                const addedNode: TreeNode = {
-                    key: path.toString(),
-                    label: dataRow[metaData!.columnView_table_[0]],
-                    leaf: detectEndNode !== false
-                };
-
-                newNodes[i] = addedNode;
-
-                if (detectEndNode !== false) {
-                    await getChildrenForDataRow(dataRow, addedNode).then((res: any) => {
-                        tempTreeMap = new Map([...tempTreeMap, ...res.treeMap])
-                    });
+            /**
+             * When the first databook is self-joined, the root page must be fetched always.
+             * Sets self-joined "null" datapage in dataprovider map
+             * @returns the datarows of the root page
+             */
+            const fetchSelfJoinedRoot = async () => {
+                const fetchReq = createFetchRequest();
+                fetchReq.dataProvider = firstLvlDataBook;
+                fetchReq.filter = {
+                    columnNames: metaData!.masterReference!.referencedColumnNames,
+                    values: [null]
                 }
+                const fetchResponse = await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, undefined, false), topbar)
+                if (fetchResponse && fetchResponse.length) {
+                    context.server.processFetch(fetchResponse[0], getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames));
+                    const builtData = context.server.buildDatasets(fetchResponse[0])
+                    return builtData;
+                }
+                return []
+            }
 
-                tempTreeMap.set(path.toString(), _.pick(dataRow, metaData!.primaryKeyColumns || ["ID"]));
-            }));
-            treeData.current = new Map([...treeData.current, ...tempTreeMap])
-            setNodes(newNodes);
-            setInitialized(true);
-        }
+            const buildNodes = async (data: any[] = []) => {
+                const newNodes = [...nodes];
+                await Promise.allSettled(data.map(async (dataRow, i) => {
+                    const path = new TreePath(i);
+                    const addedNode: TreeNode = {
+                        key: path.toString(),
+                        label: metaData!.columnView_table_.length ? dataRow[metaData!.columnView_table_[0]] : undefined,
+                        leaf: detectEndNode !== false
+                    };
 
-        //if the first databook is self-joined fetch the root page else fetch build up the tree as usual
-        if (isSelfJoined(firstLvlDataBook)) {
-            fetchSelfJoinedRoot().then((res:any) => buildNodes(res))   
-        } else {
-            buildNodes(providedData?.get(firstLvlDataBook)?.get("current"))
+                    newNodes[i] = addedNode;
+
+                    if (detectEndNode !== false) {
+                        await getChildrenForDataRow(dataRow, addedNode).then((res: any) => {
+                            tempTreeMap = new Map([...tempTreeMap, ...res.treeMap])
+                        });
+                    }
+
+                    tempTreeMap.set(path.toString(), _.pick(dataRow, metaData!.primaryKeyColumns || ["ID"]));
+                }));
+                treeData.current = new Map([...treeData.current, ...tempTreeMap])
+                setNodes(newNodes);
+                setInitialized(true);
+            }
+
+            //if the first databook is self-joined fetch the root page else fetch build up the tree as usual
+            if (isSelfJoined(firstLvlDataBook)) {
+                fetchSelfJoinedRoot().then((res: any) => buildNodes(res))
+            }
+            else {
+                buildNodes(providedData?.get(firstLvlDataBook)?.get("current"))
+            }
         }
-        
-    }, [ providedData.size ]);
+    }, [providedData.size]);
 
     /**
      * Check if we have all the data for the tree we need if the expanded keys change
@@ -447,21 +460,22 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
      * If the selectedRows change, generate the tree selectedKey and expandedKey
      */
     useEffect(() => {
-        const selected = selectedRows.get(props.dataBooks[0]);
-        if (selected) {
-            let treePath: TreePath;
-            if (isSelfJoined(props.dataBooks[0])) {
-                treePath = new TreePath([...(selected.treePath?.toArray() ?? []), selected.index]);
-            } else {
-                treePath = new TreePath(props.dataBooks.map(db => selectedRows.get(db)?.index ?? -1).filter(v => v > -1));
+        if (props.dataBooks && props.dataBooks.length) {
+            const selected = selectedRows.get(props.dataBooks[0]);
+            if (selected) {
+                let treePath: TreePath;
+                if (isSelfJoined(props.dataBooks[0])) {
+                    treePath = new TreePath([...(selected.treePath?.toArray() ?? []), selected.index]);
+                } else {
+                    treePath = new TreePath(props.dataBooks.map(db => selectedRows.get(db)?.index ?? -1).filter(v => v > -1));
+                }
+    
+                setSelectedKey(treePath.toString());
+                setExpandedKeys(prevState => {
+                    const newState = ({...prevState, ...treePath.toArray().slice(0, -1).reduce((a, n, i, arr) => ({...a, [`[${arr.slice(0, i + 1).join(',')}]`]: true}) , {})});
+                    return JSON.stringify(prevState) === JSON.stringify(newState) ? prevState : newState;
+                });
             }
-
-            setSelectedKey(treePath.toString());
-            setExpandedKeys(prevState => {
-                const newState = ({...prevState, ...treePath.toArray().slice(0, -1).reduce((a, n, i, arr) => ({...a, [`[${arr.slice(0, i + 1).join(',')}]`]: true}) , {})});
-                return JSON.stringify(prevState) === JSON.stringify(newState) ? prevState : newState;
-            });
-            
         }
     }, [selectedRows]);
 

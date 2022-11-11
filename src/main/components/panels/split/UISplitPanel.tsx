@@ -14,7 +14,7 @@
  */
 
 import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useRef, useState } from "react";
-import SplitPanel from "./SplitPanel";
+import SplitPanel, { ORIENTATIONSPLIT } from "./SplitPanel";
 import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../../util/types/BaseComponent";
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
@@ -89,7 +89,23 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
 
     // Callback which is passed to splitpanel and called initially
     const sendLoadCallback = () => {
-        const size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
+        let size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
+        if (compSizes && compSizes.size) {
+            let testWidth = 0;
+            let testHeight = 0;
+            compSizes.forEach(comp => {
+                testWidth += comp.preferredSize.width;
+                testHeight += comp.preferredSize.height;
+            });
+
+            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
+                testWidth += 10;
+            }
+            else {
+                testHeight += 10;
+            }
+            size = { height: testHeight, width: testWidth }
+        }
         if (onLoadCallback) {
             if (props.preferredSize) {
                 sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);

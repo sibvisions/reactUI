@@ -5,7 +5,7 @@
  * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ *]
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -23,7 +23,7 @@ import { getScreenSelectedRows } from "../../util/data-util/GetDataProvidersOfCo
  * @param dataBooks - the databooks of the component
  * @returns  every currently selected Row of all dataproviders of a component as Map
  */
-const useAllRowSelect = (screenName:string, dataBooks:string[]) => {
+const useAllRowSelect = (screenName:string, dataBooks?:string[]) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
