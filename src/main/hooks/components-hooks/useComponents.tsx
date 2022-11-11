@@ -109,15 +109,17 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
 
         /** Callback which gets called by each component in sendOnLoadCallBack */
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
+            let componentsChanged = false
             tempSizes.current.forEach((val, key) => {
                 if (!children.has(key)) {
                     tempSizes.current.delete(key);
+                    componentsChanged = true;
                 }
             });
             const preferredComp = tempSizes.current.get(compId);
             tempSizes.current.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
-            if(context.contentStore.getComponentById(compId) && (tempSizes.current.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))) {
+            if(context.contentStore.getComponentById(compId) && (tempSizes.current.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId) || componentsChanged)) {
                 setPreferredSizes(new Map(tempSizes.current));
             }
                 
