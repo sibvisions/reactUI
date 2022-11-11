@@ -496,7 +496,7 @@ class Server extends BaseServer {
     upload(uploadData: UploadResponse) {
         const inputElem = document.createElement('input');
         inputElem.type = 'file';
-        inputElem.click()
+        inputElem.showPicker();
         inputElem.onchange = (e) => {
             const formData = new FormData();
             formData.set("clientId", sessionStorage.getItem("clientId") || "")
