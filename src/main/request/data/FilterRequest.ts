@@ -22,6 +22,7 @@ interface FilterRequest extends DataProviderRequest {
     editorComponentId: string|undefined,
     value: string,
     columnNames?:string[],
-    filterCondition?:FilterCondition
+    filterCondition?:FilterCondition,
+    includeMetaData?:boolean
 }
 export default FilterRequest

@@ -83,7 +83,7 @@ export interface IEditorLinked extends IRCCellEditor {
  * @param server - the server instance
  * @param contentStore - the contentStore instance
  */
-export function fetchLinkedRefDatabook(screenName:string, databook: string, selectedRecord:any, displayCol: string|null|undefined, concatMask:string|undefined, server: Server|ServerFull, contentStore: BaseContentStore, name?:string, decreaseCallback?:Function) {
+export function fetchLinkedRefDatabook(screenName: string, databook: string, selectedRecord: any, displayCol: string | null | undefined, concatMask: string | undefined, server: Server | ServerFull, contentStore: BaseContentStore, name?: string, decreaseCallback?: Function) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook);
     if (selectedRecord
         && (displayCol || concatMask)
@@ -94,7 +94,10 @@ export function fetchLinkedRefDatabook(screenName:string, databook: string, sele
         filterReq.dataProvider = databook;
         filterReq.editorComponentId = name;
         filterReq.value = "";
-        server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => decreaseCallback ? decreaseCallback(databook) : undefined )
+        if (!refDataBookInfo?.metaData) {
+            filterReq.includeMetaData = true;
+        }
+        server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => decreaseCallback ? decreaseCallback(databook) : undefined)
     }
 }
 
@@ -393,6 +396,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
      * @param event - Event that gets fired on inputchange
      */
     const sendFilter = useCallback(async (value:any) => {
+        const refDataBookInfo = props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook);
         props.context.contentStore.clearDataFromProvider(props.screenName, props.cellEditor.linkReference.referencedDataBook||"")
         const filterReq = createFilterRequest();
         filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
@@ -401,6 +405,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
         if (props.isCellEditor) {
             filterReq.columnNames = [props.columnName]
+        }
+
+        if (!refDataBookInfo?.metaData) {
+            filterReq.includeMetaData = true;
         }
 
         if (props.onFilter) {
@@ -412,7 +420,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 setInitialFilter(true);
             }
         });
-    }, [props.context.contentStore, props.context.server, props.cellEditor, props.name]);
+    }, [props.context.contentStore, props.context.server, props.cellEditor, props.name, props.cellEditor.linkReference.referencedDataBook]);
 
     const buildSuggestionArray = (value:any) => {
         const arr:any[] = [];
@@ -422,11 +430,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
         columnViewNames.forEach((d) => {
             arr.push(value[d]);
-        })
+        });
         return arr;
     }
 
     const unpackSuggestionArray = (value: any[], display: boolean) => {
+        console.log(value, display, metaDataReferenced, props.cellEditor.columnView)
         if (value) {
             if (display) {
                 let displayObj: any = {}
@@ -685,6 +694,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         else {
             const suggestionObj = unpackSuggestionArray(d, true);
+            console.log(suggestionObj)
             return Object.values(suggestionObj).map((d:any, i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
