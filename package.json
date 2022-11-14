@@ -1,7 +1,7 @@
 {
   "name": "@sibvisions/reactui",
   "homepage": ".",
-  "version": "1.0.41",
+  "version": "1.0.42",
   "main": "moduleIndex.js",
   "types": "moduleIndex.d.ts",
   "license": "Apache-2.0 license",
