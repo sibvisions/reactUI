@@ -940,7 +940,7 @@ body {
 }
 
 /// Inputfields
-.p-inputtext {
+.p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput) {
     background: var(--input-background);
     border: var(--input-border-width) solid var(--input-border-color);
     border-radius: var(--editor-border-radius);

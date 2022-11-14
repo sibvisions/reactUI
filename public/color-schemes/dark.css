@@ -434,18 +434,18 @@ body {
 .rc-editor-choice:focus img {
   box-shadow: var(--focus-box-shadow); }
 
-.p-inputtext {
+.p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput) {
   background: var(--input-background);
   border: var(--input-border-width) solid var(--input-border-color);
   border-radius: var(--editor-border-radius); }
-  .p-inputtext:not(.required-field) {
+  .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):not(.required-field) {
     color: var(--text-color); }
-  .p-inputtext:enabled:focus {
+  .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):enabled:focus {
     box-shadow: var(--focus-box-shadow);
     border-color: var(--input-border-hover-color); }
-  .p-inputtext:enabled:hover {
+  .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):enabled:hover {
     border-color: var(--input-border-hover-color); }
-  .p-inputtext::placeholder {
+  .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput)::placeholder {
     color: var(--input-placeholder-color); }
 
 .p-float-label > label {

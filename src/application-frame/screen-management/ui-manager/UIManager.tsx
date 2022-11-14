@@ -194,8 +194,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                         className="p-button-raised p-button-rounded rc-button designer-button" 
                         icon="fas fa-palette"
                         style={{ 
-                            "--background": window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), 
-                            "--hoverBackground": tinycolor(window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color')).darken(5).toString(),
+                            "--background": "#2196F3", 
+                            "--hoverBackground": tinycolor("#2196F3").darken(5).toString(),
                             width: "4rem",
                             height: "4rem",
                             position: "absolute", 
@@ -218,7 +218,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
                 logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
                 logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
-                designerSubscription={context.designerSubscriptions}>
+                designerSubscription={context.designerSubscriptions}
+                appName={context.appSettings.applicationMetaData.applicationName}>
                 {content}
             </ReactUIDesigner> 
             :

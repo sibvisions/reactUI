@@ -187,7 +187,8 @@ const Login: FC = () => {
                 logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
                 logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
                 logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
-                designerSubscription={context.designerSubscriptions}>
+                designerSubscription={context.designerSubscriptions}
+                appName={context.appSettings.applicationMetaData.applicationName}>
                 {content}
             </ReactUIDesigner> 
             :
