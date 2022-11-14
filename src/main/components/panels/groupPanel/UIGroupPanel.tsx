@@ -81,10 +81,11 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                 data-pr-position="left" >
                 <div
                     className="rc-panel-group-caption"
-                    style={{ ...compStyle }}>
-                    <span>
+                    style={{ ...compStyle }}
+                    dangerouslySetInnerHTML={{ __html: props.text as string }} >
+                    {/* <span>
                         {props.text}
-                    </span>
+                    </span> */}
                 </div>
                 <div
                     className="rc-panel-group-content"

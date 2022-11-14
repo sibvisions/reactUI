@@ -834,7 +834,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
             return (
                 <>
-                    {props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable ? "" : " *")}
+                    <span dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable ? "" : " *") }} /> 
                     <span className="p-sortable-column-icon pi pi-fw"></span>
                     <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
