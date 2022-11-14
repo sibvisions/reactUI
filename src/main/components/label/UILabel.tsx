@@ -26,6 +26,7 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableLabel } from "../../extend-components/label/ExtendLabel";
+import useIsHTMLText from "../../hooks/components-hooks/useIsHTMLText";
 
 /**
  * Displays a simple label
@@ -48,7 +49,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     const lblTextAlignment = translateTextAlign(props.horizontalAlignment);
 
     /** True, if the label contains html */
-    const isHTML = useMemo(() => props.text ? props.text.includes("<html>") : false, [props.text]);
+    const isHTML = useIsHTMLText(props.text);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

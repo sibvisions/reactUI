@@ -30,6 +30,8 @@ import { IExtendableSelectable } from "../../../extend-components/buttons/Extend
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+import { RenderButtonHTML } from "../button/UIButton";
 
 /**
  * This component displays a CheckBox and its label
@@ -58,6 +60,8 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     useRequestFocus(id, props.requestFocus, cbRef.current ? cbRef.current.inputRef ? cbRef.current.inputRef.current : undefined : undefined, context);
+
+    const isHTML = useIsHTMLText(props.text);
 
     const designerUpdate = useDesignerUpdates("checkbox");
     
@@ -161,7 +165,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
                     {btnStyle.iconProps.icon !== undefined &&
                         <i className={concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon')}/>
                     }
-                    {props.text}
+                    {isHTML && props.text && <RenderButtonHTML text={props.text} />}
                 </label>
             </span>
         </span>

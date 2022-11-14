@@ -32,6 +32,8 @@ import { IExtendableCheckboxEditor } from "../../../extend-components/editors/Ex
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import { RenderButtonHTML } from "../../buttons/button/UIButton";
+import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -69,6 +71,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
     const {onLoadCallback, id} = props;
 
     useRequestFocus(id, props.requestFocus, cbRef.current ? cbRef.current.inputRef ? cbRef.current.inputRef.current : undefined : undefined, props.context);
+
+    const isHTML = useIsHTMLText(props.text);
 
     const designerUpdate = useDesignerUpdates("checkbox");
 
@@ -233,7 +237,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
                         fontSize: props.cellStyle?.fontSize
                     }}
                     htmlFor={id}>
-                    {props.cellEditor_text_ ? props.cellEditor_text_ : props.cellEditor?.text}
+                    {isHTML && (props.cellEditor_text_ || props.cellEditor.text) ? <RenderButtonHTML text={props.cellEditor_text_ ? props.cellEditor_text_ as string : props.cellEditor.text as string} />
+                    : props.cellEditor_text_ ? props.cellEditor_text_ : props.cellEditor?.text}
                 </label>
             }
 

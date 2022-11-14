@@ -101,6 +101,12 @@
         flex: unset;
         white-space: nowrap;
     }
+
+    .button-html-label {
+        flex: unset;
+        white-space: nowrap;
+        transition: all .2s;
+    }
 }
 
 .reactUI:not(.basti_mobile) {
@@ -163,6 +169,10 @@
         border-color: transparent;
     
         .p-button-label {
+            text-decoration: underline;
+        }
+
+        .button-html-label {
             text-decoration: underline;
         }
     }

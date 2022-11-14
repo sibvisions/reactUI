@@ -34,6 +34,13 @@ import { IExtendableButton } from "../../../extend-components/buttons/ExtendButt
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+
+export const RenderButtonHTML: FC<{ text:string }> = (props) => {
+    return (
+        <span className="button-html-label" dangerouslySetInnerHTML={{ __html: props.text as string }} />
+    )
+}
 
 /**
  * This component displays a basic button
@@ -62,6 +69,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
 
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+
+    const isHTML = useIsHTMLText(props.text);
 
     const designerUpdate = useDesignerUpdates(props.text ? "default-button" : "icon-only-button");
 
@@ -136,7 +145,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                         '--iconCenterGap': `${btnStyle.iconCenterGap}px`
                     } : {})
                 } as any}
-                label={props.text}
+                label={!isHTML ? props.text : undefined}
                 aria-label={props.ariaLabel}
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnStyle.iconPos}
@@ -156,8 +165,9 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                 disabled={isCompDisabled(props)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
-                {...usePopupMenu(props)}
-            />
+                {...usePopupMenu(props)}>
+                    {isHTML && props.text && <RenderButtonHTML text={props.text} />}
+                </Button>
         </span>
     )
 }

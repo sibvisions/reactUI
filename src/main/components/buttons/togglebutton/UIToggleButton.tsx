@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ToggleButton, ToggleButtonChangeParams, ToggleButtonIconPositionType } from 'primereact/togglebutton';
 import tinycolor from 'tinycolor2';
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
@@ -33,6 +33,8 @@ import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+import { RenderButtonHTML } from "../button/UIButton";
 
 /**
  * This component displays a Button which can be toggled on and off
@@ -48,6 +50,8 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
     /** Component constants for contexts, properties and style */
     const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
 
+    const [checked, setChecked] = useState<boolean|undefined>(props.selected)
+
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current ? buttonRef.current.container : undefined)
 
@@ -62,7 +66,25 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
 
     useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.container : undefined, context);
 
+    const isHTML = useIsHTMLText(props.text);
+
     const designerUpdate = useDesignerUpdates(props.text ? "default-button" : "icon-only-button");
+
+    useLayoutEffect(() => {
+        if (buttonRef.current) {
+            if (isHTML) {
+                if (buttonRef.current.container.classList.contains('p-button-icon-only')) {
+                    buttonRef.current.container.classList.remove('p-button-icon-only');
+                }
+                buttonRef.current.container.querySelector('.p-button-label').innerHTML = props.text;
+            }
+            else {
+                if (!buttonRef.current.container.classList.contains('p-button-icon-only') && !props.text) {
+                    buttonRef.current.container.classList.add('p-button-icon-only');
+                }
+            }
+        }
+    }, [isHTML, checked])
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -70,7 +92,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, isHTML]);
 
     useHandleDesignerUpdate(
         designerUpdate,
@@ -89,6 +111,8 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
 
     //If lib-user extends Togglebutton with onChange, call it when selected changes
     useEffect(() => {
+        setChecked(props.selected)
+        
         if (props.onChange) {
             props.onChange(props.selected);
         }
@@ -147,19 +171,20 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
                         '--iconCenterGap': `${btnStyle.iconCenterGap}px`
                     } : {})
                 }}
-                offLabel={props.text}
-                onLabel={props.text}
+                onLabel={!isHTML ? props.text : undefined}
+                offLabel={!isHTML ? props.text : undefined}
                 offIcon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 onIcon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnStyle.iconPos as ToggleButtonIconPositionType}
                 tabIndex={btnStyle.tabIndex}
-                checked={props.selected}
+                checked={checked}
                 onChange={handleOnChange}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}
-            />
+                tooltipOptions={{ position: "left" }}>
+                    {isHTML && props.text && <RenderButtonHTML text={props.text} />}
+                </ToggleButton>
         </span>
     )
 }

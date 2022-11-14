@@ -36,6 +36,8 @@ import { IExtendableMenuButton } from "../../../extend-components/buttons/Extend
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
+import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+import { RenderButtonHTML } from "../button/UIButton";
 
 /** Interface for MenuButton */
 export interface IMenuButton extends IButton {
@@ -77,13 +79,31 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
 
     const designerUpdate = useDesignerUpdates("menubutton");
 
+    const isHTML = useIsHTMLText(props.text);
+
+    useLayoutEffect(() => {
+        if (buttonRef.current) {
+            if (isHTML) {
+                if (buttonRef.current.defaultButton.classList.contains('p-button-icon-only')) {
+                    buttonRef.current.defaultButton.classList.remove('p-button-icon-only');
+                }
+                buttonRef.current.defaultButton.querySelector('.p-button-label').innerHTML = props.text;
+            }
+            else {
+                if (!buttonRef.current.defaultButton.classList.contains('p-button-icon-only') && !props.text) {
+                    buttonRef.current.defaultButton.classList.add('p-button-icon-only');
+                }
+            }
+        }
+    }, [isHTML])
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = buttonWrapperRef.current;
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate, isHTML]);
 
     useHandleDesignerUpdate(
         designerUpdate,
@@ -218,7 +238,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                         '--iconTextGap': `${props.imageTextGap || 4}px`,
                     } : {})
                 }}
-                label={props.text}
+                label={!isHTML ? props.text : undefined}
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 disabled={isCompDisabled(props)}
                 //tabIndex={-1}
@@ -235,7 +255,9 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                     }
                 }}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }} />
+                tooltipOptions={{ position: "left" }}>
+                    {isHTML && props.text && <RenderButtonHTML text={props.text} />}
+                </SplitButton>
         </span>
     )
 }
