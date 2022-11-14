@@ -144,10 +144,8 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
         /** Create the reactchildren */
         children.forEach(child => {
             let reactChild;
+            child.onLoadCallback = componentHasLoaded;
             if (!context.contentStore.customComponents.has(child.name)) {
-                //Hack: at first only when compLoadedChache hasn't had the childrens name it god added, now everytime a NON custom component
-                //gets a componentHasLoaded. When not using this it could be that some components aren't shown...
-                child.onLoadCallback = componentHasLoaded;
                 if (id.includes("popup")) {
                     context.subscriptions.propertiesSubscriber.get(child.id)?.apply(undefined, [child]);
                 }
