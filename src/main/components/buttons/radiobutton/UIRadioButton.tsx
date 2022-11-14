@@ -165,7 +165,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
                     {btnStyle.iconProps.icon !== undefined &&
                         <i className={concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon')}/>
                     }
-                    {isHTML && props.text && <RenderButtonHTML text={props.text} />}
+                    {isHTML && props.text ? <RenderButtonHTML text={props.text} /> : props.text}
                 </label>
             </span>
         </span>
