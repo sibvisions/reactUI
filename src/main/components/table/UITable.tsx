@@ -190,7 +190,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const rows = useMemo(() => {
         if (metaData && props.columnNames.length > 20) {
             if (getNumberOfRowsPerPage()) {
-                return getNumberOfRowsPerPage() + 3
+                return getNumberOfRowsPerPage() + 3;
             }
             else {
                 return 5;
@@ -201,7 +201,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     /** Virtual scrolling is enabled (lazy loading), if the provided data is greater than 2 times the row value*/
     const virtualEnabled = useMemo(() => {
-        return providerData.length > rows * 2
+        return providerData.length > rows * 2;
     }, [providerData.length, rows]);
 
     /** The virtual rows filled with data */
@@ -245,7 +245,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         let pks:(LengthBasedColumnDescription | NumericColumnDescription)[] | undefined;
         if (metaData) {
             if (metaData.primaryKeyColumns) {
-                return metaData.primaryKeyColumns
+                return metaData.primaryKeyColumns;
             }
             else if (metaData.columns.find(column => column.name === "ID")) {
                 return ["ID"];
@@ -253,7 +253,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             else {
                 pks = metaData.columns.filter(column => column.cellEditor.className === CELLEDITOR_CLASSNAMES.TEXT || column.cellEditor.className === CELLEDITOR_CLASSNAMES.NUMBER);
                 let pkNames:string[] = pks.map(pk => pk.name);
-                return pkNames
+                return pkNames;
             }
         }
         else {
@@ -284,8 +284,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             heldMouseEvents.current.add(release);
             if (type === "clicked" || type === "cancelled") {
                 setTimeout(() => {
-                    heldMouseEvents.current.forEach(release => release())
-                    heldMouseEvents.current.clear()
+                    heldMouseEvents.current.forEach(release => release());
+                    heldMouseEvents.current.clear();
                 }, 1)
             }
         }
@@ -1242,6 +1242,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
         }
     }, [layoutStyle?.width, estTableWidth]);
+
+    console.log(screenName)
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>

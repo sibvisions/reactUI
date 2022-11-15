@@ -57,5 +57,6 @@ interface BaseComponent {
     classNameEventSourceRef?:string,
     enabled?: boolean
     requestFocus?: boolean
+    nameComponentRef?: string
 }
 export default BaseComponent

@@ -589,7 +589,10 @@ export default abstract class BaseContentStore {
                 comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
             }
         }
-        return comp?.name
+        if (comp?.nameComponentRef) {
+            return comp.nameComponentRef;
+        }
+        return comp?.name;
     }
 
     /**
@@ -611,7 +614,7 @@ export default abstract class BaseContentStore {
         if (this.dataBooks.has(screenId)) {
             return this.dataBooks.get(screenId);
         }
-        return undefined
+        return undefined;
     }
 
     /**
@@ -644,7 +647,7 @@ export default abstract class BaseContentStore {
                 return dataArray?.slice(from, to) || [];
             }
         }
-        return  dataArray || []
+        return  dataArray || [];
     }
 
     /**
