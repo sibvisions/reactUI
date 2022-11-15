@@ -55,7 +55,7 @@ export function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxS
  * @param className - the classname of a component
  */
 function measurePrefWidth(ref:any, className:string) {
-    const arrString:string[] = [COMPONENT_CLASSNAMES.TEXTAREA, COMPONENT_CLASSNAMES.TEXTFIELD, COMPONENT_CLASSNAMES.PASSWORD, CELLEDITOR_CLASSNAMES.TEXT] as string[]
+    const arrString:string[] = [COMPONENT_CLASSNAMES.TEXTAREA, COMPONENT_CLASSNAMES.TEXTFIELD, COMPONENT_CLASSNAMES.PASSWORD, CELLEDITOR_CLASSNAMES.TEXT, COMPONENT_CLASSNAMES.SPLITPANEL] as string[]
     if (arrString.indexOf(className) !== -1) {
         return Math.max(ref.offsetWidth, Math.ceil(ref.getBoundingClientRect().width))
     }
