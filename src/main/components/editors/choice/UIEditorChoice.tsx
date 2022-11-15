@@ -71,8 +71,10 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     /** Returns the given value as string */
     const getValAsString = useCallback((val) => val === null ? "null" : val.toString(), [])
 
+    const stringAllowedValues = useMemo(() => props.cellEditor.allowedValues.map(val => getValAsString(val)), [props.cellEditor.allowedValues])
+
     /** Check if the ChoiceCellEditor only accepts two values */
-    const viableAriaPressed = props.cellEditor.allowedValues.length === 2 && props.cellEditor.allowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
+    const viableAriaPressed = stringAllowedValues.length === 2 && stringAllowedValues.some(val => ['y', 'yes', 'true'].indexOf(getValAsString(val).toLowerCase()) !== -1);
 
     // Sets the background-color if cellFormatting is set in a cell-editor
     useLayoutEffect(() => {
@@ -105,23 +107,23 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             }
             return mergedObj;
         }
-        mergedValImg = mergeObject(props.cellEditor.allowedValues, props.cellEditor.imageNames);
+        mergedValImg = mergeObject(stringAllowedValues, props.cellEditor.imageNames);
         return mergedValImg;
-    }, [props.cellEditor.allowedValues, props.cellEditor.imageNames])
+    }, [stringAllowedValues, props.cellEditor.imageNames])
 
     /**
      * Returns the current image value based on the props.selectedRow if there is no row selected check for a defaultimage else invalid
      */
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";
-        if(props.selectedRow !== undefined && props.cellEditor.allowedValues.includes(props.selectedRow.data[props.columnName])) {
-            validImage = props.selectedRow.data[props.columnName]
+        if(props.selectedRow !== undefined && stringAllowedValues.includes(getValAsString(props.selectedRow.data[props.columnName]))) {
+            validImage = getValAsString(props.selectedRow.data[props.columnName])
         }
         else if (props.cellEditor.defaultImageName !== undefined) {
             validImage = props.cellEditor.defaultImageName;
         }
         return validImage;
-    }, [props.selectedRow, validImages, props.cellEditor.defaultImageName, props.cellEditor.allowedValues])
+    }, [props.selectedRow, validImages, props.cellEditor.defaultImageName, stringAllowedValues])
 
     /**
      * When the image is loaded, measure the image and then report its preferred-, minimum-, maximum and measured-size to the layout
@@ -160,10 +162,10 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             setValReq.dataProvider = props.dataRow;
     
             /** Get the index of the current image */
-            const index = props.cellEditor.allowedValues.indexOf(currentImageValue)
+            const index = stringAllowedValues.indexOf(currentImageValue)
     
             /** If the index is not the last value in allowedValues, set to the next value */
-            if(props.cellEditor.allowedValues.length > index+1) {
+            if(stringAllowedValues.length > index+1) {
                 setValReq.values = [props.cellEditor.allowedValues[index+1]];
             }
                 
@@ -185,7 +187,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     // If the lib user extends the ChoiceCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
-            props.onChange({ value: currentImageValue, allowedValues: props.cellEditor.allowedValues })
+            props.onChange({ value: currentImageValue, allowedValues: stringAllowedValues })
         }
     }, [currentImageValue, props.onChange]);
     

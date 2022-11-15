@@ -18,9 +18,9 @@
     height: 100%;
     border-collapse: collapse;
 
-    // .p-datatable-table {
-    //     position: relative;
-    // }
+    .p-datatable-table {
+        position: relative;
+    }
 
     &:not(.no-auto-resize) {
         .p-datatable-table {
@@ -28,9 +28,9 @@
             max-width: 100%;
         }
 
-        // table {
-        //     margin-right: 100%;
-        // }
+        table {
+            margin-right: 100%;
+        }
     }
     &.read-size {
         .p-datatable-table {
