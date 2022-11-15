@@ -1243,8 +1243,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         }
     }, [layoutStyle?.width, estTableWidth]);
 
-    console.log(screenName)
-
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
             <div
