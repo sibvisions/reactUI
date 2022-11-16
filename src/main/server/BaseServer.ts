@@ -520,7 +520,6 @@ export default abstract class BaseServer {
 
             if (dataBook.metaData) {
                 if (dataBook.referencedCellEditors?.length) {
-
                     const buildDataToDisplayMap = (castedColumn: ICellEditorLinked, column: any) => {
                             let dataToDisplayMap = new Map<string, string>();
                             if (castedColumn.linkReference.dataToDisplayMap) {
@@ -529,6 +528,9 @@ export default abstract class BaseServer {
     
                             builtData.forEach((data) => {
                                 if (data) {
+                                    if (!castedColumn.linkReference.columnNames.length) {
+                                        castedColumn.linkReference.columnNames.push(column.columnName)
+                                    }
                                     const index = castedColumn.linkReference.columnNames.findIndex(colName => colName === column.columnName);
                                     const referencedData = getExtractedObject(data, [castedColumn.linkReference.referencedColumnNames[index]]);
                                     const columnViewData = getExtractedObject(data, Object.keys(data).filter(key => key !== "__recordFormats" && key !== "recordStatus"));
