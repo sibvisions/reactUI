@@ -347,10 +347,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         const refDB = props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook);
                         if (refDB) {
                             if (refDB.referencedCellEditors) {
-                                refDB.referencedCellEditors.push({cellEditor: props.cellEditor, columnName: props.columnName});
+                                refDB.referencedCellEditors.push({cellEditor: props.cellEditor, columnName: props.columnName, dataBook: props.dataRow});
                             }
                             else {
-                                refDB.referencedCellEditors = [{cellEditor: props.cellEditor, columnName: props.columnName}];
+                                refDB.referencedCellEditors = [{cellEditor: props.cellEditor, columnName: props.columnName, dataBook: props.dataRow}];
                             }
                         }
                     }
