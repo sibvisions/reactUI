@@ -637,12 +637,18 @@ export default abstract class BaseServer {
         // Fetch based on reload
         //else {
             if(changedProvider.reload === -1) {
+                if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
+                    this.missingDataFetches.push(changedProvider.dataProvider);
+                }
                 this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
                 await this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true, undefined, RequestQueueMode.IMMEDIATE)
             } 
             else if(changedProvider.reload !== undefined) {
+                if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
+                    this.missingDataFetches.push(changedProvider.dataProvider);
+                }
                 const fetchReq = createFetchRequest();
                 fetchReq.rowCount = 1;
                 fetchReq.fromRow = changedProvider.reload;

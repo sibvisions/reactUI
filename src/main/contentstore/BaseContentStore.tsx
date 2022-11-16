@@ -576,23 +576,28 @@ export default abstract class BaseContentStore {
      * @returns the component id of a screen for a component
      */
      getScreenName(id: string, dataProvider?:string) {
-        let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
-        if (comp) {
-            while (comp?.parent) {
-                if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {
-                    break;
+        if (dataProvider) {
+            return dataProvider.split("/")[1]
+        }
+        else {
+            let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
+            if (comp) {
+                while (comp?.parent) {
+                    if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {
+                        break;
+                    }
+                    else if ((comp as IPanel).content_className_) {
+                        return dataProvider ? dataProvider.split("/")[1] : comp.name;
+                    }
+    
+                    comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
                 }
-                else if ((comp as IPanel).content_className_) {
-                    return dataProvider ? dataProvider.split("/")[1] : comp.name;
-                }
-
-                comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
             }
+            if (comp?.nameComponentRef) {
+                return comp.nameComponentRef;
+            }
+            return comp?.name;
         }
-        if (comp?.nameComponentRef) {
-            return comp.nameComponentRef;
-        }
-        return comp?.name;
     }
 
     /**
