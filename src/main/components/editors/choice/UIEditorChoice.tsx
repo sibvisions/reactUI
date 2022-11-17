@@ -69,7 +69,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     useRequestFocus(id, props.requestFocus, wrapRef.current ? wrapRef.current as HTMLElement : undefined, props.context);
 
     /** Returns the given value as string */
-    const getValAsString = useCallback((val) => val === null ? "null" : val.toString(), [])
+    const getValAsString = useCallback((val) => val === undefined ? (val === null ? "null" : val.toString()) : "undefined", [])
 
     const stringAllowedValues = useMemo(() => props.cellEditor.allowedValues.map(val => getValAsString(val)), [props.cellEditor.allowedValues])
 
