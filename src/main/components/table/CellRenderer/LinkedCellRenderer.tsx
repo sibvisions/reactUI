@@ -16,7 +16,7 @@
 import React, { FC, useCallback, useContext, useEffect, useMemo } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
-import { convertColNamesToReferenceColNames, fetchLinkedRefDatabook, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
+import { convertColNamesToReferenceColNames, convertReferenceColNamesToColNames, fetchLinkedRefDatabook, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
 
 /**
@@ -64,6 +64,9 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
         if (isDisplayRefColNameOrConcat) {
             if (castedCellEditor && castedCellEditor.linkReference.dataToDisplayMap?.has(JSON.stringify(value))) {
                 return castedCellEditor.linkReference.dataToDisplayMap.get(JSON.stringify(value))
+            }
+            else {
+                return convertReferenceColNamesToColNames(value, castedCellEditor.linkReference)[props.colName]
             }
         }
         return value[props.colName]

@@ -121,11 +121,12 @@ export function convertColNamesToReferenceColNames(value:any, linkReference: Lin
         const extractedObject = getExtractedObject(value, columnNames);
         if (extractedObject 
             && columnNames.length
-            && linkReference.referencedColumnNames.length
-            && columnNames.length === linkReference.referencedColumnNames.length) {
+            && linkReference.referencedColumnNames.length) {
             const newVal:any = {}
             columnNames.forEach((colNames, i) => {
-                newVal[linkReference.referencedColumnNames[i]] = extractedObject[colNames];
+                if (extractedObject[colNames] !== undefined) {
+                    newVal[linkReference.referencedColumnNames[i]] = extractedObject[colNames];
+                }
             });
             return newVal
         }
@@ -146,11 +147,12 @@ export function convertReferenceColNamesToColNames(value:any, linkReference: Lin
         const extractedObject = getExtractedObject(value, linkReference.referencedColumnNames);
         if (extractedObject 
             && linkReference.columnNames.length 
-            && linkReference.referencedColumnNames.length
-            && linkReference.columnNames.length === linkReference.referencedColumnNames.length) {
+            && linkReference.referencedColumnNames.length) {
             const newVal:any = {}
             linkReference.referencedColumnNames.forEach((colNames, i) => {
-                newVal[linkReference.columnNames[i]] = extractedObject[colNames];
+                if (extractedObject[colNames] !== undefined) {
+                    newVal[linkReference.columnNames[i]] = extractedObject[colNames];
+                }
             });
             return newVal
         }
