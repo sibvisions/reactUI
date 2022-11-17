@@ -194,6 +194,7 @@ export default abstract class BaseServer {
                 && !this.componentExists(request.componentId)
             ) {
                 reject("Component doesn't exist: " + request.componentId);
+                return;
             }
             if (request.dataProvider) {
                 if (Array.isArray(request.dataProvider)) {
