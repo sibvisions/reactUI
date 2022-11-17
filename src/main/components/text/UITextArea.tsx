@@ -113,7 +113,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
                     handleEnterKey(e, e.target, props.name);
                 }
             }}
-            readOnly={isCompDisabled(props)}
+            disabled={isCompDisabled(props)}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
     )
 }

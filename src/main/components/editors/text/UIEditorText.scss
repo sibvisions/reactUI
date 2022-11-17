@@ -18,6 +18,10 @@
     background: transparent !important;
 }
 
+.p-disabled, .p-disabled * {
+    pointer-events: unset;
+}
+
 .rc-editor-text {
     .p-inputtext {
         text-align: left;

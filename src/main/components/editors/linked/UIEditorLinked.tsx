@@ -805,7 +805,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     ...props.cellStyle,
                     borderRight: "none" 
                 }}
-                readOnly={props.isReadOnly}
+                disabled={props.isReadOnly}
                 dropdown
                 completeMethod={event => sendFilter(event.query)}
                 suggestions={buildSuggestions(providedData)}

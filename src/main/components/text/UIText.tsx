@@ -108,7 +108,7 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
             {...usePopupMenu(props)}
             size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
             onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
-            readOnly={isCompDisabled(props)}
+            disabled={isCompDisabled(props)}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         />
     )
