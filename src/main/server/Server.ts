@@ -661,7 +661,10 @@ class Server extends BaseServer {
     // Closes a content
     closeContent(closeContentData:CloseContentResponse) {
         if (closeContentData.componentId) {
-            this.contentStore.closeScreen(closeContentData.componentId, true);
+            this.contentStore.closeScreen(closeContentData.componentId);
+            // Removed the true flag because when opening the content again, components with duplicate names where stored with different id's in the contentstore.
+            // Lets see if this causes issues later on.
+            //this.contentStore.closeScreen(closeContentData.componentId, true);
         }
     }
 
