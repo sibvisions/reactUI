@@ -45,14 +45,24 @@ module.exports = () => {
             new CopyPlugin({
                 patterns: [
                     {
-                        from: "*.scss",
-                        context: path.resolve(__dirname, "src", "application-frame", "styling", "color-schemes"),
+                        from: "*.css",
+                        context: path.resolve(__dirname, "public", "color-schemes"),
                         to: "./resources/color-schemes",
                     },
                     {
-                        from: "*.scss",
-                        context: path.resolve(__dirname, "src", "application-frame", "styling", "themes"),
+                        from: "*.css",
+                        context: path.resolve(__dirname, "public", "themes"),
                         to: "./resources/themes",
+                    },
+                    {
+                        from: "*",
+                        context: path.resolve(__dirname, "public", "assets"),
+                        to: "./resources/assets"
+                    },
+                    {
+                        from: "*",
+                        context: path.resolve(__dirname, "public", "assets", "config"),
+                        to: "./resources/assets/config"
                     },
                     {
                         from: "SetupPackage.js",

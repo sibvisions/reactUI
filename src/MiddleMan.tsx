@@ -42,7 +42,6 @@ export interface ICustomContent {
  * @param props - Custom Content which will be passed to App.
  */
 const MiddleMan: FC<ICustomContent> = (props) => {
-
     return (
         <HashRouter>
             <AppProvider {...props}>
