@@ -70,6 +70,11 @@ module.exports = () => {
                         to: "./resources/fonts/roboto"
                     },
                     {
+                        from: "application.css",
+                        context: path.resolve(__dirname, "public"),
+                        to: "./resources"
+                    },
+                    {
                         from: "SetupPackage.js",
                         context: path.resolve(__dirname, "src"),
                         to: "./"
