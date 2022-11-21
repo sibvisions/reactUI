@@ -65,6 +65,11 @@ module.exports = () => {
                         to: "./resources/assets/config"
                     },
                     {
+                        from: "*",
+                        context: path.resolve(__dirname, "public", "fonts", "roboto"),
+                        to: "./resources/fonts/roboto"
+                    },
+                    {
                         from: "SetupPackage.js",
                         context: path.resolve(__dirname, "src"),
                         to: "./"
@@ -103,7 +108,7 @@ module.exports = () => {
                     test: /\.(png|svg|jpg|gif|webP)$/,
                     type: 'asset/resource',
                     generator: {
-                        filename: 'resources/assets/[name][ext]'
+                        filename: 'resources-extra/assets/[name][ext]'
                     }
                     // use: {
                     //     loader: 'file-loader',
@@ -116,7 +121,7 @@ module.exports = () => {
                     test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                     type: 'asset/resource',
                     generator: {
-                        filename: 'resources/fonts/[name][ext]'
+                        filename: 'resources-extra/fonts/[name][ext]'
                     },
                     // use: {
                     //     loader: 'file-loader',
