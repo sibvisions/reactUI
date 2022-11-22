@@ -15,6 +15,7 @@
 
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import _ from "underscore";
+import { getExtractedObject } from "../../components/editors/linked/UIEditorLinked";
 import { appContext } from "../../contexts/AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
 import BaseComponent from "../../util/types/BaseComponent";
@@ -185,7 +186,8 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
                 let alreadyAdded = false
                 /** Checks if the new component is already added in the current components if yes add the old component else the new one */
                 components.forEach(oc => {
-                    if(nc.props.id === oc.props.id && !context.contentStore.customComponents.has(nc.props.name)){
+                    const objectKeys = Object.keys(oc.props).filter(key => key !== "onLoadCallback");
+                    if(nc.props.id === oc.props.id && !context.contentStore.customComponents.has(nc.props.name) && _.isEqual(getExtractedObject(oc.props, objectKeys), getExtractedObject(nc.props, objectKeys))) {
                         alreadyAdded = true
                         cl.push(oc);
                     }
