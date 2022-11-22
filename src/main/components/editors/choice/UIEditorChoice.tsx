@@ -32,10 +32,13 @@ import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { IExtendableChoiceEditor } from "../../../extend-components/editors/ExtendChoiceEditor";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import { parseIconData } from "../../comp-props/ComponentProperties";
+import IconProps from "../../comp-props/IconProps";
+import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor {
-    allowedValues: Array<string|boolean>,
+    allowedValues: Array<string | boolean>,
     defaultImageName?: string
     imageNames: Array<string>,
 }
@@ -61,7 +64,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     const alignments = getAlignments(props);
 
     /** Extracting onLoadCallback and id from props */
-    const {onLoadCallback, id} = props;
+    const { onLoadCallback, id } = props;
 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -91,18 +94,22 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
      * Returns an object of the allowed values as key and the corresponding image as value
      */
     const validImages = useMemo(() => {
-        let mergedValImg:any
+        let mergedValImg: any
         /**
          * Returns a merged object of two arrays keys for the object are taken from the first array values form the second
          * @param keys - the array which should represent the keys of the merged object
          * @param values - the array which should represent the values of the merged object
          * @returns merged object of two arrays
          */
-        const mergeObject = (keys:Array<string|boolean>, values:Array<string>) => {
-            let mergedObj:any = {};
+        const mergeObject = (keys: Array<string | boolean>, values: Array<string>) => {
+            let mergedObj: any = {};
             if (keys && values) {
                 for (let i = 0; i < keys.length; i++) {
-                    mergedObj[getValAsString(keys[i])] = values[i];
+                    let value: string | IconProps = values[i]
+                    if (value.includes("FontAwesome")) {
+                        value = parseIconData(undefined, value);
+                    }
+                    mergedObj[getValAsString(keys[i])] = value;
                 }
             }
             return mergedObj;
@@ -116,7 +123,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
      */
     const currentImageValue = useMemo(() => {
         let validImage = "invalid";
-        if(props.selectedRow !== undefined && props.selectedRow.data[props.columnName] !== undefined && stringAllowedValues.includes(getValAsString(props.selectedRow.data[props.columnName]))) {
+        if (props.selectedRow !== undefined && props.selectedRow.data[props.columnName] !== undefined && stringAllowedValues.includes(getValAsString(props.selectedRow.data[props.columnName]))) {
             validImage = getValAsString(props.selectedRow.data[props.columnName])
         }
         else if (props.cellEditor.defaultImageName !== undefined) {
@@ -125,13 +132,22 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
         return validImage;
     }, [props.selectedRow, validImages, props.cellEditor.defaultImageName, stringAllowedValues])
 
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
+    useLayoutEffect(() => {
+        if (onLoadCallback && imgRef.current) {
+            if (validImages[currentImageValue].icon && isFAIcon(validImages[currentImageValue].icon)) {
+                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), imgRef.current, onLoadCallback)
+            }
+        }
+    }, [onLoadCallback, id, props.image, props.preferredSize, props.maximumSize, props.minimumSize, validImages, currentImageValue]);
+
     /**
      * When the image is loaded, measure the image and then report its preferred-, minimum-, maximum and measured-size to the layout
      * @param event - image load event
      */
     const onChoiceLoaded = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        const prefSize:Dimension = {width: 0, height: 0}
-        if(props.preferredSize){
+        const prefSize: Dimension = { width: 0, height: 0 }
+        if (props.preferredSize) {
             const parsedSize = parsePrefSize(props.preferredSize) as Dimension
             prefSize.height = parsedSize.height;
             prefSize.width = parsedSize.width;
@@ -146,7 +162,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             imgRef.current.style.setProperty('--choiceMinH', `${event.currentTarget.naturalHeight}px`);
         }
 
-        if(onLoadCallback){
+        if (onLoadCallback) {
             sendOnLoadCallback(id, props.cellEditor.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
     }
@@ -160,20 +176,20 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             setValReq.componentId = props.name;
             setValReq.columnNames = [props.columnName];
             setValReq.dataProvider = props.dataRow;
-    
+
             /** Get the index of the current image */
             const index = stringAllowedValues.indexOf(currentImageValue)
-    
+
             /** If the index is not the last value in allowedValues, set to the next value */
-            if(stringAllowedValues.length > index+1) {
-                setValReq.values = [props.cellEditor.allowedValues[index+1]];
+            if (stringAllowedValues.length > index + 1) {
+                setValReq.values = [props.cellEditor.allowedValues[index + 1]];
             }
-                
+
             /** If the index is the last value, set to the first value of allowedValues */
             else {
                 setValReq.values = [props.cellEditor.allowedValues[0]];
             }
-    
+
             if (props.rowIndex !== undefined) {
                 if (props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
                     setValReq.filter = props.filter()
@@ -190,7 +206,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             props.onChange({ value: currentImageValue, allowedValues: stringAllowedValues })
         }
     }, [currentImageValue, props.onChange]);
-    
+
     return (
         <span
             ref={wrapRef}
@@ -204,10 +220,10 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             style={props.isCellEditor ?
                 { justifyContent: alignments.ha, alignItems: alignments.va }
                 :
-                { 
-                    ...props.layoutStyle, 
+                {
+                    ...props.layoutStyle,
                     //...props.cellStyle,
-                    justifyContent: alignments.ha, 
+                    justifyContent: alignments.ha,
                     alignItems: alignments.va,
                 }
             }
@@ -232,37 +248,61 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             }}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-             >
+            {...usePopupMenu(props)}
+        >
             <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
-            <img
-                ref={imgRef}
-                id={!props.isCellEditor ? props.name : undefined}
-                className={concatClassnames(
-                    "rc-editor-choice-img", 
-                    props.isReadOnly ? "choice-read-only" : "",
-                    props.style
-                )}
-                alt=""
-                onClick={(event) => {
-                    if (props.onClick) {
-                        props.onClick(event);
-                    }
+            {validImages[currentImageValue].icon ?
+                <i
+                    ref={imgRef}
+                    id={!props.isCellEditor ? props.name : undefined}
+                    className={concatClassnames(
+                        "rc-editor-choice-img",
+                        props.isReadOnly ? "choice-read-only" : "",
+                        props.style,
+                        validImages[currentImageValue].icon
+                    )}
+                    onClick={(event) => {
+                        if (props.onClick) {
+                            props.onClick(event);
+                        }
+                        setNextValue()
+                    }}
+                    style={{
+                        color: validImages[currentImageValue].color,
+                        fontSize: validImages[currentImageValue].size?.height
+                    }}
+                    data-pr-tooltip={props.toolTipText}
+                    data-pr-position="left"
+                />
+                :
+                <img
+                    ref={imgRef}
+                    id={!props.isCellEditor ? props.name : undefined}
+                    className={concatClassnames(
+                        "rc-editor-choice-img",
+                        props.isReadOnly ? "choice-read-only" : "",
+                        props.style
+                    )}
+                    alt=""
+                    onClick={(event) => {
+                        if (props.onClick) {
+                            props.onClick(event);
+                        }
 
-                    setNextValue()
-                }}
-                src={currentImageValue !== "invalid" ?
-                    props.context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
-                        currentImageValue
-                        :
-                        validImages[currentImageValue])
-                    : ""
-                }
-                onLoad={onChoiceLoaded}
-                onError={onChoiceLoaded}
-                data-pr-tooltip={props.toolTipText}
-                data-pr-position="left"
-                {...usePopupMenu(props)}
-            />
+                        setNextValue()
+                    }}
+                    src={currentImageValue !== "invalid" ?
+                        props.context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
+                            currentImageValue
+                            :
+                            validImages[currentImageValue])
+                        : ""
+                    }
+                    onLoad={onChoiceLoaded}
+                    onError={onChoiceLoaded}
+                    data-pr-tooltip={props.toolTipText}
+                    data-pr-position="left"
+                />}
         </span>
     )
 }
