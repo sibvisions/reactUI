@@ -34,6 +34,7 @@ import EditableMenuItem from "./util/types/custom-types/EditableMenuItem";
 import CustomToolbarItem from "./util/types/custom-types/CustomToolbarItem";
 import CustomStartupProps from "./util/types/custom-types/CustomStartupProps";
 import UserData from "./model/UserData";
+import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 
 export interface IAPI {
     sendRequest: (req: any, keyword: string) => void,
@@ -372,12 +373,22 @@ class API implements IAPI {
      * @param customComp - the custom-component
      */
     addCustomComponent(name:string, customComp:ReactElement) {
-        if (this.#contentStore.getComponentByName(name)) {
-            this.#contentStore.customComponents.set(name, () => customComp);
-            const comp = this.#contentStore.getComponentByName(name) as BaseComponent;
+        let component = this.#contentStore.getComponentByName(name);
+        let tableFlag = component && component.className === COMPONENT_CLASSNAMES.TABLE && component.parent?.includes("TBP") && this.#contentStore.getComponentById(component.parent);
+        
+        if (component) {
+            this.#contentStore.customComponents.set(tableFlag ? this.#contentStore.getComponentById(component.parent)!.name : name, () => customComp);
             const notifyList = new Array<string>();
-            if (comp.parent) {
-                notifyList.push(comp.parent);
+            if (tableFlag) {
+                const parent = this.#contentStore.getComponentById(component.parent)
+                if (parent && parent.parent) {
+                    notifyList.push(parent.parent);
+                }
+            }
+            else {
+                if (component.parent) {
+                    notifyList.push(component.parent);
+                }
             }
             notifyList.filter(this.#contentStore.onlyUniqueFilter).forEach(parentId => this.#subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
         }
