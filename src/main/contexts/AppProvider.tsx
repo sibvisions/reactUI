@@ -590,6 +590,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             startUpRequest.deviceMode = contextState.appSettings.deviceMode;
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
+            startUpRequest.serverVersion = "2.0.0";
             if (contextState.contentStore.customStartUpProperties.length) {
                 contextState.contentStore.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }
