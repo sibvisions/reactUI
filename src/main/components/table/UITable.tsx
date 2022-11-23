@@ -276,7 +276,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(
         props.name, 
-        tableRef.current ? (virtualEnabled ? (tableRef.current as any).el : (tableRef.current as any).table) : undefined, 
+        tableRef.current ? (tableRef.current as any).el.querySelector(".p-datatable-tbody") : undefined, 
         props.eventMouseClicked, 
         props.eventMousePressed, 
         props.eventMouseReleased,
@@ -315,6 +315,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * @param isNext - if the new selected cell is below or above the previous
      */
     const scrollToSelectedCell = (cell:any, isNext:boolean) => {
+        console.log('test')
         setTimeout(() => {
             if (tableRef.current) {
                 //@ts-ignore
