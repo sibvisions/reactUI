@@ -22,16 +22,16 @@
   --std-screen-title-margin:10px;
   --std-menu-width:240px;
   --std-menu-collapsed-width:80px;
-  --std-logo-width:190px;
-  --std-logo-collapsed-width:60px;
-  --std-logo-height:60px;
+  --std-logo-width:calc(var(--std-menu-width) - 50px);
+  --std-logo-collapsed-width:calc(var(--std-menu-collapsed-width) - 20px);
+  --std-logo-height:calc(var(--std-header-height) - 10px);
   --std-profile-height:calc(var(--std-header-height) - 10px);
   --std-profile-width-small:60px;
   --std-profile-padding:0.75rem 1rem;
-  --std-profile-pic:40px;
+  --std-profile-pic:calc(var(--std-profile-height) - 20px);
   --std-profile-submenu-width-small:10rem;
-  --std-topbar-button-size:60px;
-  --std-topbar-button-size-small:40px;
+  --std-topbar-button-size:var(--std-profile-height);
+  --std-topbar-button-size-small:calc(var(--std-profile-height) - 20px);
   --std-fadeout-width:20px;
   --std-fadeout-left:calc(var(--std-menu-collapsed-width) - var(--std-fadeout-width));
   --std-menu-header-padding:1rem 1rem 1rem 0.625rem;
@@ -42,12 +42,12 @@
   --corp-profile-height:calc(var(--corp-header-height) - 10px);
   --corp-profile-width-small:60px;
   --corp-profile-padding:0.75rem 1rem;
-  --corp-profile-pic:40px;
+  --corp-profile-pic:calc(var(--corp-profile-height) - 20px);
   --corp-profile-submenu-width-small:10rem;
-  --corp-topbar-button-size:60px;
-  --corp-topbar-button-size-small:40px;
+  --corp-topbar-button-size:var(--corp-profile-height);
+  --corp-topbar-button-size-small:calc(var(--corp-profile-height) - 20px);
   --corp-menubar-height:40px;
-  --corp-speeddial-size:2rem;
+  --corp-speeddial-size:calc(var(--corp-menubar-height) - calc(var(--corp-menubar-height) / 10) * 2);
   --corp-menu-header-padding:0.75rem 1rem;
   --corp-menu-item-padding:0.75rem 1rem;
   --input-padding-tb: 0.5rem;
@@ -121,7 +121,7 @@ body {
     width: var(--std-logo-width); }
 
 .basti .std-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-  width: var(--std-topbar-button-size);
+  min-width: var(--std-topbar-button-size);
   height: var(--std-topbar-button-size); }
 
 .basti .std-menu .profile-menu {
@@ -184,10 +184,13 @@ body {
     padding: var(--corp-menu-item-padding); }
 
 .basti .corp-menu .corp-menu-logo-wrapper {
-  max-width: var(--corp-logo-width); }
+  width: var(--corp-logo-width);
+  max-height: var(--corp-header-height); }
+  .basti .corp-menu .corp-menu-logo-wrapper .menu-logo {
+    max-height: var(--corp-header-height); }
 
 .basti .corp-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-  width: var(--corp-topbar-button-size);
+  min-width: var(--corp-topbar-button-size);
   height: var(--corp-topbar-button-size); }
 
 .basti .corp-menu .profile-menu {
@@ -325,10 +328,10 @@ body {
       max-height: var(--std-logo-height);
       width: var(--std-logo-width); }
   .basti .std-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--std-topbar-button-size-small);
+    min-width: var(--std-topbar-button-size-small);
     height: var(--std-topbar-button-size-small); }
   .basti .std-menu .fadeout {
     margin-top: calc(var(--std-header-height) + var(--std-logo-height)); }
   .basti .corp-menu .p-button.p-button-icon-only.menu-topbar-buttons {
-    width: var(--corp-topbar-button-size-small);
+    min-width: var(--corp-topbar-button-size-small);
     height: var(--corp-topbar-button-size-small); } }

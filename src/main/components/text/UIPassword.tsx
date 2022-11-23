@@ -30,6 +30,8 @@ import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableText } from "../../extend-components/text/ExtendText";
 import useRequestFocus from "../../hooks/event-hooks/useRequestFocus";
+import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
 
 /**
  * This component displays an input field of password type not linked to a databook
@@ -56,12 +58,29 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
 
     useRequestFocus(id, props.requestFocus, passwordRef.current, context);
 
+    const designerUpdate = useDesignerUpdates("inputfield");
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(onLoadCallback && passwordRef.current){
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), passwordRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        passwordRef.current,
+        layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     return (
         <Password

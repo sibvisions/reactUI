@@ -32,6 +32,8 @@ import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { IExtendableNumberEditor } from "../../../extend-components/editors/ExtendNumberEditor";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -96,6 +98,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
+    const designerUpdate = useDesignerUpdates("inputfield");
+
     /** The classnames for the number-cell-editor */
     const numberClassNames = useMemo(() => {
         return concatClassnames(
@@ -152,6 +156,22 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), numberRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        //@ts-ignore
+        numberRef.current ? numberRef.current.element : undefined,
+        props.layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {

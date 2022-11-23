@@ -25,6 +25,21 @@ export class DesignerSubscriptionManager {
     /** An Array of functions which will update the font-size of a component */
     fontSizeSubscriber: Array<Function> = [];
 
+    /** An Array of functions which will update the size of the screen, when the header size changes */
+    stdHeaderSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the size of the menu size changes  */
+    stdMenuWidthSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the size of the collapsed menu size changes  */
+    stdMenuCollapsedWidthSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the size of the screen, when the corp header size changes */
+    corpHeaderSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the size of the screen, when the corp menubar size changes */
+    corpMenubarSubscriber: Array<Function> = [];
+
     /** An Array of functions which will update the button-padding of button-components */
     buttonPaddingSubscriber: Array<Function> = [];
 
@@ -45,6 +60,10 @@ export class DesignerSubscriptionManager {
 
     /** An Array of functions which will update the padding of menubuttons */
     menubuttonPaddingSubscriber: Array<Function> = [];
+
+    inputLRPaddingSubscriber: Array<Function> = [];
+
+    inputTBPaddingSubscriber: Array<Function> = [];
 
     /** A function which will update the topbar (loading-bar) color */
     topbarColorSubscriber: Function = () => {};
@@ -76,6 +95,111 @@ export class DesignerSubscriptionManager {
     /** Notifies the subscribed components that the font-size has changed */
     notifyFontSizeChanged() {
         this.fontSizeSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    /**
+     * Subscribes a component to designer standard-menu-header changes
+     * @param fn - the function to update the state
+     */
+     subscribeToStdHeader(fn: Function) {
+        this.stdHeaderSubscriber.push(fn);
+    }
+
+    /** 
+     * Unsubscribes a component from designer standard-menu-header changes
+     * @param fn - the function which should be unsubscribed
+     */
+    unsubscribeFromStdHeader(fn: Function) {
+        this.stdHeaderSubscriber.splice(this.stdHeaderSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    /** Notifies the subscribed components that the standard-menu-header has changed */
+    notifyStdHeaderChanged() {
+        this.stdHeaderSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    /**
+     * Subscribes a component to designer standard-menu-width changes
+     * @param fn - the function to update the state
+     */
+     subscribeToStdMenuWidth(fn: Function) {
+        this.stdMenuWidthSubscriber.push(fn);
+    }
+
+    /** 
+     * Unsubscribes a component from designer standard-menu-width changes
+     * @param fn - the function which should be unsubscribed
+     */
+    unsubscribeFromStdMenuWidth(fn: Function) {
+        this.stdMenuWidthSubscriber.splice(this.stdMenuWidthSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    /** Notifies the subscribed components that the standard-menu-width has changed */
+    notifyStdMenuWidthChanged() {
+        this.stdMenuWidthSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    /**
+     * Subscribes a component to designer standard-menu-width changes
+     * @param fn - the function to update the state
+     */
+     subscribeToStdMenuCollapsedWidth(fn: Function) {
+        this.stdMenuCollapsedWidthSubscriber.push(fn);
+    }
+
+    /** 
+     * Unsubscribes a component from designer standard-menu-width changes
+     * @param fn - the function which should be unsubscribed
+     */
+    unsubscribeFromStdMenuCollapsedWidth(fn: Function) {
+        this.stdMenuCollapsedWidthSubscriber.splice(this.stdMenuCollapsedWidthSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    /** Notifies the subscribed components that the standard-menu-width has changed */
+    notifyStdMenuCollapsedWidthChanged() {
+        this.stdMenuCollapsedWidthSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    /**
+     * Subscribes a component to designer corporation-menu-header changes
+     * @param fn - the function to update the state
+     */
+     subscribeToCorpHeader(fn: Function) {
+        this.corpHeaderSubscriber.push(fn);
+    }
+
+    /** 
+     * Unsubscribes a component from designer corporation-menu-header changes
+     * @param fn - the function which should be unsubscribed
+     */
+    unsubscribeFromCorpHeader(fn: Function) {
+        this.corpHeaderSubscriber.splice(this.corpHeaderSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    /** Notifies the subscribed components that the corporation-menu-header has changed */
+    notifyCorpHeaderChanged() {
+        this.corpHeaderSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
+    }
+
+    /**
+     * Subscribes a component to designer corporation-menubar changes
+     * @param fn - the function to update the state
+     */
+     subscribeToCorpMenubar(fn: Function) {
+        this.corpMenubarSubscriber.push(fn);
+    }
+
+    /** 
+     * Unsubscribes a component from designer corporation-menubar changes
+     * @param fn - the function which should be unsubscribed
+     */
+    unsubscribeFromCorpMenubar(fn: Function) {
+        this.corpMenubarSubscriber.splice(this.corpMenubarSubscriber.findIndex(subFunction => subFunction === fn), 1);
+    }
+
+    /** Notifies the subscribed components that the corporation-menubar has changed */
+    notifyCorpMenubarChanged() {
+        this.corpMenubarSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**
@@ -241,5 +365,47 @@ export class DesignerSubscriptionManager {
     /** Notifies the components that the menu-button-padding changed */
     notifyMenuButtonPaddingChanged() {
         this.menubuttonPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+
+    /**
+     * Subscribes a component to designer input-padding left-right changes
+     * @param fn - the function to update the state
+     */
+     subscribeToInputLRPadding(fn: Function) {
+        this.inputLRPaddingSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer input-padding left-right changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromInputLRPadding(fn: Function) {
+        this.inputLRPaddingSubscriber.splice(this.inputLRPaddingSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the input-padding left-right changed */
+    notifyInputLRPaddingChanged() {
+        this.inputLRPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+
+    /**
+     * Subscribes a component to designer input-padding top-bottom changes
+     * @param fn - the function to update the state
+     */
+     subscribeToInputTBPadding(fn: Function) {
+        this.inputTBPaddingSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer input-padding top-bottom changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromInputTBPadding(fn: Function) {
+        this.inputTBPaddingSubscriber.splice(this.inputTBPaddingSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the input-padding top-bottom changed */
+    notifyInputTBPaddingChanged() {
+        this.inputTBPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
     }
 }

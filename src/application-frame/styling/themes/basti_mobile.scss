@@ -44,13 +44,13 @@
     --std-menu-collapsed-width:80px;
 
     /// Standard-menu logo width when expanded
-    --std-logo-width:190px;
+    --std-logo-width:calc(var(--std-menu-width) - 50px);
 
     /// Standard-menu logo width when collapsed
-    --std-logo-collapsed-width:60px;
+    --std-logo-collapsed-width:calc(var(--std-menu-collapsed-width) - 20px);
 
     /// Standard-menu logo height
-    --std-logo-height:60px;
+    --std-logo-height:calc(var(--std-header-height) - 10px);
 
     /// Standard-menu height of the profile-menu
     --std-profile-height:calc(var(--std-header-height) - 10px);
@@ -62,7 +62,7 @@
     --std-profile-padding:0.75rem 1rem;
 
     /// Standard-menu profile-menu picture size
-    --std-profile-pic:40px;
+    --std-profile-pic:calc(var(--std-profile-height) - 20px);
 
     /// Standard-menu profile-menu picture size mini
     --std-profile-pic-mini:30px;
@@ -71,10 +71,10 @@
     --std-profile-submenu-width-small:10rem;
 
     /// Standard-menu full size of topbar buttons
-    --std-topbar-button-size:60px;
+    --std-topbar-button-size:var(--std-profile-height);
 
     /// Standard-menu small size of topbar buttons
-    --std-topbar-button-size-small:30px;
+    --std-topbar-button-size-small:calc(var(--std-profile-height) - 30px);
 
     /// Standard-menu-fadeout-width
     --std-fadeout-width:20px;
@@ -106,22 +106,22 @@
     --corp-profile-padding:0.75rem 1rem;
 
     /// Corporation-menu profile-menu picture size
-    --corp-profile-pic:40px;
+    --corp-profile-pic:calc(var(--corp-profile-height) - 20px);
 
     /// Corporation-menu profile-menu sub-menu width when in mini mode
     --corp-profile-submenu-width-small:10rem;
 
     /// Corporation-menu full size of topbar buttons
-    --corp-topbar-button-size:60px;
+    --corp-topbar-button-size:var(--corp-profile-height);
 
     /// Corporation-menu small size of topbar buttons
-    --corp-topbar-button-size-small:40px;
+    --corp-topbar-button-size-small:calc(var(--corp-profile-height) - 20px);
 
     /// Corporation-menu menubar height
     --corp-menubar-height:40px;
 
     /// Corporation-menu speeddial size
-    --corp-speeddial-size:2rem;
+    --corp-speeddial-size:calc(var(--corp-menubar-height) - calc(var(--corp-menubar-height) / 10) * 2);
 
     /// Padding of a menu-header for coporation-menu.
     --corp-menu-header-padding:0.75rem 1rem;

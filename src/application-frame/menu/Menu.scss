@@ -301,7 +301,6 @@
             }
         }
 
-
     .profile-menu {
         margin-right: 0;
 
@@ -313,6 +312,7 @@
                 }
                 >.p-menuitem {
                     >.p-menuitem-link {
+                        padding: 0 !important;
                         width: unset;
                         .p-menuitem-icon {
                             margin-right: 0;

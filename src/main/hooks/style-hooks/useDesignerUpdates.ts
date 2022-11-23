@@ -25,6 +25,14 @@ const useDesignerUpdates = (type:string) => {
         const updateFunc = () => setDesignerUpdate(prevState => prevState === undefined ? prevState = true : !prevState);
 
         switch (type) {
+            case "std-menu":
+                context.designerSubscriptions.subscribeToStdHeader(updateFunc);
+                context.designerSubscriptions.subscribeToStdMenuWidth(updateFunc);
+                break;
+            case "corp-menu":
+                context.designerSubscriptions.subscribeToCorpHeader(updateFunc);
+                context.designerSubscriptions.subscribeToCorpMenubar(updateFunc);
+                break;
             case "default-button":
                 context.designerSubscriptions.subscribeToButtonPadding(updateFunc);
                 break;
@@ -34,9 +42,11 @@ const useDesignerUpdates = (type:string) => {
             case "menubutton":
                 context.designerSubscriptions.subscribeToMenuButtonPadding(updateFunc);
                 break;
-            case "extra-button":
+            case "linked-date":
                 context.designerSubscriptions.subscribeToButtonBackground(updateFunc);
                 context.designerSubscriptions.subscribeToInputButtonPadding(updateFunc);
+                context.designerSubscriptions.subscribeToInputLRPadding(updateFunc);
+                context.designerSubscriptions.subscribeToInputTBPadding(updateFunc);
                 break;
             case "checkbox":
                 context.designerSubscriptions.subscribeToCheckboxSize(updateFunc);
@@ -44,10 +54,22 @@ const useDesignerUpdates = (type:string) => {
             case "radiobutton":
                 context.designerSubscriptions.subscribeToRadiobuttonSize(updateFunc);
                 break;
+            case "inputfield":
+                context.designerSubscriptions.subscribeToInputLRPadding(updateFunc);
+                context.designerSubscriptions.subscribeToInputTBPadding(updateFunc);
+                break;
         }
 
         return () => {
             switch (type) {
+                case "std-menu":
+                    context.designerSubscriptions.unsubscribeFromStdHeader(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromStdMenuWidth(updateFunc);
+                    break;
+                case "corp-menu":
+                    context.designerSubscriptions.unsubscribeFromCorpHeader(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromCorpMenubar(updateFunc);
+                    break;
                 case "default-button":
                     context.designerSubscriptions.unsubscribeFromButtonPadding(updateFunc);
                     break;
@@ -57,15 +79,21 @@ const useDesignerUpdates = (type:string) => {
                 case "menubutton":
                     context.designerSubscriptions.unsubscribeFromMenuButtonPadding(updateFunc);
                     break;
-                case "extra-button":
+                case "linked-date":
                     context.designerSubscriptions.unsubscribeFromButtonBackground(updateFunc);
                     context.designerSubscriptions.unsubscribeFromInputButtonPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromInputLRPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromInputTBPadding(updateFunc);
                     break;
                 case "checkbox":
                     context.designerSubscriptions.unsubscribeFromCheckboxSize(updateFunc);
                     break;
                 case "radiobutton":
                     context.designerSubscriptions.unsubscribeFromRadiobuttonSize(updateFunc);
+                    break;
+                case "inputfield":
+                    context.designerSubscriptions.unsubscribeFromInputLRPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromInputTBPadding(updateFunc);
                     break;
             }
         }

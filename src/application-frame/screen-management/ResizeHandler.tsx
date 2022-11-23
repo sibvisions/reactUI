@@ -23,6 +23,7 @@ import { ResizeContext } from "../../main/contexts/ResizeProvider";
 import ChildWithProps from "../../main/util/types/ChildWithProps";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
+import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 
 /**
  * This component handles the screen-size it measures the first container so the panels below can be calculated
@@ -46,6 +47,8 @@ const ResizeHandler:FC = (props) => {
 
     /** The currently active app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
+
+    const designerUpdate = useDesignerUpdates(appLayout === "standard" ? "std-menu" : "corp-menu");
 
     /** Subscribes the resize-handler to the theme */
     useEffect(() => {
@@ -118,7 +121,7 @@ const ResizeHandler:FC = (props) => {
             //TODO: maybe fetch ids via screenId instead of relying on the children 
             setComponentSize(sizeMap);
         }
-    }, [props.children]);
+    }, [props.children, designerUpdate]);
 
     /** Using underscore debounce for throttling resize event */
     const handleResize = useCallback(_.debounce(doResize, 50),[doResize, sizeRef.current]);

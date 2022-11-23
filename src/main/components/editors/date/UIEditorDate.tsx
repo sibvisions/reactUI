@@ -138,7 +138,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
 
-    const designerUpdate = useDesignerUpdates("extra-button");
+    const designerUpdate = useDesignerUpdates("linked-date");
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]); 

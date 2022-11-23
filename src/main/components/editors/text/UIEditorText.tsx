@@ -35,6 +35,8 @@ import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableTextEditor } from "../../../extend-components/editors/ExtendTextEditor";
 import CELLEDITOR_CLASSNAMES from "../CELLEDITOR_CLASSNAMES";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {
@@ -237,6 +239,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    const designerUpdate = useDesignerUpdates("inputfield");
+
     /** Returns the field-type of the TextCellEditor */
     const getFieldType = useCallback(() => {
         const contentType = props.cellEditor?.contentType
@@ -255,7 +259,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     }, [props.cellEditor?.contentType])
 
     //FieldType value of the TextCellEditor
-    const fieldType = useMemo(() => getFieldType(), [getFieldType]) 
+    const fieldType = useMemo(() => getFieldType(), [getFieldType]);
 
     /**
      * Returns the className of the field-type
@@ -282,6 +286,21 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
             sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.cellEditor?.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        fieldType !== FieldTypes.HTML ? textRef.current : undefined,
+        props.layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {

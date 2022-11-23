@@ -240,7 +240,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
-    const designerUpdate = useDesignerUpdates("extra-button");
+    const designerUpdate = useDesignerUpdates("linked-date");
 
     /** Button background */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]);

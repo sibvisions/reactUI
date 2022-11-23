@@ -30,6 +30,8 @@ import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableText } from "../../extend-components/text/ExtendText";
 import useRequestFocus from "../../hooks/event-hooks/useRequestFocus";
+import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
 
 /** Interface for Textfields */
 export interface ITextField extends BaseComponent {
@@ -62,12 +64,29 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
 
     useRequestFocus(id, props.requestFocus, inputRef.current, context);
 
+    const designerUpdate = useDesignerUpdates("inputfield");
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(onLoadCallback && inputRef.current){
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize])
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        inputRef.current,
+        layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     return (
         <InputText 
