@@ -414,7 +414,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                     }
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                readOnlyInput={props.isReadOnly}
+                disabled={props.isReadOnly}
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {
