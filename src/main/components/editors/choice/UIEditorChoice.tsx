@@ -251,7 +251,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             {...usePopupMenu(props)}
         >
             <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
-            {validImages[currentImageValue].icon ?
+            {validImages[currentImageValue] && validImages[currentImageValue].icon ?
                 <i
                     ref={imgRef}
                     id={!props.isCellEditor ? props.name : undefined}
