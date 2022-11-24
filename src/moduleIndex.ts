@@ -15,6 +15,7 @@
 
 // Base ReactUI
 export { default as ReactUI } from './MiddleMan';
+import '@sibvisions/reactui-designer/main.css'
 
 // UI
 export { ProfileMenu } from './application-frame/menu/Menu';
