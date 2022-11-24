@@ -47,14 +47,34 @@ export function getPrimePrefix(numberFormat:string, value:any) {
         return undefined;
 }
 
+export function getDisplayScaleDigits(numberFormat:string) {
+    const splitString = numberFormat.includes('.') ? numberFormat.split('.')[1] : undefined;
+    if (splitString) {
+        const minScale = (splitString.match(/0/g) || []).length;
+        const maxScale = (splitString.substring(splitString.lastIndexOf('0')).match(/#/g) || []).length + splitString.lastIndexOf('0') + 1;
+        return { minScale: minScale,  maxScale: maxScale}
+    }
+    return { minScale: 0, maxScale: 0 }
+}
+
 /**
  * Returns the minimum and maximum amount of scaleDigits if server sends scale -1 PrimeReact maximum is 20
  * @param numberFormat - the number format
  * @param scale - the server sent scale
  */
-export function getScaleDigits(numberFormat:string, scale:number) {
+export function getWriteScaleDigits(numberFormat:string, scale:number) {
     let count = numberFormat.includes('.') ? (numberFormat.split('.')[1].match(/0/g) || []).length : 0;
     return scale === -1 ? {minScale: count, maxScale:20} : {minScale: count, maxScale: scale}
+}
+
+export function formatNumber(numberFormat: string, locale: string, value: any) {
+    return Intl.NumberFormat(locale,
+        {
+            useGrouping: getGrouping(numberFormat),
+            minimumIntegerDigits: getMinimumIntDigits(numberFormat),
+            minimumFractionDigits: getDisplayScaleDigits(numberFormat).minScale,
+            maximumFractionDigits: getDisplayScaleDigits(numberFormat).maxScale
+        }).format(value);
 }
 
 /**

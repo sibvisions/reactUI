@@ -16,7 +16,7 @@
 import React, { FC, useContext, useMemo } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
-import { getGrouping, getMinimumIntDigits, getScaleDigits } from "../../../util/component-util/NumberProperties";
+import { getGrouping, getMinimumIntDigits, getDisplayScaleDigits, formatNumber } from "../../../util/component-util/NumberProperties";
 import { ICellEditorNumber } from "../../editors/number/UIEditorNumber";
 import { ICellRender } from "../CellEditor";
 
@@ -37,13 +37,7 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
     // Formats the number value to the correct format
     const displayNumberValue = useMemo(() => {
         if (props.cellData !== null) {
-            return Intl.NumberFormat(context.appSettings.locale,
-                {
-                    useGrouping: getGrouping(castedCellEditor.numberFormat),
-                    minimumIntegerDigits: getMinimumIntDigits(castedCellEditor.numberFormat),
-                    minimumFractionDigits: getScaleDigits(castedCellEditor.numberFormat, castedMetaData.scale).minScale,
-                    maximumFractionDigits: getScaleDigits(castedCellEditor.numberFormat, castedMetaData.scale).maxScale
-                }).format(props.cellData);
+            return formatNumber(castedCellEditor.numberFormat, context.appSettings.locale, props.cellData)
         }
         return props.cellData
     }, [props.cellData, castedMetaData, castedCellEditor]);

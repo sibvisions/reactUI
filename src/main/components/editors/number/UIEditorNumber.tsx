@@ -21,7 +21,7 @@ import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
-import { getDecimalLength, getGrouping, getPrimePrefix, getScaleDigits } from "../../../util/component-util/NumberProperties";
+import { formatNumber, getDecimalLength, getGrouping, getPrimePrefix, getWriteScaleDigits } from "../../../util/component-util/NumberProperties";
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
@@ -73,7 +73,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     const numberInput = useRef<HTMLInputElement>(null);
 
     /** Current state value of input element */
-    const [value, setValue] = useState<number|string|null>(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
+    const [value, setValue] = useState<number|string|null|undefined>(props.selectedRow ?  formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined);
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -112,12 +112,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         )
     }, [props.columnMetaData?.nullable]);
 
+
+
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
     * @returns the minimum and maximum scaledigits for the NumberCellEditor
     */
-    const scaleDigits:ScaleType = useMemo(() => props.columnMetaData 
-        ? getScaleDigits(props.cellEditor.numberFormat, (props.columnMetaData as NumericColumnDescription).scale) 
+    const writeScaleDigits:ScaleType = useMemo(() => props.columnMetaData 
+        ? getWriteScaleDigits(props.cellEditor.numberFormat, (props.columnMetaData as NumericColumnDescription).scale) 
         : {minScale: 0, maxScale: 0}, 
     [props.columnMetaData, props.cellEditor.numberFormat]);
 
@@ -133,8 +135,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     [props.cellEditor.numberFormat, props.selectedRow]);
 
     /**
-     * Returns the maximal length before the deciaml separator
-     * @returns the maximal length before the deciaml separator
+     * Returns the maximal length before the decimal separator
+     * @returns the maximal length before the decimal separator
      */
     const decimalLength = useMemo(() => props.columnMetaData ? getDecimalLength((props.columnMetaData as NumericColumnDescription).precision, (props.columnMetaData as NumericColumnDescription).scale) : undefined, [props.columnMetaData]);
 
@@ -175,7 +177,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {
-        setValue(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined)
+        setValue(props.selectedRow ? formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined)
         lastValue.current = props.selectedRow ? props.selectedRow.data[props.columnName] : undefined;
     },[props.selectedRow]);
 
@@ -264,8 +266,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     useGrouping={useGrouping}
                     locale={props.context.appSettings.locale}
                     prefix={prefixLength}
-                    minFractionDigits={scaleDigits.minScale}
-                    maxFractionDigits={scaleDigits.maxScale}
+                    minFractionDigits={writeScaleDigits.minScale}
+                    maxFractionDigits={writeScaleDigits.maxScale}
                     //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                     value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
                     style={{ width: '100%', height: "100%" }}
@@ -309,8 +311,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 locale={props.context.appSettings.locale}
                 prefix={prefixLength}
                 //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                minFractionDigits={scaleDigits.minScale}
-                maxFractionDigits={scaleDigits.maxScale}
+                minFractionDigits={writeScaleDigits.minScale}
+                maxFractionDigits={writeScaleDigits.maxScale}
                 value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
                 style={props.layoutStyle}
                 inputStyle={{ 
