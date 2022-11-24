@@ -48,6 +48,8 @@ import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import Dimension from "../../util/types/Dimension";
 import { IExtendableTable } from "../../extend-components/table/ExtendTable";
 import { ICellEditorLinked } from "../editors/linked/UIEditorLinked";
+import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
 
 
 /** Interface for Table */
@@ -178,13 +180,21 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(screenName, props.dataBook);
 
+    const designerUpdate = useDesignerUpdates('table')
+
     /**
      * Returns the number of records visible based on row height.
      * @returns the number of records visible based on row height.
      */
      const getNumberOfRowsPerPage = useCallback(() => {
-        return Math.floor((layoutStyle?.height as number - 40) / (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
-    }, [layoutStyle?.height])
+        let headerHeight = 40;
+        const table = tableRef.current as any;
+        if (table && table.table) {
+            headerHeight = table.table.querySelector('.p-datatable-thead').offsetHeight;
+        }
+
+        return Math.floor((layoutStyle?.height as number - headerHeight) / (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
+    }, [layoutStyle?.height, designerUpdate])
 
     /** The amount of virtual rows loaded */
     const rows = useMemo(() => {
@@ -315,7 +325,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * @param isNext - if the new selected cell is below or above the previous
      */
     const scrollToSelectedCell = (cell:any, isNext:boolean) => {
-        console.log('test')
         setTimeout(() => {
             if (tableRef.current) {
                 //@ts-ignore
@@ -416,6 +425,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         return ""
     }
 
+    useEffect(() => {
+        setItemSize(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
+    }, [designerUpdate])
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if(wrapRef.current){
@@ -431,6 +444,21 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }    
         }
     }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, providerData]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        wrapRef.current,
+        layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {

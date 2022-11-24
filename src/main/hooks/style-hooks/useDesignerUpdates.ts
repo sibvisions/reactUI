@@ -28,35 +28,57 @@ const useDesignerUpdates = (type:string) => {
             case "std-menu":
                 context.designerSubscriptions.subscribeToStdHeader(updateFunc);
                 context.designerSubscriptions.subscribeToStdMenuWidth(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
             case "corp-menu":
                 context.designerSubscriptions.subscribeToCorpHeader(updateFunc);
                 context.designerSubscriptions.subscribeToCorpMenubar(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
             case "default-button":
                 context.designerSubscriptions.subscribeToButtonPadding(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
             case "icon-only-button":
                 context.designerSubscriptions.subscribeToIconOnlyPadding(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
             case "menubutton":
                 context.designerSubscriptions.subscribeToMenuButtonPadding(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
             case "linked-date":
                 context.designerSubscriptions.subscribeToButtonBackground(updateFunc);
                 context.designerSubscriptions.subscribeToInputButtonPadding(updateFunc);
                 context.designerSubscriptions.subscribeToInputLRPadding(updateFunc);
                 context.designerSubscriptions.subscribeToInputTBPadding(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
             case "checkbox":
                 context.designerSubscriptions.subscribeToCheckboxSize(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
             case "radiobutton":
                 context.designerSubscriptions.subscribeToRadiobuttonSize(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
             case "inputfield":
                 context.designerSubscriptions.subscribeToInputLRPadding(updateFunc);
                 context.designerSubscriptions.subscribeToInputTBPadding(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
+                break;
+            case "tabset":
+                context.designerSubscriptions.subscribeToTabPadding(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
+                break;
+            case "table":
+                context.designerSubscriptions.subscribeToTableHeaderPadding(updateFunc);
+                context.designerSubscriptions.subscribeToTableDataHeight(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
+                break;
+            case "menubar":
+                context.designerSubscriptions.subscribeToMenuBarHeight(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
         }
 
@@ -65,35 +87,57 @@ const useDesignerUpdates = (type:string) => {
                 case "std-menu":
                     context.designerSubscriptions.unsubscribeFromStdHeader(updateFunc);
                     context.designerSubscriptions.unsubscribeFromStdMenuWidth(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
                 case "corp-menu":
                     context.designerSubscriptions.unsubscribeFromCorpHeader(updateFunc);
                     context.designerSubscriptions.unsubscribeFromCorpMenubar(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
                 case "default-button":
                     context.designerSubscriptions.unsubscribeFromButtonPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
                 case "icon-only-button":
                     context.designerSubscriptions.unsubscribeFromIconOnlyPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
                 case "menubutton":
                     context.designerSubscriptions.unsubscribeFromMenuButtonPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
                 case "linked-date":
                     context.designerSubscriptions.unsubscribeFromButtonBackground(updateFunc);
                     context.designerSubscriptions.unsubscribeFromInputButtonPadding(updateFunc);
                     context.designerSubscriptions.unsubscribeFromInputLRPadding(updateFunc);
                     context.designerSubscriptions.unsubscribeFromInputTBPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
                 case "checkbox":
                     context.designerSubscriptions.unsubscribeFromCheckboxSize(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
                 case "radiobutton":
                     context.designerSubscriptions.unsubscribeFromRadiobuttonSize(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
                 case "inputfield":
                     context.designerSubscriptions.unsubscribeFromInputLRPadding(updateFunc);
                     context.designerSubscriptions.unsubscribeFromInputTBPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
+                    break;
+                case "tabset":
+                    context.designerSubscriptions.unsubscribeFromTabPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
+                    break;
+                case "table":
+                    context.designerSubscriptions.unsubscribeFromTableHeaderPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromTableDataHeight(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
+                    break;
+                case "menubar":
+                    context.designerSubscriptions.unsubscribeFromMenuBarHeight(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
             }
         }

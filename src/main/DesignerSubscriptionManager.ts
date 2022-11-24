@@ -61,9 +61,23 @@ export class DesignerSubscriptionManager {
     /** An Array of functions which will update the padding of menubuttons */
     menubuttonPaddingSubscriber: Array<Function> = [];
 
+    /** An Array of functions which will update the left-right-padding of inputfields */
     inputLRPaddingSubscriber: Array<Function> = [];
 
+    /** An Array of functions which will update the top-bottom-padding of inputfields */
     inputTBPaddingSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the padding of tabset navbars */
+    tabPaddingSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the padding of table's header */
+    tableHeaderPaddingSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the height of table-rows */
+    tableDataHeightSubscriber: Array<Function> = [];
+
+    /** An Array of functions which will update the height of menubars (v2) */
+    menuBarHeightSubscriber: Array<Function> = [];
 
     /** A function which will update the topbar (loading-bar) color */
     topbarColorSubscriber: Function = () => {};
@@ -407,5 +421,89 @@ export class DesignerSubscriptionManager {
     /** Notifies the components that the input-padding top-bottom changed */
     notifyInputTBPaddingChanged() {
         this.inputTBPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+
+    /**
+     * Subscribes a component to designer tab-padding changes
+     * @param fn - the function to update the state
+     */
+     subscribeToTabPadding(fn: Function) {
+        this.tabPaddingSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer tab-padding changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromTabPadding(fn: Function) {
+        this.tabPaddingSubscriber.splice(this.tabPaddingSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the tab-padding changed */
+    notifyTabPaddingChanged() {
+        this.tabPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+
+    /**
+     * Subscribes a component to designer table-header-padding changes
+     * @param fn - the function to update the state
+     */
+     subscribeToTableHeaderPadding(fn: Function) {
+        this.tableHeaderPaddingSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer table-header-padding changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromTableHeaderPadding(fn: Function) {
+        this.tableHeaderPaddingSubscriber.splice(this.tableHeaderPaddingSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the table-header-padding changed */
+    notifyTableHeaderPaddingChanged() {
+        this.tableHeaderPaddingSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+
+    /**
+     * Subscribes a component to designer table-data-height changes
+     * @param fn - the function to update the state
+     */
+     subscribeToTableDataHeight(fn: Function) {
+        this.tableDataHeightSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer table-data-height changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromTableDataHeight(fn: Function) {
+        this.tableDataHeightSubscriber.splice(this.tableDataHeightSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the table-data-height changed */
+    notifyTableDataHeightChanged() {
+        this.tableDataHeightSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
+    }
+
+    /**
+     * Subscribes a component to designer menubar-height changes
+     * @param fn - the function to update the state
+     */
+     subscribeToMenuBarHeight(fn: Function) {
+        this.menuBarHeightSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the component from designer menubar-height changes
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromMenuBarHeight(fn: Function) {
+        this.menuBarHeightSubscriber.splice(this.menuBarHeightSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /** Notifies the components that the menubar-height changed */
+    notifyMenuBarHeightChanged() {
+        this.menuBarHeightSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
     }
 }

@@ -58,7 +58,11 @@ const LoginForm:FC<ILoginForm> = (props) => {
      * Sends a loginrequest to the server when the loginform is submitted.
      */
      const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
-        props.changeLoginData(username, password)
+        if ((e.target as HTMLElement).querySelector(".login-button")) {
+            const btn = (e.target as HTMLElement).querySelector(".login-button") as HTMLButtonElement;
+            btn.disabled = true;
+        }
+        props.changeLoginData(username, password);
         e.preventDefault()
         const loginReq = createLoginRequest();
         loginReq.username = username;
@@ -67,7 +71,12 @@ const LoginForm:FC<ILoginForm> = (props) => {
         loginReq.createAuthKey = rememberMe;
         context.server.loginError = undefined;
         context.subscriptions.emitLoginChanged(undefined, undefined)
-        showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
+        showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar).then(() => {
+            if ((e.target as HTMLElement).querySelector(".login-button")) {
+                const btn = (e.target as HTMLElement).querySelector(".login-button") as HTMLButtonElement;
+                btn.disabled = false;
+            }
+        })
         context.subscriptions.emitMenuUpdate();
     }
 

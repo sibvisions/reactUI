@@ -20,6 +20,7 @@ import useComponents from "../../hooks/components-hooks/useComponents";
 import useMenuItems from "../../hooks/data-hooks/useMenuItems";
 import useProperties from "../../hooks/data-hooks/useProperties";
 import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
+import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 
 /**
@@ -41,6 +42,8 @@ const UIMenuBar: FC<any> = (baseProps) => {
 
     /** The menu-items sent by the server changed into objects which PrimeReact's MenuModel-API can use */
     const menuItems = useMenuItems(menuChildren);
+
+    const designerUpdate = useDesignerUpdates('menubar');
 
     // Adds a wrapper div to all submenu-lists, for the submenus to be correctly displayed when there are sub-submenus
     useLayoutEffect(() => {
@@ -66,7 +69,7 @@ const UIMenuBar: FC<any> = (baseProps) => {
         if (menuRef.current) {
             baseProps.sizeCallback({ height: menuRef.current.offsetHeight, width: menuRef.current.offsetWidth});
         }
-    }, [menuItems]);
+    }, [menuItems, designerUpdate]);
 
     //@ts-ignore Event handling for sub-submenus, to absolutely position them next to their parent submenu
     useMultipleEventHandler(DomHandler.find(document.getElementById(baseProps.parent + "-frame"), ".is-submenu").length ? 

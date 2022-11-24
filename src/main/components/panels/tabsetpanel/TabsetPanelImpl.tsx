@@ -29,6 +29,8 @@ import IconProps from "../../comp-props/IconProps";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
+import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 
 interface ITabsetImpl extends ITabsetPanel {
     components: React.ReactElement<any, string | React.JSXElementConstructor<any>>[]
@@ -67,6 +69,8 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
     /** Reference for TabsetPanel element */
     const panelRef = useRef<any>();
 
+    const wrapperRef = useRef<any>();
+
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
 
@@ -79,9 +83,11 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    const designerUpdate = useDesignerUpdates("tabset");
+
     /** 
      * Builds the sizeMap for the Panels of TabsetPanel, sets their size to the height of the TabsetPanel
-     * minus 48 for the TabsetPanel navigationbar
+     * minus the TabsetPanel navigationbar
      */
      useLayoutEffect(() => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
@@ -89,25 +95,27 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
             const external = props.layoutStyle;
             let width:number|undefined;
             let height:number|undefined;
-            if (external?.width && external?.height) {
+            if (external?.width && external?.height && panelRef.current) {
                 width = external.width as number;
-                height = external.height as number - 48;
+                const navbarHeight = panelRef.current.nav ? panelRef.current.nav.offsetHeight : 48;
+                height = external.height as number - navbarHeight;
             }
             props.components.forEach((component: any) => {
                 sizeMap.set(component.props.id, { width, height })
             });
             setComponentSizes(sizeMap);
-    }, [props.components, props.layoutStyle?.width, props.layoutStyle?.height, id]);
+    }, [props.components, props.layoutStyle?.width, props.layoutStyle?.height, id, designerUpdate]);
 
     /**
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      */
      useLayoutEffect(() => {
-        if (onLoadCallback) {
+        if (onLoadCallback && panelRef.current) {
             if (props.compSizes && props.compSizes.size > 0 && props.selectedIndex !== -1) {
                 const selectedPanel = props.compSizes.get(props.components[(props.selectedIndex as number)].props.id)?.preferredSize;
                 if (selectedPanel) {
-                    const prefSize:Dimension = {height: selectedPanel.height + 48, width: selectedPanel.width};
+                    const navbarHeight = panelRef.current.nav ? panelRef.current.nav.offsetHeight : 48;
+                    const prefSize:Dimension = {height: selectedPanel.height + navbarHeight, width: selectedPanel.width};
                     sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }
             }
@@ -117,6 +125,21 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
             }
         }
     }, [id, props.compSizes, onLoadCallback, props.components, props.selectedIndex, props.maximumSize, props.minimumSize]);
+
+    useHandleDesignerUpdate(
+        designerUpdate,
+        wrapperRef.current,
+        props.layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        )
+    );
 
     /**
      * Returns the built Tab elements for the TabsetPanel
@@ -179,7 +202,8 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
 
     return (
         <LayoutContext.Provider value={componentSizes}>
-            <div 
+            <div
+                ref={wrapperRef}
                 className={concatClassnames("rc-tabset", props.style)}
                 style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...props.layoutStyle, ...props.compStyle }}>
                 <TabView

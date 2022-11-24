@@ -78,12 +78,12 @@ body {
   font-size: var(--font-size); }
 
 .login-form .p-fluid {
-  padding: calc(var(--login-form-top-bottom-padding) / 2) var(--login-form-left-right-padding) var(--login-form-top-bottom-padding); }
+  padding: 20px var(--login-form-left-right-padding) var(--login-form-top-bottom-padding); }
   .login-form .p-fluid .p-field {
     margin-bottom: var(--login-form-field-margin); }
 
 .login-form .login-logo-wrapper {
-  padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) calc(var(--login-form-top-bottom-padding) / 2); }
+  padding: var(--login-form-top-bottom-padding) var(--login-form-left-right-padding) 20px; }
 
 .basti_small .p-menubar {
   height: var(--menubar-height); }
