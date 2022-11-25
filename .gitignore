@@ -29,4 +29,4 @@ debug.log
 config.json
 altConfig.json
 xy
-app.json
+/public/assets/config/app.json
