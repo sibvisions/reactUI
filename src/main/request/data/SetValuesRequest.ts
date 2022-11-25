@@ -22,6 +22,7 @@ interface SetValuesRequest extends ComponentRequest, DataProviderRequest {
     columnNames: Array<string> | undefined,
     filter: SelectFilter | undefined,
     values: Array<any> | undefined,
-    rowNumber: number | undefined
+    rowNumber: number | undefined,
+    editorColumnName: string | undefined
 }
 export default SetValuesRequest

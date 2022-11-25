@@ -282,6 +282,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
             props.dataRow,
             props.name,
             props.columnName,
+            props.columnName,
             inputDate.getTime(),
             props.context.server, 
             lastValue.current,

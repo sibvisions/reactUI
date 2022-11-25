@@ -361,7 +361,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
         event.stopPropagation();
         if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Enter" || event.key === "Tab") {
-                sendSetValues(dataRow, name, columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                sendSetValues(dataRow, name, columnName, columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -485,7 +485,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                     }
 
                     if (!escapePressed.current) {
-                        sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
                     }
                     if (props.eventFocusLost) {
                         showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
@@ -519,7 +519,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                 onBlur={() => {
                     if (!props.isReadOnly) {
                         if (!escapePressed.current) {
-                            sendSetValues(props.dataRow, props.name, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
                         }
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server)

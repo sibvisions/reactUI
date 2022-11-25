@@ -523,16 +523,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     inputObj = tempValues;
                 }
                 setText(getDisplayValue(inputObj))
-                sendSetValues(props.dataRow, props.name, columnNames, inputObj, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+                sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
             }
             else {
                 if (props.cellEditor.displayReferencedColumnName) {
                     setText(getDisplayValue(inputObj));
-                    sendSetValues(props.dataRow, props.name, columnNames, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName)[refColNames[0]], props.topbar, props.rowNumber);
+                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName)[refColNames[0]], props.topbar, props.rowNumber);
                 }
                 else {
                     setText(getDisplayValue(inputObj))
-                    sendSetValues(props.dataRow, props.name, columnNames, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, props.rowNumber);
+                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, props.rowNumber);
                 }
             }
         }
@@ -588,7 +588,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
         /** If the text is empty, send null to the server */
         if (!checkText) {
-            sendSetValues(props.dataRow, props.name, colNames, null, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+            sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
         }
         /** If there is a match found send the value to the server */
         if (foundData.length === 1) {
@@ -606,11 +606,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         }
                     }
                     setText(getDisplayValue(convertReferenceColNamesToColNames(extractedData, props.cellEditor.linkReference)))
-                    sendSetValues(props.dataRow, props.name, colNames, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
                 }
                 else {
                     setText(getDisplayValue(extractedData))
-                    sendSetValues(props.dataRow, props.name, colNames, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName), props.topbar, props.rowNumber);
+                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName), props.topbar, props.rowNumber);
                 }
 
             }
@@ -627,7 +627,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         tempArray.push(checkText);
                     }
                 }
-                sendSetValues(props.dataRow, props.name, colNames, tempArray, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempArray, props.context.server, lastValue.current, props.topbar, props.rowNumber)
             }
             else {
                 setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));

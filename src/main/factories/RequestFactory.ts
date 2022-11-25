@@ -309,7 +309,8 @@ export const createSetValuesRequest = (values?: SetValuesRequest): SetValuesRequ
         dataProvider: values?.dataProvider,
         values: values?.values,
         filter: values?.filter,
-        rowNumber: values?.rowNumber
+        rowNumber: values?.rowNumber,
+        editorColumnName: values?.editorColumnName
     };
     return req;
 }

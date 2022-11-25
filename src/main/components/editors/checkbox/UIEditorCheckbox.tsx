@@ -131,6 +131,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
             props.dataRow,
             props.name,
             props.columnName,
+            props.columnName,
             // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
             (checked !== props.cellEditor.selectedValue || !checked) ? 
                 props.cellEditor.selectedValue !== undefined ? 

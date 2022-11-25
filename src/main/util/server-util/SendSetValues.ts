@@ -33,6 +33,7 @@ export async function sendSetValues(
     dataProvider: string,
     name: string,
     columnName: string | string[],
+    editorColumnName: string,
     value: string | number | boolean | Array<any> | null,
     server: Server|ServerFull,
     lastValue: string | number | boolean | any | Array<any> | null | undefined,
@@ -45,6 +46,11 @@ export async function sendSetValues(
     req.componentId = name;
     /** Send as array if its not already an array */
     req.columnNames = Array.isArray(columnName) ? columnName : [columnName];
+
+    if (editorColumnName) {
+        req.editorColumnName = editorColumnName;
+    }
+
     let tempValues: any = value;
     /** If value is an object only send the values of the object */
     if (typeof value === "object" && value !== null) {
