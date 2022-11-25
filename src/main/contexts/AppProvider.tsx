@@ -373,6 +373,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showDebug = true;
                     }
 
+                    if (data.useDesigner === true) {
+                        contextState.appSettings.showDesigner = true;
+                    }
+
                     resolve({})
                 })
                 .catch(() => reject("config.json not found"))
