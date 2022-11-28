@@ -237,9 +237,10 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
 
             // Sends a close-frame request to the server when the dialog is being closed
             const handleOnHide = () => {
+                setVisible(false)
                 const closeFrameReq = createCloseFrameRequest();
                 closeFrameReq.componentId = messageProps.componentId;
-                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar).then(() => setVisible(false));
+                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
             }
 
             setVisible(true);
