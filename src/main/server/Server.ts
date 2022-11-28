@@ -49,6 +49,7 @@ import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
+import BadClientResponse from "../response/error/BadClientResponse";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -265,6 +266,7 @@ class Server extends BaseServer {
         .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this))
         .set(RESPONSE_NAMES.CONTENT, this.content.bind(this))
         .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
+        .set(RESPONSE_NAMES.BAD_CLIENT, this.badClient.bind(this))
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -599,7 +601,7 @@ class Server extends BaseServer {
             }
         }
         else {
-            this.subManager.emitErrorBarProperties(true, false, "Could not load translation", "There was a problem when fetching the translation");
+            this.subManager.emitErrorBarProperties(true, false, false, "Could not load translation", "There was a problem when fetching the translation");
             this.subManager.emitErrorBarVisible(true);
         }
 

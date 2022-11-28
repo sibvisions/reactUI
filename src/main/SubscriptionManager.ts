@@ -920,8 +920,8 @@ export class SubscriptionManager {
     }
 
     /** Notify the error-bar about its properties */
-    emitErrorBarProperties(sessionExpired:boolean, gone:boolean, header?:string, body?:string, retryFunc?:Function) {
-        this.errorBarPropertiesSubscriber.apply(undefined, [header, body, sessionExpired, gone, retryFunc]);
+    emitErrorBarProperties(sessionExpired:boolean, gone:boolean, versionError:boolean, header?:string, body?:string, retryFunc?:Function) {
+        this.errorBarPropertiesSubscriber.apply(undefined, [header, body, sessionExpired, gone, retryFunc, versionError]);
     }
 
     emitErrorDialogProperties(errData: ErrorResponse) {

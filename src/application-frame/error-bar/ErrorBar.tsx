@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, KeyboardEvent, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
@@ -27,8 +27,9 @@ export type IServerFailMessage = {
     headerMessage:string,
     bodyMessage:string,
     sessionExpired:boolean,
-    gone:boolean
-    retry:Function
+    gone:boolean,
+    retry:Function,
+    versionError:boolean
 }
 
 /**
@@ -43,7 +44,7 @@ const ErrorBar:FC = () => {
     const [visible, setVisible] = useState<boolean>(false);
 
     /** Reference for the dialog which shows the error message */
-    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {} });
+    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {}, versionError: false });
 
     /** History of react-router-dom */
     const history = useHistory();
@@ -59,13 +60,15 @@ const ErrorBar:FC = () => {
             body: string,
             sessionExp: boolean,
             gone: boolean,
-            retry: Function
+            retry: Function,
+            versionError: boolean
         ) => setErrorProps({
             headerMessage: header,
             bodyMessage: body,
             sessionExpired: sessionExp,
             gone: gone,
-            retry: retry
+            retry: retry,
+            versionError: versionError
         }));
 
         return () => {
@@ -119,6 +122,16 @@ const ErrorBar:FC = () => {
             handleRetry()
         }
     });
+
+    const getBodyMessage = () => {
+        if (errorProps.bodyMessage) {
+            if (errorProps.versionError) {
+                return errorProps.bodyMessage;
+            }
+            return errorProps.bodyMessage + ". <u>Click here!</u> or press Escape to retry!"
+        }
+        return "<u>Click here!</u> or press Escape to retry!"
+    }
     
     return (
         <>
@@ -139,7 +152,7 @@ const ErrorBar:FC = () => {
                             <span className="rc-error-bar-header-text">{errorProps.headerMessage}</span>
                         </div>
                         <div className="rc-error-bar-content">
-                            <span dangerouslySetInnerHTML={{ __html: errorProps.bodyMessage ? errorProps.bodyMessage + ". <u>Click here!</u> or press Escape to retry!" : "<u>Click here!</u> or press Escape to retry!" }} />
+                            <span dangerouslySetInnerHTML={{ __html: getBodyMessage() }} />
                         </div>
                     </div>
                 </>}

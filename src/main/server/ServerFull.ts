@@ -167,7 +167,8 @@ export default class ServerFull extends BaseServer {
     //.set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this))
     //.set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this))
     //.set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
-    .set(RESPONSE_NAMES.UI, this.handleUIResponse.bind(this));
+    .set(RESPONSE_NAMES.UI, this.handleUIResponse.bind(this))
+    .set(RESPONSE_NAMES.BAD_CLIENT, this.badClient.bind(this));
 
 
     /**

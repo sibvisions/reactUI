@@ -41,6 +41,7 @@ enum RESPONSE_NAMES {
     CLOSE_FRAME="closeFrame",
     CONTENT="content",
     CLOSE_CONTENT="closeContent",
-    UI="UI"
+    UI="UI",
+    BAD_CLIENT="badClient"
 }
 export default RESPONSE_NAMES
