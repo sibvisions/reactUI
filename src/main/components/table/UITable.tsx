@@ -1283,7 +1283,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     outline: "none",
                     caretColor: "transparent"
                 } as any}
-                tabIndex={getTabIndex(props.focusable, props.tabIndex)}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex ? props.tabIndex : 0)}
                 onClick={() => { 
                     if (!focused.current) {
                         focusIsClicked.current = true 
