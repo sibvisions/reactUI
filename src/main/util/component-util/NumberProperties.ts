@@ -50,8 +50,11 @@ export function getPrimePrefix(numberFormat:string, value:any) {
 export function getDisplayScaleDigits(numberFormat:string) {
     const splitString = numberFormat.includes('.') ? numberFormat.split('.')[1] : undefined;
     if (splitString) {
-        const minScale = (splitString.match(/0/g) || []).length;
-        const maxScale = (splitString.substring(splitString.lastIndexOf('0')).match(/#/g) || []).length + splitString.lastIndexOf('0') + 1;
+        let minScale = (splitString.match(/0/g) || []).length;
+        let maxScale = (splitString.substring(splitString.lastIndexOf('0')).match(/#/g) || []).length + splitString.lastIndexOf('0') + 1;
+        if (maxScale > 20) {
+            maxScale = 20;
+        }
         return { minScale: minScale,  maxScale: maxScale}
     }
     return { minScale: 0, maxScale: 0 }
