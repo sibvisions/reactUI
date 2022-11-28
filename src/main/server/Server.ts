@@ -49,7 +49,6 @@ import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
-import BadClientResponse from "../response/error/BadClientResponse";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {

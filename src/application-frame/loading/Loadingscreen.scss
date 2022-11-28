@@ -24,14 +24,27 @@
     background: -o-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
     background: -moz-radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
     background: radial-gradient(119% 190% at -6% -20%, var(--loading-screen-left-background) 70%, var(--loading-screen-right-background) 70%);
-}
 
-.loading-screen-spinner {
-    position: absolute;
-    height: 60px;
-    width: 60px;
-    top: calc(50% - 15px);
-    left: calc(50% - 30px);
+    &:not(.custom-loading-image) {
+        .loading-screen-spinner {
+            position: absolute;
+            top: calc(50% - 15px);
+            left: calc(50% - 30px);
+        }
+    }
+
+    .loading-screen-spinner {
+        height: 60px;
+        width: 60px;
+    }
+
+    &.custom-loading-image .loading-screen-spinner {
+        margin-top: 0.5rem;
+    }
+
+    .loading-screen-image {
+        width: 300px;
+    }
 }
 
 .show-debug {

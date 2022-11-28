@@ -29,3 +29,5 @@ debug.log
 config.json
 altConfig.json
 app.json
+loading_screen_image.*
+loading_screen_spinner.gif

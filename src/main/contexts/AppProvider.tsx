@@ -311,6 +311,30 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     if (data.designerUploadUrl) {
                         designerUrlToSet = data.designerUploadUrl;
                     }
+
+                    if (data.loadingText) {
+                        contextState.appSettings.loadingText = data.loadingText;
+                    }
+
+                    if (data.loadingImagePosition) {
+                        contextState.appSettings.loadingImagePosition = data.loadingImagePosition;
+                    }
+
+                    if (data.loadingSpinnerPosition) {
+                        contextState.appSettings.loadingSpinnerPosition = data.loadingSpinnerPosition;
+                    }
+
+                    if (data.loadingTextPosition) {
+                        contextState.appSettings.loadingTextPosition = data.loadingTextPosition;
+                    }
+
+                    if (data.loadingImageDisabled === true) {
+                        contextState.appSettings.loadingImageDisabled = true;
+                    }
+
+                    if (data.loadingSpinnerDisabled === true) {
+                        contextState.appSettings.loadingSpinnerDisabled = true;
+                    }
                     resolve({});
                 })
                 .catch(() => reject("app.json not found"))
