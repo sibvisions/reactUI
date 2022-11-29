@@ -135,7 +135,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
     useLayoutEffect(() => {
         if (onLoadCallback && imgRef.current) {
-            if (validImages[currentImageValue].icon && isFAIcon(validImages[currentImageValue].icon)) {
+            if (validImages[currentImageValue] && validImages[currentImageValue].icon && isFAIcon(validImages[currentImageValue].icon)) {
                 sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), imgRef.current, onLoadCallback)
             }
         }

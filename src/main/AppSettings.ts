@@ -91,18 +91,6 @@ export default class AppSettings {
     /** The logo to display at the login screen */
     LOGO_LOGIN:string = "/assets/logo_login.png";
 
-    loadingText:string = "";
-
-    loadingImagePosition = "center center";
-
-    loadingSpinnerPosition = "center center";
-
-    loadingTextPosition = "center center";
-
-    loadingImageDisabled = false;
-
-    loadingSpinnerDisabled = false;
-
     /** The current region */
     locale:string = "en-US";
 
