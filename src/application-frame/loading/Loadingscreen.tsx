@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useContext, useEffect, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { appContext } from "../../main/contexts/AppProvider";
 import { AppReadyType } from "../../main/AppSettings";
@@ -24,8 +24,10 @@ import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
  * @returns - A Component which displays a progressspinner to show that the page is currently loading
  */
 const LoadingScreen: FC = () => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** Map of parameters as keys and text to display which still need to be loaded */
     const paramTrans = new Map()
     .set("appCSSLoaded", "application.css")
     .set("schemeCSSLoaded", "color-scheme css")
@@ -34,20 +36,20 @@ const LoadingScreen: FC = () => {
     .set("translationLoaded", "translation")
     .set("userOrLoginLoaded", "user or login")
 
+    /** The current state which app-ready params are ready */
     const [appReadyParams, setAppReadyParams] = useState<AppReadyType>(context.appSettings.appReadyParams);
 
-    const [loadImgExt, setLoadImgExt] = useState<"png"|"jpg"|"svg"|"default">("png");
-
-    const [customSpinner, setCustomSpinner] = useState<boolean>(true);
-
+    /** The element which is used for a custom loading screen, is used to extract all the custom-attributes */
     const loadingElem = document.getElementById("custom-loading-screen");
 
+    /** Subscribes to the app-ready parameters and updates the state */
     useEffect(() => {
         context.subscriptions.subscribeToAppReadyParams((params: AppReadyType) => setAppReadyParams({...params}));
 
         return () => context.subscriptions.unsubscribeFromAppParamsSubscriber()
     }, [context.subscriptions]);
 
+    /** The progression-text to know which parameters are still being loaded */
     const progressionText = useMemo(() => {
         if (Object.values(appReadyParams).every(v => v === true)) {
             return "Done"
@@ -67,65 +69,250 @@ const LoadingScreen: FC = () => {
                 }
             }, "Loading: ")
         }
-    }, [appReadyParams])
+    }, [appReadyParams]);
+
+    /** True if there is a custom-loading-image to display */
+    const hasCustomImage = loadingElem?.getAttribute("loading-image") && loadingElem.getAttribute("loading-image-disabled") !== "true";
+
+    /** True if there is a custom-loading-spinner to display */
+    const hasCustomSpinner = loadingElem?.getAttribute("loading-spinner") && loadingElem.getAttribute("loading-spinner-disabled") !== "true";
+
+    /** The order in which to show the loading elements */
+    const elementOrder = loadingElem?.getAttribute("loading-order") ? loadingElem.getAttribute("loading-order")!.split(" ") : ["image", "spinner", "text"];
+
+    /**
+     * Returns the position of the loading elements in flex-terms
+     * @param type - the type of the element
+     */
+    const getLoadingPosition = (type: "image"|"spinner"|"text") => {
+        const positionConverter = (position: string) => {
+            switch (position) {
+                case "top": case "left":
+                    return "flex-start";
+                case "center":
+                    return "center";
+                case "bottom": case "right":
+                    return "flex-end";
+                default:
+                    return "center";
+            }
+        }
+
+        const attribute = type === "image" ? "loading-image-position" : type === "spinner" ? "loading-spinner-position" : "loading-text-position";
+
+        if (loadingElem && loadingElem.getAttribute(attribute)) {
+            const splitPosString = (loadingElem.getAttribute(attribute) as string).split(" ");
+            if (splitPosString.length === 2) {
+                return { vertical: positionConverter(splitPosString[0]), horizontal: positionConverter(splitPosString[1]) };
+            }
+            // if there is only one term specified, make the second one 'center'
+            else if (splitPosString.length === 1) {
+                switch (splitPosString[0]) {
+                    case "left": case "right":
+                        return { vertical: "center", horizontal: positionConverter(splitPosString[0]) };
+                    case "top": case "bottom":
+                        return { vertical: positionConverter(splitPosString[0]), horizontal: "center" };
+                    default:
+                        return { vertical: "center", horizontal: "center" }
+                }
+            }
+        }
+        return { vertical: "center", horizontal: "center" }
+    }
+
+    /** The position of the image-element */
+    const imagePosition = getLoadingPosition("image");
+
+    /** The position of the spinner-element */
+    const spinnerPosition = getLoadingPosition("spinner");
+
+    /** The position of the text-element */
+    const textPosition = getLoadingPosition("text");
+
+    /**
+     * Returns true, if the first and second position are the same.
+     * @param pos1 the position of the first element
+     * @param pos2 the position of the second element
+     */
+    const isSamePosition = (pos1: { vertical: string, horizontal: string }, pos2: { vertical: string, horizontal: string }) => {
+        return pos1.vertical === pos2.vertical && pos1.horizontal === pos2.horizontal;
+    }
+
+    /** True if the spinner is in the image */
+    const spinnerInImage = !hasCustomImage && isSamePosition(imagePosition, spinnerPosition);
+
+    const getElemsWithSamePosition = () => {
+        const samePosArray = [];
+        if (isSamePosition(imagePosition, spinnerPosition)) {
+            if (elementOrder.findIndex(val => val === "image") < elementOrder.findIndex(val => val === "spinner")) {
+                samePosArray.push("image");
+                samePosArray.push("spinner");
+            }
+            else {
+                samePosArray.push("spinner");
+                samePosArray.push("image");
+            }
+
+            if (isSamePosition(imagePosition, textPosition)) {
+                samePosArray.splice(elementOrder.findIndex(val => val === "text"), 0, "text")
+            }
+        }
+        else {
+            if (isSamePosition(imagePosition, textPosition)) {
+                if (elementOrder.findIndex(val => val === "image") < elementOrder.findIndex(val => val === "text")) {
+                    samePosArray.push("image");
+                    samePosArray.push("text");
+                }
+                else {
+                    samePosArray.push("text");
+                    samePosArray.push("image");
+                }
+            }
+            else if (isSamePosition(spinnerPosition, textPosition)) {
+                if (elementOrder.findIndex(val => val === "spinner") < elementOrder.findIndex(val => val === "text")) {
+                    samePosArray.push("spinner");
+                    samePosArray.push("text");
+                }
+                else {
+                    samePosArray.push("text");
+                    samePosArray.push("spinner");
+                }
+            }
+        }
+        return samePosArray;
+    }
+
+    const samePosArray = getElemsWithSamePosition();
+
+    const getLoadingElemStyle = (type: "image"|"spinner"|"text") => {
+        const style:CSSProperties = {}
+        style.order = elementOrder.findIndex(val => val === type).toString();
+        if (!samePosArray.includes(type)) {
+            style.position = "absolute";
+            const position = getLoadingPosition(type);
+
+            if (position.horizontal === "flex-start") {
+                style.left = "0";
+            }
+            else if (position.horizontal === "flex-end") {
+                style.right = "0";
+            }
+
+            if (position.vertical === "flex-start") {
+                style.top = "0";
+            }
+            else if (position.vertical === "flex-end") {
+                style.bottom = "0";
+            }
+
+            if (position.horizontal === "center" && position.vertical === "center") {
+                style.top = "50%";
+                style.left = "50%";
+                style.transform = "translate(-50%, -50%)";
+            }
+            else if (position.horizontal === "center" && position.vertical !== "center") {
+                style.left = "50%";
+                style.transform = "translateX(-50%)";
+            }
+            else if (position.horizontal !== "center" && position.vertical === "center") {
+                style.top = "50%";
+                style.transform = "translateY(-50%)";
+            }
+        }
+        else {
+            if (samePosArray.findIndex(val => val === type) !== 0 && (!spinnerInImage || type !== "spinner")) {
+                style.marginTop = "0.5rem";
+            }
+        }
+
+        return style;
+    }
+
+    useLayoutEffect(() => {
+        if (document.getElementById("loading-screen-text") 
+            && document.getElementById("loading-screen-spinner")
+            && spinnerInImage) {
+                if (samePosArray.findIndex(val => val === "spinner") > samePosArray.findIndex(val => val === "text")) {
+                    document.getElementById("loading-screen-spinner")!.style.top = "calc(50% - 10px + " + `${document.getElementById("loading-screen-text")!.offsetHeight / 2}px` + ")"
+                }
+                else {
+                    document.getElementById("loading-screen-spinner")!.style.top = "calc(50% - 18px - " + `${document.getElementById("loading-screen-text")!.offsetHeight / 2}px` + ")"
+                }
+        }
+    }, [])
 
     const loadingImage = useMemo(() => {
         if (!loadingElem || (loadingElem && loadingElem.getAttribute("loading-image-disabled") !== 'true')) {
-            switch(loadImgExt) {
-                case "png":
-                    return <img className="loading-screen-image" alt="loading-screen-image" src={process.env.PUBLIC_URL + '/assets/loading_screen_image.' + loadImgExt} onError={() => setLoadImgExt("jpg")} />;
-                case "jpg":
-                    return <img className="loading-screen-image" alt="loading-screen-image" src={process.env.PUBLIC_URL + '/assets/loading_screen_image.' + loadImgExt} onError={() => setLoadImgExt("svg")} />;
-                case "svg":
-                    return <img className="loading-screen-image" alt="loading-screen-image" src={process.env.PUBLIC_URL + '/assets/loading_screen_image.' + loadImgExt} onError={() => setLoadImgExt("default")} />;
-                default:
-                    return (
-                        <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                        width="300px" height="300px" viewBox="0 0 1035 900" enableBackground="new 0 0 1035 900">
-                        <g>
-                            <path fill="#069339" d="M490.288,477.792c15.104-15.091,39.598-15.091,54.707,0c15.105,15.097,15.105,39.565,0,54.657
-                                            c-15.108,15.091-39.601,15.097-54.707,0C475.179,517.354,475.182,492.889,490.288,477.792z"/>
-                            <path fill="#0C3857" d="M324.186,505.13c0.288-52.192,23.64-99.193,60.882-132.396l-77.365-77.31
-                                            c-53.913,53.624-87.354,127.761-87.62,209.706H324.186z"/>
-                            <path fill="#B2B2B2" d="M324.16,506.102c0-0.324,0.023-0.646,0.026-0.972H220.083c0,0.324-0.011,0.646-0.011,0.972
-                                            c0,81.84,33.107,155.95,86.664,209.711l77.324-77.256C347.175,605.198,324.16,558.209,324.16,506.102z"/>
-                            <g>
-                                <path fill="#EF7E08" d="M711.094,505.125c0,0.327,0.028,0.648,0.028,0.977c0,101.174-86.627,183.192-193.482,183.192
-                                                c-51.819,0-98.847-19.33-133.58-50.739l-77.324,77.258c53.888,54.088,128.48,87.574,210.904,87.574
-                                                c164.349,0,297.569-133.101,297.569-297.285c0-0.326-0.012-0.647-0.012-0.973L711.094,505.125z"/>
-                            </g>
-                            <rect x="711.094" y="99" fill="#069339" width="104.104" height="406.13" />
-                        </g>
-                    </svg>
-                    )
-            }
-        }
-
-    }, [loadImgExt])
-
-    const progressSpinner = useMemo(() => {
-        if (!loadingElem || (loadingElem && loadingElem.getAttribute("loading-spinner-disabled") !== 'true')) {
-            if (customSpinner) {
-                return <img className="loading-screen-spinner" src={process.env.PUBLIC_URL + '/assets/loading_screen_spinner.gif'} alt="loading-screen-spinner" onError={() => setCustomSpinner(false)} />
+            if (hasCustomImage) {
+                return <img 
+                            className="loading-screen-image" 
+                            alt="loading-screen-image" 
+                            key="loading-screen-image" 
+                            src={process.env.PUBLIC_URL + loadingElem!.getAttribute("loading-image")}
+                            style={getLoadingElemStyle("image")} />;
             }
             else {
                 return (
-                    <ProgressSpinner className="loading-screen-spinner" strokeWidth="10px" />
+                    <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                    width="300px" height="300px" viewBox="0 0 1035 900" enableBackground="new 0 0 1035 900" style={getLoadingElemStyle("image")}>
+                    <g>
+                        <path fill="#069339" d="M490.288,477.792c15.104-15.091,39.598-15.091,54.707,0c15.105,15.097,15.105,39.565,0,54.657
+                                        c-15.108,15.091-39.601,15.097-54.707,0C475.179,517.354,475.182,492.889,490.288,477.792z"/>
+                        <path fill="#0C3857" d="M324.186,505.13c0.288-52.192,23.64-99.193,60.882-132.396l-77.365-77.31
+                                        c-53.913,53.624-87.354,127.761-87.62,209.706H324.186z"/>
+                        <path fill="#B2B2B2" d="M324.16,506.102c0-0.324,0.023-0.646,0.026-0.972H220.083c0,0.324-0.011,0.646-0.011,0.972
+                                        c0,81.84,33.107,155.95,86.664,209.711l77.324-77.256C347.175,605.198,324.16,558.209,324.16,506.102z"/>
+                        <g>
+                            <path fill="#EF7E08" d="M711.094,505.125c0,0.327,0.028,0.648,0.028,0.977c0,101.174-86.627,183.192-193.482,183.192
+                                            c-51.819,0-98.847-19.33-133.58-50.739l-77.324,77.258c53.888,54.088,128.48,87.574,210.904,87.574
+                                            c164.349,0,297.569-133.101,297.569-297.285c0-0.326-0.012-0.647-0.012-0.973L711.094,505.125z"/>
+                        </g>
+                        <rect x="711.094" y="99" fill="#069339" width="104.104" height="406.13" />
+                    </g>
+                </svg>
                 )
             }
         }
-    }, [customSpinner])
+
+    }, [hasCustomImage])
+
+    const progressSpinner = useMemo(() => {
+        if (!loadingElem || (loadingElem && loadingElem.getAttribute("loading-spinner-disabled") !== 'true')) {
+            if (hasCustomSpinner) {
+                return <img 
+                            id="loading-screen-spinner" 
+                            alt="loading-screen-spinner" 
+                            key="loading-screen-spinner" 
+                            src={process.env.PUBLIC_URL + loadingElem!.getAttribute("loading-spinner")}
+                            style={getLoadingElemStyle("spinner")} />
+            }
+            else {
+                return (
+                    <ProgressSpinner id="loading-screen-spinner" strokeWidth="10px" style={getLoadingElemStyle("spinner")} />
+                )
+            }
+        }
+    }, [hasCustomSpinner]);
+
+    const loadingText = loadingElem?.getAttribute("loading-text") ? <span id="loading-screen-text" key={loadingElem.getAttribute("loading-text")} style={getLoadingElemStyle("text")} >{loadingElem.getAttribute("loading-text")}</span> : undefined;
 
     return (
-        <div className={concatClassnames(
-            "loading-screen",
-            context.appSettings.showDebug ? "show-debug" : "",
-            loadImgExt !== "default" ? "custom-loading-image" : "")}>
-            {loadingImage}
-            {progressSpinner}
-            {context.appSettings.showDebug && <span className="loading-screen-text">{progressionText}</span>}
+        <div
+            className={concatClassnames(
+                "loading-screen",
+                context.appSettings.showDebug ? "show-debug" : "",
+                spinnerInImage ? "default-loading-container" : "")}
+                style={{
+                    "--justifyContainer": samePosArray.length ? getLoadingPosition(samePosArray[0] as "image" | "spinner" | "text").vertical : 'center',
+                    "--alignContainer": samePosArray.length ? getLoadingPosition(samePosArray[0] as "image" | "spinner" | "text").horizontal : 'center'
+                } as CSSProperties}>
+                <div className="loading-elements-wrapper">
+                    {loadingImage}
+                    {progressSpinner}
+                    {loadingText}
+                </div>
+            {context.appSettings.showDebug && <span className="loading-screen-progress-text">{progressionText}</span>}
         </div>
-
     )
 }
 export default LoadingScreen
