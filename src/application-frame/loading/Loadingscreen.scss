@@ -57,6 +57,12 @@
     }
 }
 
+.html-loading-screen {
+    height: calc(var(--main-height) - 4px);
+    width: 100%;
+    border: none;
+}
+
 .show-debug {
     #loading-screen-spinner {
         top: calc(50% - 23px);

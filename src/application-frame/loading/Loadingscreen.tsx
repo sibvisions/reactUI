@@ -85,6 +85,7 @@ const LoadingScreen: FC = () => {
      * @param type - the type of the element
      */
     const getLoadingPosition = (type: "image"|"spinner"|"text") => {
+        // Translates position to flex terms, checks keywords, if wrong keyword default is center
         const positionConverter = (position: string) => {
             switch (position) {
                 case "top": case "left":
@@ -102,11 +103,13 @@ const LoadingScreen: FC = () => {
 
         if (loadingElem && loadingElem.getAttribute(attribute)) {
             const splitPosString = (loadingElem.getAttribute(attribute) as string).split(" ");
+            // If there are two terms use the first one as vertical and the second as horizontal
             if (splitPosString.length === 2) {
                 return { vertical: positionConverter(splitPosString[0]), horizontal: positionConverter(splitPosString[1]) };
             }
-            // if there is only one term specified, make the second one 'center'
+            // If there is only one term specified, make the second one 'center'
             else if (splitPosString.length === 1) {
+                // Check for keywords, default is center, center
                 switch (splitPosString[0]) {
                     case "left": case "right":
                         return { vertical: "center", horizontal: positionConverter(splitPosString[0]) };
@@ -141,9 +144,11 @@ const LoadingScreen: FC = () => {
     /** True if the spinner is in the image */
     const spinnerInImage = !hasCustomImage && isSamePosition(imagePosition, spinnerPosition);
 
+    /** Returns an array of the elements with the same position in the correct display order. Empty if there are no elements with same position */
     const getElemsWithSamePosition = () => {
         const samePosArray = [];
         if (isSamePosition(imagePosition, spinnerPosition)) {
+            // FindIndex checks for correct order and pushes them to the array
             if (elementOrder.findIndex(val => val === "image") < elementOrder.findIndex(val => val === "spinner")) {
                 samePosArray.push("image");
                 samePosArray.push("spinner");
@@ -184,10 +189,14 @@ const LoadingScreen: FC = () => {
 
     const samePosArray = getElemsWithSamePosition();
 
-    const getLoadingElemStyle = (type: "image"|"spinner"|"text") => {
+    /**
+     * Returns the style of the given element based on its position and if there are style attributes set for this element in the index.html
+     * @param type - the type of the element
+     */
+    const getLoadingElemStyle = (type: "background"|"image"|"spinner"|"text") => {
         const style:CSSProperties = {}
         style.order = elementOrder.findIndex(val => val === type).toString();
-        if (!samePosArray.includes(type)) {
+        if (!samePosArray.includes(type) && type !== "background") {
             style.position = "absolute";
             const position = getLoadingPosition(type);
 
@@ -219,15 +228,43 @@ const LoadingScreen: FC = () => {
                 style.transform = "translateY(-50%)";
             }
         }
-        else {
-            if (samePosArray.findIndex(val => val === type) !== 0 && (!spinnerInImage || type !== "spinner")) {
-                style.marginTop = "0.5rem";
+
+        const attributeName = "loading-" + type + "-style";
+
+        /**
+         * Returns the style string as object. First tries to parse the string as JSON, if it isn't a correct json string, it is returned as background
+         * @param style - the style string
+         */
+        const parseStyleString = (style: string) => {
+            try {
+                const customStyleObject = JSON.parse(style);
+                return customStyleObject;
+            }
+            catch {
+                return { background: style };
+            }
+        }
+
+        if (loadingElem?.getAttribute(attributeName)) {
+            const styleString = loadingElem.getAttribute(attributeName);
+            if (typeof styleString === "string") {
+                if (type === "background") {
+                    return {
+                        ...parseStyleString(styleString),
+                        "--justifyContainer": samePosArray.length ? getLoadingPosition(samePosArray[0] as "image" | "spinner" | "text").vertical : 'center',
+                        "--alignContainer": samePosArray.length ? getLoadingPosition(samePosArray[0] as "image" | "spinner" | "text").horizontal : 'center'
+                    } as CSSProperties;
+                }
+                else {
+                    return {...style, ...parseStyleString(styleString)}
+                }
             }
         }
 
         return style;
     }
 
+    // Sets spinner position
     useLayoutEffect(() => {
         if (document.getElementById("loading-screen-text") 
             && document.getElementById("loading-screen-spinner")
@@ -241,6 +278,7 @@ const LoadingScreen: FC = () => {
         }
     }, [])
 
+    /** Returns either the custom set image or the default image */
     const loadingImage = useMemo(() => {
         if (!loadingElem || (loadingElem && loadingElem.getAttribute("loading-image-disabled") !== 'true')) {
             if (hasCustomImage) {
@@ -276,6 +314,7 @@ const LoadingScreen: FC = () => {
 
     }, [hasCustomImage])
 
+    /** Returns either the custom set spinner or the default spinner */
     const progressSpinner = useMemo(() => {
         if (!loadingElem || (loadingElem && loadingElem.getAttribute("loading-spinner-disabled") !== 'true')) {
             if (hasCustomSpinner) {
@@ -294,25 +333,31 @@ const LoadingScreen: FC = () => {
         }
     }, [hasCustomSpinner]);
 
+    /** Returns the loading-text if it is set */
     const loadingText = loadingElem?.getAttribute("loading-text") ? <span id="loading-screen-text" key={loadingElem.getAttribute("loading-text")} style={getLoadingElemStyle("text")} >{loadingElem.getAttribute("loading-text")}</span> : undefined;
 
+    /** True, if there is a loading-html-set */
+    const hasLoadingHTML = loadingElem?.getAttribute("loading-html") ? true : false;
+
+    // If there is a loading-html display it else the loading-screen
     return (
-        <div
-            className={concatClassnames(
-                "loading-screen",
-                context.appSettings.showDebug ? "show-debug" : "",
-                spinnerInImage ? "default-loading-container" : "")}
-                style={{
-                    "--justifyContainer": samePosArray.length ? getLoadingPosition(samePosArray[0] as "image" | "spinner" | "text").vertical : 'center',
-                    "--alignContainer": samePosArray.length ? getLoadingPosition(samePosArray[0] as "image" | "spinner" | "text").horizontal : 'center'
-                } as CSSProperties}>
+        <>
+            {!hasLoadingHTML ? <div
+                className={concatClassnames(
+                    "loading-screen",
+                    context.appSettings.showDebug ? "show-debug" : "",
+                    spinnerInImage ? "default-loading-container" : "")}
+                style={getLoadingElemStyle("background")}>
                 <div className="loading-elements-wrapper">
                     {loadingImage}
                     {progressSpinner}
                     {loadingText}
                 </div>
-            {context.appSettings.showDebug && <span className="loading-screen-progress-text">{progressionText}</span>}
-        </div>
+                {context.appSettings.showDebug && <span className="loading-screen-progress-text">{progressionText}</span>}
+            </div> 
+            : 
+            <iframe className="html-loading-screen" src={process.env.PUBLIC_URL + loadingElem!.getAttribute("loading-html")} />}
+        </>
     )
 }
 export default LoadingScreen
