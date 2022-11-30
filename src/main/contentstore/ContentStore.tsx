@@ -188,6 +188,7 @@ export default class ContentStore extends BaseContentStore {
                         }
                         else {
                             this.flatContent.delete(newComponent.id);
+                            this.invalidateChildren(newComponent.id, existingComponent.className)
                             this.removedContent.set(newComponent.id, existingComponent);
                         }
                     }
@@ -220,6 +221,10 @@ export default class ContentStore extends BaseContentStore {
                 }
                 else if(newComponent.parent) {
                     this.addToNotifyList(newComponent, notifyList);
+                }
+
+                if (newComponent.parent && existingComponent) {
+                    this.validateComponent(existingComponent)
                 }
             }
 
@@ -302,7 +307,7 @@ export default class ContentStore extends BaseContentStore {
         this.toolbarItems = [];
         this.menuItems.clear();
         this.toolbarItems = new Array<BaseMenuButton>();
-        this.currentUser = new UserData();
+        //this.currentUser = new UserData();
     }
 
     /**
@@ -387,6 +392,39 @@ export default class ContentStore extends BaseContentStore {
             }
         }
         return children;
+    }
+
+    validateComponent(component:BaseComponent) {
+        let parent = component.parent;
+        let invalid = false;
+        while (parent && !parent.includes("IF")) {
+            if (this.getComponentById(parent) && this.getComponentById(parent)!.visible !== false && this.getComponentById(parent)!.invalid !== true) {
+                parent = this.getComponentById(parent)!.parent;
+            }
+            else {
+                invalid = true;
+                break;
+            }
+        }
+
+        if (!invalid) {
+            component.invalid = false;
+        }
+
+        const children = this.getAllChildren(component.id, component.className);
+
+        children.forEach(child => {
+            this.validateComponent(child);
+        })
+    }
+
+    invalidateChildren(id:string, className?:string) {
+        const children = this.getAllChildren(id, className);
+
+        children.forEach(child => {
+            child.invalid = true;
+            this.invalidateChildren(child.id, child.className);
+        })
     }
 
     /**

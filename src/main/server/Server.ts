@@ -147,7 +147,7 @@ class Server extends BaseServer {
      */
     componentExists(name:string) {
         for (let [, value] of this.contentStore.flatContent.entries()) {
-            if (value.name === name && value.visible !== false) {
+            if (value.name === name && value.visible !== false && value.invalid !== true) {
                 let parent = value.parent;
                 while (parent && !parent.includes("IF")) {
                     if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)!.visible !== false) {
@@ -162,7 +162,7 @@ class Server extends BaseServer {
         }
 
         for (let [, value] of this.contentStore.replacedContent.entries()) {
-            if (value.name === name && value.visible !== false) {
+            if (value.name === name && value.visible !== false && value.invalid !== true) {
                 let parent = value.parent;
                 while (parent && !parent.includes("IF")) {
                     if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)?.visible !== false) {

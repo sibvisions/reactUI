@@ -26,6 +26,7 @@ import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import { translation } from "../../main/util/other-util/Translation";
+import ContentStore from "../../main/contentstore/ContentStore";
 
 /** Interface for the default-login form */
 export interface ILoginForm extends ILoginCredentials {
@@ -43,7 +44,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
     const [context, topbar] = useConstants();
 
     /** State for username field */
-    const [username, setUsername] = useState<string>("");
+    const [username, setUsername] = useState<string>((context.contentStore as ContentStore).currentUser.userName);
 
     /** State for password field */
     const [password, setPassword] = useState<string>("");

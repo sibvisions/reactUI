@@ -58,5 +58,6 @@ interface BaseComponent {
     enabled?: boolean
     requestFocus?: boolean
     nameComponentRef?: string
+    invalid?:boolean
 }
 export default BaseComponent
