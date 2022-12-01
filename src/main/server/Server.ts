@@ -485,7 +485,10 @@ class Server extends BaseServer {
         //         return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
         //     }
         // }
-        return dataProvider.split("/")[1];
+        if (dataProvider) {
+            return dataProvider.split("/")[1];
+        }
+        return ""
     }
 
     //Down- & UpLoad

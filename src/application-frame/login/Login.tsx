@@ -13,8 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { appContext } from "../../main/contexts/AppProvider";
+import React, { CSSProperties, FC, useEffect, useMemo, useState, ReactElement } from "react";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../screen-management/ResizeHandler";
 import BaseComponent from "../../main/util/types/BaseComponent";
@@ -31,6 +30,11 @@ import tinycolor from "tinycolor2";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
 import useDesignerImages from "../../main/hooks/style-hooks/useDesignerImages";
 import { isCorporation } from "../../main/util/server-util/IsCorporation";
+import ContentStore from "../../main/contentstore/ContentStore";
+import { showTopBar } from "../../main/components/topbar/TopBar";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import useConstants from "../../main/hooks/components-hooks/useConstants";
+import { createLoginRequest } from "../../main/factories/RequestFactory";
 
 /** 
  * Type for the different login-modes
@@ -39,8 +43,8 @@ type LoginMode = "default"|"reset"|"mFTextInput"|"mFWait"|"mFURL"
 
 /** Component which handles logging in */
 const Login: FC = () => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+    /** Returns utility variables */
+    const [context, topbar] = useConstants();
 
     /** Reference for the screen-container */
     //const sizeRef = useRef<any>(null);
@@ -122,11 +126,30 @@ const Login: FC = () => {
     const getCorrectLoginForm = () => {
         const modeFunc = (mode:LoginMode) => setLoginMode(mode);
 
-        const loginDataCallback = (username: string, password: string) => setLoginData({ username: username, password: password })
+        const loginDataCallback = (username: string, password: string) => setLoginData({ username: username, password: password });
+
+        const customLoginRequest = (username: string, password: string, rememberMe?:boolean) => {
+            setLoginData({ username: username, password: password });
+            const loginReq = createLoginRequest();
+            loginReq.username = username;
+            loginReq.password = password;
+            loginReq.mode = "manual";
+            if (rememberMe !== undefined) {
+                loginReq.createAuthKey = rememberMe;
+            }
+            context.subscriptions.emitLoginChanged(undefined, undefined);
+            showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
+        }
 
         switch (loginMode) {
             case "default":
-                return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
+                if (context.appSettings.transferType !== "full" && (context.contentStore as ContentStore).customLoginView !== undefined) {
+                    return React.cloneElement((context.contentStore as ContentStore).customLoginView as ReactElement, { username: loginData.username, password: loginData.password, sendLoginRequest: customLoginRequest } );
+                }
+                else {
+                    return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
+                }
+                
             case "reset":
                 return <ResetForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
             case "mFTextInput":

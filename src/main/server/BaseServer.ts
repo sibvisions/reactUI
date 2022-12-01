@@ -38,6 +38,7 @@ import { translation } from "../util/other-util/Translation";
 import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 import { getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import BadClientResponse from "../response/error/BadClientResponse";
+import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -696,6 +697,9 @@ export default abstract class BaseServer {
         else {
             this.subManager.emitErrorBarProperties(true, false, false, translation.get("Session expired!"));
             this.subManager.emitErrorBarVisible(true);
+        }
+        if (this.history?.location.pathname.includes("/home/")) {
+            localStorage.setItem("restartScreen", this.history.location.pathname.replaceAll("/", "").substring(indexOfEnd(this.history.location.pathname, "home") - 1));
         }
         this.contentStore.reset();
         sessionStorage.clear();

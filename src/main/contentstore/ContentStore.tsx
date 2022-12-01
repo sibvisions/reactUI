@@ -52,6 +52,8 @@ export default class ContentStore extends BaseContentStore {
     /** A cache for the dialog-buttons to know which component-id to send to the server */
     dialogButtons:Array<string> = new Array<string>();
 
+    customLoginView: ReactElement|undefined = undefined;
+
     /**
      * Sets the currently active screens or clears the array
      * @param screenInfo - the screen-info of the newly opened screen or nothing to clear active screens

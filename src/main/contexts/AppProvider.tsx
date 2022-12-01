@@ -176,37 +176,58 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
         /** Initialises the websocket and handles the messages the server sends and sets the ping interval. also handles reconnect */
         const initWS = (baseURL:string) => {
+            let pingInterval = new Timer(() => ws.current?.send("PING"), contextState.server.wsPingInterval >= 10000 ? contextState.server.wsPingInterval : 10000);
+            pingInterval.stop();
+
+            let index = 0;
+            let reconnectActive = false;
+            let reconnectInterval = new Timer(() => {
+                connectWs();
+                index++
+                if (index <= 5) {
+                    contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
+                    if (index === 1) {
+                        contextState.subscriptions.emitErrorBarVisible(true);
+                    }
+                }
+                else {
+                    contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable.");
+                }
+
+            }, 5000);
+            reconnectInterval.stop();
+
             const connectWs = () => {
                 const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
-
-                let pingInterval = new Timer(() => ws.current?.send("PING"), contextState.server.wsPingInterval >= 10000 ? contextState.server.wsPingInterval : 10000);
 
                 ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId() 
                 + (isReconnect.current ? "&reconnect" : ""));
                 ws.current.onopen = () => {
-                    if (isReconnect.current) {
-                        isReconnect.current = false;
-                        console.log("WebSocket reconnected.");
-                        wsIsConnected.current = true;
-                    }
-                    else {
-                        console.log("WebSocket opened.");
-                        wsIsConnected.current = true;
-                    }
-
-                    if (contextState.server.wsPingInterval >= 0) {
-                        pingInterval.start();
-                    }
+                    ws.current?.send("PING");
                 };
                 ws.current.onclose = (event) => {
                     pingInterval.stop();
                     if (event.code !== 1006) {
                         isReconnect.current = true;
                         wsIsConnected.current = false;
-                        console.log("WebSocket has been closed, reconnecting in 1 second.");
-                        setTimeout(() => connectWs(), 1000);
+                        console.log("WebSocket has been closed, reconnecting in 5 seconds.");
+                        if (!reconnectActive) {
+                            reconnectInterval.start();
+                            reconnectActive = true;
+                        }
+                        
+                        if (index === 5 && reconnectActive) {
+                            reconnectInterval.stop();
+                            reconnectActive = false;
+                        }
+                        
+                        // setTimeout(() => connectWs(), 3000);
                     }
                     else {
+                        if (index === 5 && reconnectActive) {
+                            reconnectInterval.stop();
+                            reconnectActive = false;
+                        }
                         console.log("WebSocket has been closed.")
                     }
                 };
@@ -239,6 +260,29 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     else {
                         if (e.data === "api/changes") {
                             contextState.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
+                        }
+                        else if (e.data === "OK" && !wsIsConnected.current) {
+                            if (isReconnect.current) {
+                                isReconnect.current = false;
+                                console.log("WebSocket reconnected.");
+                                if (reconnectActive) {
+                                    reconnectInterval.stop();
+                                    reconnectActive = false;
+                                }
+                                
+                                
+                                index = 0;
+                                contextState.subscriptions.emitErrorBarVisible(false);
+                                wsIsConnected.current = true;
+                            }
+                            else {
+                                console.log("WebSocket opened.");
+                                wsIsConnected.current = true;
+                            }
+        
+                            if (contextState.server.wsPingInterval >= 0) {
+                                pingInterval.start();
+                            }
                         }
                     }
                 }
@@ -566,6 +610,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.contentStore.setServer(contextState.server);
                 if (history.location.pathname.includes("/home/")) {
                     contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "home") - 1);
+                }
+                if (localStorage.getItem("restartScreen")) {
+                    contextState.server.linkOpen = localStorage.getItem("restartScreen") as string;
+                    localStorage.removeItem("restartScreen");
+
                 }
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);

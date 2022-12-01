@@ -59,7 +59,8 @@ export interface IAPI {
     addGlobalComponent: (name:string, comp:ReactElement) => void,
     addCSSToHeadBefore: (path:string) => void,
     addCSSToHeadAfter: (path:string) => void,
-    extendComponent: (name: string, component: ReactElement) => void
+    extendComponent: (name: string, component: ReactElement) => void,
+    addCustomLogin: (loginComponent: ReactElement) => void
 }
 
 /** Contains the API functions */
@@ -497,6 +498,12 @@ class API implements IAPI {
                 existingComp[newPropName] = component.props[newPropName];
             }
             this.#subManager.propertiesSubscriber.get(existingComp.id)?.apply(undefined, [existingComp]);
+        }
+    }
+
+    addCustomLogin(customLogin:ReactElement) {
+        if (this.#appSettings.transferType !== "full") {
+            (this.#contentStore as ContentStore).customLoginView = customLogin;
         }
     }
 }

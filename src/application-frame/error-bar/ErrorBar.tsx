@@ -29,7 +29,7 @@ export type IServerFailMessage = {
     sessionExpired:boolean,
     gone:boolean,
     retry:Function,
-    versionError:boolean
+    dontShowRestart:boolean
 }
 
 /**
@@ -44,7 +44,7 @@ const ErrorBar:FC = () => {
     const [visible, setVisible] = useState<boolean>(false);
 
     /** Reference for the dialog which shows the error message */
-    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {}, versionError: false });
+    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {}, dontShowRestart: false });
 
     /** History of react-router-dom */
     const history = useHistory();
@@ -61,14 +61,14 @@ const ErrorBar:FC = () => {
             sessionExp: boolean,
             gone: boolean,
             retry: Function,
-            versionError: boolean
+            dontShowRestart: boolean
         ) => setErrorProps({
             headerMessage: header,
             bodyMessage: body,
             sessionExpired: sessionExp,
             gone: gone,
             retry: retry,
-            versionError: versionError
+            dontShowRestart: dontShowRestart
         }));
 
         return () => {
@@ -125,7 +125,7 @@ const ErrorBar:FC = () => {
 
     const getBodyMessage = () => {
         if (errorProps.bodyMessage) {
-            if (errorProps.versionError) {
+            if (errorProps.dontShowRestart) {
                 return errorProps.bodyMessage;
             }
             return errorProps.bodyMessage + ". <u>Click here!</u> or press Escape to retry!"
