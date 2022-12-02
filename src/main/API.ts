@@ -35,6 +35,7 @@ import CustomToolbarItem from "./util/types/custom-types/CustomToolbarItem";
 import CustomStartupProps from "./util/types/custom-types/CustomStartupProps";
 import UserData from "./model/UserData";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
+import { ICustomLogin } from "../moduleIndex";
 
 export interface IAPI {
     sendRequest: (req: any, keyword: string) => void,
@@ -60,7 +61,7 @@ export interface IAPI {
     addCSSToHeadBefore: (path:string) => void,
     addCSSToHeadAfter: (path:string) => void,
     extendComponent: (name: string, component: ReactElement) => void,
-    addCustomLogin: (loginComponent: ReactElement) => void
+    addCustomLogin: (loginComponent:(props: ICustomLogin) => ReactElement, useDefault?: boolean, useReset?: boolean, useTextMFA?: boolean, useWaitMFA?: boolean, useURLMFA?:boolean) => void
 }
 
 /** Contains the API functions */
@@ -501,9 +502,39 @@ class API implements IAPI {
         }
     }
 
-    addCustomLogin(customLogin:ReactElement) {
+    /**
+     * Adds a custom-login-view to the application
+     * @param customLogin - The custom-login-view as react-element
+     * @param useDefault - true, if the "default" login-mask should be replaced
+     * @param useReset - true, if the "reset" login-mask should be replaced
+     * @param useTextMFA - true, if the "text-multi-factor-authenticator" should be replaced
+     * @param useWaitMFA - true, if the "wait-multi-factor-authenticator" should be replaced
+     * @param useURLMFA - true, if the "url-multi-factor-authenticator" should be replaced
+     */
+    addCustomLogin(customLogin:(props: ICustomLogin) => ReactElement, useDefault?: boolean, useReset?: boolean, useTextMFA?: boolean, useWaitMFA?: boolean, useURLMFA?:boolean) {
         if (this.#appSettings.transferType !== "full") {
-            (this.#contentStore as ContentStore).customLoginView = customLogin;
+            const customLoginView = (this.#contentStore as ContentStore).customLoginView;
+            customLoginView.elem = customLogin;
+
+            if (useDefault !== undefined) {
+                customLoginView.useDefault = useDefault;
+            }
+
+            if (useReset !== undefined) {
+                customLoginView.useReset = useReset;
+            }
+
+            if (useTextMFA !== undefined) {
+                customLoginView.useTextMFA = useTextMFA;
+            }
+
+            if (useWaitMFA !== undefined) {
+                customLoginView.useWaitMFA = useWaitMFA;
+            }
+
+            if (useURLMFA !== undefined) {
+                customLoginView.useURLMFA = useURLMFA;
+            }
         }
     }
 }

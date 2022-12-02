@@ -28,6 +28,7 @@ import Server from "../server/Server";
 import { IPanel } from "../components/panels/panel/UIPanel";
 import { createFetchRequest } from "../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import { ICustomLogin } from "../../moduleIndex";
 
 /** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: partial*/
 export default class ContentStore extends BaseContentStore {
@@ -52,7 +53,7 @@ export default class ContentStore extends BaseContentStore {
     /** A cache for the dialog-buttons to know which component-id to send to the server */
     dialogButtons:Array<string> = new Array<string>();
 
-    customLoginView: ReactElement|undefined = undefined;
+    customLoginView: { elem: ((props: ICustomLogin) => ReactElement) | undefined, useDefault: boolean, useReset: boolean, useTextMFA: boolean, useWaitMFA: boolean, useURLMFA: boolean} = { elem: undefined, useDefault: false, useReset: false, useTextMFA: false, useWaitMFA: false, useURLMFA: false };
 
     /**
      * Sets the currently active screens or clears the array

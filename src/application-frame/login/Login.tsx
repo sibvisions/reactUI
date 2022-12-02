@@ -34,12 +34,22 @@ import ContentStore from "../../main/contentstore/ContentStore";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
-import { createLoginRequest } from "../../main/factories/RequestFactory";
+import { createLoginRequest, createResetPasswordRequest } from "../../main/factories/RequestFactory";
 
 /** 
  * Type for the different login-modes
  */
-type LoginMode = "default"|"reset"|"mFTextInput"|"mFWait"|"mFURL"
+type LoginMode = "default"|"reset"|"mFTextInput"|"mFWait"|"mFURL";
+
+export type ICustomLogin = {
+    username: string,
+    password: string,
+    sendLoginRequest: (username: string, password: string, rememberMe?:boolean) => void,
+    sendResetRequest: (identifier: string) => void,
+    loginMode: LoginMode,
+    setToDefaultLoginMode: () => void,
+    setToResetLoginMode: () => void
+}
 
 /** Component which handles logging in */
 const Login: FC = () => {
@@ -60,7 +70,7 @@ const Login: FC = () => {
 
     const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
 
-    const setImagesChanged = useDesignerImages("logn");
+    const setImagesChanged = useDesignerImages("login");
 
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
@@ -128,36 +138,101 @@ const Login: FC = () => {
 
         const loginDataCallback = (username: string, password: string) => setLoginData({ username: username, password: password });
 
-        const customLoginRequest = (username: string, password: string, rememberMe?:boolean) => {
+        const customLoginRequest = (username: string, password: string, rememberMe?:boolean, options?: any) => {
             setLoginData({ username: username, password: password });
-            const loginReq = createLoginRequest();
+            let loginReq = createLoginRequest();
             loginReq.username = username;
             loginReq.password = password;
             loginReq.mode = "manual";
             if (rememberMe !== undefined) {
                 loginReq.createAuthKey = rememberMe;
             }
+
+            if (options !== undefined) {
+                loginReq = { ...options, ...loginReq };
+            }
+
             context.subscriptions.emitLoginChanged(undefined, undefined);
             showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
         }
 
+        const customResetRequest = (identifier: string, options?: any) => {
+            let resetReq = createResetPasswordRequest();
+            resetReq.identifier = identifier;
+
+            if (options !== undefined) {
+                resetReq = { ...options, ...resetReq };
+            }
+
+            showTopBar(context.server.sendRequest(resetReq, REQUEST_KEYWORDS.RESET_PASSWORD), topbar)
+        }
+
+        let customLoginView:{
+            elem: ((props: ICustomLogin) => ReactElement) | undefined;
+            useDefault: boolean;
+            useReset: boolean;
+            useTextMFA: boolean;
+            useWaitMFA: boolean;
+            useURLMFA: boolean;
+        } | undefined = undefined;
+
+        if (context.appSettings.transferType !== "full" && (context.contentStore as ContentStore).customLoginView.elem !== undefined) {
+            customLoginView = (context.contentStore as ContentStore).customLoginView;
+        }
+
+        const getCustomLoginElem = () => {
+            if (customLoginView && customLoginView.elem) {
+                return customLoginView.elem.apply(undefined, [{
+                     username: loginData.username,
+                     password: loginData.password,
+                     loginMode: loginMode,
+                     sendLoginRequest: customLoginRequest,
+                     sendResetRequest: customResetRequest,
+                     setToDefaultLoginMode: () => setLoginMode("default"),
+                     setToResetLoginMode: () => setLoginMode("reset")
+                }])
+            }
+        }
+        
         switch (loginMode) {
             case "default":
-                if (context.appSettings.transferType !== "full" && (context.contentStore as ContentStore).customLoginView !== undefined) {
-                    return React.cloneElement((context.contentStore as ContentStore).customLoginView as ReactElement, { username: loginData.username, password: loginData.password, sendLoginRequest: customLoginRequest } );
+                if (customLoginView?.useDefault) {
+                    return getCustomLoginElem();
                 }
                 else {
                     return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
                 }
                 
             case "reset":
-                return <ResetForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                if (customLoginView?.useReset) {
+                    return getCustomLoginElem();
+                }
+                else {
+                    return <ResetForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                }
             case "mFTextInput":
-                return <MFAText username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                if (customLoginView?.useTextMFA) {
+                    return getCustomLoginElem();
+                }
+                else {
+                    return <MFAText username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                }
+                
             case "mFWait":
-                return <MFAWait username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                if (customLoginView?.useWaitMFA) {
+                    return getCustomLoginElem();
+                }
+                else {
+                    return <MFAWait username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                }
             case "mFURL":
-                return <MFAURL username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                if (customLoginView?.useURLMFA) {
+                    return getCustomLoginElem();
+                }
+                else {
+                    return <MFAURL username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                }
+                
             default:
                 return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
 
