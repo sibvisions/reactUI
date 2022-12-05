@@ -185,34 +185,6 @@ export default class ContentStoreFull extends BaseContentStore {
                 }
             }
 
-            /** Add parent of newComponent to notifyList */
-            if (
-                newComponent.parent || 
-                newComponent["~remove"] || 
-                newComponent["~destroy"] || 
-                newComponent.visible !== undefined || 
-                newComponent.constraints
-            ) {
-                if (existingComponent) {
-                    this.addToNotifyList(existingComponent, notifyList);
-                }
-                else if(newComponent.parent) {
-                    this.addToNotifyList(newComponent, notifyList);
-                }
-
-                if (newComponent.parent && existingComponent) {
-                    if (existingComponent) {
-                        this.validateComponent(existingComponent);
-                    }
-                    
-                    this.removeAsChild(newComponent);
-
-                    if (!newComponent["~destroy"]) {
-                        this.addAsChild(newComponent);
-                    }
-                }
-            }
-
             if (!existingComponent) {
                 if (!isCustom) {
                     if (newComponent["~remove"] !== 'true' && newComponent["~remove"] !== true && newComponent["~destroy"] !== 'true' && newComponent["~destroy"] !== true) {
@@ -235,6 +207,34 @@ export default class ContentStoreFull extends BaseContentStore {
                         className: ""
                     };
                     this.replacedContent.set(newComponent.id, newComp)
+                }
+            }
+
+                        /** Add parent of newComponent to notifyList */
+            if (
+                newComponent.parent || 
+                newComponent["~remove"] || 
+                newComponent["~destroy"] || 
+                newComponent.visible !== undefined || 
+                newComponent.constraints
+            ) {
+                if (existingComponent) {
+                    this.addToNotifyList(existingComponent, notifyList);
+                }
+                else if(newComponent.parent) {
+                    this.addToNotifyList(newComponent, notifyList);
+                }
+
+                if (newComponent.parent) {
+                    if (existingComponent) {
+                        this.validateComponent(existingComponent);
+                    }
+                    
+                    this.removeAsChild(newComponent);
+
+                    if (!newComponent["~destroy"]) {
+                        this.addAsChild(newComponent);
+                    }
                 }
             }
         });
@@ -297,35 +297,26 @@ export default class ContentStoreFull extends BaseContentStore {
      * @param id - the id of the component
      */
      getChildren(id: string, className?: string): Map<string, BaseComponent> {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
-        const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
-        let entry = componentEntries.next();
         let parentId = id;
 
-        if (className) {
-            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
-                parentId = mergedContent.get(parentId)!.parent as string
-            }
+        const childrenSet = this.componentChildren.get(parentId);
+
+        if (childrenSet?.size) {
+            childrenSet.forEach(child => {
+                const childComponent = this.getComponentById(child);
+
+                if (childComponent && !this.removedCustomComponents.has(childComponent.name)) {
+                    if (parentId.includes("TP")) {
+                        children.set(childComponent.id, childComponent);
+                    }
+                    else if (childComponent.visible !== false) {
+                        children.set(childComponent.id, childComponent);
+                    }
+                }
+            })
         }
 
-        while (!entry.done) {
-            const value = entry.value[1];
-
-            if (parentId && parentId.includes("-frame-tb")) {
-                parentId = parentId.substring(0, parentId.indexOf("-"));
-            }
-
-            if (value.parent === parentId && !this.removedCustomComponents.has(value.name) && value.className !== COMPONENT_CLASSNAMES.MENUBAR) {
-                if (parentId.includes("TP")) {
-                    children.set(value.id, value);
-                }
-                else if (value.visible !== false) {
-                    children.set(value.id, value);
-                }
-            }
-            entry = componentEntries.next();
-        }
         if (className) {
             if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                 children = new Map([...children].filter(entry => entry[0].includes("-tb")));
@@ -344,35 +335,21 @@ export default class ContentStoreFull extends BaseContentStore {
     }
 
     getAllChildren(id: string, className?: string): Map<string, BaseComponent> {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent]);
-        const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
-        let entry = componentEntries.next();
         let parentId = id;
 
-        if (className) {
-            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
-                parentId = mergedContent.get(parentId)!.parent as string
-            }
+        const childrenSet = this.componentChildren.get(parentId);
+
+        if (childrenSet?.size) {
+            childrenSet.forEach(child => {
+                const childComponent = this.getComponentById(child);
+
+                if (childComponent && !this.removedCustomComponents.has(childComponent.name)) {
+                    children.set(childComponent.id, childComponent);
+                }
+            })
         }
 
-        while (!entry.done) {
-            const value = entry.value[1];
-
-            if (parentId && parentId.includes("-frame-tb")) {
-                parentId = parentId.substring(0, parentId.indexOf("-"));
-            }
-
-            if (value.parent === parentId && !this.removedCustomComponents.has(value.name) && value.className !== COMPONENT_CLASSNAMES.MENUBAR) {
-                if (parentId.includes("TP")) {
-                    children.set(value.id, value);
-                }
-                else if (value.visible !== false) {
-                    children.set(value.id, value);
-                }
-            }
-            entry = componentEntries.next();
-        }
         if (className) {
             if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                 children = new Map([...children].filter(entry => entry[0].includes("-tb")));
