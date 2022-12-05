@@ -79,6 +79,8 @@ export default abstract class BaseContentStore {
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
 
+    componentChildren = new Map<string, Set<string>>();
+
     /** A Map which stores the component which are displayed in the desktop-panel, the key is the components id and the value the component */
     desktopContent = new Map<string, BaseComponent>();
 
@@ -231,6 +233,62 @@ export default abstract class BaseContentStore {
         return parent;
     }
 
+    addAsChild(child: BaseComponent) {
+        if (child.parent) {
+            const children:Set<string> = this.componentChildren.get(child.parent) || new Set<string>();
+            if (child.parent.includes("TBP")) {
+                let component = child;
+                if (this.getExistingComponent(child.id)) {
+                    component = this.getExistingComponent(child.id) as BaseComponent;
+                }
+                let string = component.parent;
+                if (component["~additional"]) {
+                    string = component.parent + "-tbMain"
+                }
+                else {
+                    string = component.parent + "-tbCenter"
+                }
+                const tbpChildren = this.componentChildren.get(string) || new Set<string>();
+                tbpChildren.add(component.id);
+                this.componentChildren.set(string, tbpChildren);
+                children.add(component.parent + "-tbMain");
+                children.add(component.parent + "-tbCenter");
+            }
+            else {
+                children.add(child.id);
+            }
+            this.componentChildren.set(child.parent, children);
+        }
+    }
+
+    removeAsChild(child: BaseComponent) {
+        if (child.parent) {
+            const children:Set<string> = this.componentChildren.get(child.parent) || new Set<string>();
+            if (child.parent.includes("TBP")) {
+                let component = child;
+                if (this.getExistingComponent(child.id)) {
+                    component = this.getExistingComponent(child.id) as BaseComponent;
+                }
+                let string = component.parent;
+                if (component["~additional"]) {
+                    string = component.parent + "-tbMain"
+                }
+                else {
+                    string = component.parent + "-tbCenter"
+                }
+                const tbpChildren = this.componentChildren.get(string) || new Set<string>();
+                tbpChildren.delete(component.id);
+                this.componentChildren.set(string, tbpChildren);
+                children.delete(component.parent + "-tbMain");
+                children.delete(component.parent + "-tbCenter");
+            }
+            else {
+                children.delete(child.id);
+            }
+            this.componentChildren.set(child.parent, children);
+        }
+    }
+
     /**
      * Returns the component if it already exists in the contentstore
      * @param id - the id of the component
@@ -367,7 +425,6 @@ export default abstract class BaseContentStore {
 
                 this.removedContent.delete(existingComp.id + "-tbMain");
                 this.removedContent.delete(existingComp.id + "tb-Center");
-                
             }
         }
         else {
@@ -556,6 +613,39 @@ export default abstract class BaseContentStore {
             return this.customScreens.get(window.name)?.apply(undefined, [{ screenName: window.name }]);
         }
 
+    }
+
+    validateComponent(component:BaseComponent) {
+        let parent = component.parent;
+        let invalid = false;
+        while (parent && !parent.includes("IF")) {
+            if (this.getComponentById(parent) && this.getComponentById(parent)!.visible !== false && this.getComponentById(parent)!.invalid !== true) {
+                parent = this.getComponentById(parent)!.parent;
+            }
+            else {
+                invalid = true;
+                break;
+            }
+        }
+
+        if (!invalid) {
+            component.invalid = false;
+        }
+
+        const children = this.getAllChildren(component.id, component.className);
+
+        children.forEach(child => {
+            this.validateComponent(child);
+        })
+    }
+
+    invalidateChildren(id:string, className?:string) {
+        const children = this.getAllChildren(id, className);
+
+        children.forEach(child => {
+            child.invalid = true;
+            this.invalidateChildren(child.id, child.className);
+        })
     }
 
     /**

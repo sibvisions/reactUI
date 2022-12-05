@@ -191,7 +191,7 @@ export default class ContentStore extends BaseContentStore {
                         }
                         else {
                             this.flatContent.delete(newComponent.id);
-                            this.invalidateChildren(newComponent.id, existingComponent.className)
+                            this.invalidateChildren(newComponent.id, existingComponent.className);
                             this.removedContent.set(newComponent.id, existingComponent);
                         }
                     }
@@ -226,8 +226,16 @@ export default class ContentStore extends BaseContentStore {
                     this.addToNotifyList(newComponent, notifyList);
                 }
 
-                if (newComponent.parent && existingComponent) {
-                    this.validateComponent(existingComponent)
+                if (newComponent.parent) {
+                    if (existingComponent) {
+                        this.validateComponent(existingComponent)
+                    }
+                    
+                    this.removeAsChild(newComponent);
+
+                    if (!newComponent["~destroy"]) {
+                        this.addAsChild(newComponent);
+                    }
                 }
             }
 
@@ -318,31 +326,26 @@ export default class ContentStore extends BaseContentStore {
      * @param id - the id of the component
      */
     getChildren(id: string, className?: string): Map<string, BaseComponent> {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
-        const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
-        let entry = componentEntries.next();
         let parentId = id;
 
-        if (className) {
-            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
-                parentId = mergedContent.get(parentId)!.parent as string
-            }
+        const childrenSet = this.componentChildren.get(parentId);
+
+        if (childrenSet?.size) {
+            childrenSet.forEach(child => {
+                const childComponent = this.getComponentById(child);
+
+                if (childComponent && !this.removedCustomComponents.has(childComponent.name)) {
+                    if (parentId.includes("TP")) {
+                        children.set(childComponent.id, childComponent);
+                    }
+                    else if (childComponent.visible !== false) {
+                        children.set(childComponent.id, childComponent);
+                    }
+                }
+            })
         }
 
-        while (!entry.done) {
-            const value = entry.value[1];
-
-            if (value.parent === parentId && !this.removedCustomComponents.has(value.name)) {
-                if (parentId.includes("TP")) {
-                    children.set(value.id, value);
-                }
-                else if (value.visible !== false) {
-                    children.set(value.id, value);
-                }
-            }
-            entry = componentEntries.next();
-        }
         if (className) {
             if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                 children = new Map([...children].filter(entry => entry[0].includes("-tb")));
@@ -358,31 +361,21 @@ export default class ContentStore extends BaseContentStore {
     }
 
     getAllChildren(id: string, className?: string): Map<string, BaseComponent> {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent, ...this.removedContent]);
-        const componentEntries = mergedContent.entries();
         let children = new Map<string, BaseComponent>();
-        let entry = componentEntries.next();
         let parentId = id;
 
-        if (className) {
-            if (mergedContent.has(parentId) && className.includes("ToolBarHelper")) {
-                parentId = mergedContent.get(parentId)!.parent as string
-            }
+        const childrenSet = this.componentChildren.get(parentId);
+
+        if (childrenSet?.size) {
+            childrenSet.forEach(child => {
+                const childComponent = this.getComponentById(child);
+
+                if (childComponent && !this.removedCustomComponents.has(childComponent.name)) {
+                    children.set(childComponent.id, childComponent);
+                }
+            })
         }
 
-        while (!entry.done) {
-            const value = entry.value[1];
-
-            if (value.parent === parentId && !this.removedCustomComponents.has(value.name)) {
-                if (parentId.includes("TP")) {
-                    children.set(value.id, value);
-                }
-                else {
-                    children.set(value.id, value);
-                }
-            }
-            entry = componentEntries.next();
-        }
         if (className) {
             if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                 children = new Map([...children].filter(entry => entry[0].includes("-tb")));
@@ -397,38 +390,7 @@ export default class ContentStore extends BaseContentStore {
         return children;
     }
 
-    validateComponent(component:BaseComponent) {
-        let parent = component.parent;
-        let invalid = false;
-        while (parent && !parent.includes("IF")) {
-            if (this.getComponentById(parent) && this.getComponentById(parent)!.visible !== false && this.getComponentById(parent)!.invalid !== true) {
-                parent = this.getComponentById(parent)!.parent;
-            }
-            else {
-                invalid = true;
-                break;
-            }
-        }
 
-        if (!invalid) {
-            component.invalid = false;
-        }
-
-        const children = this.getAllChildren(component.id, component.className);
-
-        children.forEach(child => {
-            this.validateComponent(child);
-        })
-    }
-
-    invalidateChildren(id:string, className?:string) {
-        const children = this.getAllChildren(id, className);
-
-        children.forEach(child => {
-            child.invalid = true;
-            this.invalidateChildren(child.id, child.className);
-        })
-    }
 
     /**
      * Adds a menuItem to the contentStore

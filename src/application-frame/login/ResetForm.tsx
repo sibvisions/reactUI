@@ -15,7 +15,7 @@
 
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useState } from "react";
 import { createResetPasswordRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
@@ -41,7 +41,8 @@ const ResetForm:FC<ILoginForm> = (props) => {
     /**
      * Sends a reset-password-request to the server, if a email is entered.
      */
-     const sendResetPassword = () => {
+     const sendResetPassword = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         if (!email) {
             context.subscriptions.emitToast({ message: translation.get("The email is required"), name: "" });
         }

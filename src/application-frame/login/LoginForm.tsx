@@ -83,10 +83,6 @@ const LoginForm:FC<ILoginForm> = (props) => {
 
     return (
         <>
-            <ChangePasswordDialog
-                username={username}
-                password={password}
-                loggedIn={false} />
             <form onSubmit={loginSubmit} className="login-form">
                 <div className="login-logo-wrapper">
                     <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />

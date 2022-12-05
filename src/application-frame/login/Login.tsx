@@ -35,6 +35,7 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { createLoginRequest, createResetPasswordRequest } from "../../main/factories/RequestFactory";
+import ChangePasswordDialog from "../change-password/ChangePasswordDialog";
 
 /** 
  * Type for the different login-modes
@@ -44,8 +45,8 @@ type LoginMode = "default"|"reset"|"mFTextInput"|"mFWait"|"mFURL";
 export type ICustomLogin = {
     username: string,
     password: string,
-    sendLoginRequest: (username: string, password: string, rememberMe?:boolean) => void,
-    sendResetRequest: (identifier: string) => void,
+    sendLoginRequest: (username: string, password: string, rememberMe?:boolean, options?:any) => void,
+    sendResetRequest: (identifier: string, options?:any) => void,
     loginMode: LoginMode,
     setToDefaultLoginMode: () => void,
     setToResetLoginMode: () => void
@@ -234,14 +235,22 @@ const Login: FC = () => {
                 }
                 
             default:
-                return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
-
+                if (customLoginView?.useDefault) {
+                    return getCustomLoginElem();
+                }
+                else {
+                    return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
+                }
         }
     }
 
     const content = 
         (context.appSettings.desktopPanel) ?
         <>
+            <ChangePasswordDialog
+                username={loginData.username}
+                password={loginData.password}
+                loggedIn={false} />
             <ResizeProvider login={true}>
                 <ResizeHandler>
                     <div className="rc-glasspane login-glass" />
@@ -270,9 +279,16 @@ const Login: FC = () => {
         </>
 
         :
-        <div className="login-container">
-            {getCorrectLoginForm()}
-        </div>
+        <>
+            <ChangePasswordDialog
+                username={loginData.username}
+                password={loginData.password}
+                loggedIn={false} />
+            <div className="login-container">
+                {getCorrectLoginForm()}
+            </div>
+        </>
+
     
     // If there is a desktop-panel, render it and the login mask "above" it, if not, just display the login mask
     return (

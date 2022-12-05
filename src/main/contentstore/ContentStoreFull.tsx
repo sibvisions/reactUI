@@ -22,6 +22,8 @@ import { IPanel } from "../components/panels/panel/UIPanel";
 import { isWorkScreen } from "../util/component-util/IsWorkScreen";
 import AppSettings from "../AppSettings";
 import ServerFull from "../server/ServerFull";
+import { createFetchRequest } from "../factories/RequestFactory";
+import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
 
 /** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: full*/
 export default class ContentStoreFull extends BaseContentStore {
@@ -58,6 +60,21 @@ export default class ContentStoreFull extends BaseContentStore {
      updateExistingComponent(existingComp:BaseComponent|undefined, newComp:BaseComponent) {
         if (existingComp) {
             for (let newPropName in newComp) {
+                // @ts-ignore  
+                let existingProp = existingComp[newPropName];
+                // @ts-ignore  
+                let newProp = newComp[newPropName];
+                if (["dataBook", "dataRow"].indexOf(newPropName) !== -1 && existingProp === newProp) {
+                    if (existingProp && this.getDataBook((existingProp as string).split("/")[1], existingProp)) {
+                        this.dataBooks.get((existingProp as string).split("/")[1])?.delete(existingProp)
+                        const fetchReq = createFetchRequest();
+                        fetchReq.dataProvider = existingProp;
+                        fetchReq.includeMetaData = true;
+                        this.server.missingDataFetches.push(existingProp)
+                        this.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
+                    }
+                }
+
                 // @ts-ignore
                 existingComp[newPropName] = newComp[newPropName];
 
@@ -140,6 +157,7 @@ export default class ContentStoreFull extends BaseContentStore {
                                 const foundChild = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id)
                                 if (foundChild) {
                                     this.flatContent.delete(newComponent.id);
+                                    this.invalidateChildren(newComponent.id, existingComponent.className);
                                     this.removedContent.set(newComponent.id, existingComponent);
                                     if (isWorkScreen(foundChild as IPanel)) {
                                         this.closeScreen(foundChild.name);
@@ -180,6 +198,18 @@ export default class ContentStoreFull extends BaseContentStore {
                 }
                 else if(newComponent.parent) {
                     this.addToNotifyList(newComponent, notifyList);
+                }
+
+                if (newComponent.parent && existingComponent) {
+                    if (existingComponent) {
+                        this.validateComponent(existingComponent);
+                    }
+                    
+                    this.removeAsChild(newComponent);
+
+                    if (!newComponent["~destroy"]) {
+                        this.addAsChild(newComponent);
+                    }
                 }
             }
 
