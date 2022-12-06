@@ -35,7 +35,7 @@ import CustomToolbarItem from "./util/types/custom-types/CustomToolbarItem";
 import CustomStartupProps from "./util/types/custom-types/CustomStartupProps";
 import UserData from "./model/UserData";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
-import { ICustomLogin } from "../moduleIndex";
+import { ICustomDefaultLogin, ICustomMFAText, ICustomMFAUrl, ICustomMFAWait, ICustomResetLogin } from "../application-frame/login/Login";
 
 export interface IAPI {
     sendRequest: (req: any, keyword: string) => void,
@@ -61,7 +61,7 @@ export interface IAPI {
     addCSSToHeadBefore: (path:string) => void,
     addCSSToHeadAfter: (path:string) => void,
     extendComponent: (name: string, component: ReactElement) => void,
-    addCustomLogin: (loginComponent:(props: ICustomLogin) => ReactElement, useDefault?: boolean, useReset?: boolean, useTextMFA?: boolean, useWaitMFA?: boolean, useURLMFA?:boolean) => void
+    addCustomLogin: (defaultView:(props: ICustomDefaultLogin) => ReactElement, resetView?: (props: ICustomResetLogin) => ReactElement, mfaTextView?: (props: ICustomMFAText) => ReactElement, mfaWaitView?: (props: ICustomMFAWait) => ReactElement, mfaUrlView?: (props: ICustomMFAUrl) => ReactElement) => void
 }
 
 /** Contains the API functions */
@@ -511,29 +511,25 @@ class API implements IAPI {
      * @param useWaitMFA - true, if the "wait-multi-factor-authenticator" should be replaced
      * @param useURLMFA - true, if the "url-multi-factor-authenticator" should be replaced
      */
-    addCustomLogin(customLogin:(props: ICustomLogin) => ReactElement, useDefault?: boolean, useReset?: boolean, useTextMFA?: boolean, useWaitMFA?: boolean, useURLMFA?:boolean) {
+    addCustomLogin(defaultView:(props: ICustomDefaultLogin) => ReactElement, resetView?: (props: ICustomResetLogin) => ReactElement, mfaTextView?: (props: ICustomMFAText) => ReactElement, mfaWaitView?: (props: ICustomMFAWait) => ReactElement, mfaUrlView?: (props: ICustomMFAUrl) => ReactElement) {
         if (this.#appSettings.transferType !== "full") {
             const customLoginView = (this.#contentStore as ContentStore).customLoginView;
-            customLoginView.elem = customLogin;
+            customLoginView.default = defaultView;
 
-            if (useDefault !== undefined) {
-                customLoginView.useDefault = useDefault;
+            if (resetView !== undefined) {
+                customLoginView.reset = resetView;
             }
 
-            if (useReset !== undefined) {
-                customLoginView.useReset = useReset;
+            if (mfaTextView !== undefined) {
+                customLoginView.mfaText = mfaTextView;
             }
 
-            if (useTextMFA !== undefined) {
-                customLoginView.useTextMFA = useTextMFA;
+            if (mfaWaitView !== undefined) {
+                customLoginView.mfaWait = mfaWaitView;
             }
 
-            if (useWaitMFA !== undefined) {
-                customLoginView.useWaitMFA = useWaitMFA;
-            }
-
-            if (useURLMFA !== undefined) {
-                customLoginView.useURLMFA = useURLMFA;
+            if (mfaUrlView !== undefined) {
+                customLoginView.mfaUrl = mfaUrlView;
             }
         }
     }

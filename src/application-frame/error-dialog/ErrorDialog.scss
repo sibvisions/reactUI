@@ -123,12 +123,14 @@
                 width: 100%;
 
                 &:hover {
-                    border: var(--input-border);
+                    border-color: var(--input-border-color);
+                    border-width: var(--input-border-width);
                 }
                 
                 &:focus {
                     box-shadow: none;
-                    border: var(--input-border);
+                    border-color: var(--input-border-color);
+                    border-width: var(--input-border-width);
                 }
             }
         }

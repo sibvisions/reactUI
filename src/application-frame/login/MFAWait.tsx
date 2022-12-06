@@ -50,7 +50,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
 
     // Subscribes to the code and the timeout. And starts the timer
     useLayoutEffect(() => {
-        context.subscriptions.subscribeToMFAWait((code:string, timeout:number, timeoutReset?:boolean) => {
+        context.subscriptions.subscribeToMFAWait("wait-comp", (code:string, timeout:number, timeoutReset?:boolean) => {
             setCode(code);
 
             setLoginTimeout(timeout);
@@ -63,7 +63,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
         intervalId.current = setInterval(() => setRemainingTime(prevTime => prevTime - 1000), 1000);
 
         return () => {
-            context.subscriptions.unsubscribeFromMFAWait()
+            context.subscriptions.unsubscribeFromMFAWait("wait-comp")
             clearInterval(intervalId.current);
         };
     }, []);

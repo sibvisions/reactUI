@@ -16,7 +16,7 @@
 import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AutoComplete } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
-import { createFetchRequest, createFilterRequest } from "../../../factories/RequestFactory";
+import { createFetchRequest, createFilterRequest, createSelectRowRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
@@ -45,6 +45,7 @@ import _ from "underscore";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import { SelectFilter } from "../../../request/data/SelectRowRequest";
 
 type LinkReference = {
     referencedDataBook: string
@@ -251,7 +252,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaDataReferenced ? metaDataReferenced.columnView_table_ : [], [props.cellEditor.columnView, metaDataReferenced]);
 
     // Helper to set the text on unmount
-    const textCopy = useRef<any>(text)
+    const textCopy = useRef<any>(text);
+
+    const primaryKeys:string[] = useMemo(() => {
+        const linkReference = getCorrectLinkReference();
+        if (metaDataReferenced) {
+            if (metaDataReferenced.primaryKeyColumns) {
+                return metaDataReferenced.primaryKeyColumns;
+            }
+        }
+        return linkReference.referencedColumnNames;
+    }, [metaDataReferenced, getCorrectLinkReference]);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -497,6 +508,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
     });
 
+    const sendSelectRequest = (rowNumber: number, filter: any) => {
+        const selectReq = createSelectRowRequest();
+        selectReq.dataProvider = props.cellEditor.linkReference.referencedDataBook || cellEditorMetaData?.linkReference.referencedDataBook;
+        selectReq.componentId = props.name;
+        selectReq.rowNumber = rowNumber;
+        if (filter !== undefined) {
+            selectReq.filter = filter;
+        }
+        showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_ROW), props.topbar);
+    }
+
     // Handles the selection event
     const handleSelect = (value: string[]) => {
         const linkReference = props.cellEditor.linkReference;
@@ -514,6 +536,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
         }
         else {
+            let filter:SelectFilter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => inputObj[pk])
+            };
+
             if (colNames.length > 1) {
                 if (colNames.length > Object.values(inputObj).length) {
                     let tempValues = Object.values(inputObj)
@@ -524,15 +551,18 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 }
                 setText(getDisplayValue(inputObj))
                 sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+                sendSelectRequest(props.rowNumber, filter);
             }
             else {
                 if (props.cellEditor.displayReferencedColumnName) {
                     setText(getDisplayValue(inputObj));
                     sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName)[refColNames[0]], props.topbar, props.rowNumber);
+                    sendSelectRequest(props.rowNumber, filter);
                 }
                 else {
-                    setText(getDisplayValue(inputObj))
+                    setText(getDisplayValue(inputObj));
                     sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, props.rowNumber);
+                    sendSelectRequest(props.rowNumber, filter);
                 }
             }
         }
@@ -589,10 +619,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         /** If the text is empty, send null to the server */
         if (!checkText) {
             sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+            sendSelectRequest(-1, null)
         }
         /** If there is a match found send the value to the server */
         if (foundData.length === 1) {
             const extractedData = getExtractedObject(foundData[0], refColNames) as any;
+            let filter:SelectFilter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => extractedData[pk])
+            };
+            
             if (_.isEqual(extractedData, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName))) {
                 // lastvalue needs to be converted to referenceColumnNames because dataToDisplay Map is built from referenceColumnNames
                 setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
@@ -607,10 +643,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     }
                     setText(getDisplayValue(convertReferenceColNamesToColNames(extractedData, props.cellEditor.linkReference)))
                     sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+                    sendSelectRequest(props.rowNumber, filter)
                 }
                 else {
                     setText(getDisplayValue(extractedData))
                     sendSetValues(props.dataRow, props.name, colNames, props.columnName, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName), props.topbar, props.rowNumber);
+                    sendSelectRequest(props.rowNumber, filter)
                 }
 
             }

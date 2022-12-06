@@ -252,18 +252,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     /** The primary keys of a table */
     const primaryKeys:string[] = useMemo(() => {
-        let pks:(LengthBasedColumnDescription | NumericColumnDescription)[] | undefined;
         if (metaData) {
             if (metaData.primaryKeyColumns) {
                 return metaData.primaryKeyColumns;
             }
-            else if (metaData.columns.find(column => column.name === "ID")) {
-                return ["ID"];
-            }
             else {
-                pks = metaData.columns.filter(column => column.cellEditor.className === CELLEDITOR_CLASSNAMES.TEXT || column.cellEditor.className === CELLEDITOR_CLASSNAMES.NUMBER);
-                let pkNames:string[] = pks.map(pk => pk.name);
-                return pkNames;
+                return metaData.columns.map(col => col.name);
             }
         }
         else {

@@ -28,7 +28,7 @@ import Server from "../server/Server";
 import { IPanel } from "../components/panels/panel/UIPanel";
 import { createFetchRequest } from "../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
-import { ICustomLogin } from "../../moduleIndex";
+import { ICustomDefaultLogin, ICustomMFAText, ICustomMFAUrl, ICustomMFAWait, ICustomResetLogin } from "../../application-frame/login/Login";
 
 /** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: partial*/
 export default class ContentStore extends BaseContentStore {
@@ -53,7 +53,20 @@ export default class ContentStore extends BaseContentStore {
     /** A cache for the dialog-buttons to know which component-id to send to the server */
     dialogButtons:Array<string> = new Array<string>();
 
-    customLoginView: { elem: ((props: ICustomLogin) => ReactElement) | undefined, useDefault: boolean, useReset: boolean, useTextMFA: boolean, useWaitMFA: boolean, useURLMFA: boolean} = { elem: undefined, useDefault: false, useReset: false, useTextMFA: false, useWaitMFA: false, useURLMFA: false };
+    customLoginView: {
+        default: ((props: ICustomDefaultLogin) => ReactElement) | undefined,
+        reset: ((props: ICustomResetLogin) => ReactElement) | undefined,
+        mfaText: ((props: ICustomMFAText) => ReactElement) | undefined,
+        mfaWait: ((props: ICustomMFAWait) => ReactElement) | undefined,
+        mfaUrl: ((props: ICustomMFAUrl) => ReactElement) | undefined
+    }
+        = {
+            default: undefined,
+            reset: undefined,
+            mfaText: undefined,
+            mfaWait: undefined,
+            mfaUrl: undefined,
+        };
 
     /**
      * Sets the currently active screens or clears the array

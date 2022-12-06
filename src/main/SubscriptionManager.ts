@@ -176,10 +176,10 @@ export class SubscriptionManager {
     loginSubscriber:Function = () => {};
 
     /** A function to update the mfa-wait-component to its properties */
-    MFAWaitSubscriber: Function = () => {};
+    mFAWaitSubscriber:Map<string, Function> = new Map<string, Function>();
 
     /** A function to update the mfa-url-component to its properties */
-    MFAURLSubscriber: Function = () => {};
+    mFAURLSubscriber:Map<string, Function> = new Map<string, Function>();
 
     appReadyParamsSubscriber: Function = () => {};
 
@@ -524,16 +524,16 @@ export class SubscriptionManager {
      * Subscribes to mfa-wait-properties
      * @param fn - the function to update the state
      */
-    subscribeToMFAWait(fn:Function) {
-        this.MFAWaitSubscriber = fn;
+    subscribeToMFAWait(name: string, fn:Function) {
+        this.mFAWaitSubscriber.set(name, fn);
     }
 
     /**
      * Subscribes to mfa-url-properties
      * @param fn - the function to update the state
      */
-    subscribeToMFAURL(fn:Function) {
-        this.MFAURLSubscriber = fn;
+    subscribeToMFAURL(name: string, fn:Function) {
+        this.mFAURLSubscriber.set(name, fn);
     }
 
     subscribeToAppReadyParams(fn: Function) {
@@ -776,19 +776,19 @@ export class SubscriptionManager {
     /**
      * Unsubscribes from mfa-wait-properties
      */
-    unsubscribeFromMFAWait() {
-        this.MFAWaitSubscriber = () => {};
+    unsubscribeFromMFAWait(name: string) {
+        this.mFAWaitSubscriber.delete(name);
     }
 
     /**
      * Unsubscribes from mfa-url-properties
      */
-    unsubscribeFromMFAURL() {
-        this.MFAURLSubscriber = () => {};
+    unsubscribeFromMFAURL(name: string) {
+        this.mFAURLSubscriber.delete(name);
     }
 
     unsubscribeFromAppParamsSubscriber() {
-        this.MFAURLSubscriber = () => {};
+        this.appReadyParamsSubscriber = () => {};
     }
 
     /**
@@ -1005,7 +1005,7 @@ export class SubscriptionManager {
      * @param timeout - the mfa timeout
      */
     emitMFAWaitChanged(code: string, timeout: number, timeoutReset?: boolean) {
-        this.MFAWaitSubscriber.apply(undefined, [code, timeout, timeoutReset]);
+        this.mFAWaitSubscriber.forEach((subFunc) => subFunc.apply(undefined, [code, timeout, timeoutReset]));
     }
 
     /**
@@ -1014,6 +1014,6 @@ export class SubscriptionManager {
      * @param timeout - the mfa timeout
      */
     emitMFAURLChanged(link: string|MFAURLType, timeout:number, timeoutReset?: boolean) {
-        this.MFAURLSubscriber.apply(undefined, [link, timeout, timeoutReset]);
+        this.mFAURLSubscriber.forEach((subFunc) => subFunc.apply(undefined, [link, timeout, timeoutReset]));
     }
 }

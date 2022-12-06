@@ -76,7 +76,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
 
     // Subscribes to the link object and timeout sent by the server. And starts the MFA timer
     useLayoutEffect(() => {
-        context.subscriptions.subscribeToMFAURL((pLink: string | MFAURLType, timeout: number, timeoutReset?:boolean) => {
+        context.subscriptions.subscribeToMFAURL("url-comp", (pLink: string | MFAURLType, timeout: number, timeoutReset?:boolean) => {
             if (typeof link === "object") {
                 const newLink:MFAURLType = {...link};
                 const castedParameter = pLink as MFAURLType
@@ -100,14 +100,16 @@ const MFAURL: FC<ILoginForm> = (props) => {
             }
             
             setLoginTimeout(timeout);
+
+            if (timeoutReset) {
+                setTimeoutReset(prevState => prevState === undefined ? true : !prevState);
+            }
         });
 
-        intervalId.current = setInterval(() => {
-            setRemainingTime(prevTime => prevTime - 1000);
-        }, 1000);
+        intervalId.current = setInterval(() => setRemainingTime(prevTime => prevTime - 1000), 1000);
 
         return () => {
-            context.subscriptions.unsubscribeFromMFAURL();
+            context.subscriptions.unsubscribeFromMFAURL("url-comp");
             clearInterval(intervalId.current);
         }
     }, []);
