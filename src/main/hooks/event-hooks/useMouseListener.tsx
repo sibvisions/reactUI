@@ -48,7 +48,9 @@ const useMouseListener = (
     eventMouseClicked?:boolean, 
     eventMousePressed?:boolean, 
     eventMouseReleased?:boolean,
-    hold?: (type: "pressed" | "released" | "clicked" | "cancelled", release: () => void) => void
+    hold?: (type: "pressed" | "released" | "clicked" | "cancelled"| "row_select", release: () => void) => void,
+    isTable?: boolean,
+    rowSelectionFunc?: Function
 ) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -69,6 +71,11 @@ const useMouseListener = (
         pressedX.current = event.x;
         pressedY.current = event.y;
         pressedElement.current = true;
+
+        if (isTable && rowSelectionFunc) {
+            const release = () => rowSelectionFunc();
+            hold ? hold("row_select", release) : release();
+        }
 
         if (eventMousePressed) {
             const pressReq = createMouseRequest();

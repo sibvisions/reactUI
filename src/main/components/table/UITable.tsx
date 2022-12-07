@@ -247,6 +247,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** True, if virtualscrolling is loading */
     const [listLoading, setListLoading] = useState(false);
 
+    const rowSelectionHelper = useRef<{data: any, selectedColumn: string, index: number, filter: any, event: DataTableSelectionChangeParams}>()
+
     // Cache for the sort-definitions
     const sortDefinitionCache = useRef<SortDefinition[]>();
 
@@ -291,6 +293,15 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     heldMouseEvents.current.forEach(release => release());
                     heldMouseEvents.current.clear();
                 }, 1)
+            }
+        },
+        true,
+        () => {
+            if (rowSelectionHelper.current) {
+                if (props.onRowSelect) {
+                    props.onRowSelect({ originalEvent: rowSelectionHelper.current.event, selectedRow: rowSelectionHelper.current.data })
+                }
+                sendSelectRequest(rowSelectionHelper.current.selectedColumn, rowSelectionHelper.current.filter, rowSelectionHelper.current.index)
             }
         }
     );
@@ -994,20 +1005,13 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     // If the lib user extends the Table with onRowSelect, call it when a new row is selected.
     const handleRowSelection = async (event: DataTableSelectionChangeParams) => {
         if(event.value && event.originalEvent.type === 'click') {
-            const isNewRow = selectedRow ? event.value.rowIndex !== selectedRow.index : true;
-
-            if (props.onRowSelect && isNewRow) {
-                props.onRowSelect({ originalEvent: event, selectedRow: event.value.props.rowData })
-            }
-
             let filter:SelectFilter|undefined = undefined
-            if (isNewRow) {
-                filter = {
-                    columnNames: primaryKeys,
-                    values: primaryKeys.map(pk => event.value.rowData[pk])
-                }
+            filter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => event.value.rowData[pk])
             }
-            await sendSelectRequest(event.value.field, filter, event.value.rowIndex)
+            rowSelectionHelper.current = { data: event.value.rowData, selectedColumn: event.value.field, index: event.value.rowIndex, filter: filter, event: event }
+            //await sendSelectRequest(event.value.field, filter, event.value.rowIndex)
         }
     }
 
