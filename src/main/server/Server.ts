@@ -362,6 +362,10 @@ class Server extends BaseServer {
             }
         }
 
+        if (login.username) {
+            (this.contentStore as ContentStore).currentUser.userName = login.username;
+        }
+
         this.contentStore.reset();
     }
 
