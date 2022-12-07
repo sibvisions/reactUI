@@ -805,6 +805,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
     }
 
+    useEventHandler(linkedInput.current && props.isCellEditor ? linkedInput.current : undefined, "keydown", () => {
+        setTimeout(() => linkedInput.current.focus(), 0);
+    })
+
     return (
         <span 
             ref={wrapperRef}
@@ -909,7 +913,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
             />
         </span>
-
     )
 }
 export default UIEditorLinked
