@@ -401,8 +401,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.locale = data.language;
                     }
     
-                    if (data.timezone) {
-                        contextState.appSettings.timezone = data.timezone;
+                    if (data.timeZone) {
+                        contextState.appSettings.timeZone = data.timeZone;
                     }
     
                     if (data.colorScheme) {
@@ -490,10 +490,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("language");
             }
 
-            if (convertedOptions.has("timezone")) {
-                contextState.appSettings.timezone = convertedOptions.get("timezone");
-                startUpRequest.timezone = convertedOptions.get("timezone");
-                convertedOptions.delete("timezone");
+            if (convertedOptions.has("timeZone")) {
+                contextState.appSettings.timeZone = convertedOptions.get("timeZone");
+                startUpRequest.timeZone = convertedOptions.get("timeZone");
+                convertedOptions.delete("timeZone");
             }
 
             if (convertedOptions.has("deviceMode")) {
@@ -644,6 +644,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
             startUpRequest.serverVersion = "2.0.0";
+            startUpRequest.timeZone = contextState.appSettings.timeZone;
+            startUpRequest.locale = contextState.appSettings.locale;
             if (contextState.contentStore.customStartUpProperties.length) {
                 contextState.contentStore.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }
@@ -669,7 +671,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.transferType === "partial") {
-                        contextState.server.language({ name: "", langCode: response.langCode, languageResource: response.languageResource });
+                        contextState.server.language({ name: "", langCode: response.langCode, languageResource: response.languageResource, timeZoneCode: "Europe/Vienna" });
                     }
                 });
                 if (preserveOnReload) {

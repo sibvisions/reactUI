@@ -14,7 +14,7 @@
  */
 
 import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useState } from 'react';
-import PrimeReact, { addLocale, locale } from 'primereact/api';
+import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
 import LoadingScreen from './application-frame/loading/Loadingscreen';

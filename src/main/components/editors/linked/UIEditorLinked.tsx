@@ -550,19 +550,20 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     inputObj = tempValues;
                 }
                 setText(getDisplayValue(inputObj))
-                sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
                 sendSelectRequest(props.rowNumber, filter);
+                sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+                
             }
             else {
                 if (props.cellEditor.displayReferencedColumnName) {
                     setText(getDisplayValue(inputObj));
-                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName)[refColNames[0]], props.topbar, props.rowNumber);
                     sendSelectRequest(props.rowNumber, filter);
+                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName)[refColNames[0]], props.topbar, props.rowNumber);
                 }
                 else {
                     setText(getDisplayValue(inputObj));
-                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, props.rowNumber);
                     sendSelectRequest(props.rowNumber, filter);
+                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, props.rowNumber);
                 }
             }
         }
@@ -618,8 +619,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
         /** If the text is empty, send null to the server */
         if (!checkText) {
-            sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
             sendSelectRequest(-1, null)
+            sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
         }
         /** If there is a match found send the value to the server */
         if (foundData.length === 1) {
@@ -628,7 +629,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => extractedData[pk])
             };
-            
+
             if (_.isEqual(extractedData, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName))) {
                 // lastvalue needs to be converted to referenceColumnNames because dataToDisplay Map is built from referenceColumnNames
                 setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
@@ -642,13 +643,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         }
                     }
                     setText(getDisplayValue(convertReferenceColNamesToColNames(extractedData, props.cellEditor.linkReference)))
-                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
                     sendSelectRequest(props.rowNumber, filter)
+                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
                 }
                 else {
                     setText(getDisplayValue(extractedData))
-                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName), props.topbar, props.rowNumber);
                     sendSelectRequest(props.rowNumber, filter)
+                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName), props.topbar, props.rowNumber);
                 }
 
             }

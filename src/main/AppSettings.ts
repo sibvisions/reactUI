@@ -92,13 +92,13 @@ export default class AppSettings {
     LOGO_LOGIN:string = "/assets/logo_login.png";
 
     /** The current region */
-    locale:string = "en-US";
+    locale:string = navigator.language.split("-")[0];
 
     /** The language of the app */
-    language:string = "de";
+    language:string = navigator.language.split("-")[0];
 
     /** The timezone of the app */
-    timezone:string = "CET";
+    timeZone:string = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     /** The devicemode of the client */
     deviceMode:string = "desktop";

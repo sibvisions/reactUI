@@ -39,6 +39,7 @@ import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 import { getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import BadClientResponse from "../response/error/BadClientResponse";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
+import { setDateLocale } from "../util/other-util/GetDateLocale";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -425,6 +426,11 @@ export default abstract class BaseServer {
         this.appSettings.setMenuOptions(undefined, undefined, undefined, undefined, metaData.userRestart);
 
         this.appSettings.setApplicationMetaData(metaData);
+
+        if (metaData.langCode) {
+            this.appSettings.locale = metaData.langCode;
+            setDateLocale(metaData.langCode);
+        }
     }
 
     abstract getScreenName(dataProvider:string): string;

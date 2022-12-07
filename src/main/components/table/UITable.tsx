@@ -623,19 +623,22 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Selects the next cell, if there is no cell anymore and delegateFocus is true, focus the next component
      * @param delegateFocus - true if the next component should be focused if there are no more cells
      */
-    const selectNextCell = useCallback(async (delegateFocus:boolean) => {
+    const selectNextCell = useCallback((delegateFocus:boolean) => {
         if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
+                sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
+                return true;
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
+                return false;
             }
         }
         else if (delegateFocus) {
             getFocusComponent(props.name + "-wrapper", true)?.focus();
+            return false;
         }
     }, [selectedRow, columnOrder, sendSelectRequest])
 
@@ -643,19 +646,22 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Selects the previous cell, if there is no cell anymore and delegateFocus is true, focus the previous component
      * @param delegateFocus - true if the previous component should be focused if there are no more cells
      */
-    const selectPreviousCell = useCallback(async (delegateFocus:boolean) => {
+    const selectPreviousCell = useCallback((delegateFocus:boolean) => {
         if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             if (newSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
+                sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
+                return true;
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
+                return false;
             }
         }
         else if (delegateFocus) {
             getFocusComponent(props.name + "-wrapper", false)?.focus();
+            return false;
         }
     }, [selectedRow, columnOrder, sendSelectRequest])
 
@@ -663,7 +669,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Selects the next row, if there is no row anymore and delegateFocus is true, focus the next component
      * @param delegateFocus - true if the next component should be focused if there are no more rows
      */
-    const selectNextRow = useCallback(async (delegateFocus:boolean) => {
+    const selectNextRow = useCallback((delegateFocus:boolean) => {
         if (selectedRow !== undefined) {
             const nextSelectedRowIndex = selectedRow.index + 1;
             if (nextSelectedRowIndex < providerData.length) {
@@ -671,14 +677,17 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
+                sendSelectRequest(undefined, filter, nextSelectedRowIndex);
+                return true;
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
+                return false;
             }
         }
         else if (delegateFocus) {
             getFocusComponent(props.name + "-wrapper", true)?.focus();
+            return false;
         }
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
@@ -686,7 +695,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Selects the previous row, if there is no row anymore and delegateFocus is true, focus the previous component
      * @param delegateFocus - true if the previous component should be focused if there are no more rows
      */
-    const selectPreviousRow = useCallback(async (delegateFocus:boolean) => {
+    const selectPreviousRow = useCallback((delegateFocus:boolean) => {
         if (selectedRow !== undefined) {
             const prevSelectedRowIndex = selectedRow.index - 1;
             if (prevSelectedRowIndex >= 0) {
@@ -694,14 +703,17 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter, prevSelectedRowIndex);
+                sendSelectRequest(undefined, filter, prevSelectedRowIndex);
+                return true;
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
+                return false;
             }
         }
         else if (delegateFocus) {
             getFocusComponent(props.name + "-wrapper", false)?.focus();
+            return false;
         }
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
 
@@ -709,27 +721,31 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Selects the next cell, if there is no cell anymore select the next row and so on. If there is no more cells/rows and delegateFocus is true, focus the next component
      * @param delegateFocus - true if the next component should be focused if there are no more cells/rows
      */
-    const selectNextCellAndRow = useCallback(async (delegateFocus:boolean) => {
+    const selectNextCellAndRow = useCallback((delegateFocus:boolean) => {
         if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             const nextSelectedRowIndex = selectedRow.index + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
                 const newSelectedColumn = columnOrder[newSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
+                sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
+                return true;
             }
             else if (nextSelectedRowIndex < providerData.length) {
                 let filter:SelectFilter = {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(columnOrder[0], filter, nextSelectedRowIndex);
+                sendSelectRequest(columnOrder[0], filter, nextSelectedRowIndex);
+                return true;
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
+                return false;
             }
         }
         else if (delegateFocus) {
             getFocusComponent(props.name + "-wrapper", true)?.focus();
+            return false;
         }
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
@@ -737,27 +753,31 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Selects the previous cell, if there is no cell anymore select the previous row and so on. If there is no more cells/rows and delegateFocus is true, focus the next component
      * @param delegateFocus - true if the previous component should be focused if there are no more cells/rows
      */
-    const selectPreviousCellAndRow = useCallback(async (delegateFocus:boolean) => {
+    const selectPreviousCellAndRow = useCallback((delegateFocus:boolean) => {
         if (selectedRow !== undefined && columnOrder) {
             const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             const prevSelectedRowIndex = selectedRow.index - 1;
             if (prevSelectedColumnIndex >= 0) {
                 const newSelectedColumn = columnOrder[prevSelectedColumnIndex];
-                await sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
+                sendSelectRequest(newSelectedColumn, undefined, selectedRow.index);
+                return true;
             }
             else if (prevSelectedRowIndex >= 0) {
                 let filter:SelectFilter = {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[prevSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(columnOrder[columnOrder.length - 1], filter, prevSelectedRowIndex);
+                sendSelectRequest(columnOrder[columnOrder.length - 1], filter, prevSelectedRowIndex);
+                return true;
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
+                return false;
             }
         }
         else if (delegateFocus) {
             getFocusComponent(props.name + "-wrapper", false)?.focus();
+            return false;
         }
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
 
@@ -765,7 +785,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Selects a row which is further down based on the height of the table if there are no more rows and delegate Focus is true, focus the next component
      * @param delegateFocus - true if the next component should be focused if there are no more rows
      */
-    const selectNextPage = async (delegateFocus: boolean) => {
+    const selectNextPage = (delegateFocus: boolean) => {
         if (selectedRow) {
             let nextSelectedRowIndex = selectedRow.index;
             if (nextSelectedRowIndex < providerData.length - 1) {
@@ -777,10 +797,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
+                sendSelectRequest(undefined, filter, nextSelectedRowIndex);
+                return true;
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", true)?.focus();
+                return false;
             }
         }
     }
@@ -789,7 +811,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * Selects a row which is further up based on the height of the table if there are no more rows and delegate Focus is true, focus the previous component
      * @param delegateFocus - true if the previous component should be focused if there are no more rows
      */
-    const selectPreviousPage = async (delegateFocus: boolean) => {
+    const selectPreviousPage = (delegateFocus: boolean) => {
         if (selectedRow) {
             let nextSelectedRowIndex = selectedRow.index;
             if (nextSelectedRowIndex > 0) {
@@ -801,10 +823,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     columnNames: primaryKeys,
                     values: primaryKeys.map(pk => providerData[nextSelectedRowIndex][pk])
                 };
-                await sendSelectRequest(undefined, filter, nextSelectedRowIndex);
+                sendSelectRequest(undefined, filter, nextSelectedRowIndex);
+                return true;
             }
             else if (delegateFocus) {
                 getFocusComponent(props.name + "-wrapper", false)?.focus();
+                return false;
             }
         }
     }
@@ -816,7 +840,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     useEffect(() => {
         selectNext.current = (navigationMode:number) => {
             if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
-                selectNextCell(true);
+                return selectNextCell(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
                 selectNextRow(true);

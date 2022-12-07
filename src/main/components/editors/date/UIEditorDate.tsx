@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-import React, { CSSProperties, FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 import tinycolor from "tinycolor2";
@@ -20,7 +20,7 @@ import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusR
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
-import { getDateLocale, setDateLocale } from "../../../util/other-util/GetDateLocale";
+import { getDateLocale, getGlobalLocale, setDateLocale } from "../../../util/other-util/GetDateLocale";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
@@ -34,6 +34,7 @@ import { IExtendableDateEditor } from "../../../extend-components/editors/Extend
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import { formatInTimeZone, toDate } from 'date-fns-tz'
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {
@@ -44,6 +45,8 @@ export interface ICellEditorDate extends ICellEditor {
     isMinuteEditor: boolean,
     isSecondEditor: boolean,
     isTimeEditor: boolean,
+    timeZone?: string,
+    locale?: string
 }
 
 /** Interface for DateCellEditor */
@@ -58,9 +61,8 @@ const dateTimeFormats = [
     "dd/MM/yyyy HH:mm", 
     "dd.MMMMM.yy HH:mm", 
     "dd-MMMMM-yyyy HH:mm", 
-    "dd/MMMM/yyyyy HH:mm", 
+    "dd/MMMM/yyyyy HH:mm",
 ]
-
 
 // Supported date formats
 const dateFormats = [
@@ -88,6 +90,8 @@ const parseMultiple = (
     return result;
 }
 
+let test = "enUS"
+
 /**
  * The DateCellEditor displays an input field to enter a date value and a button
  * which opens a datepicker to choose a date and change the value in its databook
@@ -102,14 +106,38 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
 
+    const locale = useMemo(() => {
+        if (props.cellEditor.locale) {
+            test = props.cellEditor.locale;
+            return getDateLocale(props.cellEditor.locale);
+        }
+        else {
+            test = props.context.appSettings.locale;
+            return getGlobalLocale();
+        }
+    }, [props.cellEditor.locale]);
+
+    const timeZone = useMemo(() => props.cellEditor.timeZone ? props.cellEditor.timeZone : props.context.appSettings.timeZone, [props.cellEditor.timeZone]);
+
+    /** Converts the selectedValue to the correct Timezone */
+    const convertToTimeZone = useCallback((viewDate:boolean) => {
+        if (props.selectedRow && props.selectedRow.data[props.columnName]) {
+            return toDate(formatInTimeZone(new Date(props.selectedRow.data[props.columnName]), timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }));
+        }
+        else if (viewDate) {
+            return new Date();
+        }
+        return undefined
+    }, [props.selectedRow, props.columnName, locale])
+
     /** The current datevalue */
-    const [dateValue, setDateValue] = useState<any>(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
+    const [dateValue, setDateValue] = useState<any>(convertToTimeZone(false));
 
     /** True, if the overlaypanel is visible */
     const [visible, setVisible] = useState<boolean>(false);
 
     /** The month/year which is currently displayed */
-    const [viewDate, setViewDate] = useState<any>(props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : new Date());
+    const [viewDate, setViewDate] = useState<any>(convertToTimeZone(true));
 
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
@@ -141,9 +169,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     const designerUpdate = useDesignerUpdates("linked-date");
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
-    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]); 
-
-    //setDateLocale(props.context.appSettings.locale);
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]);
 
     /**
      * Returns true, if the given date is a valid date
@@ -224,10 +250,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
 
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
-        setDateValue(props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : undefined);
-        setViewDate(props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : new Date());
+        setDateValue(convertToTimeZone(false));
+        setViewDate(convertToTimeZone(true));
         lastValue.current = props.selectedRow ? props.selectedRow.data[props.columnName] : undefined;
-        
     },[props.selectedRow]);
 
     // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
@@ -252,38 +277,43 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     const handleDateInput = () => {
         let inputDate:Date = new Date();
         //@ts-ignore
-        const emptyValue = calendarInput.current.value === ""
+        const emptyValue = calendarInput.current.value === "";
+
         if (showTime) {
             //@ts-ignore
             inputDate = parseMultiple(calendarInput.current.value, [
                 props.cellEditor.dateFormat || '', 
                 ...dateTimeFormats,
                 ...dateFormats
-            ], new Date(), { locale: getDateLocale() });
+            ], new Date(), { locale: locale });
         }
         else {
             //@ts-ignore
             inputDate = parseMultiple(calendarInput.current.value, [
                 props.cellEditor.dateFormat || '', 
                 ...dateFormats
-            ], new Date(), { locale: getDateLocale() });
+            ], new Date(), { locale: locale });
         }
+
+        let dateToSend = inputDate;
         
         if (isValidDate(inputDate)) {
-            setDateValue(inputDate)
+            setDateValue(inputDate);
+            dateToSend = toDate(formatInTimeZone(inputDate, Intl.DateTimeFormat().resolvedOptions().timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }), { timeZone: timeZone });
         }
         else if (emptyValue) {
-            setDateValue(null)
+            setDateValue(null);
         }
         else {
             setDateValue(isValidDate(lastValue.current) ? new Date(lastValue.current) : null);
         }
+        
         sendSetValues(
             props.dataRow,
             props.name,
             props.columnName,
             props.columnName,
-            inputDate.getTime(),
+            dateToSend.getTime(),
             props.context.server, 
             lastValue.current,
             props.topbar,
@@ -379,7 +409,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
                 appendTo={document.body}
                 onChange={event => {
-                    setDateValue(event.value ? (event.value as Date) : null);
+                    setDateValue(event.value ? event.value : null);
 
                     if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
                         (calendar.current as any).hideOverlay();
@@ -447,13 +477,13 @@ class CustomCalendar extends Calendar {
     formatDateTime(date: Date) {
         let formattedValue = null;
         if (date) {
-            formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: getDateLocale() }) : formatISO(date);
+            formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: this.props.locale ? getDateLocale(this.props.locale) : getGlobalLocale() }) : formatISO(date);
         }
 
         return formattedValue;
     }
     parseDateTime(text: string) {
-        let date = parseMultiple(text, [this.props.dateFormat || '', ...dateFormats], new Date(), { locale: getDateLocale() }) || new Date();
+        let date = parseMultiple(text, [this.props.dateFormat || '', ...dateFormats], new Date(), { locale: this.props.locale ? getDateLocale(this.props.locale) : getGlobalLocale() }) || new Date();
 
         if (this.props.timeOnly) {
             date = new Date();
@@ -463,7 +493,6 @@ class CustomCalendar extends Calendar {
         } else if (!this.props.showTime) {
             date = startOfDay(date);
         }
-
         return date;
     }
 }

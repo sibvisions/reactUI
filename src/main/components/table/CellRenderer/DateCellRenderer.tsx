@@ -14,9 +14,10 @@
  */
 
 import { isValid, format, formatISO } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import React, { FC, useContext, useMemo } from "react";
 import { appContext } from "../../../contexts/AppProvider";
-import { getDateLocale } from "../../../util/other-util/GetDateLocale";
+import { getDateLocale, getGlobalLocale } from "../../../util/other-util/GetDateLocale";
 import { ICellEditorDate } from "../../editors/date/UIEditorDate";
 import { ICellRender } from "../CellEditor";
 
@@ -34,7 +35,8 @@ const DateCellRenderer: FC<ICellRender> = (props) => {
     /** Returns the date to display if the date is valid or null */
     const displayDateValue = useMemo(() => {
         if (isValid(props.cellData) && castedCellEditor) {
-            return castedCellEditor.dateFormat ? format(props.cellData, castedCellEditor.dateFormat, { locale: getDateLocale(context.appSettings.locale) }) : formatISO(props.cellData);
+            const timeZone = castedCellEditor.timeZone ? castedCellEditor.timeZone : context.appSettings.timeZone;
+            return castedCellEditor.dateFormat ? formatInTimeZone(props.cellData, timeZone, castedCellEditor.dateFormat, { locale: castedCellEditor.locale ? getDateLocale(context.appSettings.locale) : getGlobalLocale() }) : formatISO(props.cellData);
         }
         else {
             return null;

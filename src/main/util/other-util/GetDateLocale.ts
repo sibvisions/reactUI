@@ -13,11 +13,15 @@
  * the License.
  */
 
-import { enUS } from 'date-fns/locale'
+import * as locales from 'date-fns/locale'
 import { addLocale, locale } from 'primereact/api';
 import { translation } from './Translation';
 
-let globalLocale:any = 'en';
+const supportedLocales = ["af", "ar", "arDZ", "arMA", "arSA", "az", "be", "bg", "bn", "ca", "cs", "cy", "da", "de", "deAT", "el", "enAU", "enCA", "enGB", "enIN", "enNZ", "enUS", "enZA", "eo", "es", "et", "eu", "faIR", "fi", "fil", "fr", "frCA", "frCH", "gd", "gl", "gu", "he", "hi", "hr", "ht", "hu", "hy", "id", "is", "it", "ja", "ka", "kk", "kk", "kn", "ko", "lb", "lt", "lv", "mk", "mn", "ms", "mt", "nb", "nl", "nlBE", "nn", "pl", "pt", "ptBR", "ro", "ru", "sk", "sl", "sq", "sr", "srLatn", "sv", "ta", "te", "th", "tr", "ug", "uk", "uz", "vi", "zhCN", "zhTW"]
+
+const localeMap = new Map<string, string>().set("ar", "arSA").set("fa", "faIR").set("en", "enUS").set("zh", "zhCN");
+
+let globalLocale:any = locales.enUS;
 
 // A function to build a localizing function, from date-fns (had issues with importing)
 function buildLocalizeFn(args:any) {
@@ -44,7 +48,7 @@ function buildLocalizeFn(args:any) {
 }
 
 // Overwrites the date-fns locale to use our translation file
-export function overwriteLocaleValues() {
+export function overwriteLocaleValues(locale:string) {
     const eraValues = {
         narrow: [
             translation.get("era-narrow-BC"), 
@@ -290,8 +294,21 @@ export function overwriteLocaleValues() {
         }),
     }
 
+    let localeToAdd = locales["enUS"];
+
+    if (supportedLocales.includes(locale)) {
+        if (localeMap.has(locale)) {
+            //@ts-ignore
+            localeToAdd = locales[localeMap.get(locale)];
+        }
+        else {
+            //@ts-ignore
+            localeToAdd = locales[locale]
+        }
+    }
+
     globalLocale = {
-        ...enUS,
+        ...localeToAdd,
         localize: localize
     }
 }
@@ -373,10 +390,50 @@ export function setPrimeReactLocale() {
 }
 
 export function setDateLocale(locale: string) {
-    //globalLocale = locale.split('-')[0];
+    const splitLocale = locale.split('_')[0];
+
+    let localeToAdd = locales.enUS;
+
+    if (supportedLocales.includes(splitLocale)) {
+        if (localeMap.has(splitLocale)) {
+            //@ts-ignore
+            localeToAdd = locales[localeMap.get(splitLocale)];
+        }
+        else {
+            //@ts-ignore
+            localeToAdd = locales[splitLocale]
+        }
+    }
+
+    globalLocale = {
+        ...globalLocale,
+        ...localeToAdd
+    } 
 }
 
 // Returns the globalLocale
-export function getDateLocale(locale?: string) {
+export function getDateLocale(locale: string) {
+    const splitLocale = locale.split('_')[0];
+
+    let localeToAdd = locales.enUS;
+
+    if (supportedLocales.includes(splitLocale)) {
+        if (localeMap.has(splitLocale)) {
+            //@ts-ignore
+            localeToAdd = locales[localeMap.get(splitLocale)];
+        }
+        else {
+            //@ts-ignore
+            localeToAdd = locales[splitLocale]
+        }
+    }
+
+    return {
+        ...globalLocale,
+        ...localeToAdd
+    }
+}
+
+export function getGlobalLocale() {
     return globalLocale;
 }

@@ -200,32 +200,35 @@ export const CellEditor: FC<ICellEditor> = (props) => {
      * Callback for stopping the cell editing process, closes editor and based on keyboard input, selects the next or previous cell/row
      * @param event - the KeyboardEvent
      */
-    const stopCellEditing = useCallback((event?:KeyboardEvent) => {
+    const stopCellEditing = useCallback(async (event?:KeyboardEvent) => {
+        let focusTable = true;
         setEdit(false);
         props.stopEditing()
         if (event) {
             if (event.key === "Enter") {
                 if (event.shiftKey) {
-                    selectPrevious(enterNavigationMode);
+                    focusTable = selectPrevious(enterNavigationMode);
                 }
                 else {
-                    selectNext(enterNavigationMode);
+                    focusTable = selectNext(enterNavigationMode);
                 }
             }
             else if (event.key === "Tab") {
                 event.preventDefault();
                 if (event.shiftKey) {
-                    selectPrevious(tabNavigationMode);
+                    focusTable = selectPrevious(tabNavigationMode);
                 }
                 else {
-                    selectNext(tabNavigationMode);
+                    focusTable = selectNext(tabNavigationMode);
                 }
             }
         }
         else {
-            selectNext(enterNavigationMode);
+            focusTable = selectNext(enterNavigationMode);
         }
-        tableContainer.focus()
+        if (focusTable) {
+            tableContainer.focus();
+        }
     }, [setEdit, selectNext, selectPrevious, enterNavigationMode, tabNavigationMode]);
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
