@@ -323,7 +323,7 @@ const Login: FC = () => {
                         </div>
                 </ResizeHandler>
             </ResizeProvider>
-            {context.appSettings.showDesigner && 
+            {context.appSettings.showDesigner && !showDesignerView && 
                 <Button 
                     className="p-button-raised p-button-rounded rc-button designer-button" 
                     icon="fas fa-palette"
@@ -365,7 +365,8 @@ const Login: FC = () => {
                 logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
                 logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
                 designerSubscription={context.designerSubscriptions}
-                appName={context.appSettings.applicationMetaData.applicationName}>
+                appName={context.appSettings.applicationMetaData.applicationName}
+                setShowDesigner={() => setShowDesignerView(prevState => !prevState)} >
                 {content}
             </ReactUIDesigner> 
             :

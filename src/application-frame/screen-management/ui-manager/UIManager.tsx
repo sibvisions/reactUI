@@ -189,7 +189,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
                     <ScreenManager />
                 </ResizeProvider>
-                {context.appSettings.showDesigner && 
+                {context.appSettings.showDesigner && !showDesignerView && 
                     <Button 
                         className="p-button-raised p-button-rounded rc-button designer-button" 
                         icon="fas fa-palette"
@@ -219,7 +219,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
                 logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
                 designerSubscription={context.designerSubscriptions}
-                appName={context.appSettings.applicationMetaData.applicationName}>
+                appName={context.appSettings.applicationMetaData.applicationName}
+                setShowDesigner={() => setShowDesignerView(prevState => !prevState)} >
                 {content}
             </ReactUIDesigner> 
             :
