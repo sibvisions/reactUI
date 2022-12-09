@@ -216,7 +216,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             reconnectActive = true;
                         }
                         
-                        if (index === 5 && reconnectActive) {
+                        if (index > 5 && reconnectActive) {
                             reconnectInterval.stop();
                             reconnectActive = false;
                         }
@@ -224,7 +224,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         // setTimeout(() => connectWs(), 3000);
                     }
                     else {
-                        if (index === 5 && reconnectActive) {
+                        if (index > 5 && reconnectActive) {
                             reconnectInterval.stop();
                             reconnectActive = false;
                         }
