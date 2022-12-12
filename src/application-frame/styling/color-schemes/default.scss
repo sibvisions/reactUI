@@ -135,7 +135,7 @@
 
     --input-border-color: #ced4da;
 
-    --input-border-hover-color:#2196fe;
+    --input-border-hover-color:#2196F3;
 
     /// Default input placeholder color;
     --input-placeholder-color:#6c757d;
@@ -146,13 +146,13 @@
     /// checkbox unselected border
     --checkbox-border:1px solid #ced4da;
 
-    --checkbox-border-hover-color:#2196fe;
+    --checkbox-border-hover-color:#2196F3;
 
     /// checkbox selected background
     --checkbox-selected-background:#2196f3;
 
     /// checkbox selected hover background
-    --checkbox-selected-hover-background:#0b7ad1;
+    --checkbox-selected-hover-background:#0d8aee;
 
     /// checkbox selected color
     --checkbox-color:#ffffff;
@@ -163,22 +163,22 @@
     /// checkbox unselected border
     --radiobutton-border:1px solid #ced4da;
 
-    --radiobutton-border-hover-color:#2196fe;
+    --radiobutton-border-hover-color:#2196F3;
 
     /// checkbox selected outer background
     --radiobutton-selected-outer-background:#2196f3;
 
     /// checkbox selected outer hover background
-    --radiobutton-selected-outer-hover-background:#0b7ad1;
+    --radiobutton-selected-outer-hover-background:#0d8aee;
 
     /// checkbox selected inner color
     --radiobutton-inner-color:#ffffff;
 
     /// Default toolbar background
-    --toolbar-background:#f8f9fa;
+    --toolbar-background:#e9ecef;
 
     /// Default toolbar border
-    --toolbar-border-color:#dee2e6;
+    --toolbar-border-color:#ced4da;
 
     --toolbar-color:var(--text-color);
 
@@ -201,7 +201,7 @@
     --table-header-hover-color:#000000;
 
     /// Default table selected row background
-    --table-selected-row-background:linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%);
+    --table-selected-row-background:linear-gradient(to bottom, rgba(28, 148, 243, 0.5) 2%, rgba(23, 145, 242, 0.5) 98%);
 
     /// Default table-row background for odd rows
     --table-row-odd-background:#fafafa;
@@ -270,10 +270,10 @@
     --date-panel-color:var(--text-color);
 
     /// Default DateCellEditor header border
-    --date-panel-header-border:1px solid #dee2e6;
+    --date-panel-header-border:1px solid #ced4da;
 
     /// Default color when hovering over a day to select
-    --date-panel-hover-color:var(--text-color);
+    --date-panel-hover-color:#000000;
 
     /// Default date panel selected date background
     --date-selected-background:#e3f2fd;
@@ -298,19 +298,19 @@
     --tab-navbar-background:#ffffff;
 
     /// Default border and color of a selected tab
-    --tab-selected-color:#2196fe;
+    --tab-selected-color:#2196F3;
 
     /// Default TabSet hover background
     --tab-hover-background:#ffffff;
 
     /// Default TabSet border color
-    --tab-border-color:#dee2e6;
+    --tab-border-color:#ced4da;
 
     /// Default Tree background
     --tree-background:#ffffff;
 
     /// Default Tree border
-    --tree-border:1px solid #dee2e6;
+    --tree-border:1px solid #ced4da;
 
     --tree-color:var(--text-color);
 
@@ -329,10 +329,10 @@
     --tree-even-background:var(--table-row-odd-background);
 
     /// Default HTMLEditor toolbar background
-    --html-toolbar-background:#f8f9fa;
+    --html-toolbar-background:#e9ecef;
 
     /// Default HTMLEditor toolbar border
-    --html-toolbar-border:1px solid #dee2e6;
+    --html-toolbar-border:1px solid #ced4da;
 
     --html-toolbar-button-background:var(--text-color);
 
@@ -350,7 +350,7 @@
     --html-picker-item-hover-color:#000000;
 
     /// Default Message info background
-    --message-info-header-background:var(--primary-color);
+    --message-info-header-background:#2196F3;
 
     /// Default Message info hover background of closing element
     --message-info-header-close-hover:#276b96;
@@ -407,7 +407,7 @@
     --tab-close-hover-color:#6f757a;
 
     /// Default focus border/shadow
-    --focus-box-shadow:0 0 0 0.2rem #8dcdff;
+    --focus-box-shadow:0 0 0 0.2rem #90caf9;
 
     /// Default border-radius for login
     --login-border-radius:6px;
@@ -457,7 +457,7 @@
     /// The background color of the launcher toolbar
     --launcher-toolbar-background:var(--topbar-background);
 
-    --launcher-toolbar-border:1px solid #f8f9fa;
+    --launcher-toolbar-border:1px solid #e9ecef;
 
     /// The text-color of buttons of the launcher
     --launcher-toolbar-button-text-color:var(--topbar-text-color);
@@ -489,7 +489,7 @@
     /// The background color of the frame toolbar
     --frame-toolbar-background:var(--topbar-background);
 
-    --frame-toolbar-border:1px solid #f8f9fa;
+    --frame-toolbar-border:1px solid #e9ecef;
 
     /// The text-color of buttons of the frame
     --frame-toolbar-button-text-color:var(--topbar-text-color);
@@ -507,13 +507,13 @@
     --frame-header-color:#6c6c6c;
 
     /// The border for frame headers
-    --frame-header-border:1px solid #b1b1b1;
+    --frame-header-border:1px solid #e9ecef;
 
     /// The hover background color of the frame close button
     --frame-header-button-hover-background:#fafafa;
 
     /// The hover text color of the frame close button
-    --frame-header-button-hover-color:#1e1f20;
+    --frame-header-button-hover-color:#000000;
 
     /// Border radius of the frame
     --frame-border-radius:9px;

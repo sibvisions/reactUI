@@ -79,7 +79,7 @@
   --table-header-hover-background:#1c283a;
   --table-header-color:var(--text-color);
   --table-header-hover-color:#ffffff;
-  --table-selected-row-background:linear-gradient(to bottom, rgba(27, 135, 227, 0.5) 2%, rgba(22, 110, 213, 0.5) 98%);
+  --table-selected-row-background:linear-gradient(to bottom, rgba(31, 91, 139, 0.5) 2%, rgba(30, 89, 135, 0.5) 98%);
   --table-row-odd-background:#2a323d;
   --table-row-even-background:#272c33;
   --table-row-hover-background:#1c283a;
@@ -189,7 +189,7 @@
   --frame-header-color:var(--topbar-text-color);
   --frame-header-border:1px solid #616161;
   --frame-header-button-hover-background:#e3f2fd;
-  --frame-header-button-hover-color:#495057;
+  --frame-header-button-hover-color:#ffffff;
   --frame-border-radius:9px;
   --frame-shadow:0 22px 70px 4px rgb(0 0 0 / 56%);
   --frame-border-width:4px; }

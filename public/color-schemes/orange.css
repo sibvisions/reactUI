@@ -69,8 +69,8 @@
   --radiobutton-selected-outer-background:#f78500;
   --radiobutton-selected-outer-hover-background:#db7500;
   --radiobutton-inner-color:#ffffff;
-  --toolbar-background:#f8f9fa;
-  --toolbar-border-color:#dee2e6;
+  --toolbar-background:#e9ecef;
+  --toolbar-border-color:#ced4da;
   --toolbar-color:var(--text-color);
   --toolbar-separator:1px solid #bbbbbb;
   --table-border:1px solid #ced4da;
@@ -79,7 +79,7 @@
   --table-header-hover-background:#e9ecef;
   --table-header-color:var(--text-color);
   --table-header-hover-color:#000000;
-  --table-selected-row-background:linear-gradient(180deg, rgba(227,177,27,0.5) 2%, rgba(213,166,22,0.5) 98%);
+  --table-selected-row-background:linear-gradient(180deg, rgba(242, 130, 0, 0.5) 2%, rgba(237, 128, 0, 0.5) 98%);
   --table-row-odd-background:#fafafa;
   --table-row-even-background:#ffffff;
   --table-row-hover-background:#e9ecef;
@@ -104,8 +104,8 @@
   --popupmenubutton-item-hover-text-color:#000000;
   --date-panel-background:#ffffff;
   --date-panel-color:var(--text-color);
-  --date-panel-header-border:1px solid #dee2e6;
-  --date-panel-hover-color:var(--text-color);
+  --date-panel-header-border:1px solid #ced4da;
+  --date-panel-hover-color:#000000;
   --date-selected-background:#fff3e0;
   --dialog-header-background:#ffffff;
   --dialog-header-text-color:var(--text-color);
@@ -116,9 +116,9 @@
   --tab-navbar-background:#ffffff;
   --tab-selected-color:#ffc107;
   --tab-hover-background:#ffffff;
-  --tab-border-color:#dee2e6;
+  --tab-border-color:#ced4da;
   --tree-background:#ffffff;
-  --tree-border:1px solid #dee2e6;
+  --tree-border:1px solid #ced4da;
   --tree-color:var(--text-color);
   --tree-item-hover-background:#e9ecef;
   --tree-item-hover-color:var(--table-cell-hover-color);
@@ -126,8 +126,8 @@
   --tree-selected-item-color:var(--text-color);
   --tree-odd-background:var(--table-row-even-background);
   --tree-even-background:var(--table-row-odd-background);
-  --html-toolbar-background:#f8f9fa;
-  --html-toolbar-border:1px solid #dee2e6;
+  --html-toolbar-background:#e9ecef;
+  --html-toolbar-border:1px solid #ced4da;
   --html-toolbar-button-background:var(--text-color);
   --html-toolbar-button-hover-background:#000000;
   --html-picker-expanded-background:#ffffff;
@@ -189,7 +189,7 @@
   --frame-header-color:var(--topbar-text-color);
   --frame-header-border:1px solid #e28011;
   --frame-header-button-hover-background:var(--topbar-button-hover-background);
-  --frame-header-button-hover-color:#1e1f20;
+  --frame-header-button-hover-color:#000000;
   --frame-border-radius:9px;
   --frame-shadow:0 22px 70px 4px rgb(0 0 0 / 56%);
   --frame-border-width:4px; }

@@ -175,10 +175,10 @@
     --radiobutton-inner-color:#ffffff;
 
     /// Orange toolbar background
-    --toolbar-background:#f8f9fa;
+    --toolbar-background:#e9ecef;
 
     /// Orange toolbar border
-    --toolbar-border-color:#dee2e6;
+    --toolbar-border-color:#ced4da;
 
     --toolbar-color:var(--text-color);
 
@@ -201,7 +201,7 @@
     --table-header-hover-color:#000000;
 
     /// Orange table selected row background
-    --table-selected-row-background:linear-gradient(180deg, rgba(227,177,27,0.5) 2%, rgba(213,166,22,0.5) 98%); 
+    --table-selected-row-background:linear-gradient(180deg, rgba(242, 130, 0, 0.5) 2%, rgba(237, 128, 0, 0.5) 98%); 
 
     /// Orange table-row background for odd rows
     --table-row-odd-background:#fafafa;
@@ -270,10 +270,10 @@
     --date-panel-color:var(--text-color);
 
     /// Orange DateCellEditor header border
-    --date-panel-header-border:1px solid #dee2e6;
+    --date-panel-header-border:1px solid #ced4da;
 
     /// Orange color when hovering over a day to select
-    --date-panel-hover-color:var(--text-color);
+    --date-panel-hover-color:#000000;
 
     /// Orange date panel selected date background
     --date-selected-background:#fff3e0;
@@ -304,13 +304,13 @@
     --tab-hover-background:#ffffff;
 
     /// Orange TabSet border color
-    --tab-border-color:#dee2e6;
+    --tab-border-color:#ced4da;
 
     /// Orange Tree background
     --tree-background:#ffffff;
 
     /// Orange Tree border
-    --tree-border:1px solid #dee2e6;
+    --tree-border:1px solid #ced4da;
 
     --tree-color:var(--text-color);
 
@@ -329,10 +329,10 @@
     --tree-even-background:var(--table-row-odd-background);
 
     /// Orange HTMLEditor toolbar background
-    --html-toolbar-background:#f8f9fa;
+    --html-toolbar-background:#e9ecef;
 
     /// Orange HTMLEditor toolbar border
-    --html-toolbar-border:1px solid #dee2e6;
+    --html-toolbar-border:1px solid #ced4da;
 
     --html-toolbar-button-background:var(--text-color);
 
@@ -513,7 +513,7 @@
     --frame-header-button-hover-background:var(--topbar-button-hover-background);
 
     /// The hover text color of the frame close button
-    --frame-header-button-hover-color:#1e1f20;
+    --frame-header-button-hover-color:#000000;
 
     /// Border radius of the frame
     --frame-border-radius:9px;
