@@ -24,7 +24,7 @@ import { IToolBarHelper } from "../components/panels/toolbarPanel/UIToolBarHelpe
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { componentHandler } from "../factories/UIFactory";
 import { IChangedColumns } from "../response/data/DataProviderChangedResponse";
-import MetaDataResponse, { LengthBasedColumnDescription, MetaDataReference } from "../response/data/MetaDataResponse";
+import MetaDataResponse, { LengthBasedColumnDescription, MetaDataReference, NumericColumnDescription } from "../response/data/MetaDataResponse";
 import { SortDefinition } from "../request/data/SortRequest";
 import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperType";
 import CustomStartupProps from "../util/types/custom-types/CustomStartupProps";
@@ -899,6 +899,43 @@ export default abstract class BaseContentStore {
         }
     }
 
+    createReferencedCellEditors(screenName:string, column: LengthBasedColumnDescription | NumericColumnDescription, dataProvider:string) {
+        const existingMapModified = this.getScreenDataproviderMap(screenName);
+        const castedCellEditor = column.cellEditor as ICellEditorLinked;
+        const linkReference = castedCellEditor.linkReference;
+        if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
+            if (existingMapModified) {
+                if (existingMapModified.has(linkReference.referencedDataBook)) {
+                    const dataBook = existingMapModified.get(linkReference.referencedDataBook) as IDataBook;
+                    if (!dataBook.referencedCellEditors) {
+                        dataBook.referencedCellEditors = [{cellEditor: column.cellEditor, columnName: column.name, dataBook: dataProvider}];
+                    }
+                    else if (!dataBook.referencedCellEditors.some(ref => ref.columnName === column.name)) {
+                        dataBook.referencedCellEditors.push({cellEditor: column.cellEditor, columnName: column.name, dataBook: dataProvider});
+                    }
+                }
+                else {
+                    existingMapModified.set(linkReference.referencedDataBook, {referencedCellEditors: [{cellEditor: column.cellEditor, columnName: column.name, dataBook: dataProvider}]});
+                }
+            }
+            else {
+                const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
+                tempMap.set(linkReference.referencedDataBook, {referencedCellEditors: [{cellEditor: column.cellEditor, columnName: column.name, dataBook: dataProvider}]});
+                this.dataBooks.set(screenName, tempMap);
+            }
+
+
+            if (!linkReference.columnNames.length && linkReference.referencedColumnNames.length) {
+                linkReference.columnNames.push(column.name)
+            }
+
+            if (existingMapModified?.has(linkReference.referencedDataBook) && existingMapModified.get(linkReference.referencedDataBook)?.data?.get("current")) {
+                this.server.buildDataToDisplayMap(castedCellEditor, {cellEditor: column.cellEditor, columnName: column.name, dataBook: dataProvider}, existingMapModified.get(linkReference.referencedDataBook)?.data?.get("current"), existingMapModified.get(linkReference.referencedDataBook) as IDataBook)
+            }
+            
+        }
+    }
+
     /**
      * Sets or updates the meta the metadata of a databook and notfies the metadata-subscribers.
      * @param screenName - the name of the screen
@@ -908,35 +945,7 @@ export default abstract class BaseContentStore {
         const compPanel = this.getComponentByName(screenName) as IPanel;
         
         const modifiedMetaData = {...metaData, columns: metaData.columns.map((column => {
-            const existingMapModified = this.getScreenDataproviderMap(screenName);
-            const castedCellEditor = column.cellEditor as ICellEditorLinked;
-            const linkReference = castedCellEditor.linkReference;
-            if (column.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
-                if (existingMapModified) {
-                    if (existingMapModified.has(linkReference.referencedDataBook)) {
-                        const dataBook = (existingMapModified.get(linkReference.referencedDataBook) as IDataBook)
-                        if (!dataBook.referencedCellEditors) {
-                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).referencedCellEditors = [{cellEditor: column.cellEditor, columnName: column.name, dataBook: metaData.dataProvider}];
-                        }
-                        else {
-                            (existingMapModified.get(linkReference.referencedDataBook) as IDataBook).referencedCellEditors?.push({cellEditor: column.cellEditor, columnName: column.name, dataBook: metaData.dataProvider});
-                        }
-                    }
-                    else {
-                        existingMapModified.set(linkReference.referencedDataBook, {referencedCellEditors: [{cellEditor: column.cellEditor, columnName: column.name, dataBook: metaData.dataProvider}]});
-                    }
-                }
-                else {
-                    const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
-                    tempMap.set(linkReference.referencedDataBook, {referencedCellEditors: [{cellEditor: column.cellEditor, columnName: column.name, dataBook: metaData.dataProvider}]});
-                    this.dataBooks.set(screenName, tempMap);
-                }
-
-
-                if (!linkReference.columnNames.length && linkReference.referencedColumnNames.length) {
-                    linkReference.columnNames.push(column.name)
-                }
-            } 
+            this.createReferencedCellEditors(screenName, column, metaData.dataProvider);
             return column
         }))}
 
@@ -1021,6 +1030,7 @@ export default abstract class BaseContentStore {
 
                         if (changedColumn.cellEditor !== undefined) {
                             currentCol.cellEditor = changedColumn.cellEditor;
+                            this.createReferencedCellEditors(screenName, changedColumn as LengthBasedColumnDescription | NumericColumnDescription, dataProvider);         
                             changed = true;
                         }
                     }

@@ -13,13 +13,13 @@
  * the License.
  */
 
-import React, { Children, CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Menu from "../../menu/Menu";
 import { appContext } from "../../../main/contexts/AppProvider";
 import ScreenManager from "../ScreenManager";
 import ChangePasswordDialog from "../../change-password/ChangePasswordDialog";
 import CorporateMenu from "../../menu/CorporateMenu";
-import { MenuOptions, VisibleButtons } from "../../../main/AppSettings";
+import { MenuOptions } from "../../../main/AppSettings";
 import { useParams } from "react-router";
 import ContentStore from "../../../main/contentstore/ContentStore";
 import { isCorporation } from "../../../main/util/server-util/IsCorporation";

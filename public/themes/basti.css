@@ -107,11 +107,12 @@ body {
 .basti .std-menu .menu-header {
   height: var(--std-header-height); }
 
-.basti .std-menu .menu-topbar {
+.basti .std-menu:not(.design-std-menu) .menu-topbar {
   margin-left: var(--std-menu-width); }
-  .basti .std-menu .menu-topbar .menu-screen-title {
-    font-size: var(--std-screen-title-size);
-    margin-left: var(--std-screen-title-margin); }
+
+.basti .std-menu .menu-topbar .menu-screen-title {
+  font-size: var(--std-screen-title-size);
+  margin-left: var(--std-screen-title-margin); }
 
 .basti .std-menu .menu-logo-wrapper {
   height: var(--std-header-height);
@@ -144,7 +145,9 @@ body {
   font-size: calc(var(--std-profile-pic) - 2px); }
 
 .basti .std-menu .menu-panelmenu-wrapper {
-  width: var(--std-menu-width);
+  width: var(--std-menu-width); }
+
+.basti .std-menu:not(.design-std-menu) .menu-panelmenu-wrapper {
   padding-top: var(--std-header-height); }
 
 .basti .std-menu .menu-logo-mini {
@@ -242,11 +245,15 @@ body {
       font-size: var(--input-button-icon-size); }
 
 .basti .p-checkbox {
-  width: var(--checkbox-size);
-  height: var(--checkbox-size); }
+  min-width: var(--checkbox-size);
+  min-height: var(--checkbox-size);
+  max-width: var(--checkbox-size);
+  max-height: var(--checkbox-size); }
   .basti .p-checkbox .p-checkbox-box {
-    width: var(--checkbox-size);
-    height: var(--checkbox-size); }
+    min-width: var(--checkbox-size);
+    min-height: var(--checkbox-size);
+    max-width: var(--checkbox-size);
+    max-height: var(--checkbox-size); }
     .basti .p-checkbox .p-checkbox-box .p-checkbox-icon {
       font-size: calc(var(--checkbox-size) * 0.7); }
 

@@ -238,9 +238,11 @@ body {
             height: var(--std-header-height);
         }
 
-        .menu-topbar {
+        &:not(.design-std-menu) .menu-topbar {
             margin-left: var(--std-menu-width);
+        }
 
+        .menu-topbar {
             .menu-screen-title {
                 font-size: var(--std-screen-title-size);
                 margin-left: var(--std-screen-title-margin);
@@ -292,6 +294,9 @@ body {
 
         .menu-panelmenu-wrapper {
             width: var(--std-menu-width);
+        }
+
+        &:not(.design-std-menu) .menu-panelmenu-wrapper {
             padding-top: var(--std-header-height);
         }
 
@@ -436,13 +441,17 @@ body {
     }
 
     .p-checkbox {
-        width: var(--checkbox-size);
-        height: var(--checkbox-size);
-        
+        min-width: var(--checkbox-size);
+        min-height: var(--checkbox-size);
+        max-width: var(--checkbox-size);
+        max-height: var(--checkbox-size);
+
         .p-checkbox-box {
-            width: var(--checkbox-size);
-            height: var(--checkbox-size);
-    
+            min-width: var(--checkbox-size);
+            min-height: var(--checkbox-size);
+            max-width: var(--checkbox-size);
+            max-height: var(--checkbox-size);
+        
             .p-checkbox-icon {
                 font-size: calc(var(--checkbox-size) * 0.7);
             }

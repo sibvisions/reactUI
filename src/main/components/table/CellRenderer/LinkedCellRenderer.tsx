@@ -70,7 +70,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
             }
         }
         return value[props.colName]
-    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, castedCellEditor])
+    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, castedCellEditor, props.colName])
 
     /** The displayValue to display */ 
     const linkedDisplayValue = useMemo(() => {
@@ -82,7 +82,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
             return getDisplayValue(props.rowData)
         }
         
-    }, [props.cellData, linkRefFetchFlag, castedCellEditor]);
+    }, [props.cellData, linkRefFetchFlag, castedCellEditor, props.rowData, props.colName]);
 
     return (
         <>

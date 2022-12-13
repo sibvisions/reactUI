@@ -61,9 +61,11 @@ export interface TableProps extends BaseComponent {
     tableHeaderVisible?: boolean
     autoResize?: boolean,
     enterNavigationMode?: number,
-    tabNavigationMode?: number
-    startEditing?: boolean
-    editable?: boolean
+    tabNavigationMode?: number,
+    startEditing?: boolean,
+    editable?: boolean,
+    showFocusRect?:boolean,
+    showSelection?:boolean
 }
 
 enum Navigation {
@@ -1378,7 +1380,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     onSort={(event) => handleSort(event.sortField)}
                     rowClassName={(data) => {
                         let cn: any = {}
-                        if (selectedRow && selectedRow.data === data) {
+                        if (selectedRow && selectedRow.data === data && props.showSelection !== false) {
                             cn["p-highlight"] = true;
                         }
                         if (data?.recordStatus === "D") {
