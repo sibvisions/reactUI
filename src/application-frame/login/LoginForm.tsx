@@ -117,7 +117,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                         <div className={concatClassnames(
                             "login-extra-options",
                             context.appSettings.applicationMetaData.lostPasswordEnabled ? "lost-password-enabled" : "")} >
-                            {context.appSettings.applicationMetaData.rememberMe !== false && <div className="login-cbx-container">
+                            {context.appSettings.applicationMetaData.rememberMe !== false && <div className="login-cbx-container rc-checkbox">
                                 <Checkbox
                                     inputId="rememberMe"
                                     className="remember-me-cbx"

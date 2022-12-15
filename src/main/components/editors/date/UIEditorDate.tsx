@@ -128,7 +128,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
             return new Date();
         }
         return undefined
-    }, [props.selectedRow, props.columnName, locale])
+    }, [props.selectedRow, props.columnName, locale, timeZone])
 
     /** The current datevalue */
     const [dateValue, setDateValue] = useState<any>(convertToTimeZone(false));
