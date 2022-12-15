@@ -127,29 +127,41 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
 
     // Sends a setValues Request to the server when the checkbox is clicked
     const handleOnChange = () => {
-        sendSetValues(
-            props.dataRow,
-            props.name,
-            props.columnName,
-            props.columnName,
-            // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
-            (checked !== props.cellEditor.selectedValue || !checked) ? 
-                props.cellEditor.selectedValue !== undefined ? 
-                    props.cellEditor.selectedValue 
+        const doSendSetValues = () => {
+            sendSetValues(
+                props.dataRow,
+                props.name,
+                props.columnName,
+                props.columnName,
+                // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
+                (checked !== props.cellEditor.selectedValue || !checked) ? 
+                    props.cellEditor.selectedValue !== undefined ? 
+                        props.cellEditor.selectedValue 
+                    : 
+                        true
                 : 
-                    true
-            : 
-                props.cellEditor.deselectedValue !== undefined ? 
-                    props.cellEditor.deselectedValue 
-                : 
-                    false,
-            props.context.server,
-            undefined,
-            props.topbar,
-            props.rowIndex ? props.rowIndex() : undefined,
-            props.selectedRow.index,
-            props.filter ? props.filter() : undefined
-        );
+                    props.cellEditor.deselectedValue !== undefined ? 
+                        props.cellEditor.deselectedValue 
+                    : 
+                        false,
+                props.context.server,
+                undefined,
+                props.topbar,
+                props.rowIndex ? props.rowIndex() : undefined,
+                props.selectedRow.index,
+                props.filter ? props.filter() : undefined
+            );
+        }
+        
+        // Timeout of 1 in cell-editor so selectRecord gets called first
+        if (props.isCellEditor) {
+            setTimeout(() => {
+                doSendSetValues()
+            }, 1)
+        }
+        else {
+            doSendSetValues()
+        }
     }
 
     return (

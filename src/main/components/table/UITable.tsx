@@ -280,6 +280,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataBook);
 
+    const [isSelecting, setIsSelecting] = useState<boolean>(false);
+
     const heldMouseEvents = useRef<Set<Function>>(new Set());
     /** Hook for MouseListener */
     useMouseListener(
@@ -303,7 +305,13 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 if (props.onRowSelect) {
                     props.onRowSelect({ originalEvent: rowSelectionHelper.current.event, selectedRow: rowSelectionHelper.current.data })
                 }
-                sendSelectRequest(rowSelectionHelper.current.selectedColumn, rowSelectionHelper.current.filter, rowSelectionHelper.current.index)
+                if (selectedRow.index !== rowSelectionHelper.current.index) {
+                    setIsSelecting(true);
+                }
+                sendSelectRequest(rowSelectionHelper.current.selectedColumn, rowSelectionHelper.current.filter, rowSelectionHelper.current.index).then(() => {
+                    setIsSelecting(false);
+                    rowSelectionHelper.current = undefined;
+                });
             }
         }
     );
@@ -982,7 +990,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                 }
                             :
                                 undefined
-                        } />
+                        }
+                        isSelecting={isSelecting} />
                 }}
                 style={{ whiteSpace: 'nowrap', '--colName': colName }}
                 bodyClassName={concatClassnames(
@@ -1000,7 +1009,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
         context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
         enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
-        props.startEditing
+        props.startEditing, isSelecting
     ])
 
     // When a row is selected send a selectRow request to the server

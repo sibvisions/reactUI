@@ -90,7 +90,8 @@ export interface ICellEditor {
     filter?: Function
     rowData: any,
     setIsEditing: Function,
-    removeTableLinkRef?: Function
+    removeTableLinkRef?: Function,
+    isSelecting: boolean
 }
 
 /** 
@@ -167,6 +168,8 @@ export const CellEditor: FC<ICellEditor> = (props) => {
 
     /** State if the CellEditor is currently waiting for the selectedRow */
     const [waiting, setWaiting] = useState<boolean>(false);
+
+    const [storedClickEvent, setStoredClickEvent] = useState<Function|undefined>(undefined)
 
     /** When a new selectedRow is set, set waiting to false and if edit is false reset the passRef */
     useEffect(() => {
@@ -347,11 +350,18 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     useEffect(() => {
         props.setIsEditing(edit);
     }, [edit])
+    
+    useEffect(() => {
+        if (!props.isSelecting && storedClickEvent) {
+            storedClickEvent();
+            setStoredClickEvent(undefined);
+        }
+    }, [props.isSelecting, storedClickEvent])
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
         (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
-            ((edit && !waiting) ?
+            ((edit && !waiting && isEditable) ?
                 <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
                     {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable}, stopCellEditing, passRef.current)}
                 </div>
@@ -361,22 +371,25 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                     className={cellClassNames.join(' ') + " " + isEditable}
                     onClick={() => {
                         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
-                            setWaiting(true);
-                            setEdit(true);
+                            setStoredClickEvent(() => {
+                                setWaiting(true);
+                                setEdit(true);
+                            });
                         }
                     }}>
                     <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
                 </div>
-            ) : (!edit ?
+            ) : (edit && isEditable ?
+                <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
+                    {displayEditor(columnMetaData, { ...props, isReadOnly: !isEditable }, stopCellEditing, passRef.current)}
+                </div>
+                :
                 <div
                     style={cellStyle}
                     className={cellClassNames.join(' ')}
-                    onDoubleClick={handleDoubleClick}>
+                    onDoubleClick={() => setStoredClickEvent(() => handleDoubleClick())}>
                     <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
                 </div>
-                :
-                <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                    {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable}, stopCellEditing, passRef.current)}
-                </div>)
+            )
     )
 }

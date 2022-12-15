@@ -67,7 +67,7 @@ export function getDisplayScaleDigits(numberFormat:string) {
  */
 export function getWriteScaleDigits(numberFormat:string, scale:number) {
     let count = numberFormat.includes('.') ? (numberFormat.split('.')[1].match(/0/g) || []).length : 0;
-    return scale === -1 ? {minScale: count, maxScale:20} : {minScale: count, maxScale: scale}
+    return scale === -1 ? {minScale: count, maxScale: 20} : {minScale: count, maxScale: scale < count ? count : scale}
 }
 
 export function formatNumber(numberFormat: string, locale: string, value: any) {

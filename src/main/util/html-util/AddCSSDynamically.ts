@@ -56,5 +56,4 @@ export function addCSSDynamically(path:string, type:"applicationCSS"|"schemeCSS"
     else {
         document.head.appendChild(link);
     }
-    
 }

@@ -171,33 +171,46 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
      * Send a sendValues request with the next value to the server
      */
     const setNextValue = () => {
-        if (!props.isReadOnly) {
-            const setValReq = createSetValuesRequest();
-            setValReq.componentId = props.name;
-            setValReq.columnNames = [props.columnName];
-            setValReq.dataProvider = props.dataRow;
-
-            /** Get the index of the current image */
-            const index = stringAllowedValues.indexOf(currentImageValue)
-
-            /** If the index is not the last value in allowedValues, set to the next value */
-            if (stringAllowedValues.length > index + 1) {
-                setValReq.values = [props.cellEditor.allowedValues[index + 1]];
-            }
-
-            /** If the index is the last value, set to the first value of allowedValues */
-            else {
-                setValReq.values = [props.cellEditor.allowedValues[0]];
-            }
-
-            if (props.rowIndex !== undefined) {
-                if (props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
-                    setValReq.filter = props.filter()
+        const doSendSetValues = () => {
+            if (!props.isReadOnly) {
+                const setValReq = createSetValuesRequest();
+                setValReq.componentId = props.name;
+                setValReq.columnNames = [props.columnName];
+                setValReq.dataProvider = props.dataRow;
+    
+                /** Get the index of the current image */
+                const index = stringAllowedValues.indexOf(currentImageValue)
+    
+                /** If the index is not the last value in allowedValues, set to the next value */
+                if (stringAllowedValues.length > index + 1) {
+                    setValReq.values = [props.cellEditor.allowedValues[index + 1]];
                 }
-                setValReq.rowNumber = props.rowIndex()
+    
+                /** If the index is the last value, set to the first value of allowedValues */
+                else {
+                    setValReq.values = [props.cellEditor.allowedValues[0]];
+                }
+    
+                if (props.rowIndex !== undefined) {
+                    if (props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
+                        setValReq.filter = props.filter()
+                    }
+                    setValReq.rowNumber = props.rowIndex()
+                }
+                showTopBar(props.context.server.sendRequest(setValReq, REQUEST_KEYWORDS.SET_VALUES), props.topbar);
             }
-            showTopBar(props.context.server.sendRequest(setValReq, REQUEST_KEYWORDS.SET_VALUES), props.topbar);
         }
+
+        // Timeout of 1 in cell-editor so selectRecord gets called first
+        if (props.isCellEditor) {
+            setTimeout(() => {
+                doSendSetValues()
+            }, 1)
+        }
+        else {
+            doSendSetValues()
+        }
+
     }
 
     // If the lib user extends the ChoiceCellEditor with onChange, call it when slectedRow changes.
