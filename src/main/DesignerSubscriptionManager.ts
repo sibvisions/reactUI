@@ -506,4 +506,27 @@ export class DesignerSubscriptionManager {
     notifyMenuBarHeightChanged() {
         this.menuBarHeightSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
     }
+
+    notifyAll() {
+        this.notifyButtonBackgroundChanged();
+        this.notifyButtonPaddingChanged();
+        this.notifyCheckboxSizeChanged();
+        this.notifyCorpHeaderChanged();
+        this.notifyCorpMenubarChanged();
+        this.notifyFontSizeChanged();
+        this.notifyIconOnlyPaddingChanged();
+        this.notifyInputButtonPaddingChanged();
+        this.notifyInputLRPaddingChanged();
+        this.notifyInputTBPaddingChanged();
+        this.notifyMenuBarHeightChanged();
+        this.notifyMenuButtonPaddingChanged();
+        this.notifyRadiobuttonSizeChanged();
+        this.notifyStdHeaderChanged();
+        this.notifyStdMenuCollapsedWidthChanged();
+        this.notifyStdMenuWidthChanged();
+        this.notifyTabPaddingChanged();
+        this.notifyTableDataHeightChanged();
+        this.notifyTableHeaderPaddingChanged();
+        this.notifyTopbarColorChanged();
+    }
 }

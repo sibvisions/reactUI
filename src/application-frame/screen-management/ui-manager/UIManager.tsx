@@ -220,7 +220,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
                 designerSubscription={context.designerSubscriptions}
                 appName={context.appSettings.applicationMetaData.applicationName}
-                setShowDesigner={() => setShowDesignerView(prevState => !prevState)} >
+                setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
+                changeTheme={(newTheme:string) => context.subscriptions.emitThemeChanged(newTheme)} >
                 {content}
             </ReactUIDesigner> 
             :
