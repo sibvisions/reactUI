@@ -639,10 +639,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         /** If there is a match found send the value to the server */
         if (foundData.length === 1) {
-            const extractedData = getExtractedObject(foundData[0], primaryKeys) as any;
+            const extractedData = getExtractedObject(foundData[0], refColNames) as any;
+            const extractedPrimaryKeys = getExtractedObject(foundData[0], primaryKeys) as any;
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
-                values: primaryKeys.map(pk => extractedData[pk])
+                values: primaryKeys.map(pk => extractedPrimaryKeys[pk])
             };
 
             if (_.isEqual(extractedData, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName))) {
