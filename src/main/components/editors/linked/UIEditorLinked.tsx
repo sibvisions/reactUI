@@ -445,19 +445,33 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         columnViewNames.forEach((d) => {
             arr.push(value[d]);
         });
+
+        primaryKeys.forEach((d) => {
+            arr.push(value[d])
+        })
+
         return arr;
     }
 
-    const unpackSuggestionArray = (value: any[], display: boolean) => {
+    const unpackSuggestionArray = (value: any[], type:"reference"|"display"|"primary") => {
         if (value) {
-            if (display) {
+            if (type === "display") {
                 let displayObj: any = {}
                 let j = 0;
-                for (let i = props.cellEditor.linkReference.referencedColumnNames.length; i < value.length; i++) {
+                for (let i = props.cellEditor.linkReference.referencedColumnNames.length; i < value.length - primaryKeys.length; i++) {
                     displayObj[columnViewNames[j]] = value[i];
                     j++;
                 }
                 return displayObj;
+            }
+            else if (type === "primary") {
+                let primaryObj: any = {};
+                let j = 0;
+                for (let i = props.cellEditor.linkReference.referencedColumnNames.length + columnViewNames.length; i < value.length; i++) {
+                    primaryObj[primaryKeys[j]] = value[i];
+                    j++;
+                }
+                return primaryObj
             }
             else {
                 let sendObj: any = {}
@@ -526,7 +540,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
         const columnNames = (colNames.length === 0 && refColNames.length === 1) ? props.columnName : colNames;
-        let inputObj:any|any[] = unpackSuggestionArray(value, false);
+        let inputObj:any|any[] = unpackSuggestionArray(value, "reference");
+        let primaryObj:any|any[] = unpackSuggestionArray(value, "primary");
         
         const convertedColNamesObj = convertReferenceColNamesToColNames(inputObj, props.cellEditor.linkReference);
         const extractedLastValue = getExtractedObject(lastValue.current, colNames);
@@ -538,7 +553,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         else {
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
-                values: primaryKeys.map(pk => inputObj[pk])
+                values: primaryKeys.map(pk => primaryObj[pk])
             };
 
             if (colNames.length > 1) {
@@ -624,7 +639,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         /** If there is a match found send the value to the server */
         if (foundData.length === 1) {
-            const extractedData = getExtractedObject(foundData[0], refColNames) as any;
+            const extractedData = getExtractedObject(foundData[0], primaryKeys) as any;
             let filter:SelectFilter = {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => extractedData[pk])
@@ -734,7 +749,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             return providedData[index][props.cellEditor.displayReferencedColumnName];
         }
         else {
-            const suggestionObj = unpackSuggestionArray(d, true);
+            const suggestionObj = unpackSuggestionArray(d, "display");
             return Object.values(suggestionObj).map((d:any, i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
