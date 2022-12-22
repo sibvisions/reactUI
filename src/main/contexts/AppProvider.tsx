@@ -207,7 +207,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 };
                 ws.current.onclose = (event) => {
                     pingInterval.stop();
-                    if (event.code !== 1006) {
+                    if (event.code !== 1008) {
                         isReconnect.current = true;
                         wsIsConnected.current = false;
                         console.log("WebSocket has been closed, reconnecting in 5 seconds.");
@@ -643,7 +643,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             startUpRequest.deviceMode = contextState.appSettings.deviceMode;
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
-            startUpRequest.serverVersion = "2.1.0";
+            startUpRequest.serverVersion = "2.2.0";
             startUpRequest.timeZone = contextState.appSettings.timeZone;
             startUpRequest.locale = contextState.appSettings.locale;
             if (contextState.contentStore.customStartUpProperties.length) {
