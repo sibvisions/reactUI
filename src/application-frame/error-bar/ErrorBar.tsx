@@ -94,6 +94,9 @@ const ErrorBar:FC = () => {
         context.appSettings.setAppReadyParamFalse();
         context.subscriptions.emitAppReady(false);
         context.subscriptions.emitRestart();
+        context.contentStore.reset();
+        sessionStorage.clear();
+        context.server.isSessionExpired = false;
     }
 
     /**

@@ -112,6 +112,8 @@ export default abstract class BaseServer {
 
     designerUrl = "";
 
+    isSessionExpired = false;
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
@@ -218,7 +220,8 @@ export default abstract class BaseServer {
                     return
                 }
             }
-            if (this.errorIsDisplayed) {
+
+            if (this.errorIsDisplayed && endpoint !== REQUEST_KEYWORDS.ALIVE) {
                 reject("Not sending request while an error is active");
                 return;
             } 
@@ -704,12 +707,11 @@ export default abstract class BaseServer {
         else {
             this.subManager.emitErrorBarProperties(true, false, false, translation.get("Session expired!"));
             this.subManager.emitErrorBarVisible(true);
+            this.isSessionExpired = true;
         }
         if (this.history?.location.pathname.includes("/home/")) {
             localStorage.setItem("restartScreen", this.history.location.pathname.replaceAll("/", "").substring(indexOfEnd(this.history.location.pathname, "home") - 1));
         }
-        this.contentStore.reset();
-        sessionStorage.clear();
         console.error(expData.title);
     }
 

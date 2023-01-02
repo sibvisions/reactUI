@@ -286,7 +286,12 @@ const Menu: FC<IMenu> = (props) => {
             if (menuItems) {
                 let foundMenuItem:MenuItem = {}
                 menuItems.forEach(m => {
-                    if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
+                    if (m.items) {
+                        if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
+                            foundMenuItem = m
+                        }
+                    }
+                    else if ((m as MenuItemCustom).screenClassName === selectedMenuItem) {
                         foundMenuItem = m
                     }
                 });

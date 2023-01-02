@@ -191,6 +191,16 @@
 
     /// Panelmenu styling, nesting needed because primereact nesting
     .p-panelmenu {
+        .single-group-item {
+            .p-panelmenu-header-link {
+                font-weight: normal;
+            }
+
+            .p-toggleable-content {
+                display: none;
+            }
+        } 
+
         .p-panelmenu-header {
             > a {
                 padding: 1rem 1rem 1rem 10px;
@@ -258,7 +268,6 @@
     -o-animation: fadein 1s;
     animation: fadein 1s;
 }
-
 
 @media screen and (max-width: 960px) {
     .menu-topbar-right {

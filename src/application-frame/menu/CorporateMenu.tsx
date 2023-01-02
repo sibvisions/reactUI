@@ -41,7 +41,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
     const embeddedContext = useContext(EmbeddedContext);
 
     /** get menu items */
-    const menuItems = useMenuItems();
+    const menuItems = useMenuItems(undefined, true);
 
     /** 
      * Returns an array of created toolbar-items based on the toolbar-item-data sent by the server.

@@ -277,6 +277,9 @@ body {
     .menu-panelmenu-wrapper::-webkit-scrollbar-thumb:hover {
       background: var(--menu-scrollbar-hover-color); }
 
+.p-panelmenu .single-group-item.p-menuitem--active .p-panelmenu-header-link {
+  color: var(--std-menu-activeitem-color); }
+
 .p-panelmenu .p-panelmenu-header > a {
   background: var(--std-menu-background);
   border-color: var(--std-menu-background);
@@ -288,7 +291,6 @@ body {
   color: var(--std-menu-item-hover-text-color); }
 
 .p-panelmenu .p-panelmenu-header.p-highlight > a, .p-panelmenu .p-panelmenu-header.p-highlight:not(.p-disabled) > a:hover {
-  background: var(--std-menu-background);
   color: var(--std-menu-item-hover-text-color); }
 
 .p-panelmenu .p-panelmenu-content {

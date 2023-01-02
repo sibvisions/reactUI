@@ -26,14 +26,25 @@ import { ServerMenuButtons } from "../../response/data/MenuResponse";
 import { parseIconData } from "../../components/comp-props/ComponentProperties";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { isCorporation } from "../../util/server-util/IsCorporation";
 
-const useMenuItems = (menus?:string[]) => {
+const useMenuItems = (menus?:string[], isCorp?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
     /** Current state of menu items */
     const [menuItems, setMenuItems] = useState<Array<MenuItem>>([]);
+    /** The current app-theme e.g. "basti" */
+    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
+
+    useEffect(() => {
+        context.subscriptions.subscribeToTheme("menuitems", (theme:string) => setAppTheme(theme));
+
+        return () => {
+            context.subscriptions.unsubscribeFromTheme("menuitems");
+        }
+    }, [context.subscriptions])
 
     /** 
      * Subscribes to menuchanges and builds the menu everytime the menu changes and sets the current state of menuitems
@@ -41,7 +52,7 @@ const useMenuItems = (menus?:string[]) => {
      */
     useEffect(() => {
         // Returns a menu-item which can be used by the PrimeReact MenuModel-API
-        const getMenuItem = (item: ServerMenuButtons|BaseComponent):MenuItemCustom|MenuItem => {
+        const getMenuItem = (item: ServerMenuButtons|BaseComponent, isSingleGroup:boolean):MenuItemCustom|MenuItem => {
             // Checks if the given item has been sent by the server transfertype full
             const isBaseComp = (item:ServerMenuButtons|BaseComponent): item is BaseComponent => {
                 return (item as BaseComponent).id !== undefined
@@ -93,7 +104,7 @@ const useMenuItems = (menus?:string[]) => {
             else {
                 const castedMenuItem = menuItem as MenuItemCustom
                 castedMenuItem.command = () => showTopBar(item.action(), topbar);
-                castedMenuItem.className = concatClassnames(item.componentId.split(':')[0], !isFAIcon(iconData.icon) ? "custom-menu-icon" : "");
+                castedMenuItem.className = concatClassnames(item.componentId.split(':')[0], !isFAIcon(iconData.icon) ? "custom-menu-icon" : "", isSingleGroup && !isCorporation(isCorp ? "corporation" : "standard", appTheme) ? "single-group-item" : "");
                 castedMenuItem.componentId = item.componentId;
                 castedMenuItem.screenClassName = item.componentId.split(':')[0];
                 return castedMenuItem;
@@ -102,46 +113,54 @@ const useMenuItems = (menus?:string[]) => {
 
         // Builds the menu-item hirarchy for transferType partial
         const receiveNewMenuItems = (menuGroup: Map<string, Array<ServerMenuButtons>>) => {
-            const primeMenu = new Array<MenuItem>();
+            let primeMenu = new Array<MenuItem>();
 
             // Returns an array of menu-items for the Prime-React menu
-            const getSubItems = (arr: Array<ServerMenuButtons>) => {
-                return arr.map(menuItem => getMenuItem(menuItem));
+            const getSubItems = (arr: Array<ServerMenuButtons>, isSingleGroup: boolean) => {
+                return arr.map(menuItem => getMenuItem(menuItem, isSingleGroup));
             }
 
-            menuGroup.forEach((value, key) => {
-                // Split for submenus
-                const nameSplit = key.split("/");
-                let menuIterator = primeMenu;
-                let i = 0
-                while (i < nameSplit.length) {
-                    const foundMenuGroup = menuIterator.find(item => item.label === nameSplit[i]);
-                    // If the menu-group hasn't been found add it
-                    if (!foundMenuGroup) {
-                        const newMainMenuGroup = {
-                            label: nameSplit[i],
-                            icon: undefined,
-                            // If i is nameSplit.length - 1 it is the last level and we can just get the final subitem-level
-                            // If not we can leave the items array empty and it gets filled later.
-                            items: i === nameSplit.length - 1 ?
-                            getSubItems(value) : [],
-                            className: i !== 0 ? "is-submenu " : ""
-                        };
-                        // The new menu-group gets pushed to the menu-iterator and the new menuIterator becomes the menu-groups (sub-)items array
-                        // because the next entries in the loop can only be children of the menu-group
-                        menuIterator.push(newMainMenuGroup)
-                        menuIterator = newMainMenuGroup.items;
-                    }
-                    // If the menu-group has been found, add the subitems to the existing ones
-                    else {
-                        if (i === nameSplit.length - 1) {
-                            foundMenuGroup.items = [...(foundMenuGroup.items as MenuItem[]), ...getSubItems(value)];
+            if (menuGroup.size === 1 && !isCorporation(isCorp ? "corporation" : "standard", appTheme)) {
+                const singleGroup = menuGroup.entries().next().value[1];
+                primeMenu = getSubItems(singleGroup, true);
+            }
+            else {
+                menuGroup.forEach((value, key) => {
+                    // Split for submenus
+                    const nameSplit = key.split("/");
+                    let menuIterator = primeMenu;
+                    let i = 0
+                    while (i < nameSplit.length) {
+                        const foundMenuGroup = menuIterator.find(item => item.label === nameSplit[i]);
+                        // If the menu-group hasn't been found add it
+                        if (!foundMenuGroup) {
+                            const newMainMenuGroup = {
+                                label: nameSplit[i],
+                                icon: undefined,
+                                // If i is nameSplit.length - 1 it is the last level and we can just get the final subitem-level
+                                // If not we can leave the items array empty and it gets filled later.
+                                items: i === nameSplit.length - 1 ?
+                                getSubItems(value, false) : [],
+                                className: i !== 0 ? "is-submenu " : ""
+                            };
+                            // The new menu-group gets pushed to the menu-iterator and the new menuIterator becomes the menu-groups (sub-)items array
+                            // because the next entries in the loop can only be children of the menu-group
+                            menuIterator.push(newMainMenuGroup)
+                            menuIterator = newMainMenuGroup.items;
                         }
-                        menuIterator = foundMenuGroup.items as MenuItem[];
+                        // If the menu-group has been found, add the subitems to the existing ones
+                        else {
+                            if (i === nameSplit.length - 1) {
+                                foundMenuGroup.items = [...(foundMenuGroup.items as MenuItem[]), ...getSubItems(value, false)];
+                            }
+                            menuIterator = foundMenuGroup.items as MenuItem[];
+                        }
+                        i++;
                     }
-                    i++;
-                }
-            });
+                });
+            }
+
+
             setMenuItems(primeMenu);
         }
 
@@ -151,7 +170,7 @@ const useMenuItems = (menus?:string[]) => {
 
             // Returns an array of menu-items for the Prime-React menu
             const getSubItems = (arr: BaseComponent[]) => {
-                return arr.map(menuItem => getMenuItem(menuItem))
+                return arr.map(menuItem => getMenuItem(menuItem, false))
             }
 
             // Check if the menuId is in the contentstore and add it
@@ -209,7 +228,7 @@ const useMenuItems = (menus?:string[]) => {
                 context.subscriptions.unsubscribeFromMenuChange(receiveNewMenuItems)
             }
         }
-    }, [context.subscriptions, menus]);
+    }, [context.subscriptions, menus, appTheme]);
 
     return menuItems;
 }

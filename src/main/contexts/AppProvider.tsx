@@ -182,18 +182,19 @@ const AppProvider: FC<ICustomContent> = (props) => {
             let index = 0;
             let reconnectActive = false;
             let reconnectInterval = new Timer(() => {
-                connectWs();
-                index++
-                if (index <= 5) {
-                    contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
-                    if (index === 1) {
-                        contextState.subscriptions.emitErrorBarVisible(true);
+                if (!contextState.server.isSessionExpired) {
+                    connectWs();
+                    index++
+                    if (index <= 5) {
+                        contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
+                        if (index === 1) {
+                            contextState.subscriptions.emitErrorBarVisible(true);
+                        }
+                    }
+                    else {
+                        contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable.");
                     }
                 }
-                else {
-                    contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable.");
-                }
-
             }, 5000);
             reconnectInterval.stop();
 
@@ -604,6 +605,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);
                 contextState.launcherReady = false;
+
+                if (wsPingIntervalToSet) {
+                    contextState.server.wsPingInterval = wsPingIntervalToSet;
+                }
             }
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
@@ -629,6 +634,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
         
                 if (props.onLogin) {
                     contextState.server.setOnLoginFunction(props.onLogin);
+                }
+
+                if (wsPingIntervalToSet) {
+                    contextState.server.wsPingInterval = wsPingIntervalToSet;
                 }
             }
             contextState.server.BASE_URL = baseUrlToSet;

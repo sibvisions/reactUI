@@ -652,6 +652,10 @@ body {
 }
 
 .p-panelmenu {
+    .single-group-item.p-menuitem--active .p-panelmenu-header-link {
+        color: var(--std-menu-activeitem-color);
+    }
+
     .p-panelmenu-header {
         > a {
             background: var(--std-menu-background);
@@ -667,7 +671,6 @@ body {
 
         &.p-highlight {
             > a, &:not(.p-disabled) > a:hover {
-                background: var(--std-menu-background);
                 color: var(--std-menu-item-hover-text-color);
             }
         }
