@@ -27,6 +27,8 @@ import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableImageEditor } from "../../../extend-components/editors/ExtendImageEditor";
+import { removeLayoutStyle } from "../../../util/component-util/RemoveLayoutStyle";
+import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor {
@@ -66,6 +68,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (!props.cellEditor.defaultImageName || !props.selectedRow || !props.selectedRow.data[props.columnName]) {
+            removeLayoutStyle(wrapRef.current);
             const prefSize:Dimension = wrapRef.current ? { width: wrapRef.current.offsetWidth, height: wrapRef.current.offsetHeight } : { width: 0, height: 0 }
             if (props.preferredSize) {
                 const parsedSize = parsePrefSize(props.preferredSize) as Dimension
@@ -102,6 +105,8 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
             sendOnLoadCallback(id, props.cellEditor.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }   
     }
+
+    useAddLayoutStyle(wrapRef.current, props.layoutStyle, onLoadCallback);
 
     // If the lib user extends the ImageCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {

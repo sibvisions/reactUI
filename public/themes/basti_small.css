@@ -98,7 +98,7 @@ body {
   .basti_small .std-menu.menu-collapsed .menu-panelmenu-wrapper::-webkit-scrollbar-button:start:decrement {
     height: var(--std-header-height); }
 
-.basti_small .std-menu.menu-collapsed .menu-topbar {
+.basti_small .std-menu.menu-collapsed:not(.design-std-menu) .menu-topbar {
   margin-left: var(--std-menu-collapsed-width); }
 
 .basti_small .std-menu.menu-collapsed .menu-logo-mini {

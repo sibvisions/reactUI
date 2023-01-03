@@ -251,8 +251,7 @@ export default abstract class BaseContentStore {
                 const tbpChildren = this.componentChildren.get(string) || new Set<string>();
                 tbpChildren.add(component.id);
                 this.componentChildren.set(string, tbpChildren);
-                children.add(component.parent + "-tbMain");
-                children.add(component.parent + "-tbCenter");
+                children.add(string);
             }
             else {
                 children.add(child.id);
@@ -279,8 +278,7 @@ export default abstract class BaseContentStore {
                 const tbpChildren = this.componentChildren.get(string) || new Set<string>();
                 tbpChildren.delete(component.id);
                 this.componentChildren.set(string, tbpChildren);
-                children.delete(component.parent + "-tbMain");
-                children.delete(component.parent + "-tbCenter");
+                children.delete(string);
             }
             else {
                 children.delete(child.id);

@@ -24,6 +24,7 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 // Interface for the browser component
 export interface IBrowser extends BaseComponent {
@@ -55,8 +56,10 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    useAddLayoutStyle(browserRef.current, layoutStyle, onLoadCallback);
+
     return (
-        <span ref={browserRef} style={layoutStyle}>
+        <span ref={browserRef} style={layoutStyle} >
             <Tooltip target={"#" + props.name} />
             <iframe
                 id={props.name} 

@@ -116,7 +116,8 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
             parseMaxSize(props.maximumSize),
             parseMinSize(props.minimumSize),
             clone,
-            onLoadCallback)
+            onLoadCallback),
+        onLoadCallback
     );
 
     useLayoutEffect(() => {

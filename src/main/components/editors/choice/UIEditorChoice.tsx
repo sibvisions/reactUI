@@ -35,6 +35,7 @@ import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import { parseIconData } from "../../comp-props/ComponentProperties";
 import IconProps from "../../comp-props/IconProps";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
+import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor {
@@ -167,6 +168,8 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
         }
     }
 
+    useAddLayoutStyle(wrapRef.current, props.layoutStyle, onLoadCallback);
+
     /**
      * Send a sendValues request with the next value to the server
      */
@@ -222,6 +225,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
 
     return (
         <span
+            id={props.name + "-wrapper"}
             ref={wrapRef}
             className={concatClassnames(
                 "rc-editor-choice",
@@ -267,6 +271,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             {validImages[currentImageValue] && validImages[currentImageValue].icon ?
                 <i
                     ref={imgRef}
+                    layoutstyle-wrapper={props.name + "-wrapper"}
                     id={!props.isCellEditor ? props.name : undefined}
                     className={concatClassnames(
                         "rc-editor-choice-img",

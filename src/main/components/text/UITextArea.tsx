@@ -84,7 +84,8 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     return (

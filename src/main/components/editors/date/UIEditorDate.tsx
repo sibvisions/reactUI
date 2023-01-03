@@ -211,7 +211,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     // When the cell-editor is opened focus the input and forward the pressed key when opening, on unmount save the date-input if the screen is still opened

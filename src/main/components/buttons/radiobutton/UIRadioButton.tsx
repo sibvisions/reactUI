@@ -85,7 +85,8 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     //If lib-user extends Radiobutton with onChange, call it when selected changes

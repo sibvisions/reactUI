@@ -25,6 +25,7 @@ import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for Gauge properties sent by server */
 export interface IGauge extends BaseComponent {
@@ -90,6 +91,8 @@ const UIGauge: FC<IGauge> = (baseProps) => {
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
+
+    useAddLayoutStyle(wrapperRef.current, layoutStyle, onLoadCallback);
 
     // Sets the gauge properties on render
     useLayoutEffect(() => {

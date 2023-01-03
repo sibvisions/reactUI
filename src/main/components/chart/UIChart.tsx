@@ -37,6 +37,7 @@ import useMetaData from "../../hooks/data-hooks/useMetaData";
 import MetaDataResponse from "../../response/data/MetaDataResponse";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -620,6 +621,8 @@ const UIChart: FC<IChart> = (baseProps) => {
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
+
+    useAddLayoutStyle(chartRef.current, layoutStyle, onLoadCallback)
 
     return (
         <span ref={chartRef} className={props.style} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>

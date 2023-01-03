@@ -38,6 +38,7 @@ import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
 import IconProps from "../comp-props/IconProps";
 import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
 import { IExtendableMap } from "../../extend-components/maps/ExtendMapGoogle";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for Map components */
 export interface IMap extends BaseComponent {
@@ -97,6 +98,8 @@ const UIMapOSM: FC<IMap & IExtendableMap> = (baseProps) => {
         }
             
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useAddLayoutStyle(mapRef.current, layoutStyle, onLoadCallback);
 
     /** 
      * Map can't measure itself, because it needs a set height initially --> before the componentsizes are set by the layout,

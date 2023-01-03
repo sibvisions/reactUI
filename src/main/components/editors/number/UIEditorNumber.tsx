@@ -172,7 +172,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
@@ -257,9 +258,10 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     // TODO: It should be possible to remove this double inputnumber implementation
     return (
         (!props.isCellEditor) ?
-            <span aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
+            <span id={props.name + "-wrapper"} aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
                     ref={numberRef}
+                    layoutstyle-wrapper={props.name + "-wrapper"}
                     id={props.name}
                     inputRef={numberInput}
                     className={numberClassNames}

@@ -27,12 +27,14 @@ import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableLabel } from "../../extend-components/label/ExtendLabel";
 import useIsHTMLText from "../../hooks/components-hooks/useIsHTMLText";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /**
  * Displays a simple label
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
+    const wrapRef = useRef<HTMLSpanElement>(null);
     /** Reference for label element */
     const labelRef = useRef<HTMLSpanElement>(null);
 
@@ -54,10 +56,24 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /**
+     * XXX prevents infinite loop of labels, labels would report their size for a specific layoutstyle and then would report themselves again for adjusted parent -> loop
+     * when there is already a size for this layoutstyle, don't report again and use this one instead.
+     */
+    //const layoutStyleSizes = useRef<Map<string, {width: any, height: any}>>(new Map<string, {width: any, height: any}>())
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (labelRef.current && onLoadCallback) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
+            // if (layoutStyle && layoutStyle.width && layoutStyle.height) {
+            //     if (layoutStyleSizes.current && !layoutStyleSizes.current.has(layoutStyle.width.toString() + "-" + layoutStyle.height.toString())) {
+            //         sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
+            //         layoutStyleSizes.current.set(layoutStyle.width.toString() + "-" + layoutStyle.height.toString(), { width: layoutStyle.width, height: layoutStyle.height });
+            //     }
+            // }
+            // else {
+                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
+            //}
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
 
@@ -66,7 +82,9 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
         if (props.onChange) {
             props.onChange(props.text)
         }
-    }, [props.text])
+    }, [props.text]);
+
+    useAddLayoutStyle(wrapRef.current, layoutStyle, onLoadCallback)
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
@@ -74,6 +92,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
         <Tooltip target={"#" + props.name + "-text"} />
         <span
             {...usePopupMenu(props)}
+            ref={wrapRef}
             id={props.name}
             className={concatClassnames(
                 "rc-label",
@@ -87,7 +106,9 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
                 alignItems: !isHTML ? lblAlignments.va : lblAlignments.ha,
                 ...lblTextAlignment,
                 ...layoutStyle,
-                ...compStyle
+                ...compStyle,
+                //height: layoutStyle && layoutStyle.height && layoutStyle.width ? layoutStyleSizes.current.has(layoutStyle.width.toString() + "-" + layoutStyle.height.toString()) ? layoutStyleSizes.current.get(layoutStyle.width.toString() + "-" + layoutStyle.height.toString())!.height : layoutStyle.height : undefined,
+                //width: layoutStyle && layoutStyle.height && layoutStyle.width ? layoutStyleSizes.current.has(layoutStyle.width.toString() + "-" + layoutStyle.height.toString()) ? layoutStyleSizes.current.get(layoutStyle.width.toString() + "-" + layoutStyle.height.toString())!.width : layoutStyle.width : undefined
             }}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <span 
@@ -95,7 +116,8 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
                 ref={labelRef} 
                 dangerouslySetInnerHTML={{ __html: props.text as string }} 
                 data-pr-tooltip={props.toolTipText} 
-                data-pr-position="left" />
+                data-pr-position="left"
+                layoutstyle-wrapper={props.name} />
         </span>
         </>
     )

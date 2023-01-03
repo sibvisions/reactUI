@@ -95,7 +95,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     // Sets the background-color if cellFormatting is set in a cell-editor

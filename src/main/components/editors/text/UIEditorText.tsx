@@ -299,7 +299,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */

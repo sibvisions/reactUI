@@ -1,7 +1,9 @@
-import { CSSProperties, useLayoutEffect } from "react";
+import { CSSProperties, useEffect, useLayoutEffect } from "react";
 import { removeLayoutStyle } from "../../util/component-util/RemoveLayoutStyle";
+import LoadCallBack from "../../util/types/LoadCallBack";
+import useAddLayoutStyle from "./useAddLayoutStyle";
 
-const useHandleDesignerUpdate = (designerUpdate:boolean|undefined, ref: any, layoutStyle: CSSProperties|undefined, loadCallBack:Function) => {
+const useHandleDesignerUpdate = (designerUpdate:boolean|undefined, ref: any, layoutStyle: CSSProperties|undefined, loadCallBack:Function, loadCallBackFunc:LoadCallBack|undefined) => {
     useLayoutEffect(() => {
         if (ref && designerUpdate !== undefined) {
             const cloneElem = ref.cloneNode(true) as HTMLElement;
@@ -13,13 +15,6 @@ const useHandleDesignerUpdate = (designerUpdate:boolean|undefined, ref: any, lay
         }
     }, [designerUpdate])
 
-    useLayoutEffect(() => {
-        if (ref) {
-            ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
-            ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
-            ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
-            ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
-        }
-    }, [layoutStyle])
+    useAddLayoutStyle(ref, layoutStyle, loadCallBackFunc)
 }
 export default useHandleDesignerUpdate

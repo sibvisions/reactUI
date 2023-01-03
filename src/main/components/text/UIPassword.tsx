@@ -79,7 +79,8 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     return (

@@ -138,7 +138,8 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     /**

@@ -85,7 +85,8 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     // If lib-user extends Checkbox with onChange, call it when selected changes

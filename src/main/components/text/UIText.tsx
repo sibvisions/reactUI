@@ -85,7 +85,8 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     return (

@@ -472,7 +472,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     /** Determine the estimated width of the table */

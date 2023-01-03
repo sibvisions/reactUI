@@ -15,6 +15,7 @@
 
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import CELLEDITOR_CLASSNAMES from "../../components/editors/CELLEDITOR_CLASSNAMES";
+import { removeLayoutStyle } from "../component-util/RemoveLayoutStyle";
 import Dimension from "../types/Dimension";
 //import { CELLEDITOR_CLASSNAMES } from "../../components/editors";
 
@@ -55,7 +56,8 @@ export function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxS
  * @param className - the classname of a component
  */
 function measurePrefWidth(ref:any, className:string) {
-    const arrString:string[] = [COMPONENT_CLASSNAMES.TEXTAREA, COMPONENT_CLASSNAMES.TEXTFIELD, COMPONENT_CLASSNAMES.PASSWORD, CELLEDITOR_CLASSNAMES.TEXT, COMPONENT_CLASSNAMES.SPLITPANEL] as string[]
+    const arrString:string[] = [COMPONENT_CLASSNAMES.TEXTAREA, COMPONENT_CLASSNAMES.TEXTFIELD, COMPONENT_CLASSNAMES.PASSWORD, CELLEDITOR_CLASSNAMES.TEXT, COMPONENT_CLASSNAMES.SPLITPANEL] as string[];
+    
     if (arrString.indexOf(className) !== -1) {
         return Math.max(ref.offsetWidth, Math.ceil(ref.getBoundingClientRect().width))
     }
@@ -80,8 +82,17 @@ export function sendOnLoadCallback(id: string, className:string, preferredSize:D
             checkedSize = checkSizes(preferredSize, minSize, maxSize);
         }
         else {
-            /** Measure how big the component wants to be initially */
-            const prefSize:Dimension = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};
+            let prefSize:Dimension = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};
+            if (ref) {
+                if (ref.getAttribute("layoutstyle-wrapper")) {
+                    removeLayoutStyle(document.getElementById(ref.getAttribute("layoutstyle-wrapper")));
+                }
+                else {
+                    removeLayoutStyle(ref)
+                }
+                /** Measure how big the component wants to be initially */
+                prefSize = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};
+            }
             checkedSize = checkSizes(prefSize, minSize, maxSize);
         }
         onLoadCallback(id, checkedSize, minSize, maxSize);

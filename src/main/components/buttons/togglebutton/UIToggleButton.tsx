@@ -106,7 +106,8 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     //If lib-user extends Togglebutton with onChange, call it when selected changes

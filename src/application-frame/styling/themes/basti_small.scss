@@ -225,7 +225,7 @@ body {
                 }
             }
 
-            .menu-topbar {
+            &:not(.design-std-menu) .menu-topbar {
                 margin-left: var(--std-menu-collapsed-width);
             }
 

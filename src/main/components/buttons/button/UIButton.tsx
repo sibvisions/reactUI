@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
@@ -93,7 +93,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             parseMinSize(props.minimumSize),
             clone,
             onLoadCallback
-        )
+        ),
+        onLoadCallback
     );
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
@@ -110,7 +111,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     }
 
     return (
-        <span ref={buttonWrapperRef} style={layoutStyle}>
+        <span id={props.name + "-wrapper"} ref={buttonWrapperRef} style={layoutStyle}>
             <Button
                 id={props.name}
                 ref={buttonRef}
@@ -165,6 +166,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                 disabled={isCompDisabled(props)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
+                layoutstyle-wrapper={props.name + "-wrapper"}
                 {...usePopupMenu(props)}>
                     {isHTML && props.text && <RenderButtonHTML text={props.text} />}
                 </Button>

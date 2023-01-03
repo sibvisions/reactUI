@@ -250,7 +250,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                     setEdit(true);
                     break;
                 default:
-                    if (event.key.length === 1) {
+                    if (event.key.length === 1 && !event.ctrlKey) {
                         passRef.current = event.key;
                         setEdit(true);
                     }

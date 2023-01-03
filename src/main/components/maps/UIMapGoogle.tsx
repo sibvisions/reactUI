@@ -35,6 +35,7 @@ import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
 
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableMapGoogle } from "../../extend-components/maps/ExtendMapGoogle";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /**
  * This component displays a map view with Google Maps
@@ -103,6 +104,8 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), mapWrapperRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useAddLayoutStyle(mapWrapperRef.current, layoutStyle, onLoadCallback);
 
     /** Call the loadGoogleMaps function pass function to set Map ready and API key sent by server */
     useEffect(() => {

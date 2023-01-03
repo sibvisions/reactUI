@@ -30,6 +30,7 @@ import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableIcon } from "../../extend-components/icon/ExtendIcon";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
@@ -94,6 +95,8 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
             }
         }
     },[onLoadCallback, id, props.image, props.preferredSize, props.maximumSize, props.minimumSize]);
+
+    useAddLayoutStyle(iconRef.current, layoutStyle, onLoadCallback)
 
     // If the lib user extends the Icon with onChange, call it when the image changes.
     useEffect(() => {
