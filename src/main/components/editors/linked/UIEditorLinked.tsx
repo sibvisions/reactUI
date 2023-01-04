@@ -882,7 +882,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 }}
                 onFocus={() => {
                     if (!focused.current) {
-                        focused.current = true
+                        focused.current = true;
+                        setTimeout(() => onFocusGained(props.name, props.context.server), 0);
                     }
                 }}
                 onBlur={event => {
