@@ -24,6 +24,7 @@ import Dimension from "../../../util/types/Dimension";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
+import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
 
 /**
  * This component is a panel with a header, useful to group components
@@ -65,6 +66,8 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             onLoadCallback
         )
     }, [onLoadCallback]);
+
+    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
 
     return (
         <>

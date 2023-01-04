@@ -453,6 +453,9 @@ body {
   background: var(--input-background);
   border: var(--input-border-width) solid var(--input-border-color);
   border-radius: var(--editor-border-radius); }
+  .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):not(.express-scheme-editor):not(.designer-search-editor):not(.p-dropdown-label).p-autocomplete-input, .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):not(.express-scheme-editor):not(.designer-search-editor):not(.p-dropdown-label).p-date-input {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px; }
   .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):not(.express-scheme-editor):not(.designer-search-editor):not(.p-dropdown-label):not(.required-field) {
     color: var(--text-color); }
   .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):not(.express-scheme-editor):not(.designer-search-editor):not(.p-dropdown-label):enabled:focus {

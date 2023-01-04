@@ -30,6 +30,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Layout from "../../layouts/Layout";
 import { IDesktopPanel } from "./UIDesktopPanel";
+import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
 
 // Interface for the opened-frame-context
 interface IOpenedFrameContext {
@@ -164,6 +165,8 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
         toFront ? arrCopy.unshift(name) : arrCopy.push(name);
         setOpenedFrames(arrCopy);
     }, [openFrames]);
+
+    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
 
     return (
         <OpenFrameContext.Provider value={{ openFrames: openFrames, openFramesCallback: openFramesCallback, tabMode: props.tabMode === true }}>

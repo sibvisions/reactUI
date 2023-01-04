@@ -956,6 +956,11 @@ body {
     border: var(--input-border-width) solid var(--input-border-color);
     border-radius: var(--editor-border-radius);
 
+    &.p-autocomplete-input, &.p-date-input {
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
     &:not(.required-field) {
         color: var(--text-color);
     }

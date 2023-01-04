@@ -24,6 +24,7 @@ import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
+import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
 
 /**
  * This component displays a panel in which you will be able to scroll
@@ -118,7 +119,9 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             layoutSize,
             setLayoutSize
         )
-    }, [onLoadCallback])
+    }, [onLoadCallback]);
+
+    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
 
     return (
         <>

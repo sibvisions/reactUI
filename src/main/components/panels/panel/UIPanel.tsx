@@ -27,6 +27,7 @@ import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
+import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for Panels */
 export interface IPanel extends BaseComponent {
@@ -217,7 +218,9 @@ const UIPanel: FC<IPanel> = (baseProps) => {
             }
         }
         return ""
-    }, [props.layout, isToolBar, isLastToolBar])
+    }, [props.layout, isToolBar, isLastToolBar]);
+
+    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
 
     return (
         <>

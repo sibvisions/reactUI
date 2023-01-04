@@ -386,7 +386,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                     props.style
                 )}
                 panelClassName="rc-editor-date-panel"
-                inputClassName={props.isReadOnly ? "rc-input-readonly" : ""}
+                inputClassName={concatClassnames(props.isReadOnly ? "rc-input-readonly" : "", "p-date-input")}
                 style={{
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
