@@ -96,7 +96,7 @@ export function getFontProperties(font?:string) {
                 break;
         }
 
-        fontProperties.fontSize = splitFont[2];
+        fontProperties.fontSize = `${splitFont[2]}px`;
     }
     return fontProperties;
 };

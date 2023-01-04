@@ -49,6 +49,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         id,
         reportSize,
         maximumSize,
+        minimumSize,
         className
     } = baseProps;
 
@@ -510,8 +511,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 }
 
                 /** Set from server */
-                const maxLayoutSize: {width: number, height: number} = {height:100000, width:100000};
-                const minLayoutSize: {width: number, height: number} = {width: 10, height: 10};
+                const maxLayoutSize: {width: number, height: number} = maximumSize || {height:100000, width:100000};
+                const minLayoutSize: {width: number, height: number} = minimumSize || {width: 10, height: 10};
 
                 /** Available size set by parent layout*/
                 let calcSize = {width: (style?.width as number) || 0, height: (style?.height as number) || 0};
@@ -527,22 +528,22 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 }
                     
 
-                if(maximumSize) {
-                    if(calcSize.width > maximumSize.width) {
-                        calcSize.width = maximumSize.width;
-                    }
+                // if(maximumSize) {
+                //     if(calcSize.width > maximumSize.width) {
+                //         calcSize.width = maximumSize.width;
+                //     }
                         
-                    if(calcSize.height > maximumSize.height) {
-                        calcSize.height = maximumSize.height;
-                    }
-                }
+                //     if(calcSize.height > maximumSize.height) {
+                //         calcSize.height = maximumSize.height;
+                //     }
+                // }
 
                 const lba = anchors.get("l");
                 const rba = anchors.get("r");
                 const bba = anchors.get("b");
                 const tba = anchors.get("t");
-                if(calculatedTargetDependentAnchors && lba && rba && bba && tba && calcSize){                    
-                    if(horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH || (leftBorderUsed && rightBorderUsed)){
+                if(calculatedTargetDependentAnchors && lba && rba && bba && tba && calcSize) {
+                    if(horizontalAlignment === HORIZONTAL_ALIGNMENT.STRETCH || (leftBorderUsed && rightBorderUsed)) {
                         if(minLayoutSize.width > calcSize.width){
                             lba.position = 0;
                             rba.position = minLayoutSize.width;
@@ -570,7 +571,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             lba.position = 0;
                         }
                         else {
-                            switch (horizontalAlignment){
+                            switch (horizontalAlignment) {
                                 case HORIZONTAL_ALIGNMENT.LEFT:
                                     lba.position = 0;
                                     break

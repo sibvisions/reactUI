@@ -277,7 +277,12 @@ export default abstract class BaseServer {
                             }
                         }
                         else {
-                            this.subManager.emitErrorBarProperties(false, false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                            if (endpoint === REQUEST_KEYWORDS.STARTUP) {
+                                this.subManager.emitErrorBarProperties(false, false, false, "Startup failed!", "Check if the server is available", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
+                            }
+                            else {
+                                this.subManager.emitErrorBarProperties(false, false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                            }
                         }
                         if (error !== "no valid json") {
                             this.subManager.emitErrorBarVisible(true);

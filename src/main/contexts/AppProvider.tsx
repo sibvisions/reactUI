@@ -307,7 +307,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
                 setInterval(() => {
                     if ((Math.floor(Date.now() / 1000) - Math.floor(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
-                        contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                        if (getClientId() !== "ClientIdNotFound") {
+                            contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                        }
                     }
                 }, contextState.server.aliveInterval)
 
