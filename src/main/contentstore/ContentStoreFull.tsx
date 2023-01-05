@@ -108,6 +108,10 @@ export default class ContentStoreFull extends BaseContentStore {
             const isCustom:boolean = this.customComponents.has(newComponent.name as string);
             existingComponent = this.getExistingComponent(newComponent.id);
 
+            if (existingComponent) {
+                this.removeAsChild(existingComponent);
+            }
+
             this.updateExistingComponent(existingComponent, newComponent);
 
             if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL && !isCustom) {
@@ -229,12 +233,15 @@ export default class ContentStoreFull extends BaseContentStore {
                     if (existingComponent) {
                         this.validateComponent(existingComponent);
                     }
-                    
-                    this.removeAsChild(newComponent);
+                }
+            }
 
-                    if (!newComponent["~destroy"]) {
-                        this.addAsChild(newComponent);
-                    }
+            if (!newComponent["~destroy"]) {
+                if (newComponent.parent) {
+                    this.addAsChild(newComponent)
+                }
+                else if (existingComponent) {
+                    this.addAsChild(existingComponent);
                 }
             }
         });

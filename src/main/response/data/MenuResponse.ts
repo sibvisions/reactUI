@@ -25,6 +25,7 @@ export interface BaseMenuButton {
     enabled?: boolean,
     className?: string
     navigationName?:string
+    flat:boolean
     action?: () => Promise<any>
 }
 

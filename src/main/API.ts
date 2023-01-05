@@ -243,7 +243,8 @@ class API implements IAPI {
                 text: menuItem.text,
                 group: menuItem.menuGroup,
                 image: menuItem.icon ? menuItem.icon.substring(0, 2) + " " + menuItem.icon : "",
-                action: itemAction
+                action: itemAction,
+                flat: false
             };
             if (menuGroup) {
                 menuGroup.push(newItem);
@@ -322,7 +323,8 @@ class API implements IAPI {
             componentId: toolbarItem.id, 
             text: toolbarItem.title, 
             image: toolbarItem.icon.substring(0, 2) + " " + toolbarItem.icon, 
-            action: itemAction 
+            action: itemAction,
+            flat: false
         });
     }
 

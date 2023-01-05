@@ -455,7 +455,8 @@ export default class ContentStore extends BaseContentStore {
             action: () => {
                 this.history?.push("/home/"+title);
                 return Promise.resolve(true);
-            }
+            },
+            flat: false
         }
 
         //this.addCustomScreen(title, customScreen);

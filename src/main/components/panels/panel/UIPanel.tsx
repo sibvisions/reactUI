@@ -91,7 +91,7 @@ export function panelReportSize(id: string,
             className,
             propPref ? parsePrefSize(propPref) : adjustedSize,
             parseMaxSize(propMax),
-            parseMinSize(propMin),
+            calcMin ? calcMin : parseMinSize(propMin),
             undefined,
             onLoadCallback
         )

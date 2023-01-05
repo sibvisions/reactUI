@@ -27,6 +27,7 @@ import { parseIconData } from "../../components/comp-props/ComponentProperties";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { isCorporation } from "../../util/server-util/IsCorporation";
+import * as _ from "underscore"
 
 const useMenuItems = (menus?:string[], isCorp?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
@@ -125,41 +126,52 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                 primeMenu = getSubItems(singleGroup, true);
             }
             else {
+                if (isCorporation(isCorp ? "corporation" : "standard", appTheme)) {
+                    menuGroup.forEach(value => {
+                        const flatItems = value.filter(menuitem => menuitem.flat);
+                        flatItems.forEach(menuItem => {
+                            primeMenu.push(getMenuItem(menuItem, false));
+                            value.splice(value.findIndex(valItem => valItem.componentId === menuItem.componentId), 1);
+                        })
+                    });
+                }
+
                 menuGroup.forEach((value, key) => {
-                    // Split for submenus
-                    const nameSplit = key.split("/");
-                    let menuIterator = primeMenu;
-                    let i = 0
-                    while (i < nameSplit.length) {
-                        const foundMenuGroup = menuIterator.find(item => item.label === nameSplit[i]);
-                        // If the menu-group hasn't been found add it
-                        if (!foundMenuGroup) {
-                            const newMainMenuGroup = {
-                                label: nameSplit[i],
-                                icon: undefined,
-                                // If i is nameSplit.length - 1 it is the last level and we can just get the final subitem-level
-                                // If not we can leave the items array empty and it gets filled later.
-                                items: i === nameSplit.length - 1 ?
-                                getSubItems(value, false) : [],
-                                className: i !== 0 ? "is-submenu " : ""
-                            };
-                            // The new menu-group gets pushed to the menu-iterator and the new menuIterator becomes the menu-groups (sub-)items array
-                            // because the next entries in the loop can only be children of the menu-group
-                            menuIterator.push(newMainMenuGroup)
-                            menuIterator = newMainMenuGroup.items;
-                        }
-                        // If the menu-group has been found, add the subitems to the existing ones
-                        else {
-                            if (i === nameSplit.length - 1) {
-                                foundMenuGroup.items = [...(foundMenuGroup.items as MenuItem[]), ...getSubItems(value, false)];
+                    if (value.length) {
+                        // Split for submenus
+                        const nameSplit = key.split("/");
+                        let menuIterator = primeMenu;
+                        let i = 0
+                        while (i < nameSplit.length) {
+                            const foundMenuGroup = menuIterator.find(item => item.label === nameSplit[i]);
+                            // If the menu-group hasn't been found add it
+                            if (!foundMenuGroup) {
+                                const newMainMenuGroup = {
+                                    label: nameSplit[i],
+                                    icon: undefined,
+                                    // If i is nameSplit.length - 1 it is the last level and we can just get the final subitem-level
+                                    // If not we can leave the items array empty and it gets filled later.
+                                    items: i === nameSplit.length - 1 ?
+                                    getSubItems(value, false) : [],
+                                    className: i !== 0 ? "is-submenu " : ""
+                                };
+                                // The new menu-group gets pushed to the menu-iterator and the new menuIterator becomes the menu-groups (sub-)items array
+                                // because the next entries in the loop can only be children of the menu-group
+                                menuIterator.push(newMainMenuGroup)
+                                menuIterator = newMainMenuGroup.items;
                             }
-                            menuIterator = foundMenuGroup.items as MenuItem[];
+                            // If the menu-group has been found, add the subitems to the existing ones
+                            else {
+                                if (i === nameSplit.length - 1) {
+                                    foundMenuGroup.items = [...(foundMenuGroup.items as MenuItem[]), ...getSubItems(value, false)];
+                                }
+                                menuIterator = foundMenuGroup.items as MenuItem[];
+                            }
+                            i++;
                         }
-                        i++;
                     }
                 });
             }
-
 
             setMenuItems(primeMenu);
         }
