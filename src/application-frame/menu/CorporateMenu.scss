@@ -32,7 +32,7 @@
 
     .profile-menu {
         display: flex;
-        overflow: hidden;
+        //overflow: hidden;
     }
 }
 
@@ -104,7 +104,7 @@
             overflow-y: auto;
             overflow-x: hidden;
             height: inherit;
-    
+            display: block;
             >.p-menuitem {
                 float: left;
                 position: unset;

@@ -121,7 +121,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                 return arr.map(menuItem => getMenuItem(menuItem, isSingleGroup));
             }
 
-            if (menuGroup.size === 1 && !isCorporation(isCorp ? "corporation" : "standard", appTheme)) {
+            if (menuGroup.size === 1) {
                 const singleGroup = menuGroup.entries().next().value[1];
                 primeMenu = getSubItems(singleGroup, true);
             }
