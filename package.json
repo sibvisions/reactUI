@@ -43,7 +43,6 @@
     "jsdoc": "^3.6.6",
     "leaflet": "^1.7.1",
     "mini-css-extract-plugin": "^2.6.0",
-    "node-sass": "^6.0.1",
     "postcss": "^8.4.14",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-normalize": "^10.0.1",
@@ -63,6 +62,7 @@
     "react-transition-group": "^4.4.1",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.2",
+    "sass": "^1.57.1",
     "sass-loader": "^12.6.0",
     "stream": "^0.0.2",
     "style-loader": "^2.0.0",
@@ -79,8 +79,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes",
-    "build-ci": "CI=false && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && node-sass src/application-frame/styling/color-schemes -o build/color-schemes && node-sass src/application-frame/styling/themes -o build/themes && zip -r reactBuild build",
+    "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && sass src/application-frame/styling/color-schemes:build/color-schemes && sass src/application-frame/styling/themes:build/themes",
+    "build-ci": "CI=false && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && sass src/application-frame/styling/color-schemes:build/color-schemes && sass src/application-frame/styling/themes:build/themes && zip -r reactBuild build",
     "clean": "if exist dist rmdir /S /Q dist",
     "clean-ci": "rm -rf dist",
     "pre-package": "npm run build && npm run clean && npm run bundle && node dist/SetupPackage.js",
@@ -96,8 +96,8 @@
     "test": "react-scripts test",
     "createdoc": "jsdoc src -r -d docs",
     "eject": "react-scripts eject",
-    "scss-schemes": "node-sass --watch src/application-frame/styling/color-schemes -o public/color-schemes",
-    "scss-themes": "node-sass --watch src/application-frame/styling/themes -o public/themes"
+    "scss-schemes": "sass --watch --no-source-map src/application-frame/styling/color-schemes:public/color-schemes",
+    "scss-themes": "sass --watch --no-source-map src/application-frame/styling/themes:public/themes"
   },
   "eslintConfig": {
     "extends": "react-app"
