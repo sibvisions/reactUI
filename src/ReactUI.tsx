@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import React, { CSSProperties, FC, useContext, useState } from 'react';
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
