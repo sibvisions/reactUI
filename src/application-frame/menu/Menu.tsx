@@ -400,7 +400,7 @@ const Menu: FC<IMenu> = (props) => {
 
     return (
         <>
-            {(props.menuOptions.menuBar && (!embeddedContext || embeddedContext.showMenu)) &&
+            {(props.menuOptions.menuBar && props.menuOptions.toolBar && (!embeddedContext || embeddedContext.showMenu)) &&
                 <div className={concatClassnames(
                     "std-menu",
                     menuCollapsed ? " menu-collapsed" : "",
@@ -424,7 +424,7 @@ const Menu: FC<IMenu> = (props) => {
                             </div>
                         </div>
                     </div>
-                    {props.menuOptions.menuBar &&
+                    {props.menuOptions.menuBar && props.menuOptions.toolBar &&
                         <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
                             <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                                 <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />

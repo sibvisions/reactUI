@@ -183,7 +183,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                 menuMini ? "" : "screen-no-mini",
                 menuOptions.toolBar ? "toolbar-visible" : "",
-                !menuOptions.menuBar || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
+                (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
                 !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
             )}>
                 <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
