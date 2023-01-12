@@ -1,7 +1,7 @@
 import { CSSProperties, useEffect } from "react";
 import LoadCallBack from "../../util/types/LoadCallBack";
 
-const useAddLayoutStyle = (ref: any, layoutStyle: CSSProperties|undefined, loadBackFunction:LoadCallBack|undefined) => {
+const useAddLayoutStyle = (ref: any, layoutStyle: CSSProperties|undefined, loadBackFunction:LoadCallBack|undefined, additionalDependency?:any) => {
     useEffect(() => {
         if (ref) {
             ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
@@ -9,6 +9,6 @@ const useAddLayoutStyle = (ref: any, layoutStyle: CSSProperties|undefined, loadB
             ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
             ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
         }
-    }, [layoutStyle, loadBackFunction])
+    }, [layoutStyle, loadBackFunction, additionalDependency])
 }
 export default useAddLayoutStyle
