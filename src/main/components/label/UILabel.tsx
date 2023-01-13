@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Tooltip } from 'primereact/tooltip';
 import BaseComponent from "../../util/types/BaseComponent";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
@@ -56,24 +56,10 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
-    /**
-     * XXX prevents infinite loop of labels, labels would report their size for a specific layoutstyle and then would report themselves again for adjusted parent -> loop
-     * when there is already a size for this layoutstyle, don't report again and use this one instead.
-     */
-    //const layoutStyleSizes = useRef<Map<string, {width: any, height: any}>>(new Map<string, {width: any, height: any}>())
-
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (labelRef.current && onLoadCallback) {
-            // if (layoutStyle && layoutStyle.width && layoutStyle.height) {
-            //     if (layoutStyleSizes.current && !layoutStyleSizes.current.has(layoutStyle.width.toString() + "-" + layoutStyle.height.toString())) {
-            //         sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
-            //         layoutStyleSizes.current.set(layoutStyle.width.toString() + "-" + layoutStyle.height.toString(), { width: layoutStyle.width, height: layoutStyle.height });
-            //     }
-            // }
-            // else {
-                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
-            //}
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
 
@@ -106,9 +92,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
                 alignItems: !isHTML ? lblAlignments.va : lblAlignments.ha,
                 ...lblTextAlignment,
                 ...layoutStyle,
-                ...compStyle,
-                //height: layoutStyle && layoutStyle.height && layoutStyle.width ? layoutStyleSizes.current.has(layoutStyle.width.toString() + "-" + layoutStyle.height.toString()) ? layoutStyleSizes.current.get(layoutStyle.width.toString() + "-" + layoutStyle.height.toString())!.height : layoutStyle.height : undefined,
-                //width: layoutStyle && layoutStyle.height && layoutStyle.width ? layoutStyleSizes.current.has(layoutStyle.width.toString() + "-" + layoutStyle.height.toString()) ? layoutStyleSizes.current.get(layoutStyle.width.toString() + "-" + layoutStyle.height.toString())!.width : layoutStyle.width : undefined
+                ...compStyle
             }}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <span 

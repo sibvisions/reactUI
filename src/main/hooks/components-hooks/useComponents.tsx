@@ -127,7 +127,7 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
             //Set Preferred Sizes of changed Components
             if(preferredSizes && preferredSizes.has(compId)){
                 const preferredComp = preferredSizes.get(compId);
-                if(preferredComp && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))){
+                if(preferredComp && (preferredSizes.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))){
                     preferredComp.preferredSize = prefSize;
                     preferredComp.minimumSize = minSize;
                     preferredComp.maximumSize = maxSize

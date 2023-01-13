@@ -57,7 +57,6 @@ export function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxS
  */
 function measurePrefWidth(ref:any, className:string) {
     const arrString:string[] = [COMPONENT_CLASSNAMES.TEXTAREA, COMPONENT_CLASSNAMES.TEXTFIELD, COMPONENT_CLASSNAMES.PASSWORD, CELLEDITOR_CLASSNAMES.TEXT, COMPONENT_CLASSNAMES.SPLITPANEL] as string[];
-    
     if (arrString.indexOf(className) !== -1) {
         return Math.max(ref.offsetWidth, Math.ceil(ref.getBoundingClientRect().width))
     }
@@ -84,11 +83,13 @@ export function sendOnLoadCallback(id: string, className:string, preferredSize:D
         else {
             let prefSize:Dimension = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};
             if (ref) {
-                if (ref.getAttribute("layoutstyle-wrapper")) {
-                    removeLayoutStyle(document.getElementById(ref.getAttribute("layoutstyle-wrapper")));
-                }
-                else {
-                    removeLayoutStyle(ref)
+                if (className !== COMPONENT_CLASSNAMES.LABEL) {
+                    if (ref.getAttribute("layoutstyle-wrapper")) {
+                        removeLayoutStyle(document.getElementById(ref.getAttribute("layoutstyle-wrapper")));
+                    }
+                    else {
+                        removeLayoutStyle(ref)
+                    }
                 }
                 /** Measure how big the component wants to be initially */
                 prefSize = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};

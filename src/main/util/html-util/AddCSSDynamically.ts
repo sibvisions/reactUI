@@ -43,17 +43,29 @@ export function addCSSDynamically(path:string, type:"applicationCSS"|"schemeCSS"
     link.rel = 'stylesheet'; 
     link.type = 'text/css';
     link.href = path;
-    link.addEventListener("load", () => appReadyCallback(type));
-
-    link.addEventListener("error", (e) => {
-        console.error("error in file: " + type + ". The file could not be loaded.");
-        appReadyCallback(type);
-    })
-
+    
     if (before && type !== "applicationCSS") {
         document.head.insertBefore(link, before);
     }
     else {
         document.head.appendChild(link);
     }
+
+    var img = document.createElement('img');
+    document.body.appendChild(img);
+
+    img.onerror = img.onload = function() {
+        img.onerror = img.onload = null;
+        document.body.removeChild(img);
+        appReadyCallback(type)
+    };
+
+    img.src = path
+
+    // link.addEventListener("load", () => appReadyCallback(type));
+
+    // link.addEventListener("error", (e) => {
+    //     console.error("error in file: " + type + ". The file could not be loaded.");
+    //     appReadyCallback(type);
+    // })
 }

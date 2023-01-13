@@ -65,7 +65,7 @@ const UIManagerFull: FC<any> = () => {
             <div id="reactUI-main" className={concatClassnames(
                     "main",
                     menuOptions.toolBar ? "toolbar-visible" : "",
-                    !menuOptions.menuBar ? "menu-not-visible" : "",
+                    (!menuOptions.menuBar || !menuOptions.toolBar) ? "menu-not-visible" : "",
                 )}>
                     <ResizeProvider login={false} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
                         <ScreenManager />

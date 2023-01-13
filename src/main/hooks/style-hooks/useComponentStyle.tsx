@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { CSSProperties, useLayoutEffect, useState } from "react"
+import { CSSProperties, useLayoutEffect, useMemo, useState } from "react"
 import BaseComponent from "../../util/types/BaseComponent";
 
 // map to quickly get to the syscolor css variables
@@ -106,18 +106,14 @@ export function getFontProperties(font?:string) {
  * @param props - the properties of the components
  */
 const useComponentStyle = (props: BaseComponent):CSSProperties => {
-    /** The componentstyle state */
-    const [componentStyle, setComponentStyle] = useState<CSSProperties>({});
+    const compStyle = useMemo(() => {
+        const fontProps = getFontProperties(props.font);
+        const bgdProps = getColorProperties(props.background, true);
+        const fgdProps = getColorProperties(props.foreground, false);
 
-    // Everytime the font, background or foreground changes, check the componentstyle
-    useLayoutEffect(() => {
-            const fontProps = getFontProperties(props.font);
-            const bgdProps = getColorProperties(props.background, true);
-            const fgdProps = getColorProperties(props.foreground, false);
+        return { ...fontProps, ...bgdProps, ...fgdProps }
+    }, [props.font, props.background, props.foreground])
 
-            setComponentStyle(prevStyle => ({ ...prevStyle, ...fontProps, ...bgdProps, ...fgdProps }));
-    },[props.font, props.background, props.foreground])
-
-    return componentStyle
+    return compStyle
 }
 export default useComponentStyle

@@ -226,7 +226,9 @@ export default class AppSettings {
         this.applicationMetaData.rememberMe = appMetaData.rememberMe;
 
         if (!this.applicationMetaData.applicationLayout.urlSet) {
-            this.applicationMetaData.applicationLayout.layout = appMetaData.applicationLayout
+            if (appMetaData.applicationLayout) {
+                this.applicationMetaData.applicationLayout.layout = appMetaData.applicationLayout
+            }
         }
         
         if (appMetaData.applicationName) {
