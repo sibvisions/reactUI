@@ -47,7 +47,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
     /** The state of the css-version */
-    const [cssVersion, setCssVersion] = useState<string>("");
+    const [cssVersions, setCssVersions] = useState<{ appCssVersion: string, scheme: { name: string, version: string } , theme: { name: string, version: string } }>({ appCssVersion: "", scheme: {name: "", version: ""}, theme: {name: "", version: ""} });
 
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
@@ -63,11 +63,26 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
         let path = 'application.css'
-        if (cssVersion) {
-            path = path + "?version=" + cssVersion;
+        if (cssVersions.appCssVersion) {
+            path = path + "?version=" + cssVersions.appCssVersion;
         }
-        addCSSDynamically(path, "applicationCSS", () => context.appSettings.setAppReadyParam("applicationCSS"))
-    }, [cssVersion, restart, context.appSettings]);
+        addCSSDynamically(path, "applicationCSS", () => context.appSettings.setAppReadyParam("applicationCSS"));
+    }, [cssVersions.appCssVersion, restart, context.appSettings]);
+
+    /** Adds the application.css to the head */
+    useLayoutEffect(() => {
+        if (cssVersions.scheme.name && cssVersions.scheme.version) {
+            let path = "color-schemes/" + cssVersions.scheme.name
+            path = path + "?version=" + cssVersions.scheme.version;
+            addCSSDynamically(path, "schemeCSS", () => context.appSettings.setAppReadyParam("schemeCSS"));
+        }
+
+        if (cssVersions.theme.name && cssVersions.theme.version) {
+            let path = "themes/" + cssVersions.theme.name
+            path = path + "?version=" + cssVersions.theme.version;
+            addCSSDynamically(path, "themeCSS", () => context.appSettings.setAppReadyParam("themeCSS"));
+        }
+    }, [cssVersions.scheme, cssVersions.theme]);
 
     /**
      * Subscribes to app-name, css-version and restart
@@ -76,13 +91,16 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     useEffect(() => {
         context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
 
-        context.subscriptions.subscribeToCssVersion((version: string) => setCssVersion(version));
+        context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(prevState => ({...prevState, appCssVersion: version})));
+
+        context.subscriptions.subscribeToDesignerCssVersion((scheme:{ name: string, version: string }, theme: { name: string, version: string }) => setCssVersions(prevState => ({...prevState, scheme: scheme, theme: theme})));
 
         context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
 
         return () => {
             context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
-            context.subscriptions.unsubscribeFromCssVersion();
+            context.subscriptions.unsubscribeFromAppCssVersion();
+            context.subscriptions.unsubscribeFromDesignerCssVersion();
             context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
         }
     }, [context.subscriptions]);

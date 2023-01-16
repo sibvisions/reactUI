@@ -253,7 +253,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                 showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
                             }
                             else if (jscmd.command === "reloadCss") {
-                                contextState.subscriptions.emitCssVersion(jscmd.arguments.version);
+                                contextState.subscriptions.emitAppCssVersion(jscmd.arguments.version);
                             }
                         }
                         reader.readAsText(e.data);

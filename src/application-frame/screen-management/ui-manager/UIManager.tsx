@@ -221,7 +221,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 designerSubscription={context.designerSubscriptions}
                 appName={context.appSettings.applicationMetaData.applicationName}
                 setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
-                changeTheme={(newTheme:string) => context.subscriptions.emitThemeChanged(newTheme)} >
+                changeTheme={(newTheme:string) => context.subscriptions.emitThemeChanged(newTheme)}
+                uploadCallback={(schemeFileName: string, themeFileName: string) => context.subscriptions.emitDesignerCssVersion({ name: schemeFileName, version: Math.random().toString(36).slice(2) }, { name: themeFileName, version: Math.random().toString(36).slice(2) })} >
                 {content}
             </ReactUIDesigner> 
             :

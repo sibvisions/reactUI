@@ -164,7 +164,10 @@ export class SubscriptionManager {
     tabTitleSubscriber = new Array<Function>();
 
     /** A function that subscribes the AppWrapper to the css-version of application.css */
-    cssVersionSubscriber:Function = () => {};
+    appCssVersionSubscriber:Function = () => {};
+
+    /** A function that updates the css version of theme and scheme when the designer uploads a new file */
+    designerCssVersionSubscriber: Function = () => {};
 
     /** 
      * A Map which stores a function to update the theme state of the subscribers, the key is the name of the subscribers
@@ -497,11 +500,19 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes to css-version
+     * Subscribes to application css-version
      * @param fn - the function to update the state
      */
-    subscribeToCssVersion(fn:Function) {
-        this.cssVersionSubscriber = fn;
+    subscribeToAppCssVersion(fn:Function) {
+        this.appCssVersionSubscriber = fn;
+    }
+
+    /**
+     * Subscribes to theme/scheme css-version
+     * @param fn - the function to update the state
+     */
+    subscribeToDesignerCssVersion(fn:Function) {
+        this.designerCssVersionSubscriber = fn;
     }
 
     /**
@@ -752,10 +763,17 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes from restart
+     * Unsubscribes from app css-version
      */
-    unsubscribeFromCssVersion() {
-        this.cssVersionSubscriber = () => {};
+    unsubscribeFromAppCssVersion() {
+        this.appCssVersionSubscriber = () => {};
+    }
+
+    /**
+     * Unsubscribes from designer css-version
+     */
+    unsubscribeFromDesignerCssVersion() {
+        this.designerCssVersionSubscriber = () => {};
     }
 
     /**
@@ -978,8 +996,17 @@ export class SubscriptionManager {
      * Notify that the css-version of application.css has been changed
      * @param version - the new version
      */
-    emitCssVersion(version:string) {
-        this.cssVersionSubscriber.apply(undefined, [version]);
+    emitAppCssVersion(version:string) {
+        this.appCssVersionSubscriber.apply(undefined, [version]);
+    }
+
+    /**
+     * Notify that the css-version of theme and scheme has been changed
+     * @param scheme - the new scheme name and version
+     * @param theme - the new theme name and version
+     */
+    emitDesignerCssVersion(scheme:{ name: string, version: string }, theme:{ name: string, version: string }) {
+        this.designerCssVersionSubscriber.apply(undefined, [scheme, theme]);
     }
 
     /**
