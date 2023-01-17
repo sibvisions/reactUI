@@ -73,13 +73,13 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     useLayoutEffect(() => {
         if (cssVersions.scheme.name && cssVersions.scheme.version) {
             let path = "color-schemes/" + cssVersions.scheme.name
-            path = path + "?version=" + cssVersions.scheme.version;
+            //path = path + "?version=" + cssVersions.scheme.version;
             addCSSDynamically(path, "schemeCSS", () => context.appSettings.setAppReadyParam("schemeCSS"));
         }
 
         if (cssVersions.theme.name && cssVersions.theme.version) {
             let path = "themes/" + cssVersions.theme.name
-            path = path + "?version=" + cssVersions.theme.version;
+            //path = path + "?version=" + cssVersions.theme.version;
             addCSSDynamically(path, "themeCSS", () => context.appSettings.setAppReadyParam("themeCSS"));
         }
     }, [cssVersions.scheme, cssVersions.theme]);

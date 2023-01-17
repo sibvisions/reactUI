@@ -42,8 +42,8 @@ export function addCSSDynamically(path:string, type:"applicationCSS"|"schemeCSS"
     const link:HTMLLinkElement = document.createElement('link');
     link.rel = 'stylesheet'; 
     link.type = 'text/css';
-    link.href = path;
-    
+    link.href = path + (type !== "applicationCSS" ? "?version=" + Math.random().toString(36).slice(2) : "");
+
     if (before && type !== "applicationCSS") {
         document.head.insertBefore(link, before);
     }
