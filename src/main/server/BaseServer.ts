@@ -454,7 +454,23 @@ export default abstract class BaseServer {
         if(selectedRowIndex !== -1 && selectedRowIndex !== -0x80000000 && selectedRowIndex !== undefined) {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(screenName, dataProvider, selectedRowIndex);
-            this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
+            if (!selectedRow) {
+                const dataBook = this.contentStore.dataBooks.get(screenName)?.get(dataProvider);
+                if (dataBook && dataBook.data && dataBook.data.get("current")) {
+                    const length = dataBook.data.get("current").length;
+                    const fetchReq = createFetchRequest();
+                    fetchReq.fromRow = length;
+                    fetchReq.rowCount = (selectedRowIndex - length) + 1;
+                    fetchReq.dataProvider = dataProvider;
+                    this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE).then((res) => {
+                        const newSelectedRow = this.contentStore.getDataRow(screenName, dataProvider, selectedRowIndex);
+                        this.contentStore.setSelectedRow(screenName, dataProvider, newSelectedRow, selectedRowIndex, treePath, selectedColumn);
+                    });
+                }
+            }
+            else {
+                this.contentStore.setSelectedRow(screenName, dataProvider, selectedRow, selectedRowIndex, treePath, selectedColumn);
+            }
         }
         // If there is no selected row, check if there is a treepath and set the last index of it or deselect the current selected row
         else if(selectedRowIndex === -1) {
