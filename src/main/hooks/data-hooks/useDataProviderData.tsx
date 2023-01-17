@@ -28,6 +28,10 @@ const useDataProviderData = (screenName:string, dataProvider:string): [any]=> {
     /** Current state of the data received by the dataprovider */
     const [data, setData] = useState<any>(context.contentStore.getData(screenName, dataProvider));
 
+    useEffect(() => {
+        setData(context.contentStore.getData(screenName, dataProvider));
+    }, [dataProvider]);
+
     /**
      * Subscribes to dataChange which will update the data state everytime the dataprovider updates
      * @returns unsubscribes from dataChange

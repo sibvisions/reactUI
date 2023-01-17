@@ -511,8 +511,8 @@ export default abstract class BaseContentStore {
      closeScreen(windowName: string, closeContent?:boolean, opensWelcome?:boolean) {
         let window = this.getComponentByName(windowName);
 
-        if (window && !closeContent) {
-            this.cleanUp(window.id, window.name, window.className);
+        if (window) {
+            this.cleanUp(window.id, window.name, window.className, closeContent);
         }
 
         if (!opensWelcome) {
@@ -538,7 +538,7 @@ export default abstract class BaseContentStore {
      * @param id - the component id
      * @param name - the component name
      */
-     cleanUp(id:string, name:string|undefined, className: string) {
+     cleanUp(id:string, name:string|undefined, className: string, closeContent?:boolean) {
         if (name) {
             const parentId = this.getComponentById(id)?.parent;
             this.deleteChildren(id, className);
@@ -549,8 +549,10 @@ export default abstract class BaseContentStore {
 
             //only do a total cleanup if there are no more components of that name
             if(!this.getComponentByName(name)) {
-                this.dataBooks.delete(name);
-                this.subManager.rowSelectionSubscriber.delete(name);
+                if (!closeContent) {
+                    this.dataBooks.delete(name);
+                    this.subManager.rowSelectionSubscriber.delete(name);
+                }
             }
         }
     }
