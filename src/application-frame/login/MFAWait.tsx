@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
 import { ILoginForm } from "./LoginForm";
@@ -23,6 +23,8 @@ import { createCancelLoginRequest } from "../../main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { translation } from "../../main/util/other-util/Translation";
+import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
+import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a Code authentication
@@ -43,8 +45,12 @@ const MFAWait:FC<ILoginForm> = (props) => {
 
     const [timeoutReset, setTimeoutReset] = useState<boolean|undefined>(undefined);
 
+    useDesignerUpdates("default-button");
+
+    const bgdUpdate = useButtonBackground();
+
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
     const intervalId = useRef<any>(null);
 

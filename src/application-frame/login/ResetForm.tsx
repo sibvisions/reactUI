@@ -15,7 +15,7 @@
 
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, FormEvent, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useMemo, useState } from "react";
 import { createResetPasswordRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
@@ -23,6 +23,8 @@ import { ILoginForm } from "./LoginForm";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { translation } from "../../main/util/other-util/Translation";
+import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
+import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 
 /**
  * Returns the reset-form to reset the password of a user.
@@ -35,8 +37,12 @@ const ResetForm:FC<ILoginForm> = (props) => {
     /** State of the email field */
     const [email, setEmail] = useState<string>("");
 
+    useDesignerUpdates("default-button");
+
+    const bgdUpdate = useButtonBackground();
+
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
     /**
      * Sends a reset-password-request to the server, if a email is entered.

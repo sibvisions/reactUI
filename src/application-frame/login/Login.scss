@@ -28,9 +28,18 @@
     padding: 0.5rem;
   }
 
-  .p-float-label label {
-    line-height: unset;
-  }
+  .p-float-label {
+    label {
+      line-height: unset;
+      
+    }
+
+    input:focus ~label, input:not(.p-filled) ~label, 
+    textarea:focus ~label, textarea:not(.p-filled) ~label,
+    .p-inputwrapper-focus ~label, .p-inputwrapper-filled ~label {
+      margin-top: calc(var(--font-size) / 2 - var(--font-size));
+    }
+  } 
 } 
 
 .login-logo-wrapper {
@@ -47,9 +56,10 @@
   /// Position and Size of floatlabel placeholder
   input:focus ~label, input.p-filled ~label, 
   textarea:focus ~label, textarea.p-filled ~label,
-  .p-inputwrapper-focus ~label, .p-inputwrapper-filled ~label{
+  .p-inputwrapper-focus ~label, .p-inputwrapper-filled ~label {
     top: 10px;
     font-size: 8px;
+    margin-top: -0.5rem;
   }
 }
 

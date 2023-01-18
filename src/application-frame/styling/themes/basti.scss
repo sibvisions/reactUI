@@ -424,7 +424,7 @@ body {
         font-size: var(--font-size);
     }
     
-    .p-inputtext {
+    .p-inputtext:not(.login-inputtext) {
         padding: var(--input-padding-tb) var(--input-padding-lr);
     }
 

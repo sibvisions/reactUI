@@ -24,6 +24,7 @@ import ChildWithProps from "../../main/util/types/ChildWithProps";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
+import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 
 /**
  * This component handles the screen-size it measures the first container so the panels below can be calculated
@@ -190,7 +191,7 @@ const ResizeHandler:FC = (props) => {
     return (
         <LayoutContext.Provider value={componentSize}>
             {resizeContext.login ?
-                <div className="login-container-with-desktop" ref={sizeRef}>
+                <div className={concatClassnames("login-container-with-desktop", appTheme)} ref={sizeRef}>
                     {props.children}
                 </div>
                 :

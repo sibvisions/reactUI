@@ -25,6 +25,8 @@ import { translation } from "../../main/util/other-util/Translation";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import { createChangesRequest, createCloseFrameRequest } from "../../main/factories/RequestFactory";
 import REQUEST_KEYWORDS from '../../main/request/REQUEST_KEYWORDS'
+import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
+import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 
 /** Displays an error-message as dialog */
 const ErrorDialog:FC = () => {
@@ -40,8 +42,12 @@ const ErrorDialog:FC = () => {
     /** True, if the error-details should be displayed */
     const [showDetails, setShowDetails] = useState<boolean>(false);
 
+    useDesignerUpdates("default-button");
+
+    const bgdUpdate = useButtonBackground();
+
     /** The button background based on the color-scheme */
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
     /** The currently selected error when details is expanded */
     const [selectedError, setSelectedError] = useState<{label: string, exception: string} | null>(null)

@@ -16,7 +16,7 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, FormEvent, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useMemo, useState } from "react";
 import { createLoginRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
@@ -27,6 +27,8 @@ import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import { translation } from "../../main/util/other-util/Translation";
 import ContentStore from "../../main/contentstore/ContentStore";
+import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
+import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 
 /** Interface for the default-login form */
 export interface ILoginForm extends ILoginCredentials {
@@ -52,8 +54,12 @@ const LoginForm:FC<ILoginForm> = (props) => {
     /** State for remember-me checkbox */
     const [rememberMe, setRememberMe] = useState<boolean>(false);
 
+    useDesignerUpdates("default-button");
+
+    const bgdUpdate = useButtonBackground();
+
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
     /**
      * Sends a loginrequest to the server when the loginform is submitted.
@@ -97,6 +103,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                             <i className="pi pi-user" />
                             <InputText
                                 value={username}
+                                className="login-inputtext"
                                 id="username"
                                 type="text"
                                 autoComplete="username"
@@ -107,6 +114,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                             <i className="pi pi-key" />
                             <InputText
                                 value={password}
+                                className="login-inputtext"
                                 id="password"
                                 type="password"
                                 autoComplete="current-password"

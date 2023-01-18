@@ -15,7 +15,7 @@
 
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, useState } from "react";
+import React, { CSSProperties, FC, useMemo, useState } from "react";
 import { createCancelLoginRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
@@ -23,6 +23,8 @@ import { ILoginForm } from "./LoginForm";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { translation } from "../../main/util/other-util/Translation";
+import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
+import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a TextInput authentication
@@ -35,8 +37,12 @@ const MFAText:FC<ILoginForm> = (props) => {
     /** State of the email field */
     const [code, setCode] = useState<string>("");
 
+    useDesignerUpdates("default-button");
+
+    const bgdUpdate = useButtonBackground();
+
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
-    const btnBgd = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
     // Sends a login-request with the confirmation-code to the server
     const sendAuthCode = () => {

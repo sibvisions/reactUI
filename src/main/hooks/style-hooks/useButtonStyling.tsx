@@ -21,6 +21,7 @@ import IconProps from "../../components/comp-props/IconProps";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import { appContext } from "../../contexts/AppProvider";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
+import useButtonBackground from "./useButtonBackground";
 
 // Interface for button-style
 interface IButtonStyle {
@@ -45,18 +46,10 @@ interface IButtonStyle {
  * @returns style properties used by all button components
  */
 const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle?: CSSProperties, ref?: HTMLElement, ref2?: HTMLElement): IButtonStyle => {
-    const context = useContext(appContext);
-
     /** The margins of a button */
     const margins = useMemo(() => getMargins(props.margins), [props.margins]);
 
-    const [designerBgdChanged, setDesignerBgdChanged] = useState<boolean>(false);
-
-    useEffect(() => {
-        context.designerSubscriptions.subscribeToButtonBackground(() => setDesignerBgdChanged(prevState => !prevState))
-
-        return () => context.designerSubscriptions.unsubscribeFromButtonBackground(() => setDesignerBgdChanged(prevState => !prevState));
-    },[context.subscriptions])
+    const designerBgdChanged = useButtonBackground();
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
