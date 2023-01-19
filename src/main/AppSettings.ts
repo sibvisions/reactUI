@@ -236,24 +236,41 @@ export default class AppSettings {
         }
 
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {
-            if (appMetaData.applicationColorScheme) {
-                this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
-                addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
+            if (localStorage.getItem("reactui-designer-scheme-" + appMetaData.applicationName)) {
+                const designerScheme = sessionStorage.getItem("reactui-designer-scheme-" + appMetaData.applicationName) as string;
+                this.applicationMetaData.applicationColorScheme.value = designerScheme;
+                addCSSDynamically('color-schemes/' + designerScheme + '.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
             }
             else {
-                addCSSDynamically('color-schemes/default.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
+                if (appMetaData.applicationColorScheme) {
+                    this.applicationMetaData.applicationColorScheme.value = appMetaData.applicationColorScheme;
+                    addCSSDynamically('color-schemes/' + appMetaData.applicationColorScheme + '.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
+                }
+                else {
+                    addCSSDynamically('color-schemes/default.css', "schemeCSS", () => this.setAppReadyParam("schemeCSS"));
+                }
             }
+
         }
         
         if (!this.applicationMetaData.applicationTheme.urlSet) {
-            if (appMetaData.applicationTheme) {
-                this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
-                addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
+            if (localStorage.getItem("reactui-designer-theme-" + appMetaData.applicationName)) {
+                const designerTheme = sessionStorage.getItem("reactui-designer-theme-" + appMetaData.applicationName) as string;
+                this.applicationMetaData.applicationColorScheme.value = designerTheme;
+                addCSSDynamically('themes/' + designerTheme + '.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
+                this.#subManager.emitThemeChanged(designerTheme);
             }
             else {
-                addCSSDynamically('themes/basti.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
+                if (appMetaData.applicationTheme) {
+                    this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
+                    addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
+                    this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
+                }
+                else {
+                    addCSSDynamically('themes/basti.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
+                    this.#subManager.emitThemeChanged("basti");
+                }
             }
-            this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
         }
     }
 

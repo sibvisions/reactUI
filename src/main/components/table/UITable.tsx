@@ -118,7 +118,7 @@ function getNextSort(mode?: "Ascending" | "Descending" | "None") {
  * @param cell  - the current cell
  * @returns if the element is fully or partly visible
  */
-function isVisible(ele:HTMLElement, container:HTMLElement, cell:any) {
+function isVisible(ele:HTMLElement, container:HTMLElement, cell:any, rowHeight:number) {
     if (ele) {
         const eleLeft = ele.offsetLeft;
         const eleRight = eleLeft + ele.clientWidth;
@@ -126,7 +126,7 @@ function isVisible(ele:HTMLElement, container:HTMLElement, cell:any) {
         const containerLeft = container.scrollLeft;
         const containerRight = containerLeft + container.clientWidth;
 
-        const eleTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
+        const eleTop = cell.rowIndex * rowHeight;
         const eleBottom = eleTop + ele.clientHeight;
     
         const containerTop = container.scrollTop;
@@ -182,7 +182,21 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(screenName, props.dataBook);
 
-    const designerUpdate = useDesignerUpdates('table')
+    const designerUpdate = useDesignerUpdates('table');
+
+    /**
+     * Get the set data-height, with the designer it's not possible to set lower than 16px (nothing will change below).
+     * So set it to a minimum of 16 and add the usual 8 which is set by borders and padding.
+     */
+    const tableRowHeight = useMemo(() => {
+        let rowHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height"))
+        if (rowHeight < 16) {
+            return 24;
+        }
+        else {
+            return rowHeight + 8;
+        }
+    }, [designerUpdate])
 
     /**
      * Returns the number of records visible based on row height.
@@ -195,8 +209,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             headerHeight = table.table.querySelector('.p-datatable-thead').offsetHeight;
         }
 
-        return Math.floor((layoutStyle?.height as number - headerHeight) / (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8))
-    }, [layoutStyle?.height, designerUpdate])
+        return Math.floor((layoutStyle?.height as number - headerHeight) / tableRowHeight)
+    }, [layoutStyle?.height, designerUpdate, tableRowHeight])
 
     /** The amount of virtual rows loaded */
     const rows = useMemo(() => {
@@ -224,7 +238,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     })());
 
     /** the list row height */
-    const [itemSize, setItemSize] = useState(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
+    const [itemSize, setItemSize] = useState(tableRowHeight);
 
     /** The current firstRow displayed in the table */
     const firstRowIndex = useRef(0);
@@ -349,10 +363,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table')
 
                 if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
-                    const moveDirections = isVisible(selectedElem, container, cell);
+                    const moveDirections = isVisible(selectedElem, container, cell, tableRowHeight);
                     if (pageKeyPressed.current !== false) {
                         pageKeyPressed.current = false;
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
+                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * tableRowHeight);
                         container.focus();
                     }
                     else if (selectedElem !== null) {
@@ -364,15 +378,15 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         }
     
                         if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                            sTop = cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
+                            sTop = cell.rowIndex * tableRowHeight;
                         }
                         else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                            sTop = container.scrollTop + (isNext ? (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) : -(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
+                            sTop = container.scrollTop + (isNext ? tableRowHeight : -tableRowHeight);
                         }
                         container.scrollTo(sLeft, sTop);
                     }
                     else {
-                        container.scrollTo(container.scrollLeft, cell.rowIndex * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8));
+                        container.scrollTo(container.scrollLeft, cell.rowIndex * tableRowHeight);
                     }
                 }
             }
@@ -441,8 +455,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     }
 
     useEffect(() => {
-        setItemSize(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8);
-    }, [designerUpdate])
+        setItemSize(tableRowHeight);
+    }, [tableRowHeight])
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
@@ -453,7 +467,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 }
                 else {
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
-                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * (parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8) + (props.tableHeaderVisible !== false ? 42 : 3) + (layoutStyle && (estTableWidth + 4) > (layoutStyle!.width as number) ? 17 : 0) : 410, width: estTableWidth + 4}
+                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * tableRowHeight + (props.tableHeaderVisible !== false ? 42 : 3) + (layoutStyle && (estTableWidth + 4) > (layoutStyle!.width as number) ? 17 : 0) : 410, width: estTableWidth + 4}
                     sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize) ? parseMinSize(props.minimumSize) : { width: 0, height: 0 }, undefined, onLoadCallback)
                 }  
             }    
@@ -1269,7 +1283,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     useEffect(() => {
         //this will force the table to refresh its internal visible item count
-        setItemSize(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")) + 8 + Math.random() / 1E10);
+        setItemSize(tableRowHeight + Math.random() / 1E10);
 
         if (tableRef.current) {
             const table = tableRef.current as any;
