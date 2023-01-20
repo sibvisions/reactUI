@@ -667,9 +667,11 @@ class Server extends BaseServer {
             }
         }
         else {
-            workScreen = this.contentStore.getComponentById(contentData.changedComponents[0].id) as IPanel;
-            if (workScreen.content_modal_) {
-                this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+            if (this.contentStore.getComponentById(contentData.changedComponents[0].id)) {
+                workScreen = this.contentStore.getComponentById(contentData.changedComponents[0].id) as IPanel;
+                if (workScreen.content_modal_) {
+                    this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+                }
             }
         }
     }
