@@ -43,16 +43,18 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [children, components, componentSizes] = useComponents(baseProps.id + "-popup", baseProps.className);
+    const [, components, componentSizes] = useComponents(baseProps.id + "-popup", baseProps.className);
 
     /** Current state of the size of the popup-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
+    /** Reference for the popup component */
     const popupRef = useRef<any>(null)
 
-    const [initialisePopup, setInitialisePopup] = useState<boolean>(false);
+    /** True, if the first popup size initialization has completed. */
+    const [initializePopup, setInitializePopup] = useState<boolean>(false);
 
-    const [initialiseCompSizes, setInitialiseCompSizes] = useState<boolean>(false);
+    const [initializeCompSizes, setInitializeCompSizes] = useState<boolean>(false);
 
     /** Subscribes the resize-handler to the theme */
     useEffect(() => {
@@ -96,32 +98,35 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         }
     }
 
+    /** Sets the initial size for the popup */
     const handleInitialSize = () => {
         if (popupRef.current && popupRef.current.contentEl) {
             const sizeMap = new Map<string, CSSProperties>();
-            let popupSize:Dimension = { height: 400, width: 600 } 
-            // if (componentSizes && componentSizes.has(baseProps.id)) {
-            //     popupSize.height = componentSizes.get(baseProps.id)!.preferredSize.height;
-            //     popupSize.width = componentSizes.get(baseProps.id)!.preferredSize.width;
-            // }
+            let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
             sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
-            setInitialisePopup(true)
+            setInitializePopup(true)
         }
     }
 
+    /** 
+     * After setting the initial size check and set the size of the panel which is being popped up.
+     * If the popup frame (eg. header) is bigger than the panel, set the size of the panel-frame instead.
+     */
     const handleAfterInitial = () => {
         const sizeMap = new Map<string, CSSProperties>();
         if (componentSizes && componentSizes.has(baseProps.id)) {
-            let popupSize:Dimension = { height: 400, width: 600 } 
-            popupSize.height = componentSizes.get(baseProps.id)!.preferredSize.height;
-            popupSize.width = componentSizes.get(baseProps.id)!.preferredSize.width;
+            let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
+            const compSize = componentSizes.get(baseProps.id);
+            popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
+            popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
             sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }
-        setInitialiseCompSizes(true);
+        setInitializeCompSizes(true);
     }
 
+    /** When the popup is being resized update the size to resize the panel */
     const handlePopupResize = () => {
         if (popupRef.current && popupRef.current.contentEl) {
             const sizeMap = new Map<string, CSSProperties>();
@@ -131,13 +136,14 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         }
     }
 
+    /** When resizing debounce the resize function so it doesn't get called too often */
     const handleResize = useCallback(_.debounce(handlePopupResize, 50), [handlePopupResize, popupRef.current]);
 
     useEffect(() => {
-        if (!initialisePopup) {
+        if (!initializePopup) {
             handleInitialSize();
         }
-        else if (!initialiseCompSizes && componentSizes) {
+        else if (!initializeCompSizes && componentSizes) {
             handleAfterInitial();
         }
     }, [componentSizes])
