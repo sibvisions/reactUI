@@ -52,7 +52,7 @@ const ErrorBar:FC = () => {
     /** True, if a request has already been sent, to prevent multiple requests being sent when spamming "esc" or click */
     const alreadySent = useRef<boolean>(false);
 
-    // Subscribes to the error-bar visibility and the properties of which information to show/execute
+    // Subscribes to the error-bar properties of which information to show/execute
     useEffect(() => {
         context.subscriptions.subscribeToErrorBarVisible((show: boolean) => setVisible(show));
         context.subscriptions.subscribeToErrorBarProps((
@@ -100,7 +100,7 @@ const ErrorBar:FC = () => {
     }
 
     /**
-     * Restarts the app if session-expired or retries the last request which resulted in an error.
+     * Restarts the app if session-expired/gone or retries the last request which resulted in an error.
      */
     const handleRetry = () => {
         if (!alreadySent.current) {
@@ -126,6 +126,7 @@ const ErrorBar:FC = () => {
         }
     });
 
+    /** Returns the body messages depending on whether or not a retry is available */
     const getBodyMessage = () => {
         if (errorProps.bodyMessage) {
             if (errorProps.dontShowRestart) {

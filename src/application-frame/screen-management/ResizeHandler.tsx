@@ -49,6 +49,7 @@ const ResizeHandler:FC = (props) => {
     /** The currently active app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
+    /** Flag which gets changed when the designer changes variables which are relevant to the resizehandler */
     const designerUpdate = useDesignerUpdates(appLayout === "standard" ? "std-menu" : "corp-menu");
 
     /** Subscribes the resize-handler to the theme */

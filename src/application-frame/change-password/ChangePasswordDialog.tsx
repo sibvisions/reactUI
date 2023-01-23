@@ -73,8 +73,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
         if (props.password) {
             setChangePWData(prevState => ({ ...prevState, password: props.password as string }));
         }
-        
-    }, [props.password])
+    }, [props.password]);
 
     /**
      * Sends a login request to change the password of a user.

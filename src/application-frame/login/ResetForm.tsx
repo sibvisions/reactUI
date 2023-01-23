@@ -37,8 +37,10 @@ const ResetForm:FC<ILoginForm> = (props) => {
     /** State of the email field */
     const [email, setEmail] = useState<string>("");
 
+    /** Subscribes to designer-changes so the components are updated live */
     useDesignerUpdates("default-button");
 
+    /** Updates the button background live */
     const bgdUpdate = useButtonBackground();
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */

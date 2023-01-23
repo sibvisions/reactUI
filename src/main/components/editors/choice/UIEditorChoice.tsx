@@ -70,11 +70,13 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, wrapRef.current ? wrapRef.current as HTMLElement : undefined, props.context);
 
     /** Returns the given value as string */
     const getValAsString = useCallback((val) => val !== undefined ? (val === null ? "null" : val.toString()) : "undefined", [])
 
+    /** The allowed values as string */
     const stringAllowedValues = useMemo(() => props.cellEditor.allowedValues.map(val => getValAsString(val)), [props.cellEditor.allowedValues])
 
     /** Check if the ChoiceCellEditor only accepts two values */
@@ -168,6 +170,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
         }
     }
 
+    /** Adds the layoutstyle to given element */
     useAddLayoutStyle(wrapRef.current, props.layoutStyle, onLoadCallback);
 
     /**

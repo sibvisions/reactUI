@@ -27,7 +27,6 @@ import ResizeProvider from "../../../main/contexts/ResizeProvider";
 import useMenuCollapser from "../../../main/hooks/event-hooks/useMenuCollapser";
 import useDeviceStatus from "../../../main/hooks/event-hooks/useDeviceStatus";
 import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useResponsiveBreakpoints";
-import ChildWithProps from "../../../main/util/types/ChildWithProps";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
 import { ReactUIDesigner } from '@sibvisions/reactui-designer'
@@ -77,14 +76,17 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
+    /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
 
+    /** context for embedded screens/app */
     const embeddedContext = useContext(EmbeddedContext);
 
     /** Current state of screen title, displays the screen title */
     const screenTitle = useScreenTitle(context.contentStore.topbarTitleSetByServer);
 
-    const setImagesChanged = useDesignerImages('man');
+    /** A function which is being passed to the designer, to rerender when the images have changed */
+    const setImagesChanged = useDesignerImages();
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -101,6 +103,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
         return dataArray;
     }
 
+    /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
     useEffect(() => {
         const docStyle = window.getComputedStyle(document.documentElement)
         const mainHeight = docStyle.getPropertyValue('--main-height');

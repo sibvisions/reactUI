@@ -56,6 +56,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    /** Adds the layoutstyle to given element */
     useAddLayoutStyle(browserRef.current, layoutStyle, onLoadCallback);
 
     return (

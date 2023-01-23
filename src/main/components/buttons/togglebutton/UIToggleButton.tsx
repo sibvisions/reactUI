@@ -50,6 +50,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
     /** Component constants for contexts, properties and style */
     const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
 
+    /** True, if the togglebutton is selected */
     const [checked, setChecked] = useState<boolean|undefined>(props.selected)
 
     /** Style properties for the button */
@@ -64,12 +65,16 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.container : undefined, context);
 
+    /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates(props.text ? "default-button" : "icon-only-button");
 
+    /** Adding HTML-text to button manually */
     useLayoutEffect(() => {
         if (buttonRef.current) {
             if (isHTML) {
@@ -94,6 +99,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, isHTML]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         buttonWrapperRef.current,

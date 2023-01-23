@@ -42,8 +42,10 @@ const ErrorDialog:FC = () => {
     /** True, if the error-details should be displayed */
     const [showDetails, setShowDetails] = useState<boolean>(false);
 
+    /** Subscribes to designer-changes so the components are updated live */
     useDesignerUpdates("default-button");
 
+    /** Updates the button background live */
     const bgdUpdate = useButtonBackground();
 
     /** The button background based on the color-scheme */
@@ -92,6 +94,7 @@ const ErrorDialog:FC = () => {
         }
     }, [showDetails]);
 
+    // When the errorItems change, select the first item
     useEffect(() => {
         if (errorItems.length) {
             if (errorItems[0].items[0]) {
@@ -100,6 +103,7 @@ const ErrorDialog:FC = () => {
         }
     }, [errorItems])
 
+    // Set visibility to false and send a close frame request to the server
     const handleOnHide = () => {
         setVisible(false);
         setShowDetails(false);

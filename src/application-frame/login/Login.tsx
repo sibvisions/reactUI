@@ -42,6 +42,7 @@ import ChangePasswordDialog from "../change-password/ChangePasswordDialog";
  */
 type LoginMode = "default"|"reset"|"mFTextInput"|"mFWait"|"mFURL";
 
+// Enum for the different login-modes
 export enum LOGINMODES {
     DEFAULT = "default",
     RESET = "reset",
@@ -50,40 +51,48 @@ export enum LOGINMODES {
     MFA_URL = "mFURL"
 }
 
+// Interface for the MFA-Wait mode
 export type IMFAWait = {
     code: string,
     timeout: number,
     timeoutReset?:boolean
 }
 
+// Interface for the MFA-URL mode
 export type IMFAUrl = {
     link: string | MFAURLType,
     timeout: number,
     timeoutReset?:boolean
 }
 
+// Interface for custom login-forms
 export interface ICustomLogin {
     username: string,
     password: string,
     setLoginMode: (loginMode: LoginMode) => void
 }
 
+// Interface for custom default-login-forms
 export interface ICustomDefaultLogin extends ICustomLogin {
     sendLoginRequest: (username: string, password: string, rememberMe?:boolean, options?:any) => void,
 }
 
+// Interface for custom reset-forms
 export interface ICustomResetLogin extends ICustomLogin {
     sendResetRequest: (identifier: string, options?:any) => void,
 }
 
+// Interface for custom mfa-text-forms
 export interface ICustomMFAText extends ICustomLogin {
     sendLoginRequest: (username: string, password: string, code:string, options?:any) => void,
 }
 
+// Interface for custom mfa-wait-forms
 export interface ICustomMFAWait extends ICustomLogin {
     mfaData: IMFAWait,
 }
 
+// Interface for custom mfa-url-forms
 export interface ICustomMFAUrl extends ICustomLogin {
     mfaData: IMFAUrl,
 }
@@ -105,9 +114,11 @@ const Login: FC = () => {
     /** State of the login-data entered */
     const [loginData, setLoginData] = useState<ILoginCredentials>({ username: "", password: "" });
 
+    /** True, if the designer should be shown */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
 
-    const setImagesChanged = useDesignerImages("login");
+    /** A function which is being passed to the designer, to rerender when the images have changed */
+    const setImagesChanged = useDesignerImages();
 
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
@@ -115,8 +126,10 @@ const Login: FC = () => {
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
+    /** Some stock parameters for a custom mfa-wait component */
     const [waitParams, setWaitParams] = useState<IMFAWait>({ code: "", timeout: 300000, timeoutReset: undefined });
 
+    /** Some stock parameters for a custom mfa-url component */
     const [urlParams, setUrlParams] = useState<IMFAUrl>({ link: { width: 500, height: 300, url: "", target: "_self" }, timeout: 300000, timeoutReset: undefined });
     
     useEffect(() => {
@@ -154,6 +167,7 @@ const Login: FC = () => {
         }
     }, []);
 
+    /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
     useEffect(() => {
         const docStyle = window.getComputedStyle(document.documentElement)
         const mainHeight = docStyle.getPropertyValue('--main-height');
@@ -183,8 +197,16 @@ const Login: FC = () => {
     const getCorrectLoginForm = () => {
         const modeFunc = (mode: LoginMode) => setLoginMode(mode);
 
+        // Callback to update the state of username and password
         const loginDataCallback = (username: string, password: string) => setLoginData({ username: username, password: password });
 
+        /**
+         * Builds and sends a manual login-request to the server, used for custom login-forms
+         * @param username - the username to send to the server
+         * @param password - the password to send to the server
+         * @param rememberMe - true, if autologin should be enabled
+         * @param options - additional login options
+         */
         const customLoginRequest = (username: string, password: string, rememberMe?: boolean, options?: any) => {
             setLoginData({ username: username, password: password });
             let loginReq = createLoginRequest();
@@ -203,6 +225,13 @@ const Login: FC = () => {
             showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
         }
 
+        /**
+         * Builds and sends a mftextinput login-request to the server, used for custom mfa-text-forms
+         * @param username - the username to send to the server
+         * @param password - the password to send to the server
+         * @param code - the mfa confirmation code to send to the server
+         * @param options - additional login options
+         */
         const customLoginRequestMFA = (username: string, password: string, code: string, options?: any) => {
             setLoginData({ username: username, password: password });
             let loginReq = createLoginRequest();
@@ -218,6 +247,11 @@ const Login: FC = () => {
             showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
         }
 
+        /**
+         * Sends a reset-password request to the server
+         * @param identifier - the identifier to send to the server (eg. email)
+         * @param options - additional login options
+         */
         const customResetRequest = (identifier: string, options?: any) => {
             let resetReq = createResetPasswordRequest();
             resetReq.identifier = identifier;

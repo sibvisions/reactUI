@@ -16,7 +16,7 @@
 import { useContext, useEffect, useState } from "react"
 import { appContext } from "../../contexts/AppProvider";
 
-const useDesignerImages = (type:string) => {
+const useDesignerImages = () => {
     const context = useContext(appContext);
 
     const [imagesChanged, setImagesChanged] = useState<boolean>(false);

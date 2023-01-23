@@ -106,6 +106,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
         }   
     }
 
+    /** Adds the layoutstyle to given element */
     useAddLayoutStyle(wrapRef.current, props.layoutStyle, onLoadCallback);
 
     // If the lib user extends the ImageCellEditor with onChange, call it when slectedRow changes.

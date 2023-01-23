@@ -101,11 +101,13 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
 
+    /** Reference for the wrapper element of the calendar */
     const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
 
+    /** The current locale of the editor, if there is no locale set use the globallocale */
     const locale = useMemo(() => {
         if (props.cellEditor.locale) {
             test = props.cellEditor.locale;
@@ -117,6 +119,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
         }
     }, [props.cellEditor.locale]);
 
+    /** Use the set timezone for the editor or the timezone in the appsettings */
     const timeZone = useMemo(() => props.cellEditor.timeZone ? props.cellEditor.timeZone : props.context.appSettings.timeZone, [props.cellEditor.timeZone]);
 
     /** Converts the selectedValue to the correct Timezone */
@@ -166,6 +169,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("linked-date");
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
@@ -182,6 +186,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Hook for MouseListener */ //@ts-ignore
     useMouseListener(props.name, calendar.current ? calendar.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, calendarInput.current as HTMLElement|undefined, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -199,6 +204,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         wrapperRef.current,
@@ -234,6 +240,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
         }
     },[])
 
+    // If the editor is readonly, disable the button to open the datepicker
     useEffect(() => {
         if (calendar.current) {
             //@ts-ignore

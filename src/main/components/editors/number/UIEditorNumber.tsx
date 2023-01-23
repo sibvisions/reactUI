@@ -54,6 +54,10 @@ export interface ScaleType {
     maxScale:number,
 }
 
+/**
+ * Returns the number separator for the given locale
+ * @param locale - the locale
+ */
 function getNumberSeparators(locale: string) {
     const numberWithDecimalSeparator = 100000.1;
     const parts = Intl.NumberFormat(locale).formatToParts(numberWithDecimalSeparator);
@@ -87,10 +91,16 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     /** Hook for MouseListener */ // @ts-ignore
     useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, numberInput.current as HTMLElement|undefined, props.context);
 
+    // The number seperator for the given locale
     const numberSeperators = getNumberSeparators(props.context.appSettings.locale);
 
+    /**
+     * Returns the number without numberseperators
+     * @param value - the number which needs to be parsed
+     */
     const parseNumber = (value: string) => {
         return parseFloat(value.replace(numberSeperators.group, '').replace(numberSeperators.decimal, '.'))
     }
@@ -98,6 +108,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("inputfield");
 
     /** The classnames for the number-cell-editor */
@@ -159,6 +170,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         //@ts-ignore

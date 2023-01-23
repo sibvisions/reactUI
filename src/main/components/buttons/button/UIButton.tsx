@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
+import React, { FC,  useLayoutEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
@@ -65,13 +65,16 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     /** Hook to display mouseOverImages and mousePressedImage */
     useButtonMouseImages(btnStyle.iconProps, btnStyle.pressedIconProps, btnStyle.mouseOverIconProps, buttonRef.current ? buttonRef.current : undefined);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, buttonRef.current, context);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates(props.text ? "default-button" : "icon-only-button");
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -81,6 +84,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, designerUpdate]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         buttonWrapperRef.current,

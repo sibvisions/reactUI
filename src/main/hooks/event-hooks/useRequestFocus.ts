@@ -16,7 +16,18 @@
 import { useEffect } from "react"
 import { AppContextType } from "../../contexts/AppProvider"
 
+/**
+ * Focuses the component if they receive the "requestFocus" property.
+ * @param id - the id of the component
+ * @param requestFocus - the requestFocus property of the component
+ * @param elem - the element to focus
+ * @param context - the context to use the contentstore and subscription-manager
+ */
 const useRequestFocus = (id: string, requestFocus: boolean|undefined, elem: HTMLElement|undefined, context: AppContextType) => {
+    /**
+     * Focuses the element, sets the requestFocus property to false and notifies the component, that the property changed.
+     * Server only sends requestFocus true and doesn't set it back to false so we have to do it ourselves.
+     */
     useEffect(() => {
         if (requestFocus && elem && document.activeElement !== elem) {
             setTimeout(() => {

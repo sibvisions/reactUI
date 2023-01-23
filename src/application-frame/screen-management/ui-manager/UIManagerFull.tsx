@@ -15,7 +15,7 @@
 
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../../main/contexts/AppProvider";
-import { MenuOptions, VisibleButtons } from "../../../main/AppSettings";
+import { MenuOptions } from "../../../main/AppSettings";
 import ScreenManager from "../ScreenManager";
 import { isCorporation } from "../../../main/util/server-util/IsCorporation";
 import ResizeProvider from "../../../main/contexts/ResizeProvider";
@@ -49,7 +49,7 @@ const UIManagerFull: FC<any> = () => {
         context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons, changePWEnabled: boolean) => {
+            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions) => {
                 setMenuOptions(menuOptions);
             });
             context.subscriptions.unsubscribeFromTheme("uimanager");

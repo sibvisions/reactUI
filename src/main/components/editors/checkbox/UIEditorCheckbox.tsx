@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Checkbox, CheckboxChangeParams } from 'primereact/checkbox';
+import { Checkbox } from 'primereact/checkbox';
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
@@ -70,10 +70,13 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, cbRef.current ? cbRef.current.inputRef ? cbRef.current.inputRef.current : undefined : undefined, props.context);
 
+    /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("checkbox");
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -83,6 +86,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         wrapRef.current,

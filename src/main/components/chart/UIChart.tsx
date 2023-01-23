@@ -201,6 +201,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
 
+    /** The metadata for the given databook */
     const metaData:MetaDataResponse = useMetaData(screenName, props.dataBook) as MetaDataResponse
 
     /** topbar context to show progress */
@@ -605,6 +606,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         }
     }, [props.chartStyle, providerData]);
 
+    /** Fetches the data from the databook if the data isn't available */
     useFetchMissingData(screenName, props.dataBook);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -622,6 +624,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
+    /** Adds the layoutStyle to the ref */
     useAddLayoutStyle(chartRef.current, layoutStyle, onLoadCallback)
 
     return (

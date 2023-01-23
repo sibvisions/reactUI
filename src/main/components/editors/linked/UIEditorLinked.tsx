@@ -47,6 +47,7 @@ import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { SelectFilter } from "../../../request/data/SelectRowRequest";
 
+// Type for linkreferences
 type LinkReference = {
     referencedDataBook: string
     columnNames: string[]
@@ -173,6 +174,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
 
+    /** Reference for the wrapper of the linkedcelleditor element */
     const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Reference for the LinkedCellEditor input element */
@@ -184,10 +186,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Reference to last value so that sendSetValue only sends when value actually changed */
     const lastValue = useRef<any>();
 
+    /** Metadata for the linkreferenced databook */
     const metaDataReferenced:MetaDataResponse = useMetaData(props.screenName, props.cellEditor.linkReference.referencedDataBook||"") as MetaDataResponse;
 
+    /** Metadata for the 'normal' bound databook */
     const metaData:MetaDataResponse = useMetaData(props.screenName, props.dataRow||"") as MetaDataResponse;
 
+    /** The metadata of the celleditor */
     const cellEditorMetaData = useMemo(() => {
         if (metaData && metaData.columns.find(column => column.name === props.columnName)) {
             return metaData.columns.find(column => column.name === props.columnName)?.cellEditor as ICellEditorLinked
@@ -201,6 +206,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** True if the linkRef has already been fetched */
     const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
 
+    // Return the linkReference of the celleditormetadata if there is one else use the linkReference of the celleditor properties
     const getCorrectLinkReference = useCallback(() => {
         if (cellEditorMetaData && cellEditorMetaData.linkReference) {
             return cellEditorMetaData.linkReference
@@ -208,6 +214,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         return props.cellEditor.linkReference;
     }, [cellEditorMetaData, props.cellEditor.linkReference])
 
+    /**
+     * Returns the value which should be displayed in the linkedcelleditor input.
+     * Usually take the bound column but when there is a displayReferencedColumnname or a concat-mask,
+     * check the dataToDisplayMap in the linkReference and pick the correct value by stringifying the selected object.
+     */
     const getDisplayValue = useCallback((value:any) => {
         if (value) {
             if (isDisplayRefColNameOrConcat) {     
@@ -239,8 +250,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** True, if the CellEditor is currently focused */
     const focused = useRef<boolean>(false);
 
+    /** True if the initialFilter has been set */
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("linked-date");
 
     /** Button background */
@@ -249,11 +262,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** True, if the dropdown should be displayed as table */
     const tableOptions = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnCount > 1 : metaDataReferenced ? metaDataReferenced.columnView_table_.length > 1 : false, [props.cellEditor.columnView, metaDataReferenced]); 
 
+    /** If the columnView of the celleditor is empty use "columnView_table of the referenced databook instead" */
     const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaDataReferenced ? metaDataReferenced.columnView_table_ : [], [props.cellEditor.columnView, metaDataReferenced]);
 
     // Helper to set the text on unmount
     const textCopy = useRef<any>(text);
 
+    // Use the primaryKeyColumns from the referenced metadata or use the referencedColumnNames if empty.
     const primaryKeys:string[] = useMemo(() => {
         const linkReference = getCorrectLinkReference();
         if (metaDataReferenced) {
@@ -267,6 +282,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, linkedInput.current, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -276,6 +292,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         wrapperRef.current,
@@ -311,6 +328,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
     }, []);
 
+    // Disable the dropdown-button if the editor is set to readonly
     useEffect(() => {
         const autoRef: any = linkedRef.current
         if (autoRef) {
@@ -437,6 +455,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         });
     }, [props.context.contentStore, props.context.server, props.cellEditor, props.name, props.cellEditor.linkReference.referencedDataBook]);
 
+    // Build a suggestion-array by firstly adding the referencedColumnNames then the columnViewNames and primaryKeyColumns
     const buildSuggestionArray = (value:any) => {
         const arr:any[] = [];
         props.cellEditor.linkReference.referencedColumnNames.forEach((d) => {
@@ -454,6 +473,15 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         return arr;
     }
 
+    /**
+     * Unpacks the suggestion-array and picks out the correct values based on the type.
+     * If reference use index 0 (begin from start)
+     * if display begin at the end of linkedreference columns to get the display values
+     * if primary use index linkedreference col length + columnView length until the end to get primary keys.
+     * @param value - the value of the suggestion-array
+     * @param type - the type which needs to be unpacked
+     * @returns 
+     */
     const unpackSuggestionArray = (value: any[], type:"reference"|"display"|"primary") => {
         if (value) {
             if (type === "display") {
@@ -523,6 +551,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
     });
 
+    /**
+     * Builds a select row request and sends it to the server
+     * @param rowNumber - the rownumber which is being selected
+     * @param filter - the filter to select a row
+     */
     const sendSelectRequest = (rowNumber: number, filter: any) => {
         const selectReq = createSelectRowRequest();
         selectReq.dataProvider = props.cellEditor.linkReference.referencedDataBook || cellEditorMetaData?.linkReference.referencedDataBook;
@@ -541,12 +574,15 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
         const columnNames = (colNames.length === 0 && refColNames.length === 1) ? props.columnName : colNames;
+        // value is the suggestion-array, now unpack the suggestion-array by referencedColumns and primarykeys
         let inputObj:any|any[] = unpackSuggestionArray(value, "reference");
         let primaryObj:any|any[] = unpackSuggestionArray(value, "primary");
         
+        // Convert inputObj keys from ref to colnames to compare them to the lastvalue
         const convertedColNamesObj = convertReferenceColNamesToColNames(inputObj, props.cellEditor.linkReference);
         const extractedLastValue = getExtractedObject(lastValue.current, colNames);
 
+        // Check if the object is equal to the lastValue if yes don't send anything and set the text to the lastvalue
         if (_.isEqual(convertedColNamesObj, extractedLastValue)) {
             // lastvalue needs to be converted to referenceColumnNames because dataToDisplay Map is built from referenceColumnNames
             setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
@@ -556,7 +592,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 columnNames: primaryKeys,
                 values: primaryKeys.map(pk => primaryObj[pk])
             };
-
+            // Set text, send selectrequest and setvalues if values are being found
             if (colNames.length > 1) {
                 if (colNames.length > Object.values(inputObj).length) {
                     let tempValues = Object.values(inputObj)
@@ -633,7 +669,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
         const extractedLastValue = getExtractedObject(lastValue.current, colNames);
 
-        /** If the text is empty, send null to the server */
+        /** If the text is empty, send null to the server to deselect */
         if (!checkText) {
             sendSelectRequest(-1, null)
             sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
@@ -671,7 +707,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
             }
         }
-        /** If there is no match found set the old value */
+        /** If there is no match found set the old value except if validationenabled is false */
         else {
             if (props.cellEditor.validationEnabled === false) {
                 let tempArray = [];
@@ -701,32 +737,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         let suggestions:any = [];
         if (values.length > 0) {
             values.forEach((value:any) => {
-                //let suggestion : string | string[] = "";
-                //const objectKeys: string[] = [];
-
-                // props.cellEditor.columnView.columnNames.forEach((d, i) => {
-                //     objectKeys.push(d)
-                // })
-
-                // //const objectKeys = Object.keys(value).filter(key => key !== "__recordFormats" && key !== "recordStatus" && props.cellEditor.linkReference.referencedColumnNames.includes(key));
-                // if (props.cellEditor.displayReferencedColumnName) {
-                //     objectKeys.push(props.cellEditor.displayReferencedColumnName)
-                // }
-                // const extractedObject = getExtractedObject(value, objectKeys)
-                // suggestion = Array.from(Object.values(extractedObject));
-                // suggestions.push(suggestion)
                 suggestions.push(buildSuggestionArray(value));
             });
         }
-
-        // if(props.cellEditor.columnView?.columnCount > 1) {
-        //     return [{
-        //         label: props.cellEditor.columnView.columnNames,
-        //         items: suggestions
-        //     }]
-        // } else {
-            return suggestions
-        //}
+        return suggestions
     }
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 400 new rows

@@ -45,6 +45,7 @@ export interface IEditorText extends IRCCellEditor {
     length:number
 }
 
+// Enum for the different texteditors
 enum FieldTypes {
     TEXTFIELD = 0,
     TEXTAREA = 1,
@@ -234,11 +235,13 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, textRef.current, props.context)
 
     /** Hook for MouseListener */
     useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("inputfield");
 
     /** Returns the field-type of the TextCellEditor */
@@ -258,7 +261,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
         }
     }, [props.cellEditor?.contentType])
 
-    //FieldType value of the TextCellEditor
+    // FieldType value of the TextCellEditor
     const fieldType = useMemo(() => getFieldType(), [getFieldType]);
 
     /**
@@ -287,6 +290,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
         }
     },[onLoadCallback, id, props.cellEditor?.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         fieldType !== FieldTypes.HTML ? textRef.current : undefined,

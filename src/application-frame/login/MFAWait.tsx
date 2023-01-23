@@ -43,15 +43,19 @@ const MFAWait:FC<ILoginForm> = (props) => {
     /** State of the lapsed time during the wait */
     const [remainingTime, setRemainingTime] = useState<number>(loginTimeout);
 
+    /** State flag which resets the timeout when the flag switches */
     const [timeoutReset, setTimeoutReset] = useState<boolean|undefined>(undefined);
 
+    /** Subscribes to designer-changes so the components are updated live */
     useDesignerUpdates("default-button");
 
+    /** Updates the button background live */
     const bgdUpdate = useButtonBackground();
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
+    /** Ref for the interval */
     const intervalId = useRef<any>(null);
 
     // Subscribes to the code and the timeout. And starts the timer
@@ -74,10 +78,12 @@ const MFAWait:FC<ILoginForm> = (props) => {
         };
     }, []);
 
+    // Sets the login-timeout if there is a new one.
     useEffect(() => {
         setRemainingTime(loginTimeout)
     }, [loginTimeout])
 
+    // When the timeout resets, reset the interval
     useEffect(() => {
         if (timeoutReset !== undefined) {
             clearInterval(intervalId.current)

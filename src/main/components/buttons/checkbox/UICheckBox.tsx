@@ -59,10 +59,13 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, cbRef.current ? cbRef.current.inputRef ? cbRef.current.inputRef.current : undefined : undefined, context);
 
+    /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("checkbox");
     
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -73,6 +76,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle, designerUpdate]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         buttonWrapperRef.current,

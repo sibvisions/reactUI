@@ -54,8 +54,10 @@ const LoginForm:FC<ILoginForm> = (props) => {
     /** State for remember-me checkbox */
     const [rememberMe, setRememberMe] = useState<boolean>(false);
 
+    /** Subscribes to designer-changes so the components are updated live */
     useDesignerUpdates("default-button");
 
+    /** Updates the button background live */
     const bgdUpdate = useButtonBackground();
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */

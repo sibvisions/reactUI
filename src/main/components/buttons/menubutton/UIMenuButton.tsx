@@ -75,12 +75,16 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.defaultButton : undefined, context);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("menubutton");
 
+    /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
+    /** Adding HTML-text to button manually */
     useLayoutEffect(() => {
         if (buttonRef.current) {
             if (isHTML) {
@@ -105,6 +109,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate, isHTML]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
         buttonWrapperRef.current,
