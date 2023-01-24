@@ -79,6 +79,7 @@ export default abstract class BaseContentStore {
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, BaseComponent>();
 
+    /** A Map which stores the children of components, the key is the id of the component and the value is a set of the children id's */
     componentChildren = new Map<string, Set<string>>();
 
     /** A Map which stores the component which are displayed in the desktop-panel, the key is the components id and the value the component */
@@ -135,10 +136,13 @@ export default abstract class BaseContentStore {
     //Maybe unnecessary in the future
     timer:Timer|undefined;
 
+    /** The title of the tab in the browser */ 
     tabTitle: string = "";
 
+    /** The title in the menu topbar sent by the server */
     topbarTitleSetByServer: string = "";
 
+    /** True, if the menu topbar title is sent by the server */
     isTopbarTitleSetByServer: boolean = false;
 
     constructor(history?:History<any>) {
@@ -233,6 +237,11 @@ export default abstract class BaseContentStore {
         return parent;
     }
 
+    /**
+     * Adds a component to the children list of it's parent, if there is no entry for the parent an entry is created.
+     * Also handles the toolbarpanel helpers
+     * @param child - the component which is being added.
+     */
     addAsChild(child: BaseComponent) {
         if (child.parent) {
             const children:Set<string> = this.componentChildren.get(child.parent) || new Set<string>();
@@ -260,6 +269,10 @@ export default abstract class BaseContentStore {
         }
     }
 
+    /**
+     * Removes a component from it's parent's list of children. Also handles toolbarpanel helpers.
+     * @param child - the component which is being removed
+     */
     removeAsChild(child: BaseComponent) {
         if (child.parent) {
             const children:Set<string> = this.componentChildren.get(child.parent) || new Set<string>();
@@ -352,6 +365,11 @@ export default abstract class BaseContentStore {
         }
     }
 
+    /**
+     * Handles adding or removing popups
+     * @param existingComp - the previous component before the update
+     * @param newComp - the updated component
+     */
     handleModalPanel(existingComp:IPanel|undefined, newComp:IPanel) {
         if (existingComp) {
             const popup = this.getExistingComponent(existingComp.id + "-popup");
@@ -615,6 +633,10 @@ export default abstract class BaseContentStore {
 
     }
 
+    /**
+     * Validates a component and it's children. 
+     * @param component - the component which gets validated
+     */
     validateComponent(component:BaseComponent) {
         let parent = component.parent;
         let invalid = false;
@@ -639,6 +661,11 @@ export default abstract class BaseContentStore {
         })
     }
 
+    /**
+     * Recursively invalidates the children of a component, so they aren't used anymore
+     * @param id - the id of the component which get's it's children invalidated
+     * @param className - the classname of the component
+     */
     invalidateChildren(id:string, className?:string) {
         const children = this.getAllChildren(id, className);
 

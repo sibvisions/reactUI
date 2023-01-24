@@ -341,6 +341,11 @@ export default class ContentStoreFull extends BaseContentStore {
         return children;
     }
 
+    /**
+     * Returns all children of a parent
+     * @param id - the id of the component
+     * @param className  the classname of the component
+     */
     getAllChildren(id: string, className?: string): Map<string, BaseComponent> {
         let children = new Map<string, BaseComponent>();
         let parentId = id;

@@ -16,13 +16,17 @@
 import { useContext, useEffect, useState } from "react"
 import { appContext } from "../../contexts/AppProvider";
 
+/** This hook notifies components when the designer uploads/changes images to rerender the images */
 const useDesignerImages = () => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** State to know when the images have been changed */
     const [imagesChanged, setImagesChanged] = useState<boolean>(false);
 
     const [, setReloadImages] = useState<boolean>(false);
 
+    // When the images change, add a version timestamp to them to not have cache problems.
     useEffect(() => {
         if (context.appSettings.LOGO_BIG.includes('?v=')) {
             context.appSettings.LOGO_BIG = context.appSettings.LOGO_BIG.replace(/\?v=[0-9]*/, '?v=' + Date.now());

@@ -29,6 +29,11 @@ import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { isCorporation } from "../../util/server-util/IsCorporation";
 import * as _ from "underscore"
 
+/**
+ * Returns the menuitems
+ * @param menus - the menugroups in v2
+ * @param isCorp - true, if the menu layout is corporation
+ */
 const useMenuItems = (menus?:string[], isCorp?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -39,6 +44,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
+    // Subscribes to the theme
     useEffect(() => {
         context.subscriptions.subscribeToTheme("menuitems", (theme:string) => setAppTheme(theme));
 
@@ -61,6 +67,10 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
 
             const iconData = parseIconData(undefined, item.image)
 
+            /**
+             * If a quickBarText or sideBarText is set use them before the normal item text
+             * @param item - the menuitem
+             */
             const getItemLabel = (item:ServerMenuButtons|BaseComponent) => {
                 if (!isBaseComp(item)) {
                     if (item.quickBarText) {
@@ -121,11 +131,13 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                 return arr.map(menuItem => getMenuItem(menuItem, isSingleGroup));
             }
 
+            // If there is only one menugroup, autoexpand this group
             if (menuGroup.size === 1) {
                 const singleGroup = menuGroup.entries().next().value[1];
                 primeMenu = getSubItems(singleGroup, true);
             }
             else {
+                // If the menu-layout is corporation, check for flat menuitems, don't add them to submenu and put them where the menugroups are.
                 if (isCorporation(isCorp ? "corporation" : "standard", appTheme)) {
                     menuGroup.forEach(value => {
                         const flatItems = value.filter(menuitem => menuitem.flat);

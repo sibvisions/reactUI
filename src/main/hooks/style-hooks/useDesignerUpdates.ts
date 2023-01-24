@@ -16,9 +16,15 @@
 import { useContext, useEffect, useState } from "react"
 import { appContext } from "../../contexts/AppProvider";
 
+/**
+ * This hook subscribes components to various designer changes which need to trigger a new size calculation.
+ * @param type - the type is responsible for which variables the component is subscribed to
+ */
 const useDesignerUpdates = (type:string) => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** State which gets updated when designer stuff gets updated */
     const [designerUpdate, setDesignerUpdate] = useState<boolean|undefined>(undefined);
 
     useEffect(() => {
