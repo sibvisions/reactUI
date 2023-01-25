@@ -477,10 +477,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                  * @param preferredSize - the preferred size
                  */
                 const calculateRelativeAnchor = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number) => {
-
-                    if(leftTopAnchor.relative){
+                    if(leftTopAnchor.relative) {
                         const rightBottom = rightBottomAnchor.getRelativeAnchor();
-                        if(rightBottom && rightBottom !== leftTopAnchor){
+                        if(rightBottom && rightBottom !== leftTopAnchor) {
                             let pref = rightBottom.getAbsolutePosition() - rightBottomAnchor.getAbsolutePosition() + preferredSize;
                             let size = 0;
                             if(rightBottom.relatedAnchor && leftTopAnchor.relatedAnchor){
@@ -699,7 +698,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         else {
                             onLayoutCallback({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
                         }
-                            
                     }
                     /** Set the state of the calculated Style */
                     calculatedStyle.current = {
@@ -710,7 +708,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             top:  style?.top || marginConstraint.topAnchor.getAbsolutePosition(),
                             position: "relative",
                         },
-                        componentSizes: sizeMap
+                        componentSizes: (style.height !== undefined && style.width !== undefined) ? sizeMap : undefined
                     };
                 }
             }

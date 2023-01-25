@@ -466,8 +466,28 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
                 }
                 else {
+                    const getTableHeight = () => {
+                        if (providerData.length > 10) {
+                            return 410;
+                        }
+                        else {
+                            let height = props.tableHeaderVisible ? 42 : 3
+                            if (providerData.length === 0) {
+                                height += 50;
+                            }
+                            else {
+                                height += providerData.length * tableRowHeight
+                            }
+
+                            if (layoutStyle && (estTableWidth + 4) > (layoutStyle!.width as number)) {
+                                height += 17;
+                            }
+                            return height
+                        }
+
+                    }
                     /** If the provided data is more than 10, send a fixed height if less, calculate the height */
-                    const prefSize:Dimension = {height: providerData.length < 10 ? providerData.length * tableRowHeight + (props.tableHeaderVisible !== false ? 42 : 3) + (layoutStyle && (estTableWidth + 4) > (layoutStyle!.width as number) ? 17 : 0) : 410, width: estTableWidth + 4}
+                    const prefSize:Dimension = {height: getTableHeight(), width: estTableWidth + 4}
                     sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize) ? parseMinSize(props.minimumSize) : { width: 0, height: 0 }, undefined, onLoadCallback)
                 }  
             }    

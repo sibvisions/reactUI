@@ -126,16 +126,29 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Use the set timezone for the editor or the timezone in the appsettings */
     const timeZone = useMemo(() => props.cellEditor.timeZone ? props.cellEditor.timeZone : props.context.appSettings.timeZone, [props.cellEditor.timeZone]);
 
+    /** True, if for some reason the editor would throw an error, disables the editor */
+    const [hasError, setHasError] = useState<boolean>(false)
+
     /** Converts the selectedValue to the correct Timezone */
     const convertToTimeZone = useCallback((viewDate:boolean) => {
         if (props.selectedRow && props.selectedRow.data[props.columnName] && isValidDate(new Date(props.selectedRow.data[props.columnName]))) {
+            if (hasError) {
+                setHasError(false)
+            }
             return toDate(formatInTimeZone(new Date(props.selectedRow.data[props.columnName]), timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }));
         }
         else if (viewDate) {
+            if (hasError) {
+                setHasError(false)
+            }
             return new Date();
         }
+        else if (props.selectedRow && props.selectedRow.data[props.columnName] && !isValidDate(new Date(props.selectedRow.data[props.columnName])) && !hasError) {
+            setHasError(true)
+        } 
         return undefined
-    }, [props.selectedRow, props.columnName, locale, timeZone])
+        
+    }, [props.selectedRow, props.columnName, locale, timeZone, hasError])
 
     /** The current datevalue */
     const [dateValue, setDateValue] = useState<any>(convertToTimeZone(false));
@@ -241,16 +254,16 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
         if (calendar.current) {
             //@ts-ignore
             const btnElem = calendar.current.container.querySelector("button");
-            if (props.isReadOnly) {
+            if (props.isReadOnly || hasError) {
                 if (!btnElem.disabled) {
                     btnElem.disabled = true;
                 }
             }
-            else if (btnElem.disable) {
+            else if (btnElem.disabled && !hasError) {
                 btnElem.disabled = false;
             }
         }
-    }, [props.isReadOnly])
+    }, [props.isReadOnly, hasError])
 
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
@@ -449,7 +462,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                     }
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                disabled={props.isReadOnly}
+                disabled={props.isReadOnly || hasError}
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {
