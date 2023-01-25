@@ -102,9 +102,6 @@ const Login: FC = () => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();
 
-    /** Reference for the screen-container */
-    //const sizeRef = useRef<any>(null);
-
     /** State of the current login-mode to display */
     const [loginMode, setLoginMode] = useState<LoginMode>(LOGINMODES.DEFAULT);
 
@@ -114,18 +111,6 @@ const Login: FC = () => {
     /** State of the login-data entered */
     const [loginData, setLoginData] = useState<ILoginCredentials>({ username: "", password: "" });
 
-    /** True, if the designer should be shown */
-    const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
-
-    /** A function which is being passed to the designer, to rerender when the images have changed */
-    const setImagesChanged = useDesignerImages();
-
-    /** The currently used app-layout */
-    const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
-
-    /** The current app-theme e.g. "basti" */
-    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
-
     /** Some stock parameters for a custom mfa-wait component */
     const [waitParams, setWaitParams] = useState<IMFAWait>({ code: "", timeout: 300000, timeoutReset: undefined });
 
@@ -133,12 +118,10 @@ const Login: FC = () => {
     const [urlParams, setUrlParams] = useState<IMFAUrl>({ link: { width: 500, height: 300, url: "", target: "_self" }, timeout: 300000, timeoutReset: undefined });
     
     useEffect(() => {
-        context.subscriptions.subscribeToTheme("login", (theme:string) => setAppTheme(theme));
         context.subscriptions.subscribeToMFAWait("login", (code:string, timeout:number, timeoutReset?:boolean) => setWaitParams({ code: code, timeout: timeout, timeoutReset: timeoutReset }));
         context.subscriptions.subscribeToMFAURL("login", (pLink: string | MFAURLType, timeout: number, timeoutReset?:boolean) => setUrlParams({ link: pLink, timeout: timeout, timeoutReset: timeoutReset }));
 
         return () => {
-            context.subscriptions.unsubscribeFromTheme("login");
             context.subscriptions.unsubscribeFromMFAWait("login");
             context.subscriptions.unsubscribeFromMFAURL("login")
         }
@@ -166,32 +149,6 @@ const Login: FC = () => {
             context.subscriptions.unsubscribeFromLogin();
         }
     }, []);
-
-    /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
-    useEffect(() => {
-        const docStyle = window.getComputedStyle(document.documentElement)
-        const mainHeight = docStyle.getPropertyValue('--main-height');
-        const mainWidth = docStyle.getPropertyValue('--main-width');
-        if (showDesignerView) {
-            if (mainHeight === "100vh") {
-                document.documentElement.style.setProperty("--main-height", 
-                `calc(100vh - ${docStyle.getPropertyValue('--designer-topbar-height')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
-            }
-
-            if (mainWidth === "100vw") {
-                document.documentElement.style.setProperty("--main-width", `calc(100vw - ${docStyle.getPropertyValue('--designer-panel-wrapper-width')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
-            }
-        }
-        else {
-            if (mainHeight !== "100vh") {
-                document.documentElement.style.setProperty("--main-height", "100vh");
-            }
-
-            if (mainWidth !== "100vw") {
-                document.documentElement.style.setProperty("--main-width", "100vw");
-            }
-        }
-    }, [showDesignerView])
 
     // Renders the correct login-form and passes a function to change the login-mode and to change login-data
     const getCorrectLoginForm = () => {
@@ -340,74 +297,34 @@ const Login: FC = () => {
                 }
         }
     }
-
-    const content = 
+    
+    // If there is a desktop-panel, render it and the login mask "above" it, if not, just display the login mask
+    return (
         (context.appSettings.desktopPanel) ?
-        <>
-            <ChangePasswordDialog
-                username={loginData.username}
-                password={loginData.password}
-                loggedIn={false} />
-            <ResizeProvider login={true}>
-                <ResizeHandler>
-                    <div className="rc-glasspane login-glass" />
+            <>
+                <ChangePasswordDialog
+                    username={loginData.username}
+                    password={loginData.password}
+                    loggedIn={false} />
+                <ResizeProvider login={true}>
+                    <ResizeHandler>
+                        <div className="rc-glasspane login-glass" />
                         {componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)}
                         <div className="login-form-position-wrapper">
                             {getCorrectLoginForm()}
                         </div>
-                </ResizeHandler>
-            </ResizeProvider>
-            {context.appSettings.showDesigner && !showDesignerView && 
-                <Button 
-                    className="p-button-raised p-button-rounded rc-button designer-button" 
-                    icon="fas fa-palette"
-                    style={{ 
-                        "--background": window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), 
-                        "--hoverBackground": tinycolor(window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color')).darken(5).toString(),
-                        width: "4rem",
-                        height: "4rem",
-                        position: "absolute", 
-                        top: "calc(100% - 100px)", 
-                        left: "calc(100% - 90px)", 
-                        opacity: "0.8",
-                        fontSize: "1.825rem",
-                    } as CSSProperties}
-                    onClick={() => setShowDesignerView(prevState => !prevState)}  />}
-        </>
-
-        :
-        <>
-            <ChangePasswordDialog
-                username={loginData.username}
-                password={loginData.password}
-                loggedIn={false} />
-            <div className="login-container">
-                {getCorrectLoginForm()}
-            </div>
-        </>
-
-    
-    // If there is a desktop-panel, render it and the login mask "above" it, if not, just display the login mask
-    return (
-        (showDesignerView) ?
-            <ReactUIDesigner 
-                isLogin 
-                changeImages={() => setImagesChanged(prevState => !prevState)} 
-                uploadUrl={context.server.designerUrl} 
-                isCorporation={isCorporation(appLayout, appTheme)}
-                logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
-                logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
-                logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
-                designerSubscription={context.designerSubscriptions}
-                appName={context.appSettings.applicationMetaData.applicationName}
-                setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
-                changeTheme={(newTheme:string) => context.subscriptions.emitThemeChanged(newTheme)}
-                uploadCallback={(schemeFileName: string, themeFileName: string) => context.subscriptions.emitDesignerCssVersion({ name: schemeFileName, version: Math.random().toString(36).slice(2) }, { name: themeFileName, version: Math.random().toString(36).slice(2) })} >
-                {content}
-            </ReactUIDesigner> 
+                    </ResizeHandler>
+                </ResizeProvider>
+            </>
             :
             <>
-                {content}
+                <ChangePasswordDialog
+                    username={loginData.username}
+                    password={loginData.password}
+                    loggedIn={false} />
+                <div className="login-container">
+                    {getCorrectLoginForm()}
+                </div>
             </>
     )
 }

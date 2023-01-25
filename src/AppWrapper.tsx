@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
+import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Helmet } from "react-helmet";
 import TopBar, { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
 import UIToast from './main/components/toast/UIToast';
@@ -29,14 +29,19 @@ import useConfirmDialogProps from "./main/hooks/components-hooks/useConfirmDialo
 import { addCSSDynamically } from "./main/util/html-util/AddCSSDynamically";
 import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
+import { Button } from "primereact/button";
+import tinycolor from "tinycolor2";
+import { ReactUIDesigner } from "@sibvisions/reactui-designer";
+import { isCorporation } from "./main/util/server-util/IsCorporation";
+import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 interface IAppWrapper {
-    embedOptions?: { [key:string]:any }
-    theme?:string
-    colorScheme?:string
-    design?:string
+    embedOptions?: { [key: string]: any }
+    theme?: string
+    colorScheme?: string
+    design?: string
 }
 
-const AppWrapper:FC<IAppWrapper> = (props) => {
+const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -47,7 +52,7 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
     /** The state of the css-version */
-    const [cssVersions, setCssVersions] = useState<{ appCssVersion: string, scheme: { name: string, version: string } , theme: { name: string, version: string } }>({ appCssVersion: "", scheme: {name: "", version: ""}, theme: {name: "", version: ""} });
+    const [cssVersions, setCssVersions] = useState<{ appCssVersion: string, scheme: { name: string, version: string }, theme: { name: string, version: string } }>({ appCssVersion: "", scheme: { name: "", version: "" }, theme: { name: "", version: "" } });
 
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
@@ -59,6 +64,18 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
 
     /** True if a screen was opened by clicking browser back or forward button (prevents openscreen loop) */
     const openedWithHistory = useRef<boolean>(false);
+
+    /** True, if the designer should be displayed */
+    const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
+
+    /** A function which is being passed to the designer, to rerender when the images have changed */
+    const setImagesChanged = useDesignerImages();
+
+    /** The current app-theme e.g. "basti" */
+    const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
+
+    /** The currently used app-layout */
+    const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
@@ -84,6 +101,32 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         }
     }, [cssVersions.scheme, cssVersions.theme]);
 
+    /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
+    useEffect(() => {
+        const docStyle = window.getComputedStyle(document.documentElement)
+        const mainHeight = docStyle.getPropertyValue('--main-height');
+        const mainWidth = docStyle.getPropertyValue('--main-width');
+        if (showDesignerView) {
+            if (mainHeight === "100vh") {
+                document.documentElement.style.setProperty("--main-height", 
+                `calc(100vh - ${docStyle.getPropertyValue('--designer-topbar-height')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
+            }
+
+            if (mainWidth === "100vw") {
+                document.documentElement.style.setProperty("--main-width", `calc(100vw - ${docStyle.getPropertyValue('--designer-panel-wrapper-width')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
+            }
+        }
+        else {
+            if (mainHeight !== "100vh") {
+                document.documentElement.style.setProperty("--main-height", "100vh");
+            }
+
+            if (mainWidth !== "100vw") {
+                document.documentElement.style.setProperty("--main-width", "100vw");
+            }
+        }
+    }, [showDesignerView])
+
     /**
      * Subscribes to app-name, css-version and restart
      * @returns unsubscribes from app-name, css-version and restart
@@ -91,17 +134,20 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
     useEffect(() => {
         context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
 
-        context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(prevState => ({...prevState, appCssVersion: version})));
+        context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(prevState => ({ ...prevState, appCssVersion: version })));
 
-        context.subscriptions.subscribeToDesignerCssVersion((scheme:{ name: string, version: string }, theme: { name: string, version: string }) => setCssVersions(prevState => ({...prevState, scheme: scheme, theme: theme})));
+        context.subscriptions.subscribeToDesignerCssVersion((scheme: { name: string, version: string }, theme: { name: string, version: string }) => setCssVersions(prevState => ({ ...prevState, scheme: scheme, theme: theme })));
 
         context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
+
+        context.subscriptions.subscribeToTheme("appwrapper", (theme:string) => setAppTheme(theme));
 
         return () => {
             context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
             context.subscriptions.unsubscribeFromAppCssVersion();
             context.subscriptions.unsubscribeFromDesignerCssVersion();
             context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
+            context.subscriptions.unsubscribeFromTheme("appwrapper");
         }
     }, [context.subscriptions]);
 
@@ -146,6 +192,27 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const content =
+        <>
+            {props.children}
+            {context.appSettings.showDesigner && !showDesignerView &&
+                <Button
+                    className="p-button-raised p-button-rounded rc-button designer-button"
+                    icon="fas fa-palette"
+                    style={{
+                        "--background": "#2196F3",
+                        "--hoverBackground": tinycolor("#2196F3").darken(5).toString(),
+                        width: "4rem",
+                        height: "4rem",
+                        position: "absolute",
+                        top: "calc(100% - 100px)",
+                        left: "calc(100% - 90px)",
+                        opacity: "0.8",
+                        fontSize: "1.825rem"
+                    } as CSSProperties}
+                    onClick={() => setShowDesignerView(prevState => !prevState)} />}
+        </>
+
     return (
         <>
             <Helmet>
@@ -157,7 +224,27 @@ const AppWrapper:FC<IAppWrapper> = (props) => {
             <ErrorBar />
             <PopupContextProvider>
                 <TopBar>
-                    {props.children}
+                    {showDesignerView ?
+                        <ReactUIDesigner
+                            isLogin={false}
+                            changeImages={() => setImagesChanged(prevState => !prevState)}
+                            uploadUrl={context.server.designerUrl}
+                            isCorporation={isCorporation(appLayout, appTheme)}
+                            logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
+                            logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
+                            logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
+                            designerSubscription={context.designerSubscriptions}
+                            appName={context.appSettings.applicationMetaData.applicationName}
+                            setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
+                            changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
+                            uploadCallback={(schemeFileName: string, themeFileName: string) => context.subscriptions.emitDesignerCssVersion({ name: schemeFileName, version: Math.random().toString(36).slice(2) }, { name: themeFileName, version: Math.random().toString(36).slice(2) })}
+                            transferType={context.transferType} >
+                            {content}
+
+                        </ReactUIDesigner> :
+                        <>
+                            {content}
+                        </>}
                 </TopBar>
             </PopupContextProvider>
         </>

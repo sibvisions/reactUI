@@ -76,17 +76,11 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
-    /** True, if the designer should be displayed */
-    const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
-
     /** context for embedded screens/app */
     const embeddedContext = useContext(EmbeddedContext);
 
     /** Current state of screen title, displays the screen title */
     const screenTitle = useScreenTitle(context.contentStore.topbarTitleSetByServer);
-
-    /** A function which is being passed to the designer, to rerender when the images have changed */
-    const setImagesChanged = useDesignerImages();
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values
@@ -102,32 +96,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
         }
         return dataArray;
     }
-
-    /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
-    useEffect(() => {
-        const docStyle = window.getComputedStyle(document.documentElement)
-        const mainHeight = docStyle.getPropertyValue('--main-height');
-        const mainWidth = docStyle.getPropertyValue('--main-width');
-        if (showDesignerView) {
-            if (mainHeight === "100vh") {
-                document.documentElement.style.setProperty("--main-height", 
-                `calc(100vh - ${docStyle.getPropertyValue('--designer-topbar-height')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
-            }
-
-            if (mainWidth === "100vw") {
-                document.documentElement.style.setProperty("--main-width", `calc(100vw - ${docStyle.getPropertyValue('--designer-panel-wrapper-width')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
-            }
-        }
-        else {
-            if (mainHeight !== "100vh") {
-                document.documentElement.style.setProperty("--main-height", "100vh");
-            }
-
-            if (mainWidth !== "100vw") {
-                document.documentElement.style.setProperty("--main-width", "100vw");
-            }
-        }
-    }, [showDesignerView])
 
     /** Current state of menu size */
     const menuSize = useResponsiveBreakpoints(menuRef, 
@@ -147,91 +115,53 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     const CustomWrapper = props.customAppWrapper;
 
-    const content = 
+    return (
         (CustomWrapper) ?
-        <div
-            className={concatClassnames(
+            <div
+                className={concatClassnames(
+                    "reactUI",
+                    isCorporation(appLayout, appTheme) ? "corporation" : "",
+                    appTheme
+                )}>
+                <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.name} password="" />
+                <CustomWrapper>
+                    <div id="reactUI-main" className="main">
+                        <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize}>
+                            <ScreenManager />
+                        </ResizeProvider>
+                    </div>
+                </CustomWrapper>
+            </div>
+            : <div className={concatClassnames(
                 "reactUI",
                 isCorporation(appLayout, appTheme) ? "corporation" : "",
                 appTheme
-            )}>
-            <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.name} password="" />
-            <CustomWrapper>
-                <div id="reactUI-main" className="main">
-                    <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize}>
+            )} >
+                <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
+                {isCorporation(appLayout, appTheme) ?
+                    <CorporateMenu
+                        screenTitle={screenTitle}
+                        menuOptions={menuOptions} />
+                    :
+                    <Menu
+                        screenTitle={screenTitle}
+                        forwardedRef={menuRef}
+                        showMenuMini={menuMini}
+                        menuOptions={menuOptions} />}
+                <div id="reactUI-main" className={concatClassnames(
+                    "main",
+                    isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
+                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
+                    menuMini ? "" : "screen-no-mini",
+                    menuOptions.toolBar ? "toolbar-visible" : "",
+                    (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
+                    !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
+                )}>
+                    <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active: boolean) => setMobileStandard(active)}>
                         <ScreenManager />
                     </ResizeProvider>
                 </div>
-            </CustomWrapper>
-        </div>
-        : <div className={concatClassnames(
-            "reactUI",
-            isCorporation(appLayout, appTheme) ? "corporation" : "",
-            appTheme
-        )} >
-            <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
-            {isCorporation(appLayout, appTheme) ?
-                <CorporateMenu
-                    screenTitle={screenTitle}
-                    menuOptions={menuOptions} />
-                :
-                <Menu
-                    screenTitle={screenTitle}
-                    forwardedRef={menuRef}
-                    showMenuMini={menuMini}
-                    menuOptions={menuOptions} />}
-            <div id="reactUI-main" className={concatClassnames(
-                "main",
-                isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
-                ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
-                menuMini ? "" : "screen-no-mini",
-                menuOptions.toolBar ? "toolbar-visible" : "",
-                (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
-                !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
-            )}>
-                <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active:boolean) => setMobileStandard(active)}>
-                    <ScreenManager />
-                </ResizeProvider>
-                {context.appSettings.showDesigner && !showDesignerView && 
-                    <Button 
-                        className="p-button-raised p-button-rounded rc-button designer-button" 
-                        icon="fas fa-palette"
-                        style={{ 
-                            "--background": "#2196F3", 
-                            "--hoverBackground": tinycolor("#2196F3").darken(5).toString(),
-                            width: "4rem",
-                            height: "4rem",
-                            position: "absolute", 
-                            top: "calc(100% - 100px)", 
-                            left: "calc(100% - 90px)", 
-                            opacity: "0.8",
-                            fontSize: "1.825rem"
-                        } as CSSProperties}
-                        onClick={() => setShowDesignerView(prevState => !prevState)} />}
             </div>
-        </div>
-
-    return (
-        (showDesignerView) ?
-            <ReactUIDesigner 
-                isLogin={false} 
-                changeImages={() => setImagesChanged(prevState => !prevState)} 
-                uploadUrl={context.server.designerUrl} 
-                isCorporation={isCorporation(appLayout, appTheme)}
-                logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
-                logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
-                logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
-                designerSubscription={context.designerSubscriptions}
-                appName={context.appSettings.applicationMetaData.applicationName}
-                setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
-                changeTheme={(newTheme:string) => context.subscriptions.emitThemeChanged(newTheme)}
-                uploadCallback={(schemeFileName: string, themeFileName: string) => context.subscriptions.emitDesignerCssVersion({ name: schemeFileName, version: Math.random().toString(36).slice(2) }, { name: themeFileName, version: Math.random().toString(36).slice(2) })} >
-                {content}
-            </ReactUIDesigner> 
-            :
-            <>
-                {content}
-            </>
     )
 }
 export default UIManager
