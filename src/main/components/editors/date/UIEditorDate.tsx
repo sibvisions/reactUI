@@ -115,20 +115,21 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
         }
     }, [props.cellEditor.locale]);
 
+    /**
+     * Returns true, if the given date is a valid date
+     * @param inputDate - the date to be checked
+     */
+    const isValidDate = (inputDate:any) => {
+        return inputDate instanceof Date && !isNaN(inputDate.getTime());
+    }
+
     /** Use the set timezone for the editor or the timezone in the appsettings */
     const timeZone = useMemo(() => props.cellEditor.timeZone ? props.cellEditor.timeZone : props.context.appSettings.timeZone, [props.cellEditor.timeZone]);
 
-    const convertStringToNumber = (value:any) => {
-        if (typeof value === "string") {
-            return parseInt(value);
-        }
-        return value;
-    }
-
     /** Converts the selectedValue to the correct Timezone */
     const convertToTimeZone = useCallback((viewDate:boolean) => {
-        if (props.selectedRow && props.selectedRow.data[props.columnName]) {
-            return toDate(formatInTimeZone(new Date(convertStringToNumber(props.selectedRow.data[props.columnName])), timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }));
+        if (props.selectedRow && props.selectedRow.data[props.columnName] && isValidDate(new Date(props.selectedRow.data[props.columnName]))) {
+            return toDate(formatInTimeZone(new Date(props.selectedRow.data[props.columnName]), timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }));
         }
         else if (viewDate) {
             return new Date();
@@ -177,14 +178,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
 
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]);
-
-    /**
-     * Returns true, if the given date is a valid date
-     * @param inputDate - the date to be checked
-     */
-    const isValidDate = (inputDate:any) => {
-        return inputDate instanceof Date && !isNaN(inputDate.getTime());
-    }
 
     /** Hook for MouseListener */ //@ts-ignore
     useMouseListener(props.name, calendar.current ? calendar.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -263,13 +256,13 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     useEffect(() => {
         setDateValue(convertToTimeZone(false));
         setViewDate(convertToTimeZone(true));
-        lastValue.current = props.selectedRow && props.selectedRow.data[props.columnName] ? convertStringToNumber(props.selectedRow.data[props.columnName]) : undefined;
+        lastValue.current = props.selectedRow && props.selectedRow.data[props.columnName] && isValidDate(new Date(props.selectedRow.data[props.columnName])) ? props.selectedRow.data[props.columnName] : undefined;
     },[props.selectedRow]);
 
     // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
-            props.onChange(props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(convertStringToNumber(props.selectedRow.data[props.columnName])) : undefined)
+            props.onChange(props.selectedRow && props.selectedRow.data[props.columnName] && isValidDate(new Date(props.selectedRow.data[props.columnName])) ? new Date(props.selectedRow.data[props.columnName]) : undefined)
         }
     }, [props.selectedRow, props.onChange])
 
