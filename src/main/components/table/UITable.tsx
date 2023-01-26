@@ -66,6 +66,7 @@ export interface TableProps extends BaseComponent {
     editable?: boolean,
     showFocusRect?:boolean,
     showSelection?:boolean
+    sortOnHeaderEnabled?:boolean
 }
 
 enum Navigation {
@@ -1037,7 +1038,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 )}
                 //loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
                 reorderable={columnMetaData?.movable}
-                sortable
+                sortable={props.sortOnHeaderEnabled !== false}
             />
         })
     }, [

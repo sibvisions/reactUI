@@ -78,6 +78,10 @@
                 &:focus {
                     box-shadow: none;
                 }
+
+                &.p-reorderable-column {
+                    cursor: default;
+                }
             }
         }
     }
