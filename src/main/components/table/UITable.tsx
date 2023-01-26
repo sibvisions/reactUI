@@ -472,7 +472,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             return 410;
                         }
                         else {
-                            let height = props.tableHeaderVisible ? 42 : 3
+                            let height = props.tableHeaderVisible !== false ? 42 : 3
                             if (providerData.length === 0) {
                                 height += 50;
                             }
