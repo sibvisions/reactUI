@@ -358,7 +358,12 @@ body {
         }
 
         .corp-menu-logo-wrapper {
-            max-width: var(--corp-logo-width);
+            width: var(--corp-logo-width);
+            max-height: var(--corp-header-height);
+
+            .menu-logo {
+                max-height: var(--corp-header-height);
+            }
         }
 
         .p-button.p-button-icon-only.menu-topbar-buttons {
@@ -524,6 +529,10 @@ body {
 }
 
 .p-autocomplete-panel.dropdown-table {
+    .p-autocomplete-items {
+        font-size: var(--font-size);
+    }
+
     .p-autocomplete-item {
         height: calc(8px + var(--table-data-height));
     }

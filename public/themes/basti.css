@@ -325,6 +325,9 @@ body {
   font-size: var(--error-dialog-icon-size);
 }
 
+.p-autocomplete-panel.dropdown-table .p-autocomplete-items {
+  font-size: var(--font-size);
+}
 .p-autocomplete-panel.dropdown-table .p-autocomplete-item {
   height: calc(8px + var(--table-data-height));
 }

@@ -201,7 +201,11 @@ body {
   padding: var(--corp-menu-item-padding);
 }
 .basti_mobile .corp-menu .corp-menu-logo-wrapper {
-  max-width: var(--corp-logo-width);
+  width: var(--corp-logo-width);
+  max-height: var(--corp-header-height);
+}
+.basti_mobile .corp-menu .corp-menu-logo-wrapper .menu-logo {
+  max-height: var(--corp-header-height);
 }
 .basti_mobile .corp-menu .p-button.p-button-icon-only.menu-topbar-buttons {
   width: var(--corp-topbar-button-size);
@@ -370,6 +374,9 @@ body {
   font-size: var(--error-dialog-icon-size);
 }
 
+.p-autocomplete-panel.dropdown-table .p-autocomplete-items {
+  font-size: var(--font-size);
+}
 .p-autocomplete-panel.dropdown-table .p-autocomplete-item {
   height: calc(8px + var(--table-data-height));
 }

@@ -602,20 +602,20 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     inputObj = tempValues;
                 }
                 setText(getDisplayValue(inputObj))
-                sendSelectRequest(props.rowNumber, filter);
-                sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+                sendSelectRequest(-1, filter);
+                sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj, props.context.server, extractedLastValue as any, props.topbar, -1);
                 
             }
             else {
                 if (props.cellEditor.displayReferencedColumnName) {
                     setText(getDisplayValue(inputObj));
-                    sendSelectRequest(props.rowNumber, filter);
-                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName)[refColNames[0]], props.topbar, props.rowNumber);
+                    sendSelectRequest(-1, filter);
+                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[0]], props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName)[refColNames[0]], props.topbar, -1);
                 }
                 else {
                     setText(getDisplayValue(inputObj));
-                    sendSelectRequest(props.rowNumber, filter);
-                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, props.rowNumber);
+                    sendSelectRequest(-1, filter);
+                    sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[index]], props.context.server, extractedLastValue[props.columnName], props.topbar, -1);
                 }
             }
         }
@@ -672,7 +672,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         /** If the text is empty, send null to the server to deselect */
         if (!checkText) {
             sendSelectRequest(-1, null)
-            sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+            sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, extractedLastValue as any, props.topbar, -1);
         }
         /** If there is a match found send the value to the server */
         if (foundData.length === 1) {
@@ -696,13 +696,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         }
                     }
                     setText(getDisplayValue(convertReferenceColNamesToColNames(extractedData, props.cellEditor.linkReference)))
-                    sendSelectRequest(props.rowNumber, filter)
-                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempValues, props.context.server, extractedLastValue as any, props.topbar, props.rowNumber);
+                    sendSelectRequest(-1, filter)
+                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempValues, props.context.server, extractedLastValue as any, props.topbar, -1);
                 }
                 else {
                     setText(getDisplayValue(extractedData))
-                    sendSelectRequest(props.rowNumber, filter)
-                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName), props.topbar, props.rowNumber);
+                    sendSelectRequest(-1, filter)
+                    sendSetValues(props.dataRow, props.name, colNames, props.columnName, extractedData, props.context.server, convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName), props.topbar, -1);
                 }
 
             }
@@ -719,7 +719,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         tempArray.push(checkText);
                     }
                 }
-                sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempArray, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempArray, props.context.server, lastValue.current, props.topbar, -1)
             }
             else {
                 setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
