@@ -25,7 +25,7 @@ import LoadCallBack from "../../util/types/LoadCallBack";
  */
 const useAddLayoutStyle = (ref: any, layoutStyle: CSSProperties|undefined, loadBackFunction:LoadCallBack|undefined, additionalDependency?:any) => {
     useEffect(() => {
-        if (ref) {
+        if (ref && loadBackFunction) {
             ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
             ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
             ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);

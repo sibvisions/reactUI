@@ -79,7 +79,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (wrapperRef.current) {
+        if (wrapperRef.current && onLoadCallback) {
             sendOnLoadCallback(
                 id,
                 props.className, 
@@ -155,6 +155,8 @@ const UIGauge: FC<IGauge> = (baseProps) => {
             })
         }
     });
+
+    console.log(props.id, layoutStyle)
 
     return (
         <>
