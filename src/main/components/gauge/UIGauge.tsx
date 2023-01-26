@@ -156,8 +156,6 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         }
     });
 
-    console.log(props.id, layoutStyle)
-
     return (
         <>
             <Tooltip target={"#" + props.name} />

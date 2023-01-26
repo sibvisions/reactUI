@@ -88,7 +88,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         }
 
         if (foundWider) {
-            (s.height as number) -= 17;
+            //(s.height as number) -= 17;
             minusHeight.current = true;
         }
         else {
