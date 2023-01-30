@@ -118,7 +118,6 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (componentSizes && componentSizes.has(baseProps.id)) {
             let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
             const compSize = componentSizes.get(baseProps.id);
-            console.log(componentSizes, compSize, popupRef.current)
             popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
             popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
             sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
