@@ -28,6 +28,7 @@ export interface ICellEditor{
 
 /** Base Interface for CellEditors */
 export interface IEditor extends BaseComponent{
+    borderVisible?: boolean
     cellEditor?: ICellEditor,
     cellEditor_editable_:boolean,
     cellEditor_horizontalAlignment_?: 0 | 1 | 2| 3,

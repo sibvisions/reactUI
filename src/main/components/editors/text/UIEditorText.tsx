@@ -41,7 +41,6 @@ import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesigne
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {
     cellEditor?: ICellEditor
-    borderVisible?: boolean
     length:number
 }
 
@@ -464,6 +463,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                 props.isCellEditor ? "open-cell-editor" : undefined,
                 props.focusable === false ? "no-focus-rect" : "",
                 props.isReadOnly ? "rc-input-readonly" : "",
+                props.borderVisible === false ? "invisible-border" : "",
                 props.style
             ),
             style: { 

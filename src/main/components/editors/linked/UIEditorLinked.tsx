@@ -865,6 +865,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     props.columnMetaData?.nullable === false ? "required-field" : "",
                     props.isCellEditor ? "open-cell-editor" : undefined,
                     props.focusable === false ? "no-focus-rect" : "",
+                    props.borderVisible === false ? "invisible-border" : "",
                     props.style
                 )}
                 inputClassName={props.isReadOnly ? "rc-input-readonly" : ""}

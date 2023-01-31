@@ -119,6 +119,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             props.isCellEditor ? "open-cell-editor" : undefined,
             props.focusable === false ? "no-focus-rect" : "",
             props.isReadOnly ? "rc-input-readonly" : "",
+            props.borderVisible === false ? "invisible-border" : "",
             props.style
         )
     }, [props.columnMetaData?.nullable]);

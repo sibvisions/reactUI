@@ -13,9 +13,10 @@
  * the License.
  */
 
-.invisible-border {
+.invisible-border.p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):not(.express-scheme-editor):not(.designer-search-editor):not(.p-dropdown-label), 
+.invisible-border input.p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):not(.express-scheme-editor):not(.designer-search-editor):not(.p-dropdown-label) {
     border: none;
-    background: transparent !important;
+    background: transparent;
 }
 
 .p-disabled, .p-disabled * {
