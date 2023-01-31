@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Menu from "../../menu/Menu";
 import { appContext } from "../../../main/contexts/AppProvider";
 import ScreenManager from "../ScreenManager";
@@ -29,12 +29,8 @@ import useDeviceStatus from "../../../main/hooks/event-hooks/useDeviceStatus";
 import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useResponsiveBreakpoints";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
-import { ReactUIDesigner } from '@sibvisions/reactui-designer'
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
-import { Button } from "primereact/button";
-import tinycolor from "tinycolor2";
 import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
-import useDesignerImages from "../../../main/hooks/style-hooks/useDesignerImages";
 
 // Interface for UIManager
 export interface IUIManagerProps {

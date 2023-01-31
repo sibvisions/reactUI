@@ -166,9 +166,6 @@ export class SubscriptionManager {
     /** A function that subscribes the AppWrapper to the css-version of application.css */
     appCssVersionSubscriber:Function = () => {};
 
-    /** A function that updates the css version of theme and scheme when the designer uploads a new file */
-    designerCssVersionSubscriber: Function = () => {};
-
     /** 
      * A Map which stores a function to update the theme state of the subscribers, the key is the name of the subscribers
      * and the value is the function to update the theme state
@@ -508,14 +505,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes to theme/scheme css-version
-     * @param fn - the function to update the state
-     */
-    subscribeToDesignerCssVersion(fn:Function) {
-        this.designerCssVersionSubscriber = fn;
-    }
-
-    /**
      * Subscribes to theme
      * @param fn - the function to update the state
      */
@@ -770,13 +759,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes from designer css-version
-     */
-    unsubscribeFromDesignerCssVersion() {
-        this.designerCssVersionSubscriber = () => {};
-    }
-
-    /**
      * Unsubscribes from theme
      * @param id - the id to delete
      */
@@ -998,15 +980,6 @@ export class SubscriptionManager {
      */
     emitAppCssVersion(version:string) {
         this.appCssVersionSubscriber.apply(undefined, [version]);
-    }
-
-    /**
-     * Notify that the css-version of theme and scheme has been changed
-     * @param scheme - the new scheme name and version
-     * @param theme - the new theme name and version
-     */
-    emitDesignerCssVersion(scheme:{ name: string, version: string }, theme:{ name: string, version: string }) {
-        this.designerCssVersionSubscriber.apply(undefined, [scheme, theme]);
     }
 
     /**

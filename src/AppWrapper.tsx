@@ -52,7 +52,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
     /** The state of the css-version */
-    const [cssVersions, setCssVersions] = useState<{ appCssVersion: string, scheme: { name: string, version: string }, theme: { name: string, version: string } }>({ appCssVersion: "", scheme: { name: "", version: "" }, theme: { name: "", version: "" } });
+    const [appCssVersion, setCssVersions] = useState<string>("");
 
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
@@ -80,26 +80,11 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
         let path = 'application.css'
-        if (cssVersions.appCssVersion) {
-            path = path + "?version=" + cssVersions.appCssVersion;
+        if (appCssVersion) {
+            path = path + "?version=" + appCssVersion;
         }
         addCSSDynamically(path, "applicationCSS", () => context.appSettings.setAppReadyParam("applicationCSS"));
-    }, [cssVersions.appCssVersion, restart, context.appSettings]);
-
-    /** Adds the application.css to the head */
-    useLayoutEffect(() => {
-        if (cssVersions.scheme.name && cssVersions.scheme.version) {
-            let path = "color-schemes/" + cssVersions.scheme.name
-            //path = path + "?version=" + cssVersions.scheme.version;
-            addCSSDynamically(path, "schemeCSS", () => context.appSettings.setAppReadyParam("schemeCSS"));
-        }
-
-        if (cssVersions.theme.name && cssVersions.theme.version) {
-            let path = "themes/" + cssVersions.theme.name
-            //path = path + "?version=" + cssVersions.theme.version;
-            addCSSDynamically(path, "themeCSS", () => context.appSettings.setAppReadyParam("themeCSS"));
-        }
-    }, [cssVersions.scheme, cssVersions.theme]);
+    }, [appCssVersion, restart, context.appSettings]);
 
     /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
     useEffect(() => {
@@ -134,9 +119,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     useEffect(() => {
         context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
 
-        context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(prevState => ({ ...prevState, appCssVersion: version })));
-
-        context.subscriptions.subscribeToDesignerCssVersion((scheme: { name: string, version: string }, theme: { name: string, version: string }) => setCssVersions(prevState => ({ ...prevState, scheme: scheme, theme: theme })));
+        context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
 
         context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
 
@@ -145,7 +128,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         return () => {
             context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
             context.subscriptions.unsubscribeFromAppCssVersion();
-            context.subscriptions.unsubscribeFromDesignerCssVersion();
             context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
             context.subscriptions.unsubscribeFromTheme("appwrapper");
         }
@@ -237,7 +219,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             appName={context.appSettings.applicationMetaData.applicationName}
                             setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
                             changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
-                            uploadCallback={(schemeFileName: string, themeFileName: string) => context.subscriptions.emitDesignerCssVersion({ name: schemeFileName, version: Math.random().toString(36).slice(2) }, { name: themeFileName, version: Math.random().toString(36).slice(2) })}
+                            uploadCallback={(schemeFileName: string, themeFileName: string) => {}}
                             transferType={context.transferType} >
                             {content}
 

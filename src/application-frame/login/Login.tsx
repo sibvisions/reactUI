@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useEffect, useMemo, useState, ReactElement } from "react";
+import React, { FC, useEffect, useState, ReactElement } from "react";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../screen-management/ResizeHandler";
 import BaseComponent from "../../main/util/types/BaseComponent";
@@ -25,11 +25,6 @@ import MFAURL from "./MFAURL";
 import ILoginCredentials from "./ILoginCredentials";
 import ResizeProvider from "../../main/contexts/ResizeProvider";
 import { LoginModeType, MFAURLType } from "../../main/response/login/LoginResponse";
-import { Button } from "primereact/button";
-import tinycolor from "tinycolor2";
-import { ReactUIDesigner } from "@sibvisions/reactui-designer";
-import useDesignerImages from "../../main/hooks/style-hooks/useDesignerImages";
-import { isCorporation } from "../../main/util/server-util/IsCorporation";
 import ContentStore from "../../main/contentstore/ContentStore";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
