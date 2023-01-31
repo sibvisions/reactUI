@@ -75,12 +75,12 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
          */
         const sizesChanged = (compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {
             if (compSizes) {
-                // if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
-                //     return false;
-                // }
-                if (compSizes.preferredSize.height === newPref.height) {
+                if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
                     return false;
                 }
+                // if (compSizes.preferredSize.height === newPref.height) {
+                //     return false;
+                // }
             }
             return true;
         }
