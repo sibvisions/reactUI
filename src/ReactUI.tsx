@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useState } from 'react';
+import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
@@ -27,6 +27,7 @@ import {ErrorBoundary} from 'react-error-boundary'
 import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import tinycolor from 'tinycolor2';
+import { addCSSDynamically } from './main/util/html-util/AddCSSDynamically';
 
 const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unknown>) => void }> = ({ error, resetErrorBoundary }) => {
     const [showDetails, setShowDetails] = useState<boolean>();
@@ -83,20 +84,51 @@ const ReactUI: FC<ICustomContent> = (props) => {
     
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
+
+    /** The state of the css-version */
+    const [appCssVersion, setCssVersions] = useState<string>("");
+
+    /** Flag to retrigger Startup if session expires */
+    const [restart, setRestart] = useState<boolean>(false);
+
+    /** Adds the application.css to the head */
+    useLayoutEffect(() => {
+        let path = 'application.css'
+        if (appCssVersion) {
+            path = path + "?version=" + appCssVersion;
+        }
+        addCSSDynamically(path, "applicationCSS", () => context.appSettings.setAppReadyParam("applicationCSS"));
+    }, [appCssVersion, restart, context.appSettings]);
+
+    /**
+     * Subscribes to app-name, css-version and restart
+     * @returns unsubscribes from app-name, css-version and restart
+     */
+    useEffect(() => {
+        context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
+        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
+
+        return () => {
+            context.subscriptions.unsubscribeFromAppCssVersion();
+            context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
+        }
+    }, [context.subscriptions]);
   
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     if (context.transferType === "full") {
         return (
             <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => context.subscriptions.emitRestart()}>
-                <AppWrapper>
-                    {context.appReady ?
+                {context.appReady ?
+                    <AppWrapper>
+
                         <Switch>
                             <Route path={""} render={() => <UIManagerFull />} />
                         </Switch>
-                        :
-                        <LoadingScreen />
-                    }
-                </AppWrapper>
+
+                    </AppWrapper>
+                    :
+                    <LoadingScreen />
+                }
             </ErrorBoundary>
 
         )
@@ -104,21 +136,22 @@ const ReactUI: FC<ICustomContent> = (props) => {
     else {
         return (
             <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => context.subscriptions.emitRestart()}>
-                <AppWrapper>
-                    {context.appReady ?
+                {context.appReady ?
+                    <AppWrapper>
+
                         <Switch>
-                                <Route exact path={"/login"} render={() => <Login />} />
-                                <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                                <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                            <Route exact path={"/login"} render={() => <Login />} />
+                            <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                            <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
                         </Switch>
-                        :
-                        <LoadingScreen />
-                    }
-                </AppWrapper>
+
+                    </AppWrapper>
+                    :
+                    <LoadingScreen />
+                }
             </ErrorBoundary>
 
         );
     }
-
 }
 export default ReactUI;

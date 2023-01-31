@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useContext, useEffect, useLayoutEffect } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useState } from "react";
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from "./application-frame/screen-management/ui-manager/UIManager";
@@ -22,6 +22,7 @@ import { ICustomContent } from "./MiddleMan";
 import AppWrapper from "./AppWrapper";
 import { appContext } from "./main/contexts/AppProvider";
 import Login from "./application-frame/login/Login";
+import { addCSSDynamically } from "./main/util/html-util/AddCSSDynamically";
 
 /**
  * This component manages the start and routing of the application, if the application is started embedded.
@@ -32,6 +33,35 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
 
     /** PrimeReact ripple effect */
     PrimeReact.ripple = true;
+
+    /** The state of the css-version */
+    const [appCssVersion, setCssVersions] = useState<string>("");
+
+    /** Flag to retrigger Startup if session expires */
+    const [restart, setRestart] = useState<boolean>(false);
+
+    /** Adds the application.css to the head */
+    useLayoutEffect(() => {
+        let path = 'application.css'
+        if (appCssVersion) {
+            path = path + "?version=" + appCssVersion;
+        }
+        addCSSDynamically(path, "applicationCSS", () => context.appSettings.setAppReadyParam("applicationCSS"));
+    }, [appCssVersion, restart, context.appSettings]);
+
+    /**
+     * Subscribes to app-name, css-version and restart
+     * @returns unsubscribes from app-name, css-version and restart
+     */
+    useEffect(() => {
+        context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
+        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
+
+        return () => {
+            context.subscriptions.unsubscribeFromAppCssVersion();
+            context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
+        }
+    }, [context.subscriptions]);
 
     useLayoutEffect(() => {
         if (props.style && props.style.height) {
@@ -57,20 +87,24 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
     })
 
     return (
-        <AppWrapper embedOptions={props.embedOptions}>
+        <>
             {context.appReady ?
-                <>
-                    {props.embedOptions && !props.embedOptions.showMenu && <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
-                        ReactUI Embedded WorkScreen
-                    </span>}
-                    <div className={props.embedOptions?.showMenu ? "embed-frame-no-border" : "embed-frame"}>
-                        <Switch>
-                            <Route exact path={"/login"} render={() => <Login />} />
-                            <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                            <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
-                        </Switch>
-                    </div>
-                </>
+                <AppWrapper embedOptions={props.embedOptions}>
+
+                    <>
+                        {props.embedOptions && !props.embedOptions.showMenu && <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
+                            ReactUI Embedded WorkScreen
+                        </span>}
+                        <div className={props.embedOptions?.showMenu ? "embed-frame-no-border" : "embed-frame"}>
+                            <Switch>
+                                <Route exact path={"/login"} render={() => <Login />} />
+                                <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                                <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                            </Switch>
+                        </div>
+                    </>
+
+                </AppWrapper>
                 :
                 <>
                     <span style={{ fontWeight: 'bold', fontSize: "2rem" }}>
@@ -80,7 +114,8 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
                         <LoadingScreen />
                     </div>
                 </>}
-        </AppWrapper>
+        </>
+
     )
 }
 export default ReactUIEmbedded

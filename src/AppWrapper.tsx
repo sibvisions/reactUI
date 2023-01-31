@@ -26,7 +26,6 @@ import { appContext } from "./main/contexts/AppProvider";
 import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
 import { createOpenScreenRequest } from "./main/factories/RequestFactory";
 import useConfirmDialogProps from "./main/hooks/components-hooks/useConfirmDialogProps";
-import { addCSSDynamically } from "./main/util/html-util/AddCSSDynamically";
 import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { Button } from "primereact/button";
@@ -51,12 +50,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** The state of the tab-title */
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
-    /** The state of the css-version */
-    const [appCssVersion, setCssVersions] = useState<string>("");
-
-    /** Flag to retrigger Startup if session expires */
-    const [restart, setRestart] = useState<boolean>(false);
-
     const topbar = useContext(TopBarContext);
 
     /** History of react-router-dom */
@@ -66,7 +59,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     const openedWithHistory = useRef<boolean>(false);
 
     /** True, if the designer should be displayed */
-    const [showDesignerView, setShowDesignerView] = useState<boolean>(false);
+    const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();
@@ -77,14 +70,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
-    /** Adds the application.css to the head */
-    useLayoutEffect(() => {
-        let path = 'application.css'
-        if (appCssVersion) {
-            path = path + "?version=" + appCssVersion;
-        }
-        addCSSDynamically(path, "applicationCSS", () => context.appSettings.setAppReadyParam("applicationCSS"));
-    }, [appCssVersion, restart, context.appSettings]);
+
 
     /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
     useEffect(() => {
@@ -92,6 +78,10 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         const mainHeight = docStyle.getPropertyValue('--main-height');
         const mainWidth = docStyle.getPropertyValue('--main-width');
         if (showDesignerView) {
+            if (!sessionStorage.getItem("reactui-designer-on")) {
+                sessionStorage.setItem("reactui-designer-on", "true");
+            }
+
             if (mainHeight === "100vh") {
                 document.documentElement.style.setProperty("--main-height", 
                 `calc(100vh - ${docStyle.getPropertyValue('--designer-topbar-height')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
@@ -102,6 +92,10 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
             }
         }
         else {
+            if (sessionStorage.getItem("reactui-designer-on")) {
+                sessionStorage.removeItem("reactui-designer-on");
+            }
+
             if (mainHeight !== "100vh") {
                 document.documentElement.style.setProperty("--main-height", "100vh");
             }
@@ -117,18 +111,13 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
-        context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
-
-        context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
-
-        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
+        context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle))
 
         context.subscriptions.subscribeToTheme("appwrapper", (theme:string) => setAppTheme(theme));
 
         return () => {
             context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
             context.subscriptions.unsubscribeFromAppCssVersion();
-            context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
             context.subscriptions.unsubscribeFromTheme("appwrapper");
         }
     }, [context.subscriptions]);
