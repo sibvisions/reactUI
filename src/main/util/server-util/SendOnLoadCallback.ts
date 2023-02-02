@@ -83,7 +83,7 @@ export function sendOnLoadCallback(id: string, className:string, preferredSize:D
         else {
             let prefSize:Dimension = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};
             if (ref) {
-                if (className !== COMPONENT_CLASSNAMES.LABEL) {
+                if (className !== COMPONENT_CLASSNAMES.LABEL && className !== COMPONENT_CLASSNAMES.SPLITPANEL) {
                     if (ref.getAttribute("layoutstyle-wrapper")) {
                         removeLayoutStyle(document.getElementById(ref.getAttribute("layoutstyle-wrapper")));
                     }
