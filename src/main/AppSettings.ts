@@ -256,7 +256,7 @@ export default class AppSettings {
         if (!this.applicationMetaData.applicationTheme.urlSet) {
             if (sessionStorage.getItem("reactui-designer-theme-" + appMetaData.applicationName)) {
                 const designerTheme = sessionStorage.getItem("reactui-designer-theme-" + appMetaData.applicationName) as string;
-                this.applicationMetaData.applicationColorScheme.value = designerTheme;
+                this.applicationMetaData.applicationTheme.value = designerTheme;
                 addCSSDynamically('themes/' + designerTheme + '.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
                 this.#subManager.emitThemeChanged(designerTheme);
             }

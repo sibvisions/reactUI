@@ -38,6 +38,7 @@ import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
+import { MetaDataReference } from "../../response/data/MetaDataResponse";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {
@@ -208,6 +209,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 const childPath = parentPath.getChildPath(i);
                 nodeReference.children = nodeReference.children ? nodeReference.children : [];
                 if (!nodeReference.children.some((child:any) => child.key === childPath.toString())) {
+                    console.log(metaData!.columnView_table_, data)
                     nodeReference.children.push({
                         key: childPath.toString(),
                         label: metaData!.columnView_table_.length ? data[metaData!.columnView_table_[0]] : undefined,
@@ -220,16 +222,32 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
         return new Promise<{ treeMap: TreeMap }>(async (resolve, reject) => {
             if (metaData?.masterReference !== undefined) {
+                const getReferencedColumnNames = () => {
+                    if (isSelfJoined(fetchDataPage) && metaData.rootReference && fetchDataPage !== getDataBookName(parentPath.length() - 1)) {
+                        return metaData.rootReference.referencedColumnNames;
+                    }
+                    else {
+                        return metaData.masterReference!.referencedColumnNames
+                    }
+                }
                 //picking out the referenced columns of the datarow
-                const pkObj = _.pick(fetchObj, metaData.masterReference.referencedColumnNames);
+                const pkObj = _.pick(fetchObj, getReferencedColumnNames());
                 //stringify the pkObj to create the key for the datapages in dataprovider map
                 const pkObjStringified = JSON.stringify(pkObj);
                 if (fetchDataPage && !providedData.get(fetchDataPage).has(pkObjStringified)) {
                     const fetchReq = createFetchRequest();
                     fetchReq.dataProvider = fetchDataPage;
+                    const getFilterValues = () => {
+                        const arr = [];
+                        const referencedColNames = getReferencedColumnNames();
+                        for (let i = 0; i < Object.values(pkObj).length; i++) {
+                            arr.push(pkObj[referencedColNames[i]]);
+                        }
+                        return arr;
+                    }
                     fetchReq.filter = {
                         columnNames: metaData.masterReference.columnNames,
-                        values: Object.values(pkObj)
+                        values: getFilterValues()
                     }
                     await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, undefined, false)
                         .then((fetchResponse:FetchResponse[]) => {

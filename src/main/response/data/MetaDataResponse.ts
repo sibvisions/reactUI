@@ -70,6 +70,7 @@ interface MetaDataResponse extends BaseResponse {
     readOnly: boolean,
     isAllFetched: boolean,
     masterReference?: MetaDataReference,
-    detailReferences?: MetaDataReference[]
+    detailReferences?: MetaDataReference[],
+    rootReference?: MetaDataReference
 }
 export default MetaDataResponse;
