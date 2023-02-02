@@ -747,7 +747,7 @@ export default abstract class BaseServer {
     }
 
     badClient(badClientData:BadClientResponse) {
-        this.subManager.emitErrorBarProperties(false, false, true, "Invalid Server Version", "Server/Client Version mismatch. An Update is required!");
+        this.subManager.emitErrorBarProperties(false, false, true, "Invalid Server version", "This Client requires a newer Server. An update is required!");
         this.subManager.emitErrorBarVisible(true);
     }
 }
