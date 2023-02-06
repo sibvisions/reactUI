@@ -50,7 +50,7 @@
 
 .rc-panel {
     background-image: var(--backgroundImage);
-    user-select: none;
+    //user-select: none;
 
     &.panel-hide-overflow {
         overflow: hidden;
