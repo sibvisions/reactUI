@@ -23,6 +23,12 @@ import AppWrapper from "./AppWrapper";
 import { appContext } from "./main/contexts/AppProvider";
 import Login from "./application-frame/login/Login";
 import { addCSSDynamically } from "./main/util/html-util/AddCSSDynamically";
+import useConfirmDialogProps from "./main/hooks/components-hooks/useConfirmDialogProps";
+import { Helmet } from "react-helmet";
+import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
+import UIToast from "./main/components/toast/UIToast";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import ErrorBar from "./application-frame/error-bar/ErrorBar";
 
 /**
  * This component manages the start and routing of the application, if the application is started embedded.
@@ -39,6 +45,12 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
 
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
+
+    /** The state of the tab-title */
+    const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
+
+    /** If the confirm-dialog is visible and the message-properties */
+    const [messageVisible, messageProps] = useConfirmDialogProps();
 
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
@@ -88,6 +100,13 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
 
     return (
         <>
+            <Helmet>
+                <title>{tabTitle ? tabTitle : "<App-Name>"}</title>
+            </Helmet>
+            <ErrorDialog />
+            <UIToast />
+            <ConfirmDialog visible={messageVisible} {...messageProps} />
+            <ErrorBar />
             {context.appReady ?
                 <AppWrapper embedOptions={props.embedOptions}>
 

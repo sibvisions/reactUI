@@ -62,7 +62,7 @@ const WorkScreen: FC = () => {
         return () => {
             context.subscriptions.unsubscribeFromActiveScreens("workscreen");
         }
-    },[context.subscriptions])
+    },[context.subscriptions]);
 
     return (
         <ResizeHandler>

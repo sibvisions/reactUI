@@ -28,6 +28,12 @@ import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import tinycolor from 'tinycolor2';
 import { addCSSDynamically } from './main/util/html-util/AddCSSDynamically';
+import { Helmet } from 'react-helmet';
+import ErrorDialog from './application-frame/error-dialog/ErrorDialog';
+import UIToast from './main/components/toast/UIToast';
+import { ConfirmDialog } from 'primereact/confirmdialog';
+import ErrorBar from './application-frame/error-bar/ErrorBar';
+import useConfirmDialogProps from './main/hooks/components-hooks/useConfirmDialogProps';
 
 const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unknown>) => void }> = ({ error, resetErrorBoundary }) => {
     const [showDetails, setShowDetails] = useState<boolean>();
@@ -91,6 +97,12 @@ const ReactUI: FC<ICustomContent> = (props) => {
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
 
+    /** The state of the tab-title */
+    const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
+
+    /** If the confirm-dialog is visible and the message-properties */
+    const [messageVisible, messageProps] = useConfirmDialogProps();
+
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
         let path = 'application.css'
@@ -106,11 +118,13 @@ const ReactUI: FC<ICustomContent> = (props) => {
      */
     useEffect(() => {
         context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
-        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
+        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
+        context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle))
 
         return () => {
             context.subscriptions.unsubscribeFromAppCssVersion();
             context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
+            context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
         }
     }, [context.subscriptions]);
   
@@ -118,6 +132,13 @@ const ReactUI: FC<ICustomContent> = (props) => {
     if (context.transferType === "full") {
         return (
             <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => context.subscriptions.emitRestart()}>
+                <Helmet>
+                    <title>{tabTitle ? tabTitle : "<App-Name>"}</title>
+                </Helmet>
+                <ErrorDialog />
+                <UIToast />
+                <ConfirmDialog visible={messageVisible} {...messageProps} />
+                <ErrorBar />
                 {context.appReady ?
                     <AppWrapper>
 
@@ -136,6 +157,13 @@ const ReactUI: FC<ICustomContent> = (props) => {
     else {
         return (
             <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => context.subscriptions.emitRestart()}>
+                <Helmet>
+                    <title>{tabTitle ? tabTitle : "<App-Name>"}</title>
+                </Helmet>
+                <ErrorDialog />
+                <UIToast />
+                <ConfirmDialog visible={messageVisible} {...messageProps} />
+                <ErrorBar />
                 {context.appReady ?
                     <AppWrapper>
 

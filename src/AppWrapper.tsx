@@ -13,17 +13,12 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { Helmet } from "react-helmet";
+import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react"
 import TopBar, { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
-import UIToast from './main/components/toast/UIToast';
-import { ConfirmDialog } from "primereact/confirmdialog";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
-import ErrorBar from "./application-frame/error-bar/ErrorBar";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { appContext } from "./main/contexts/AppProvider";
-import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
 import { createOpenScreenRequest } from "./main/factories/RequestFactory";
 import useConfirmDialogProps from "./main/hooks/components-hooks/useConfirmDialogProps";
 import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
@@ -44,12 +39,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** If the confirm-dialog is visible and the message-properties */
-    const [messageVisible, messageProps] = useConfirmDialogProps();
-
-    /** The state of the tab-title */
-    const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
-
     const topbar = useContext(TopBarContext);
 
     /** History of react-router-dom */
@@ -69,8 +58,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
-
-
 
     /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
     useEffect(() => {
@@ -111,13 +98,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
-        context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle))
-
         context.subscriptions.subscribeToTheme("appwrapper", (theme:string) => setAppTheme(theme));
 
         return () => {
-            context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
-            context.subscriptions.unsubscribeFromAppCssVersion();
             context.subscriptions.unsubscribeFromTheme("appwrapper");
         }
     }, [context.subscriptions]);
@@ -186,13 +169,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
     return (
         <>
-            <Helmet>
-                <title>{tabTitle ? tabTitle : "<App-Name>"}</title>
-            </Helmet>
-            <ErrorDialog />
-            <UIToast />
-            <ConfirmDialog visible={messageVisible} {...messageProps} />
-            <ErrorBar />
             <PopupContextProvider>
                 <TopBar>
                     {showDesignerView ?
