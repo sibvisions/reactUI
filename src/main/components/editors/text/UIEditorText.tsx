@@ -480,7 +480,11 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                 if (props.onInput) {
                     props.onInput({originalEvent: event, value: event.currentTarget.value})
                 }
-                setText(event.currentTarget.value)
+                setText(event.currentTarget.value);
+
+                if (props.savingImmediate && !escapePressed.current) {
+                    sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.currentTarget.value, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                }
             },
             onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
             onBlur: (event:React.FocusEvent) => {

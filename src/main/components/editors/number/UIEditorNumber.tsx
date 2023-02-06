@@ -102,7 +102,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
      * @param value - the number which needs to be parsed
      */
     const parseNumber = (value: string) => {
-        return parseFloat(value.replace(numberSeperators.group, '').replace(numberSeperators.decimal, '.'))
+        return parseFloat(value.replaceAll(numberSeperators.group, '').replaceAll(numberSeperators.decimal, '.'))
     }
 
     /** The popup-menu of the ImageViewer */
@@ -151,6 +151,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
      * @returns the maximal length before the decimal separator
      */
     const decimalLength = useMemo(() => props.columnMetaData ? getDecimalLength((props.columnMetaData as NumericColumnDescription).precision, (props.columnMetaData as NumericColumnDescription).scale) : undefined, [props.columnMetaData]);
+
+    // const suffix = useMemo(() => {
+    //     if (props.cellEditor.numberFormat.endsWith('.')) {
+    //         return 'test';
+    //     }
+    // }, [props.cellEditor.numberFormat, numberSeperators])
 
     /** Returns true if the caret is before the comma */
     const isSelectedBeforeComma = (value: string) => {
@@ -281,6 +287,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     useGrouping={useGrouping}
                     locale={props.context.appSettings.locale}
                     prefix={prefixLength}
+                    //suffix={suffix}
                     minFractionDigits={writeScaleDigits.minScale}
                     maxFractionDigits={writeScaleDigits.maxScale}
                     //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
@@ -296,6 +303,10 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             props.onInput(event);
                         }
                         setValue(event.value)
+
+                        if (props.savingImmediate) {
+                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof event.target.value === 'string' ? parseNumber(event.target.value) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                        }
                     }}
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
                     onBlur={(event) => {
