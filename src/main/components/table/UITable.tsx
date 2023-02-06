@@ -597,7 +597,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 }
             }, 0);
         }
-    }, [metaData, measureFlag]);
+    }, [metaData?.columns, measureFlag]);
 
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {

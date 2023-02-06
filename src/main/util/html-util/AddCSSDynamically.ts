@@ -55,9 +55,14 @@ export function addCSSDynamically(path:string, type:"applicationCSS"|"schemeCSS"
     document.body.appendChild(img);
 
     img.onerror = img.onload = function() {
-        img.onerror = img.onload = null;
-        document.body.removeChild(img);
-        appReadyCallback(type)
+        setTimeout(() => {
+            img.onerror = img.onload = null;
+            document.body.removeChild(img);
+            appReadyCallback(type)
+        }, 100)
+        // img.onerror = img.onload = null;
+        // document.body.removeChild(img);
+        // appReadyCallback(type)
     };
 
     img.src = path

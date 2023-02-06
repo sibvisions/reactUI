@@ -15,6 +15,7 @@
 
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import _ from "underscore";
+import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import { getExtractedObject } from "../../components/editors/linked/UIEditorLinked";
 import { appContext } from "../../contexts/AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
@@ -73,14 +74,18 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
          * @param newMin - the minimum size of the component
          * @param newMax - the maximum size of the component
          */
-        const sizesChanged = (compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {
+        const sizesChanged = (compId: string, compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {
             if (compSizes) {
-                if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
-                    return false;
+                if (context.contentStore.getComponentById(compId)?.className !== COMPONENT_CLASSNAMES.LABEL) {
+                    if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
+                        return false;
+                    }
                 }
-                // if (compSizes.preferredSize.height === newPref.height) {
-                //     return false;
-                // }
+                else {
+                    if (compSizes.preferredSize.height === newPref.height) {
+                        return false;
+                    }
+                }
             }
             return true;
         }
@@ -123,14 +128,14 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
             const preferredComp = tempSizes.current.get(compId);
             tempSizes.current.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
-            if(context.contentStore.getComponentById(compId) && (tempSizes.current.size === children.size || id.includes('TP')) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId) || componentsChanged)) {
+            if(context.contentStore.getComponentById(compId) && (tempSizes.current.size === children.size || id.includes('TP')) && (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId) || componentsChanged)) {
                 setPreferredSizes(new Map(tempSizes.current));
             }
                 
             //Set Preferred Sizes of changed Components
             if(preferredSizes && preferredSizes.has(compId)){
                 const preferredComp = preferredSizes.get(compId);
-                if(preferredComp && (preferredSizes.size === children.size) && (sizesChanged(preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))){
+                if(preferredComp && (preferredSizes.size === children.size) && (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))){
                     preferredComp.preferredSize = prefSize;
                     preferredComp.minimumSize = minSize;
                     preferredComp.maximumSize = maxSize

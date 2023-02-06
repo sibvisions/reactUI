@@ -88,9 +88,9 @@ const ErrorBar:FC = () => {
      * Restarts the app when the session expires
      */
     const handleRestart = () => {
-        if (context.transferType !== "full") {
-            history.push("/login");
-        }
+        // if (context.transferType !== "full") {
+        //     history.push("/login");
+        // }
         context.appSettings.setAppReadyParamFalse();
         context.subscriptions.emitAppReady(false);
         context.subscriptions.emitRestart();

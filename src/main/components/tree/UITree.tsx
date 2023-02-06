@@ -209,7 +209,6 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 const childPath = parentPath.getChildPath(i);
                 nodeReference.children = nodeReference.children ? nodeReference.children : [];
                 if (!nodeReference.children.some((child:any) => child.key === childPath.toString())) {
-                    console.log(metaData!.columnView_table_, data)
                     nodeReference.children.push({
                         key: childPath.toString(),
                         label: metaData!.columnView_table_.length ? data[metaData!.columnView_table_[0]] : undefined,
