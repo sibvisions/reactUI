@@ -297,7 +297,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                         ...textAlignment, 
                         ...props.cellStyle
                     }}
-                    onValueChange={event => {
+                    onChange={event => {
                         
                         if (props.onInput) {
                             props.onInput(event);
@@ -305,7 +305,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                         setValue(event.value)
 
                         if (props.savingImmediate) {
-                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof event.target.value === 'string' ? parseNumber(event.target.value) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                         }
                     }}
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
