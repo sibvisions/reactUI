@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { ScaleType } from "../../components/editors/number/UIEditorNumber";
+import { getNumberSeparators, ScaleType } from "../../components/editors/number/UIEditorNumber";
 
 /**
  * Returns true, if there is a ',' in the number format to enable grouping
@@ -39,12 +39,26 @@ export function getMinimumIntDigits(numberFormat:string) {
  * @param value - the current value of the number editor
  * @returns a string of leading zeros or undefined
  */
-export function getPrimePrefix(numberFormat:string, value:any) {
-    let count = (numberFormat.split('.')[0].match(/0/g) || []).length;
-    if (count - (value ? value.toString().length : 0) > 1)
-        return '0'.repeat(count - (value ? value.toString().length : 0))
-    else
-        return undefined;
+export function getPrimePrefix(numberFormat:string, value:any, locale: string) {
+    const numberSeperators = getNumberSeparators(locale);
+    const splitFormat = numberFormat.split('.')[0];
+    let count = (splitFormat.match(/0/g) || []).length;
+    if (count - (value ? value.toString().length : 1) >= 1) {
+        let string = "";
+        let j = 2;
+        for (let i = 0; i < count - (value ? value.toString().length : 1); i++) {
+            string += "0";
+            if (j === 2) {
+                string += numberSeperators.group;
+                j = 0;
+            }
+            else {
+                j++;
+            }
+        }
+        return string
+    }
+    return "";
 }
 
 export function getDisplayScaleDigits(numberFormat:string) {

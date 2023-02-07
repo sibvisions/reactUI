@@ -53,7 +53,7 @@ import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../ut
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
     //application/UI
-    STARTUP = "/api/v4/startup",
+    STARTUP = "/api/v5/startup",
     UI_REFRESH = "/api/uiRefresh",
     DEVICE_STATUS = "/api/deviceStatus",
     CLOSE_FRAME = "/api/closeFrame",

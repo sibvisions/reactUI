@@ -58,10 +58,45 @@ export interface ScaleType {
  * Returns the number separator for the given locale
  * @param locale - the locale
  */
-function getNumberSeparators(locale: string) {
+export function getNumberSeparators(locale: string) {
     const numberWithDecimalSeparator = 100000.1;
     const parts = Intl.NumberFormat(locale).formatToParts(numberWithDecimalSeparator);
     return { decimal: parts.find(part => part.type === 'decimal')!.value, group: parts.find(part => part.type === 'group')!.value};
+}
+
+export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boolean, locale: string) {
+    if (numberFormat.startsWith('0')) {
+        return getPrimePrefix(numberFormat, data, locale);
+    }
+    else if (!numberFormat.startsWith('0') && !numberFormat.startsWith('#')) {
+        const indexHash = numberFormat.indexOf('#');
+        const index0 = numberFormat.indexOf('0');
+        if (indexHash !== 1 && indexHash < index0) {
+            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('#')) + (getPrimePrefix(numberFormat, data, locale) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale) : "");
+        }
+        else if (index0 !== 1 && index0 < indexHash) {
+            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('0')) + (getPrimePrefix(numberFormat, data, locale) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale) : "");
+        }
+    }
+    return ""
+}
+
+export function getSuffix(numberFormat:string, locale: string) {
+    const numberSeperators = getNumberSeparators(locale)
+    if (!numberFormat.endsWith('0') && !numberFormat.endsWith('#')) {
+        if (numberFormat.endsWith(".")) {
+            return numberSeperators.decimal;
+        }
+        const indexHash = numberFormat.lastIndexOf('#');
+        const index0 = numberFormat.lastIndexOf('0');
+        if (indexHash !== 1 && indexHash > index0) {
+            return numberFormat.replaceAll("'", '').substring(numberFormat.lastIndexOf('#') + 1)
+        }
+        else if (index0 !== 1 && index0 > indexHash) {
+            return numberFormat.replaceAll("'", '').substring(numberFormat.lastIndexOf('0') + 1)
+        }
+    }
+    return ""
 }
 
 /**
@@ -143,20 +178,16 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
      * 0s will be added
      * @returns a string which will be added before the number
      */
-    const prefixLength = useMemo(() => getPrimePrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? props.selectedRow.data[props.columnName] : undefined),
-    [props.cellEditor.numberFormat, props.selectedRow]);
+    const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? props.selectedRow.data[props.columnName] : undefined, false, props.context.appSettings.locale), [props.cellEditor.numberFormat, props.selectedRow]);
+
+    /** Returns a string which will be added behind the number, based on the numberFormat */
+    const suffix = useMemo(() => getSuffix(props.cellEditor.numberFormat, props.context.appSettings.locale), [props.cellEditor.numberFormat]);
 
     /**
      * Returns the maximal length before the decimal separator
      * @returns the maximal length before the decimal separator
      */
     const decimalLength = useMemo(() => props.columnMetaData ? getDecimalLength((props.columnMetaData as NumericColumnDescription).precision, (props.columnMetaData as NumericColumnDescription).scale) : undefined, [props.columnMetaData]);
-
-    // const suffix = useMemo(() => {
-    //     if (props.cellEditor.numberFormat.endsWith('.')) {
-    //         return 'test';
-    //     }
-    // }, [props.cellEditor.numberFormat, numberSeperators])
 
     /** Returns true if the caret is before the comma */
     const isSelectedBeforeComma = (value: string) => {
@@ -226,6 +257,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         }
     }, [])
 
+    useEffect(() => {
+        if (value === "-" && numberInput.current?.value === "") {
+            numberInput.current.value = "-"
+        }
+    }, [value])
+
     /**
      * When a value is pasted check if the value isn't too big for the max length
      * @param e - the browser event
@@ -286,8 +323,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     className={numberClassNames}
                     useGrouping={useGrouping}
                     locale={props.context.appSettings.locale}
-                    prefix={prefixLength}
-                    //suffix={suffix}
+                    prefix={prefix}
+                    suffix={suffix}
                     minFractionDigits={writeScaleDigits.minScale}
                     maxFractionDigits={writeScaleDigits.maxScale}
                     //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
@@ -302,6 +339,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                         if (props.onInput) {
                             props.onInput(event);
                         }
+
                         setValue(event.value)
 
                         if (props.savingImmediate) {
@@ -318,7 +356,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             if (props.onBlur) {
                                 props.onBlur(event)
                             }
-                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof event.target.value === 'string' ? parseNumber(event.target.value) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+
+                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, lastValue.current, props.topbar, props.rowNumber);
                         }
                     }}
                     disabled={props.isReadOnly}
@@ -335,7 +374,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 className={numberClassNames}
                 useGrouping={useGrouping}
                 locale={props.context.appSettings.locale}
-                prefix={prefixLength}
+                prefix={prefix}
+                suffix={suffix}
                 //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={writeScaleDigits.minScale}
                 maxFractionDigits={writeScaleDigits.maxScale}
@@ -346,8 +386,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     //background: !isSysColor(editorBackground) ? editorBackground.background : undefined
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
-                onValueChange={event => setValue(event.value)}
-                onBlur={(event) => sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof event.target.value === 'string' ? parseNumber(event.target.value) : event.target.value, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
+                onChange={event => {
+                    setValue(event.value);
+
+                    if (props.savingImmediate) {
+                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                    }
+                }}
+                onBlur={(event) => sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
                 disabled={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}

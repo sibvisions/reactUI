@@ -16,8 +16,8 @@
 import React, { FC, useContext, useMemo } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
-import { getGrouping, getMinimumIntDigits, getDisplayScaleDigits, formatNumber } from "../../../util/component-util/NumberProperties";
-import { ICellEditorNumber } from "../../editors/number/UIEditorNumber";
+import { formatNumber } from "../../../util/component-util/NumberProperties";
+import { getPrefix, getSuffix, ICellEditorNumber } from "../../editors/number/UIEditorNumber";
 import { ICellRender } from "../CellEditor";
 
 /**
@@ -36,10 +36,10 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
 
     // Formats the number value to the correct format
     const displayNumberValue = useMemo(() => {
-        if (props.cellData !== null) {
-            return formatNumber(castedCellEditor.numberFormat, context.appSettings.locale, props.cellData)
-        }
-        return props.cellData
+        //if (props.cellData !== null) {
+            return getPrefix(castedCellEditor.numberFormat, props.cellData, true, context.appSettings.locale) + formatNumber(castedCellEditor.numberFormat, context.appSettings.locale, props.cellData) + getSuffix(castedCellEditor.numberFormat, context.appSettings.locale)
+        //}
+        //return props.cellData
     }, [props.cellData, castedMetaData, castedCellEditor]);
 
     return (
