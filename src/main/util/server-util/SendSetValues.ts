@@ -19,7 +19,7 @@ import { showTopBar, TopBarContextType } from "../../components/topbar/TopBar";
 import ServerFull from "../../server/ServerFull";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
-import _ from "underscore";
+import _, { last } from "underscore";
 
 /**
  * Builds a setValuesRequest and sends it to the server
@@ -65,8 +65,9 @@ export async function sendSetValues(
     }
     /** Send as array if its not already an array */
     req.values = Array.isArray(tempValues) ? tempValues : [tempValues];
+
     if (lastValue !== undefined) {
-        if (typeof value === "object") {
+        if (typeof value === "object" && typeof lastValue === "object") {
             if (!_.isEqual(value, lastValue) && !(value === null && Object.values(lastValue).every(x => x === null))) {
                 await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUES), topbar);
             }
