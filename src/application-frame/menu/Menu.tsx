@@ -296,12 +296,13 @@ const Menu: FC<IMenu> = (props) => {
                     }
                 });
     
-                if (foundMenuItem && !panelMenu.current?.state.activeItem) {
-                    panelMenu.current?.setState({ activeItem: foundMenuItem });
-                }
-                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
-                    panelMenu.current?.setState({ activeItem: foundMenuItem });
-                }
+                // if (foundMenuItem && !panelMenu.current?.state.activeItem) {
+                //     panelMenu.current?.setState({ activeItem: foundMenuItem });
+                // }
+                // else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
+                //     panelMenu.current?.setState({ activeItem: foundMenuItem });
+                // }
+                panelMenu.current?.setState({ activeItem: foundMenuItem });
             }
         }
 

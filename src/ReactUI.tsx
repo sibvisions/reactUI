@@ -109,6 +109,9 @@ const ReactUI: FC<ICustomContent> = (props) => {
         if (appCssVersion) {
             path = path + "?version=" + appCssVersion;
         }
+        else {
+            path = path + "?version=" + Math.random().toString(36).slice(2)
+        }
         addCSSDynamically(path, "applicationCSS", () => context.appSettings.setAppReadyParam("applicationCSS"));
     }, [appCssVersion, restart, context.appSettings]);
 

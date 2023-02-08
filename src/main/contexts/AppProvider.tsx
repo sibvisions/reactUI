@@ -246,7 +246,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             if (jscmd.command === "relaunch") {
                                 contextState.contentStore.reset();
                                 relaunchArguments.current = jscmd.arguments;
-                                setRestart(prevState => !prevState);
+                                contextState.appSettings.setAppReadyParamFalse();
+                                contextState.subscriptions.emitAppReady(false);
+                                contextState.subscriptions.emitRestart();
+                                contextState.contentStore.reset();
+                                sessionStorage.clear();
                             }
                             else if (jscmd.command === "api/reopenScreen") {
                                 const openReq = createOpenScreenRequest();

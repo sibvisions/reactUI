@@ -15,7 +15,6 @@
 
 import {parseString} from "xml2js"
 import ContentStore from "../contentstore/ContentStore"
-import { IDataBook } from "../contentstore/BaseContentStore";
 import BaseServer from "./BaseServer";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
 import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
@@ -29,7 +28,7 @@ import GenericResponse from "../response/ui/GenericResponse";
 import { IPanel } from "../components/panels/panel/UIPanel";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import CloseScreenResponse from "../response/ui/CloseScreenResponse";
-import MenuResponse from "../response/data/MenuResponse";
+import MenuResponse, { ServerMenuButtons } from "../response/data/MenuResponse";
 import UploadResponse from "../response/data/UploadResponse";
 import DownloadResponse from "../response/data/DownloadResponse";
 import ShowDocumentResponse from "../response/event/ShowDocumentResponse";
@@ -49,6 +48,7 @@ import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
+import * as _ from 'underscore';
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -455,12 +455,13 @@ class Server extends BaseServer {
      */
     menu(menuData: MenuResponse) {
         if (menuData.entries && menuData.entries.length) {
+            (this.contentStore as ContentStore).menuItems = new Map<string, ServerMenuButtons[]>()
             menuData.entries.forEach(entry => {
                 entry.action = () => {
                     return this.api.sendOpenScreenIntern(entry.componentId)
                 }
                 (this.contentStore as ContentStore).addMenuItem(entry);
-            })
+            });
         }
         if (menuData.toolBarEntries && menuData.toolBarEntries.length) {
             menuData.toolBarEntries.forEach(entry => {
