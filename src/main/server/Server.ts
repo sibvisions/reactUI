@@ -62,6 +62,7 @@ enum REQUEST_ENDPOINTS {
     CLOSE_CONTENT = "/api/closeContent",
     REOPEN_SCREEN = "/api/reopenScreen",
     ABOUT = "/api/about",
+    MENU = "/api/menu",
 
     //login/account-management
     LOGIN = "/api/v2/login",
@@ -229,7 +230,8 @@ class Server extends BaseServer {
     .set(REQUEST_KEYWORDS.CANCEL_LOGIN, REQUEST_ENDPOINTS.CANCEL_LOGIN)
     .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE)
     .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS.EXIT)
-    .set(REQUEST_KEYWORDS.ABOUT, REQUEST_ENDPOINTS.ABOUT);
+    .set(REQUEST_KEYWORDS.ABOUT, REQUEST_ENDPOINTS.ABOUT)
+    .set(REQUEST_KEYWORDS.MENU, REQUEST_ENDPOINTS.MENU);
 
     /** ----------HANDLING-RESPONSES---------- */
 

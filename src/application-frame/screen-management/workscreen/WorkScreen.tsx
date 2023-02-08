@@ -67,7 +67,7 @@ const WorkScreen: FC = () => {
     return (
         <ResizeHandler>
             {renderedScreens.length ? 
-            renderedScreens : context.appSettings.desktopPanel ? componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore) : <></>}
+            renderedScreens : context.appSettings.desktopPanel && !context.server.linkOpen && !context.appSettings.welcomeScreen.name ? componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore) : <></>}
         </ResizeHandler>
 
     )

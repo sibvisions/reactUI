@@ -21,6 +21,7 @@ import { SubscriptionManager } from "../SubscriptionManager";
 import API from "../API";
 import AppSettings from "../AppSettings";
 import { createAliveRequest,
+         createBaseRequest,
          createChangesRequest,
          createOpenScreenRequest,
          createStartupRequest,
@@ -243,7 +244,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         reader.onloadend = () => { 
                             let jscmd = JSON.parse(String(reader.result)); 
                 
-                            if (jscmd.command === "relaunch") {
+                            if (jscmd.command === "dyn:relaunch") {
                                 contextState.contentStore.reset();
                                 relaunchArguments.current = jscmd.arguments;
                                 contextState.appSettings.setAppReadyParamFalse();
@@ -257,8 +258,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                 openReq.className = jscmd.arguments.className;
                                 showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
                             }
-                            else if (jscmd.command === "reloadCss") {
+                            else if (jscmd.command === "dyn:reloadCss") {
                                 contextState.subscriptions.emitAppCssVersion(jscmd.arguments.version);
+                            }
+                            else if (jscmd.command === "api/menu") {
+                                const menuReq = createBaseRequest();
+                                showTopBar(contextState.server.sendRequest(menuReq, REQUEST_KEYWORDS.MENU), topbar);
                             }
                         }
                         reader.readAsText(e.data);

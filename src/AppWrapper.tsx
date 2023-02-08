@@ -130,11 +130,15 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                 context.contentStore.activeScreens.forEach(active => {
                                     const comp = context.contentStore.getComponentByName(active.name) as IPanel;
                                     if (comp && comp.className === COMPONENT_CLASSNAMES.PANEL) {
-                                        context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true);
+                                        context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true, context.appSettings.welcomeScreen.name ? true : false);
                                     }
-
                                 })
                             }
+
+                            if (context.appSettings.welcomeScreen.name) {
+                                showTopBar(context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen.name), topbar)
+                            }
+
                         }
                     }
 
