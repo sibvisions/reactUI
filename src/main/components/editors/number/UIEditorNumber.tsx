@@ -299,9 +299,18 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     props.stopCellEditing(event);
                 }
             }
+
+            const checkBackspacePossible = () => {
+                if (event.key === "Backspace" && ((typeof value === "string" && value.replaceAll('0', '').replaceAll('.', '').replaceAll(',', '').length <= 1) || value?.toString().length === 1)) {
+                    return false;
+                }
+                return true;
+            }
+
             // Checks if the decimal length limit is hit and when it is don't allow more inputs
-            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma(event.target.value)) {
+            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma(event.target.value) || !checkBackspacePossible()) {
                 event.preventDefault();
+                event.stopPropagation();
                 return false;
             }
         }
