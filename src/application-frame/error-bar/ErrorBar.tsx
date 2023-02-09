@@ -46,9 +46,6 @@ const ErrorBar:FC = () => {
     /** Reference for the dialog which shows the error message */
     const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {}, dontShowRestart: false });
 
-    /** History of react-router-dom */
-    const history = useHistory();
-
     /** True, if a request has already been sent, to prevent multiple requests being sent when spamming "esc" or click */
     const alreadySent = useRef<boolean>(false);
 
@@ -62,14 +59,18 @@ const ErrorBar:FC = () => {
             gone: boolean,
             retry: Function,
             dontShowRestart: boolean
-        ) => setErrorProps({
-            headerMessage: header,
-            bodyMessage: body,
-            sessionExpired: sessionExp,
-            gone: gone,
-            retry: retry,
-            dontShowRestart: dontShowRestart
-        }));
+        ) => {
+            if (!errorProps.sessionExpired) {
+                setErrorProps({
+                    headerMessage: header,
+                    bodyMessage: body,
+                    sessionExpired: sessionExp,
+                    gone: gone,
+                    retry: retry,
+                    dontShowRestart: dontShowRestart
+                })
+            }
+        });
 
         return () => {
             context.subscriptions.unsubscribeFromErrorBarVisible();
