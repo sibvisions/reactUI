@@ -175,6 +175,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let timeoutToSet = 10000;
         let aliveIntervalToSet:number|undefined = undefined;
         let wsPingIntervalToSet:number|undefined = undefined;
+        let autoRestartSession:boolean = false;
         let aliveInterval:string | number | NodeJS.Timeout | undefined = undefined ;
 
         /** Initialises the websocket and handles the messages the server sends and sets the ping interval. also handles reconnect */
@@ -370,7 +371,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             contextState.transferType = "partial"
                             contextState.appSettings.transferType = "partial"
                         }
+                    }
 
+                    if (data.autoRestartOnSessionExpired === true) {
+                        autoRestartSession = true;
                     }
 
                     if (data.useDesigner === true) {
@@ -637,6 +641,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 if (wsPingIntervalToSet !== undefined) {
                     contextState.server.wsPingInterval = wsPingIntervalToSet
                 }
+
+                contextState.server.autoRestartOnSessionExpired = autoRestartSession;
                 
                 if (history.location.pathname.includes("/home/")) {
                     contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "home") - 1);

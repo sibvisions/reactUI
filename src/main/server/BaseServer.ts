@@ -114,6 +114,8 @@ export default abstract class BaseServer {
 
     isSessionExpired = false;
 
+    autoRestartOnSessionExpired = false;
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
@@ -717,9 +719,12 @@ export default abstract class BaseServer {
      * @param expData - the sessionExpiredResponse
      */
      sessionExpired(expData: SessionExpiredResponse) {
-        if (this.uiRefreshInProgress) {
-            if (this.appSettings.transferType !== "full") {
-                this.history?.push("/login");
+        if (this.uiRefreshInProgress || this.autoRestartOnSessionExpired) {
+            // if (this.appSettings.transferType !== "full") {
+            //     this.history?.push("/login");
+            // }
+            if (this.autoRestartOnSessionExpired) {
+                console.log("Session Expired! Restarting.")
             }
             this.appSettings.setAppReadyParamFalse();
             this.subManager.emitAppReady(false);
