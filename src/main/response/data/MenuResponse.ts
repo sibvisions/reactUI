@@ -35,7 +35,7 @@ export interface ServerMenuButtons extends BaseMenuButton {
     action: () => Promise<any>
 }
 
-/** Interface for ManuResponse */
+/** Interface for MenuResponse */
 interface MenuResponse extends ComponentResponse {
     entries: Array<ServerMenuButtons>
     toolBarEntries: Array<BaseMenuButton>

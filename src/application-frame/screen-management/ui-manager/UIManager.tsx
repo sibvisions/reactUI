@@ -48,7 +48,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Flag if the manu is collpased or expanded */
+    /** Flag if the menu is collpased or expanded */
     const menuCollapsed = useMenuCollapser('reactUI');
 
     /** State of menu-visibility */

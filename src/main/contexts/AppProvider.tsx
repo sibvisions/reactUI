@@ -175,6 +175,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let timeoutToSet = 10000;
         let aliveIntervalToSet:number|undefined = undefined;
         let wsPingIntervalToSet:number|undefined = undefined;
+        let aliveInterval:string | number | NodeJS.Timeout | undefined = undefined ;
 
         /** Initialises the websocket and handles the messages the server sends and sets the ping interval. also handles reconnect */
         const initWS = (baseURL:string) => {
@@ -201,6 +202,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             reconnectInterval.stop();
 
             const connectWs = () => {
+                console.log('connecting WebSocket')
                 const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
 
                 ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId() 
@@ -210,7 +212,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 };
                 ws.current.onclose = (event) => {
                     pingInterval.stop();
-                    if (event.code !== 1008) {
+                    clearInterval(aliveInterval);
+                    if (event.code === 1000) {
+                        wsIsConnected.current = false;
+                        console.log("WebSocket has been closed.");
+                    }
+                    else if (event.code !== 1008) {
                         isReconnect.current = true;
                         wsIsConnected.current = false;
                         console.log("WebSocket has been closed, reconnecting in 5 seconds.");
@@ -231,7 +238,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             reconnectInterval.stop();
                             reconnectActive = false;
                         }
-                        console.log("WebSocket has been closed.")
+                        console.log("WebSocket has been closed.");
                     }
                 };
 
@@ -247,6 +254,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             if (jscmd.command === "dyn:relaunch") {
                                 contextState.contentStore.reset();
                                 relaunchArguments.current = jscmd.arguments;
+                                if (ws.current && ws.current.readyState !== WebSocket.CLOSED) {
+                                    ws.current.close(1000);
+                                }
                                 contextState.appSettings.setAppReadyParamFalse();
                                 contextState.subscriptions.emitAppReady(false);
                                 contextState.subscriptions.emitRestart();
@@ -291,14 +301,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                 wsIsConnected.current = true;
                             }
         
-                            if (contextState.server.wsPingInterval >= 0) {
+                            if (contextState.server.wsPingInterval > 0) {
                                 pingInterval.start();
                             }
                         }
                     }
                 }
             }
-
+        
             connectWs()
         }
 
@@ -315,13 +325,15 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     sessionStorage.setItem("startup", JSON.stringify(result));
                 }
 
-                setInterval(() => {
-                    if ((Math.floor(Date.now() / 1000) - Math.floor(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
-                        if (getClientId() !== "ClientIdNotFound") {
-                            contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                if (contextState.server.aliveInterval >= 0) {
+                    aliveInterval = setInterval(() => {
+                        if ((Math.ceil(Date.now() / 1000) - Math.ceil(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
+                            if (getClientId() !== "ClientIdNotFound") {
+                                contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                            }
                         }
-                    }
-                }, contextState.server.aliveInterval)
+                    }, contextState.server.aliveInterval)
+                }
 
                 initWS(contextState.server.BASE_URL);
 
@@ -574,10 +586,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("aliveInterval");
             }
 
-            if (aliveIntervalToSet) {
-                contextState.server.aliveInterval = aliveIntervalToSet;
-            }
-
             if (convertedOptions.has("wsPingInterval")) {
                 const parsedValue = parseInt(convertedOptions.get("wsPingInterval"));
                 if (!isNaN(parsedValue)) {
@@ -590,10 +598,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
             if (convertedOptions.has("debug") && convertedOptions.get("debug") === true) {
                 contextState.appSettings.showDebug = true;
                 convertedOptions.delete("debug");
-            }
-
-            if (wsPingIntervalToSet) {
-                contextState.server.wsPingInterval = wsPingIntervalToSet;
             }
 
             convertedOptions.forEach((v, k) => {
@@ -625,6 +629,15 @@ const AppProvider: FC<ICustomContent> = (props) => {
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
                 contextState.contentStore.setServer(contextState.server);
+
+                if (aliveIntervalToSet !== undefined) {
+                    contextState.server.aliveInterval = aliveIntervalToSet
+                }
+
+                if (wsPingIntervalToSet !== undefined) {
+                    contextState.server.wsPingInterval = wsPingIntervalToSet
+                }
+                
                 if (history.location.pathname.includes("/home/")) {
                     contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "home") - 1);
                 }

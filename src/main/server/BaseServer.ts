@@ -221,7 +221,7 @@ export default abstract class BaseServer {
                 }
             }
 
-            if (this.errorIsDisplayed && endpoint !== REQUEST_KEYWORDS.ALIVE) {
+            if ((this.errorIsDisplayed && endpoint !== REQUEST_KEYWORDS.ALIVE) || (endpoint === REQUEST_KEYWORDS.ALIVE && this.isSessionExpired && this.errorIsDisplayed)) {
                 reject("Not sending request while an error is active");
                 return;
             } 
