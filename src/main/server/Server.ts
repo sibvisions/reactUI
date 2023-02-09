@@ -379,7 +379,7 @@ class Server extends BaseServer {
     generic(genericData: GenericResponse) {
 
         const openScreen = () => {
-            if (genericData.changedComponents && genericData.changedComponents.length && (!this.linkOpen || !genericData.home)) {
+            if (genericData.changedComponents && genericData.changedComponents.length) {
                 this.contentStore.updateContent(genericData.changedComponents, false);
             }
             if (!genericData.update) {
