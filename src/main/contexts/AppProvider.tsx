@@ -709,10 +709,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     if (response.applicationTheme && !themeToSet) {
                         addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => {});
                     }
-
-                    if (response.languageResource && response.langCode && response.name === RESPONSE_NAMES.LANGUAGE && contextState.transferType === "partial") {
-                        contextState.server.language({ name: "", langCode: response.langCode, languageResource: response.languageResource, timeZoneCode: "Europe/Vienna" });
-                    }
                 });
                 if (preserveOnReload) {
                     for (let [, value] of contextState.server.subManager.jobQueue.entries()) {

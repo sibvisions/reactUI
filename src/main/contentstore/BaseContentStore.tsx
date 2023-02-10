@@ -15,7 +15,7 @@
 
 import React, { ReactElement } from "react";
 import { History } from "history";
-import SignaturePad from "../components/custom-comp/custom-container-components/SignaturePad";
+import SignaturePad, { ISignaturPad } from "../components/custom-comp/custom-container-components/SignaturePad";
 import TreePath from "../model/TreePath";
 import { SubscriptionManager } from "../SubscriptionManager";
 import BaseComponent from "../util/types/BaseComponent";
@@ -128,7 +128,7 @@ export default abstract class BaseContentStore {
     history?:History<any>;
 
     /** Global components are extra components which are not available in VisionX but are displayable client-side */
-    globalComponents:Map<string, Function> = new Map<string, Function>().set("SignaturePad", (props: BaseComponent) => <SignaturePad {...props} />);
+    globalComponents:Map<string, Function> = new Map<string, Function>().set("SignaturePad", (props: ISignaturPad) => <SignaturePad {...props} />);
 
     //Maybe unnecessary in the future
     ws:WebSocket|undefined;

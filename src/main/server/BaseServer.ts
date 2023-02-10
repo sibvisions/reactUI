@@ -189,7 +189,7 @@ export default abstract class BaseServer {
         job?: boolean, 
         waitForOpenRequests?: boolean,
         queueMode: RequestQueueMode = RequestQueueMode.QUEUE,
-        handleResponse: boolean = true,
+        handleResponse: boolean = true
     ) {
         let promise = new Promise<any>((resolve, reject) => {
             // If the component/dataproviders don't exist or an error is displayed, don't send the request
@@ -464,7 +464,7 @@ export default abstract class BaseServer {
                     fetchReq.fromRow = length;
                     fetchReq.rowCount = (selectedRowIndex - length) + 1;
                     fetchReq.dataProvider = dataProvider;
-                    this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE).then((res) => {
+                    this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then((res) => {
                         const newSelectedRow = this.contentStore.getDataRow(screenName, dataProvider, selectedRowIndex);
                         this.contentStore.setSelectedRow(screenName, dataProvider, newSelectedRow, selectedRowIndex, treePath, selectedColumn);
                     });
@@ -687,7 +687,7 @@ export default abstract class BaseServer {
                 this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
-                await this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true, undefined, RequestQueueMode.IMMEDIATE)
+                this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
             } 
             else if(changedProvider.reload !== undefined) {
                 if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
@@ -697,7 +697,7 @@ export default abstract class BaseServer {
                 fetchReq.rowCount = 1;
                 fetchReq.fromRow = changedProvider.reload;
                 fetchReq.dataProvider = changedProvider.dataProvider;
-                await this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, undefined, undefined, RequestQueueMode.IMMEDIATE);
+                this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH);
             }
             else {
                 const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn;

@@ -244,7 +244,7 @@ body {
 .basti_small .corp-menu .p-speeddial .p-speeddial-action .p-speeddial-action-icon {
   font-size: calc(var(--corp-speeddial-size) / 2);
 }
-.basti_small .p-component {
+.basti_small .p-component, .basti_small .rc-label {
   font-size: var(--font-size);
 }
 .basti_small .p-inputtext:not(.login-inputtext) {

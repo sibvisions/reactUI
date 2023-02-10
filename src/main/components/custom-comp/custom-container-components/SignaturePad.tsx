@@ -13,24 +13,113 @@
  * the License.
  */
 
-import React, { FC, useContext } from "react"
+import { Button } from "primereact/button"
+import React, { CSSProperties, FC, useEffect, useMemo, useRef } from "react"
 import SignatureCanvas from 'react-signature-canvas'
-import { appContext } from "../../../contexts/AppProvider"
+import tinycolor from "tinycolor2"
+import { createSetValuesRequest } from "../../../factories/RequestFactory"
+import useRowSelect from "../../../hooks/data-hooks/useRowSelect";
+import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants"
+import useButtonBackground from "../../../hooks/style-hooks/useButtonBackground"
+import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates"
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames"
 import BaseComponent from "../../../util/types/BaseComponent"
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS"
+import { showTopBar } from "../../topbar/TopBar"
+
+export interface ISignaturPad extends BaseComponent {
+    dataRow:string,
+    columnName:string
+}
 
 /**
  * Displays a signature pad which can be used to draw or sign.
  * @param props - the properties sent by the server
  * @returns 
  */
-const SignaturePad:FC<BaseComponent> = (props) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+const SignaturePad:FC<ISignaturPad> = (baseProps) => {
+    /** Component constants */
+    const [context, topbar, [props]] = useComponentConstants<ISignaturPad>(baseProps);
+
+    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow]) 
+
+    const [selectedRow] = useRowSelect(screenName, props.dataRow);
+
+    const sigRef = useRef<any>(null);
+
+    /** Subscribes to designer-changes so the components are updated live */
+    useDesignerUpdates("default-button");
+
+    /** Updates the button background live */
+    const bgdUpdate = useButtonBackground();
+
+    /** The button background based on the color-scheme */
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
+
+    useEffect(() => {
+        if (sigRef.current) {
+            if (selectedRow && selectedRow.data[props.columnName]) {
+                sigRef.current.clear();
+                sigRef.current.fromDataURL("data:image/jpeg;base64," + selectedRow.data[props.columnName]);
+            }
+        }
+    }, [selectedRow])
 
     return (
         <div className={concatClassnames("rc-signature-pad", props.style)} style={{ height: 200, width: 400, border: "1px solid #ced4da" }}>
-            <SignatureCanvas penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"} canvasProps={{height: 200, width: 400, className: 'sigCanvas'}} />
+            <SignatureCanvas
+                ref={sigRef}
+                penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"} 
+                canvasProps={{height: 200, width: 400, className: 'sigCanvas' }}
+                onBegin={() => {
+                    if (sigRef.current) {
+                        sigRef.current.getCanvas().parentElement.classList.add('sigpad-drawing');
+                    }
+                }}
+                onEnd={() => {
+                    if (sigRef.current && sigRef.current.getCanvas().parentElement.classList.contains('sigpad-drawing')) {
+                        sigRef.current.getCanvas().parentElement.classList.remove('sigpad-drawing')
+                    }
+                }}/>
+            <div className="signature-buttons">
+                <Button
+                    className="rc-button" 
+                    icon="fas fa-times"
+                    style={{
+                        '--background': btnBgd,
+                        '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                    } as CSSProperties}
+                    onClick={() => {
+                        if (sigRef.current) {
+                            sigRef.current.clear();
+                            const svReq = createSetValuesRequest();
+                            svReq.componentId = props.name;
+                            svReq.dataProvider = props.dataRow;
+                            svReq.editorColumnName = props.columnName;
+                            svReq.columnNames = [props.columnName];
+                            svReq.values = [sigRef.current.toDataURL("image/png")];
+                            showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar)
+                        }
+                    }} />
+                <Button
+                    className="rc-button" 
+                    icon="fas fa-check"
+                    style={{
+                        '--background': btnBgd,
+                        '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                    } as CSSProperties}
+                    onClick={() => {
+                        if (sigRef.current) {
+                            const svReq = createSetValuesRequest();
+                            svReq.componentId = props.name;
+                            svReq.dataProvider = props.dataRow;
+                            svReq.editorColumnName = props.columnName;
+                            svReq.columnNames = [props.columnName];
+                            svReq.values = [sigRef.current.toDataURL("image/png")];
+                            showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar);
+                        }
+                    }} />
+            </div>
         </div>
     )
 }

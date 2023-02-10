@@ -152,7 +152,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     return (
         <LayoutContext.Provider value={componentSize}>
             <Dialog
-                className={concatClassnames("rc-popup", baseProps.style, appTheme)}
+                className={concatClassnames("rc-popup", baseProps.style, appTheme, 'reactUI')}
                 header={baseProps.screen_title_ || baseProps.content_title_}
                 visible={baseProps.screen_modal_ || baseProps.content_modal_}
                 onDrag={(e) => baseProps.onDrag ? baseProps.onDrag(e) : undefined}

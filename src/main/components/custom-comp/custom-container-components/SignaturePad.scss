@@ -1,0 +1,28 @@
+.rc-signature-pad {
+    position: relative;
+    width: 400px;
+    height: 200px;
+    border: 1px solid #ced4da;
+
+    &.sigpad-drawing {
+        .signature-buttons {
+            display: none;
+        }
+    }
+
+    .signature-buttons {
+        display: inline-block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+
+        .rc-button {
+            width: 35px;
+            height: 35px;
+
+            &:first-child {
+                margin-right: 0.25rem;
+            }
+        }
+    }
+}

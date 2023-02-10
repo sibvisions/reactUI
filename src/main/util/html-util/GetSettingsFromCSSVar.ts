@@ -13,8 +13,17 @@
  * the License.
  */
 
+import tinycolor from "tinycolor2";
+
 const defaultTransforms = {
-    'csv': (v:string) => v.split(',').map(v => v.trim()),
+    'csv': (v:string) => {
+        if (v.includes("rgb") || v.includes("hsl")) {
+            if (tinycolor(v.substring(0, v.indexOf('), ') + 1)).isValid() && tinycolor(v.substring(v.indexOf('), ') + 4)).isValid()) {
+                return [tinycolor(v.substring(0, v.indexOf('), ') + 1)).toHexString(), tinycolor(v.substring(v.indexOf('), ') + 4)).toHexString()]
+            }
+        }
+        return v.split(',').map(v => v.trim())
+    } ,
     'float': (v:string) => parseFloat(v),
 };
 
@@ -47,6 +56,7 @@ export default function getSettingsFromCSSVar(mapping: Record<string, string | C
         const v = style.getPropertyValue(cssVar).trim();
         if (transform) {
             const t = typeof transform === 'function' ? transform : defaultTransforms[transform];
+            
             out[k] = t(v) || defaultValue;
         } else {
             out[k] = v || defaultValue;

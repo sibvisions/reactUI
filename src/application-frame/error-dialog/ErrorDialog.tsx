@@ -169,7 +169,7 @@ const ErrorDialog:FC = () => {
                 }
             </div>
         )
-    }, [showDetails, selectedError, errorProps])
+    }, [showDetails, selectedError, errorProps, btnBgd])
 
     return (
         <Dialog
