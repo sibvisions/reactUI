@@ -63,7 +63,7 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
             ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
             ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
         }
-    }, [layoutStyle])
+    }, [layoutStyle, onLoadCallback]);
 
     return (
         <span ref={wrapperRef} style={layoutStyle}>
