@@ -419,7 +419,7 @@ class Server extends BaseServer {
             const pathName = (this.history as History).location.pathname as string;
             // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
             const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
-            if (!(screenToOpen && screenToOpen.split(":")[0] !== this.appSettings.welcomeScreen.name)) {
+            if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || (genericData.home && !this.linkOpen)) {
                 openScreen()
             }
             else {
@@ -704,18 +704,21 @@ class Server extends BaseServer {
                     highestPriority = 1;
                     // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
                     const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
-                    if (pathName.includes("home") && screenToOpen) {
-                        const req = createOpenScreenRequest();
-                        req.componentId = screenToOpen;
-                        this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
-                    }
-                    else if (pathName === "/login" && this.linkOpen && this.contentStore.navigationNames.has(this.linkOpen)) {
-                        const req = createOpenScreenRequest();
-                        req.componentId = this.contentStore.navigationNames.get(this.linkOpen)!.componentId;
-                        this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
-                    }
-                    else {
-                        routeTo = "home";
+                    const alreadyOpened = this.contentStore.activeScreens.some(screen => screen.className === screenToOpen?.split(":")[0]);
+                    if (!alreadyOpened) {
+                        if (pathName.includes("home") && screenToOpen) {
+                            const req = createOpenScreenRequest();
+                            req.componentId = screenToOpen;
+                            this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
+                        }
+                        else if (pathName === "/login" && this.linkOpen && this.contentStore.navigationNames.has(this.linkOpen)) {
+                            const req = createOpenScreenRequest();
+                            req.componentId = this.contentStore.navigationNames.get(this.linkOpen)!.componentId;
+                            this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
+                        }
+                        else {
+                            routeTo = "home";
+                        }
                     }
                 }
                 this.appSettings.setAppReadyParam("userOrLogin");

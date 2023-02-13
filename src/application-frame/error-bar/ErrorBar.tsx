@@ -19,6 +19,7 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
+import { createAliveRequest, REQUEST_KEYWORDS } from "../../moduleIndex";
 
 /**
  * Interface for server-error messages
@@ -92,6 +93,8 @@ const ErrorBar:FC = () => {
         // if (context.transferType !== "full") {
         //     history.push("/login");
         // }
+        context.server.isExiting = true;
+        context.server.timeoutRequest(fetch(context.server.BASE_URL + context.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), context.server.buildReqOpts(createAliveRequest())), context.server.timeoutMs);
         context.appSettings.setAppReadyParamFalse();
         context.subscriptions.emitAppReady(false);
         context.subscriptions.emitRestart();

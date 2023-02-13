@@ -258,6 +258,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                 if (ws.current && ws.current.readyState !== WebSocket.CLOSED) {
                                     ws.current.close(1000);
                                 }
+                                contextState.server.isExiting = true;
+                                contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
                                 contextState.appSettings.setAppReadyParamFalse();
                                 contextState.subscriptions.emitAppReady(false);
                                 contextState.subscriptions.emitRestart();

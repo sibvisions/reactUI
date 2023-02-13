@@ -20,7 +20,7 @@ import AppSettings from "../AppSettings";
 import BaseContentStore, { IDataBook } from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
 import ContentStoreFull from "../contentstore/ContentStoreFull";
-import { createFetchRequest } from "../factories/RequestFactory";
+import { createAliveRequest, createFetchRequest } from "../factories/RequestFactory";
 import TreePath from "../model/TreePath";
 import { SubscriptionManager } from "../SubscriptionManager";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
@@ -115,6 +115,8 @@ export default abstract class BaseServer {
     isSessionExpired = false;
 
     autoRestartOnSessionExpired = false;
+
+    isExiting = false;
 
     /**
      * @constructor constructs server instance
@@ -226,7 +228,12 @@ export default abstract class BaseServer {
             if ((this.errorIsDisplayed && endpoint !== REQUEST_KEYWORDS.ALIVE) || (endpoint === REQUEST_KEYWORDS.ALIVE && this.isSessionExpired && this.errorIsDisplayed)) {
                 reject("Not sending request while an error is active");
                 return;
-            } 
+            }
+
+            if (this.isExiting) {
+                reject("Server is currently exiting old application");
+                return
+            }
 
             if (queueMode === RequestQueueMode.IMMEDIATE) {
                 let finalEndpoint = this.endpointMap.get(endpoint);
@@ -729,6 +736,8 @@ export default abstract class BaseServer {
             this.appSettings.setAppReadyParamFalse();
             this.subManager.emitAppReady(false);
             this.subManager.emitRestart();
+            this.isExiting = true;
+            this.timeoutRequest(fetch(this.BASE_URL + this.endpointMap.get(REQUEST_KEYWORDS.EXIT), this.buildReqOpts(createAliveRequest())), this.timeoutMs);
         }
         else {
             this.subManager.emitErrorBarProperties(true, false, false, translation.get("Session expired!"));
