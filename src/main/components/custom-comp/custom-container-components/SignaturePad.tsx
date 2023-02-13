@@ -56,11 +56,14 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     /** The button background based on the color-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
+    const oldIndex = useRef<number>();
+
     useEffect(() => {
         if (sigRef.current) {
-            if (selectedRow && selectedRow.data[props.columnName]) {
+            if (selectedRow && selectedRow.data[props.columnName] && selectedRow.index !== oldIndex.current) {
                 sigRef.current.clear();
                 sigRef.current.fromDataURL("data:image/jpeg;base64," + selectedRow.data[props.columnName]);
+                oldIndex.current = selectedRow.index;
             }
         }
     }, [selectedRow])
@@ -97,7 +100,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                             svReq.dataProvider = props.dataRow;
                             svReq.editorColumnName = props.columnName;
                             svReq.columnNames = [props.columnName];
-                            svReq.values = [sigRef.current.toDataURL("image/png")];
+                            svReq.values = [sigRef.current.toDataURL("image/png").replace("data:image/png;base64,", "")];
                             showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar)
                         }
                     }} />
@@ -115,7 +118,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                             svReq.dataProvider = props.dataRow;
                             svReq.editorColumnName = props.columnName;
                             svReq.columnNames = [props.columnName];
-                            svReq.values = [sigRef.current.toDataURL("image/png")];
+                            svReq.values = [sigRef.current.toDataURL("image/png").replace("data:image/png;base64,", "")];
                             showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar);
                         }
                     }} />
