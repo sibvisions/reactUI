@@ -41,7 +41,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
 
     // If there is a cell-data fetch the linkedReference Databook so the correct value can be displayed
     useEffect(() => {
-        if (props.cellData) {
+        if (props.cellData !== undefined) {
             fetchLinkedRefDatabook(
                 props.screenName, 
                 castedCellEditor.linkReference.referencedDataBook,

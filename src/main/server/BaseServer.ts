@@ -601,8 +601,6 @@ export default abstract class BaseServer {
 
             if (dataBook.metaData) {
                 if (dataBook.referencedCellEditors?.length) {
-
-
                     dataBook.referencedCellEditors.forEach((column) => {
                         let castedColumn = (this.contentStore.getDataBook(screenName, column.dataBook) as IDataBook).metaData?.columns.find(col => col.name === column.columnName)?.cellEditor as ICellEditorLinked;
                         if (!castedColumn || !castedColumn.linkReference) {

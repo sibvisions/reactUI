@@ -945,7 +945,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         }
 
         return props.columnNames.map((colName, colIndex) => {
-            const columnMetaData = getColMetaData(colName, metaData)
+            const columnMetaData = getColMetaData(colName, metaData);
             const className = columnMetaData?.cellEditor?.className;
             if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED 
                 && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask 

@@ -169,13 +169,11 @@ const ReactUI: FC<ICustomContent> = (props) => {
                 <ErrorBar />
                 {context.appReady ?
                     <AppWrapper>
-
                         <Switch>
                             <Route exact path={"/login"} render={() => <Login />} />
                             <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
                             <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
                         </Switch>
-
                     </AppWrapper>
                     :
                     <LoadingScreen />

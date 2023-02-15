@@ -87,7 +87,7 @@ export interface IEditorLinked extends IRCCellEditor {
  */
 export function fetchLinkedRefDatabook(screenName: string, databook: string, selectedRecord: any, displayCol: string | null | undefined, concatMask: string | undefined, server: Server | ServerFull, contentStore: BaseContentStore, name?: string, decreaseCallback?: Function) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook);
-    if (selectedRecord
+    if (selectedRecord !== undefined
         && (displayCol || concatMask)
         && (!refDataBookInfo?.data)
         && !server.missingDataFetches.includes(databook)) {
@@ -354,7 +354,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         fetchLinkedRefDatabook(
             props.screenName, 
             props.cellEditor.linkReference.referencedDataBook,
-            props.selectedRow ? props.selectedRow.data : undefined, 
+            props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data : undefined, 
             props.cellEditor.displayReferencedColumnName,
             props.cellEditor.displayConcatMask,
             props.context.server, 

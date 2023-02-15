@@ -23,7 +23,7 @@ import useConstants from "../../main/hooks/components-hooks/useConstants";
 import ErrorResponse from "../../main/response/error/ErrorResponse";
 import { translation } from "../../main/util/other-util/Translation";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
-import { createChangesRequest, createCloseFrameRequest } from "../../main/factories/RequestFactory";
+import { createCloseFrameRequest } from "../../main/factories/RequestFactory";
 import REQUEST_KEYWORDS from '../../main/request/REQUEST_KEYWORDS'
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
