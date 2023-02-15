@@ -73,7 +73,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
             <SignatureCanvas
                 ref={sigRef}
                 penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"} 
-                canvasProps={{height: 200, width: 400, className: 'sigCanvas' }}
+                canvasProps={{ className: 'sigCanvas' }}
                 onBegin={() => {
                     if (sigRef.current) {
                         sigRef.current.getCanvas().parentElement.classList.add('sigpad-drawing');
