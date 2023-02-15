@@ -31,6 +31,7 @@ import { concatClassnames } from "../../../main/util/string-util/ConcatClassname
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
+import { WSDesignerContext } from "../../../AppWrapper";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -44,6 +45,8 @@ export interface IUIManagerProps {
 const UIManager: FC<IUIManagerProps> = (props) => {
     /** Reference for the menu component */
     const menuRef = useRef<any>(null);
+
+    const wsContext = useContext(WSDesignerContext);
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -146,7 +149,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                         menuOptions={menuOptions} />}
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
-                    isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu",
+                    !wsContext.isActive ? (isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu") : "",
                     ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuOptions.toolBar ? "toolbar-visible" : "",

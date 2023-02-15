@@ -92,6 +92,10 @@ body {
     font-weight: 400;
     font-style: normal;
     margin: 0;
+
+    &.is-loading {
+        overflow: hidden;
+    }
 }
 
 /// Image in this file because image won't be displayed
@@ -261,4 +265,15 @@ body {
 
 .crash-input-stack-textarea {
     width: 100%;
+}
+
+.p-speeddial.designer-button .p-speeddial-button.p-button.p-button-icon-only {
+    background: #2196F3;
+    border-color: #2196F3;
+    color: white;
+
+    &:hover {
+        background: #0d8aee;
+        border-color: #0d8aee;
+    }
 }

@@ -130,6 +130,15 @@ const ReactUI: FC<ICustomContent> = (props) => {
             context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
         }
     }, [context.subscriptions]);
+
+    useEffect(() => {
+        if (!context.appReady && !document.body.classList.contains("is-loading")) {
+            document.body.classList.add("is-loading");
+        }
+        else if (context.appReady && document.body.classList.contains("is-loading")) {
+            document.body.classList.remove("is-loading");
+        }
+    }, [context.appReady])
   
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     if (context.transferType === "full") {

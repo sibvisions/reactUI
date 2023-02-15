@@ -180,6 +180,8 @@ export default class AppSettings {
     cssToAddWhenReady:Array<any> = [];
 
     showDesigner: boolean = false;
+
+    showWSDesigner: boolean = false;
     
     showDebug: boolean = false;
 

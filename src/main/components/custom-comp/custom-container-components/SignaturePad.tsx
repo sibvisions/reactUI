@@ -69,7 +69,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     }, [selectedRow])
 
     return (
-        <div className={concatClassnames("rc-signature-pad", props.style)} style={{ border: "1px solid #ced4da" }}>
+        <div className={concatClassnames("rc-signature-pad", props.style)}>
             <SignatureCanvas
                 ref={sigRef}
                 penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"} 

@@ -52,7 +52,6 @@ export function addCSSDynamically(path:string, type:"applicationCSS"|"schemeCSS"
     }
 
     var img = document.createElement('img');
-    img.style.display = "none";
     document.body.appendChild(img);
 
     img.onerror = img.onload = function() {

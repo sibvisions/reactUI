@@ -37,6 +37,7 @@ import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { ActiveScreen } from "../../main/contentstore/BaseContentStore";
 import { translation } from "../../main/util/other-util/Translation";
+import { WSDesignerContext } from "../../AppWrapper";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -89,7 +90,6 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
         return () => {
             context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
                 setMenuOptions(menuOptions)
-
                 setVisibleButtons(visibleButtons);
             });
         }
@@ -204,6 +204,8 @@ const Menu: FC<IMenu> = (props) => {
 
     /** get menu items */
     const menuItems = useMenuItems();
+
+    const wsContext = useContext(WSDesignerContext);
 
     // Subscribes to the active-screens
     useLayoutEffect(() => {
@@ -401,7 +403,7 @@ const Menu: FC<IMenu> = (props) => {
 
     return (
         <>
-            {(props.menuOptions.menuBar && props.menuOptions.toolBar && (!embeddedContext || embeddedContext.showMenu)) &&
+            {(props.menuOptions.menuBar && props.menuOptions.toolBar && (!embeddedContext || embeddedContext.showMenu)) && !wsContext.isActive &&
                 <div className={concatClassnames(
                     "std-menu",
                     menuCollapsed ? " menu-collapsed" : "",

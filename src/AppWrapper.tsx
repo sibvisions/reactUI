@@ -13,27 +13,34 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useEffect, useMemo, useRef, useState } from "react"
+import React, { FC, useContext, useEffect, useMemo, useRef, useState, createContext } from "react"
 import TopBar, { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { appContext } from "./main/contexts/AppProvider";
 import { createOpenScreenRequest } from "./main/factories/RequestFactory";
-import useConfirmDialogProps from "./main/hooks/components-hooks/useConfirmDialogProps";
 import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
-import { Button } from "primereact/button";
-import tinycolor from "tinycolor2";
+import { SpeedDial } from "primereact/speeddial";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
+import { WorkScreenDesigner } from "@sibvisions/workscreen-designer/dist/moduleIndex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
+import { Tooltip } from "primereact/tooltip";
 interface IAppWrapper {
     embedOptions?: { [key: string]: any }
     theme?: string
     colorScheme?: string
     design?: string
 }
+
+interface IWSDesignerContext {
+    isActive:boolean,
+    toggleWSDesigner: () => void
+}
+
+export const WSDesignerContext = createContext<IWSDesignerContext>({ isActive: false, toggleWSDesigner: () => {} });
 
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
@@ -50,6 +57,8 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
+    const [wsContextState, setWSContextState] = useState<IWSDesignerContext>({ isActive: false, toggleWSDesigner: () => setWSContextState(prevState => ({ ...prevState, isActive: !prevState.isActive })) });
+
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();
 
@@ -64,8 +73,8 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         const docStyle = window.getComputedStyle(document.documentElement)
         const mainHeight = docStyle.getPropertyValue('--main-height');
         const mainWidth = docStyle.getPropertyValue('--main-width');
-        if (showDesignerView) {
-            if (!sessionStorage.getItem("reactui-designer-on")) {
+        if (showDesignerView || wsContextState.isActive) {
+            if (showDesignerView && !sessionStorage.getItem("reactui-designer-on")) {
                 sessionStorage.setItem("reactui-designer-on", "true");
             }
 
@@ -91,7 +100,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                 document.documentElement.style.setProperty("--main-width", "100vw");
             }
         }
-    }, [showDesignerView])
+    }, [showDesignerView, wsContextState.isActive])
 
     /**
      * Subscribes to app-name, css-version and restart
@@ -150,25 +159,50 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const getSpeedDialModel = () => {
+        const speeddialModel = [];
+        if (context.appSettings.showDesigner) {
+            speeddialModel.push({
+                label: 'Style-Designer',
+                icon: 'fas fa-palette',
+                command: () => setShowDesignerView(prevState => !prevState)
+            });
+        }
+
+        if (context.appSettings.showWSDesigner) {
+            speeddialModel.push({
+                label: 'Workscreen-Designer',
+                icon: 'fas fa-hammer',
+                command: () => wsContextState.toggleWSDesigner()
+            })
+        }
+        return speeddialModel;
+    }
+
+    const speeddialModel = getSpeedDialModel();
+
     const content =
         <>
-            {props.children}
-            {context.appSettings.showDesigner && !showDesignerView &&
-                <Button
-                    className="p-button-raised p-button-rounded rc-button designer-button"
-                    icon="fas fa-palette"
-                    style={{
-                        "--background": "#2196F3",
-                        "--hoverBackground": tinycolor("#2196F3").darken(5).toString(),
-                        width: "4rem",
-                        height: "4rem",
-                        position: "absolute",
-                        top: "calc(100% - 100px)",
-                        left: "calc(100% - 90px)",
-                        opacity: "0.8",
-                        fontSize: "1.825rem"
-                    } as CSSProperties}
-                    onClick={() => setShowDesignerView(prevState => !prevState)} />}
+            <WSDesignerContext.Provider value={wsContextState}>
+                {props.children}
+                {speeddialModel.length && !showDesignerView && !wsContextState.isActive &&
+                    <>
+                        <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
+                        <SpeedDial 
+                            className="designer-button" 
+                            model={speeddialModel} 
+                            direction="up"
+                            style={{
+                                position: "absolute",
+                                top: speeddialModel.length === 1 ? "calc(100% - 180px)" : "calc(100% - 220px)",
+                                left: "calc(100% - 90px)",
+                                opacity: "0.8",
+                                fontSize: "1.825rem"
+                            }} />
+                    </>
+
+                }
+            </WSDesignerContext.Provider>
         </>
 
     return (
@@ -188,14 +222,18 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             appName={context.appSettings.applicationMetaData.applicationName}
                             setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
                             changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
-                            uploadCallback={(schemeFileName: string, themeFileName: string) => {}}
+                            uploadCallback={(schemeFileName: string, themeFileName: string) => { }}
                             transferType={context.transferType} >
                             {content}
 
                         </ReactUIDesigner> :
-                        <>
-                            {content}
-                        </>}
+                        (wsContextState.isActive) ?
+                            <WorkScreenDesigner>
+                                {content}
+                            </WorkScreenDesigner> :
+                            <>
+                                {content}
+                            </>}
                 </TopBar>
             </PopupContextProvider>
         </>
