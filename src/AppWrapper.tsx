@@ -24,7 +24,6 @@ import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { SpeedDial } from "primereact/speeddial";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
-import { WorkScreenDesigner } from "@sibvisions/workscreen-designer/dist/moduleIndex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
@@ -168,14 +167,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                 command: () => setShowDesignerView(prevState => !prevState)
             });
         }
-
-        if (context.appSettings.showWSDesigner) {
-            speeddialModel.push({
-                label: 'Workscreen-Designer',
-                icon: 'fas fa-hammer',
-                command: () => wsContextState.toggleWSDesigner()
-            })
-        }
         return speeddialModel;
     }
 
@@ -227,13 +218,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             {content}
 
                         </ReactUIDesigner> :
-                        (wsContextState.isActive) ?
-                            <WorkScreenDesigner>
-                                {content}
-                            </WorkScreenDesigner> :
-                            <>
-                                {content}
-                            </>}
+                        <>
+                            {content}
+                        </>}
                 </TopBar>
             </PopupContextProvider>
         </>
