@@ -40,6 +40,7 @@ import useEventHandler from "../hooks/event-hooks/useEventHandler";
 import Timer from "../util/other-util/Timer";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
+import { initialURL } from "../..";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
@@ -685,7 +686,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
             contextState.server.timeoutMs = timeoutToSet;
             contextState.server.designerUrl = designerUrlToSet;
 
-            startUpRequest.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2);
+            startUpRequest.requestUri = initialURL;
+            startUpRequest.baseUrl = baseUrlToSet;
 
             if(authKey) {
                 startUpRequest.authKey = authKey;

@@ -17,9 +17,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import '@sibvisions/reactui-designer/main.css';
 import './index.scss';
-import '@sibvisions/workscreen-designer/dist/main.css';
 import * as serviceWorker from './serviceWorker';
 import MiddleMan from './MiddleMan';
+
+export const initialURL = window.location.href;
 
 /** Rendering the application */
 export default ReactDOM.render(
