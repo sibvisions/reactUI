@@ -94,7 +94,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         }
 
         profileMenuItems.push({
-            label: "Info",
+            label: translation.get("About"),
             icon: "pi pi-info-circle",
             command(e: MenuItemCommandParams) {
                 showTopBar(context.server.sendRequest(createAboutRequest(), REQUEST_KEYWORDS.ABOUT), topbar)
