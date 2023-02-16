@@ -205,8 +205,6 @@ const Menu: FC<IMenu> = (props) => {
     /** get menu items */
     const menuItems = useMenuItems();
 
-    const wsContext = useContext(WSDesignerContext);
-
     // Subscribes to the active-screens
     useLayoutEffect(() => {
         context.subscriptions.subscribeToActiveScreens("menu", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
@@ -403,7 +401,7 @@ const Menu: FC<IMenu> = (props) => {
 
     return (
         <>
-            {(props.menuOptions.menuBar && props.menuOptions.toolBar && (!embeddedContext || embeddedContext.showMenu)) && !wsContext.isActive &&
+            {(props.menuOptions.menuBar && props.menuOptions.toolBar && (!embeddedContext || embeddedContext.showMenu)) &&
                 <div className={concatClassnames(
                     "std-menu",
                     menuCollapsed ? " menu-collapsed" : "",

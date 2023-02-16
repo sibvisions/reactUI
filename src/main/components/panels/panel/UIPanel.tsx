@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useMemo, useRef } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
 import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
@@ -28,6 +28,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
 import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
+import { WSDesignerContext } from "../../../../AppWrapper";
 
 /** Interface for Panels */
 export interface IPanel extends BaseComponent {
@@ -145,6 +146,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
     const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
+    const wsContext = useContext(WSDesignerContext);
+
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
 
@@ -208,6 +211,21 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         )
     }, [onLoadCallback]);
 
+    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
+
+    useEffect(() => {
+        if (layoutStyle?.width && layoutStyle.height && panelRef.current) {
+            const elemRect = panelRef.current.getBoundingClientRect();
+            wsContext.testMap.set(props.id, { x: elemRect.x, y: elemRect.y })
+        }
+
+        return () => {
+            if (wsContext.testMap.has(props.id)) {
+                wsContext.testMap.delete(props.id)
+            }
+        }
+    }, [layoutStyle?.width, layoutStyle?.height])
+
     const getToolBarClassName = useCallback(() => {
         if (isToolBar && !isLastToolBar) {
             switch (parseInt(props.layout.split(",")[7])) {
@@ -219,8 +237,6 @@ const UIPanel: FC<IPanel> = (baseProps) => {
         }
         return ""
     }, [props.layout, isToolBar, isLastToolBar]);
-
-    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
 
     return (
         <>

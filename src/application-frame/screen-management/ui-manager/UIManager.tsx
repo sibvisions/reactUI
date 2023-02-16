@@ -137,23 +137,27 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 appTheme
             )} >
                 <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
-                {isCorporation(appLayout, appTheme) ?
-                    <CorporateMenu
-                        screenTitle={screenTitle}
-                        menuOptions={menuOptions} />
-                    :
-                    <Menu
-                        screenTitle={screenTitle}
-                        forwardedRef={menuRef}
-                        showMenuMini={menuMini}
-                        menuOptions={menuOptions} />}
+                {!wsContext.isActive ? 
+                    isCorporation(appLayout, appTheme) ?
+                        <CorporateMenu
+                            screenTitle={screenTitle}
+                            menuOptions={menuOptions} />
+                        :
+                        <Menu
+                            screenTitle={screenTitle}
+                            forwardedRef={menuRef}
+                            showMenuMini={menuMini}
+                            menuOptions={menuOptions} />
+                        :
+                        undefined
+                    }
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
                     !wsContext.isActive ? (isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu") : "",
-                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
+                    !wsContext.isActive && ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuOptions.toolBar ? "toolbar-visible" : "",
-                    (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
+                    (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) || wsContext.isActive ? "menu-not-visible" : "",
                     !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
                     <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active: boolean) => setMobileStandard(active)}>

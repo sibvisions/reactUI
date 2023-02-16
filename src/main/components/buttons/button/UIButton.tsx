@@ -87,14 +87,6 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, designerUpdate]);
 
-    useEffect(() => {
-        if (layoutStyle?.width && layoutStyle.height && buttonWrapperRef.current) {
-            const elemRect = buttonWrapperRef.current.getBoundingClientRect();
-            console.log(elemRect)
-            wsContext.testMap.set(props.id, { x: elemRect.x, y: elemRect.y })
-        }
-    }, [layoutStyle?.width, layoutStyle?.height])
-
     /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         designerUpdate,
@@ -111,6 +103,19 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
         ),
         onLoadCallback
     );
+
+    useEffect(() => {
+        if (layoutStyle?.width && layoutStyle.height && buttonWrapperRef.current) {
+            const elemRect = buttonWrapperRef.current.getBoundingClientRect();
+            wsContext.testMap.set(props.id, { x: elemRect.x, y: elemRect.y })
+        }
+
+        return () => {
+            if (wsContext.testMap.has(props.id)) {
+                wsContext.testMap.delete(props.id)
+            }
+        }
+    }, [layoutStyle?.width, layoutStyle?.height]);
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = (event:any) => {

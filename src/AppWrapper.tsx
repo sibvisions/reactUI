@@ -169,6 +169,14 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                 command: () => setShowDesignerView(prevState => !prevState)
             });
         }
+
+        if (context.appSettings.showWSDesigner) {
+            speeddialModel.push({
+                label: 'Workscreen-Designer',
+                icon: 'fas fa-hammer',
+                command: () => wsContextState.toggleWSDesigner()
+            })
+        }
         return speeddialModel;
     }
 
@@ -187,7 +195,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             direction="up"
                             style={{
                                 position: "absolute",
-                                top: speeddialModel.length === 1 ? "calc(100% - 180px)" : "calc(100% - 220px)",
+                                top: speeddialModel.length === 1 ? "calc(100% - 165px)" : "calc(100% - 220px)",
                                 left: "calc(100% - 90px)",
                                 opacity: "0.8",
                                 fontSize: "1.825rem"
