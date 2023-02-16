@@ -686,6 +686,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             contextState.server.designerUrl = designerUrlToSet;
 
             startUpRequest.requestUri = window.location.href.substring(0, window.location.href.indexOf('#/') + 2);
+            startUpRequest.baseUrl = baseUrlToSet;
 
             if(authKey) {
                 startUpRequest.authKey = authKey;
