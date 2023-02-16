@@ -24,6 +24,7 @@ import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { SpeedDial } from "primereact/speeddial";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
+import { WorkScreenDesigner } from "@sibvisions/workscreen-designer/dist/moduleIndex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
