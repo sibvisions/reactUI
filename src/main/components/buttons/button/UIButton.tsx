@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC,  useLayoutEffect, useRef } from "react";
+import React, { FC,  useContext,  useEffect,  useLayoutEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
@@ -35,6 +35,7 @@ import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+import { WSDesignerContext } from "../../../../AppWrapper";
 
 export const RenderButtonHTML: FC<{ text:string }> = (props) => {
     return (
@@ -55,6 +56,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
 
     /** Component constants for contexts, properties and style */
     const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButton & IExtendableButton>(baseProps);
+
+    const wsContext = useContext(WSDesignerContext);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)
@@ -83,6 +86,14 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), buttonRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, designerUpdate]);
+
+    useEffect(() => {
+        if (layoutStyle?.width && layoutStyle.height && buttonWrapperRef.current) {
+            const elemRect = buttonWrapperRef.current.getBoundingClientRect();
+            console.log(elemRect)
+            wsContext.testMap.set(props.id, { x: elemRect.x, y: elemRect.y })
+        }
+    }, [layoutStyle?.width, layoutStyle?.height])
 
     /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(

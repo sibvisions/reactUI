@@ -37,10 +37,11 @@ interface IAppWrapper {
 
 interface IWSDesignerContext {
     isActive:boolean,
-    toggleWSDesigner: () => void
+    toggleWSDesigner: () => void,
+    testMap: Map<string, { x: number, y: number }>
 }
 
-export const WSDesignerContext = createContext<IWSDesignerContext>({ isActive: false, toggleWSDesigner: () => {} });
+export const WSDesignerContext = createContext<IWSDesignerContext>({ isActive: false, toggleWSDesigner: () => {}, testMap: new Map<string, { x: number, y: number }>() });
 
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
@@ -57,7 +58,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
-    const [wsContextState, setWSContextState] = useState<IWSDesignerContext>({ isActive: false, toggleWSDesigner: () => setWSContextState(prevState => ({ ...prevState, isActive: !prevState.isActive })) });
+    const [wsContextState, setWSContextState] = useState<IWSDesignerContext>({ isActive: false, toggleWSDesigner: () => setWSContextState(prevState => ({ ...prevState, isActive: !prevState.isActive })), testMap: new Map<string, { x: number, y: number }>() });
 
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();
@@ -228,7 +229,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
                         </ReactUIDesigner> :
                         (wsContextState.isActive) ?
-                            <WorkScreenDesigner>
+                            <WorkScreenDesigner wsContext={wsContextState} >
                                 {content}
                             </WorkScreenDesigner> :
                             <>
