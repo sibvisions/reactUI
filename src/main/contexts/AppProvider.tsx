@@ -408,11 +408,16 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         if (k === "appName") {
                             startUpRequest.applicationName = v;
                         }
-                        else if (["theme", "colorScheme"].indexOf(k) === -1) {
-                            startUpRequest[k] = v;
-                        }
                     });
                     baseUrlToSet = data.baseUrl;
+
+                    if (data.userName) {
+                        startUpRequest.userName = data.userName;
+                    }
+
+                    if (data.password) {
+                        startUpRequest.password = data.password;
+                    }
         
                     if (data.logoBig) {
                         contextState.appSettings.LOGO_BIG = data.logoBig;
@@ -433,6 +438,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
     
                     if (data.language) {
+                        startUpRequest.langCode = data.language;
                         contextState.appSettings.language = data.language;
                         contextState.appSettings.locale = data.language;
                     }

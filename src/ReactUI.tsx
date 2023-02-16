@@ -138,7 +138,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
         else if (context.appReady && document.body.classList.contains("is-loading")) {
             document.body.classList.remove("is-loading");
         }
-    }, [context.appReady])
+    }, [context.appReady]);
   
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     if (context.transferType === "full") {
