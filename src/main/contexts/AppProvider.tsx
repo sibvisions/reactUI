@@ -353,8 +353,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app.json').then((r) => r.json())
                 .then((data) => {
-                    if (data.timeout) {
-                        timeoutToSet = parseInt(data.timeout);
+                    if (data.requestTimeout) {
+                        timeoutToSet = parseInt(data.requestTimeout);
                     }
 
                     if (data.aliveInterval) {
@@ -589,13 +589,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
             }
 
-            if (convertedOptions.has("timeout")) {
-                const parsedValue = parseInt(convertedOptions.get("timeout"));
+            if (convertedOptions.has("requestTimeout")) {
+                const parsedValue = parseInt(convertedOptions.get("requestTimeout"));
                 if (!isNaN(parsedValue)) {
                     timeoutToSet = parsedValue;
                 }
 
-                convertedOptions.delete("timeout");
+                convertedOptions.delete("requestTimeout");
             }
 
             if (convertedOptions.has("aliveInterval")) {
