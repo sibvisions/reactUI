@@ -207,7 +207,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 console.log('connecting WebSocket')
                 const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
 
-                ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + getClientId() 
+                ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + encodeURIComponent(getClientId())
                 + (isReconnect.current ? "&reconnect" : ""));
                 ws.current.onopen = () => {
                     ws.current?.send("PING");
