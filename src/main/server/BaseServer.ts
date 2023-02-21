@@ -241,6 +241,11 @@ export default abstract class BaseServer {
                 if (endpoint === REQUEST_KEYWORDS.UI_REFRESH) {
                     this.uiRefreshInProgress = true;
                 }
+                else if (endpoint === REQUEST_KEYWORDS.LOGIN) {
+                    this.subManager.emitLoginActive(true);
+                }
+
+                this.lastRequestTimeStamp = Date.now();
                 this.timeoutRequest(
                     fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                     this.timeoutMs, 
@@ -248,8 +253,10 @@ export default abstract class BaseServer {
                 )
                     .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                     .then(result => {
-                        this.lastRequestTimeStamp = Date.now();
-                        
+                        if (endpoint === REQUEST_KEYWORDS.LOGIN) {
+                            this.subManager.emitLoginActive(false);
+                        }
+
                         if (result.code) {
                             if (400 <= result.code && result.code <= 599) {
                                 return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
@@ -257,7 +264,7 @@ export default abstract class BaseServer {
                         }
                         return result;
                     }, (err) => Promise.reject(err))
-                    .then((results) => handleResponse ? this.responseHandler.bind(this)(results) : results, (err) => Promise.reject(err))
+                    .then((results) => handleResponse ? this.responseHandler.bind(this)(results, request) : results, (err) => Promise.reject(err))
                     .then(results => {
                         if (fn) {
                             fn.forEach(func => func.apply(undefined, []))
@@ -386,7 +393,7 @@ export default abstract class BaseServer {
     abstract responseMap: Map<string, Function>;
 
     /** Calls the correct function based on the responses */
-    async responseHandler(responses: Array<BaseResponse>) {
+    async responseHandler(responses: Array<BaseResponse>, request:any) {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
         if (Array.isArray(responses) && responses.length) {
@@ -415,14 +422,14 @@ export default abstract class BaseServer {
             for (const [, response] of responses.entries()) {
                 const mapper = this.dataResponseMap.get(response.name);
                 if (mapper) {
-                    await mapper(response);
+                    await mapper(response, request);
                 }
             }
 
             for (const [, response] of responses.entries()) {
                 const mapper = this.responseMap.get(response.name);
                 if (mapper) {
-                    await mapper(response);
+                    await mapper(response, request);
                 }
             }
         }
@@ -591,7 +598,7 @@ export default abstract class BaseServer {
      * @param fetchData - the fetchResponse
      * @param detailMapKey - the referenced key which should be added to the map
      */
-     processFetch(fetchData: FetchResponse, detailMapKey?: string) {
+     processFetch(fetchData: FetchResponse, request: any) {
         const builtData = this.buildDatasets(fetchData);
         const screenName = this.getScreenName(fetchData.dataProvider);
 
@@ -610,7 +617,7 @@ export default abstract class BaseServer {
                     })
                 }
             }
-        } 
+        }
 
         // If there is a detailMapKey, call updateDataProviderData with it
         this.contentStore.updateDataProviderData(
@@ -619,8 +626,9 @@ export default abstract class BaseServer {
             builtData, 
             fetchData.to, 
             fetchData.from, 
-            detailMapKey,
-            fetchData.clear
+            fetchData.masterRow,
+            fetchData.clear,
+            request
         );
         
         this.contentStore.setSortDefinition(screenName, fetchData.dataProvider, fetchData.sortDefinition ? fetchData.sortDefinition : []);

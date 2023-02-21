@@ -32,6 +32,7 @@ import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackgroun
 
 /** Interface for the default-login form */
 export interface ILoginForm extends ILoginCredentials {
+    loginActive: boolean
     changeLoginMode: Function
     changeLoginData: Function
     errorMessage?: string
@@ -67,10 +68,6 @@ const LoginForm:FC<ILoginForm> = (props) => {
      * Sends a loginrequest to the server when the loginform is submitted.
      */
      const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
-        if ((e.target as HTMLElement).querySelector(".login-button")) {
-            const btn = (e.target as HTMLElement).querySelector(".login-button") as HTMLButtonElement;
-            btn.disabled = true;
-        }
         props.changeLoginData(username, password);
         e.preventDefault()
         const loginReq = createLoginRequest();
@@ -80,12 +77,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
         loginReq.createAuthKey = rememberMe;
         context.server.loginError = undefined;
         context.subscriptions.emitLoginChanged(undefined, undefined)
-        showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar).then(() => {
-            if ((e.target as HTMLElement).querySelector(".login-button")) {
-                const btn = (e.target as HTMLElement).querySelector(".login-button") as HTMLButtonElement;
-                btn.disabled = false;
-            }
-        })
+        showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar);
         context.subscriptions.emitMenuUpdate();
     }
 
@@ -156,7 +148,8 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                 '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                             } as CSSProperties} 
                             label={translation.get("Login")}
-                            icon="pi pi-lock-open" />
+                            icon="pi pi-lock-open"
+                            disabled={props.loginActive} />
                     </div>
             </form>
         </>

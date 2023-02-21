@@ -199,29 +199,27 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     return (
         <>
             <PopupContextProvider>
-                <TopBar>
-                    {showDesignerView ?
-                        <ReactUIDesigner
-                            isLogin={false}
-                            changeImages={() => setImagesChanged(prevState => !prevState)}
-                            uploadUrl={context.server.designerUrl}
-                            isCorporation={isCorporation(appLayout, appTheme)}
-                            logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
-                            logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
-                            logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
-                            designerSubscription={context.designerSubscriptions}
-                            appName={context.appSettings.applicationMetaData.applicationName}
-                            setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
-                            changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
-                            uploadCallback={(schemeFileName: string, themeFileName: string) => { }}
-                            transferType={context.transferType} >
-                            {content}
+                {showDesignerView ?
+                    <ReactUIDesigner
+                        isLogin={false}
+                        changeImages={() => setImagesChanged(prevState => !prevState)}
+                        uploadUrl={context.server.designerUrl}
+                        isCorporation={isCorporation(appLayout, appTheme)}
+                        logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
+                        logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
+                        logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
+                        designerSubscription={context.designerSubscriptions}
+                        appName={context.appSettings.applicationMetaData.applicationName}
+                        setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
+                        changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
+                        uploadCallback={(schemeFileName: string, themeFileName: string) => { }}
+                        transferType={context.transferType} >
+                        {content}
 
-                        </ReactUIDesigner> :
-                        <>
-                            {content}
-                        </>}
-                </TopBar>
+                    </ReactUIDesigner> :
+                    <>
+                        {content}
+                    </>}
             </PopupContextProvider>
         </>
     )

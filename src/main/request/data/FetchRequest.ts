@@ -19,9 +19,10 @@ import DataProviderRequest from "./DataProviderRequest"
 /** Interface for FetchRequest */
 interface FetchRequest extends DataProviderRequest {
     columnNames?: string[],
-    filter?: {columnNames?:string[], values?: any[]},
+    filter?: {columnNames?:any[], values?: any[]},
     fromRow: number | undefined,
     rowCount: number | undefined,
-    includeMetaData?: boolean
+    includeMetaData?: boolean,
+    rootKey?:boolean
 }
 export default FetchRequest

@@ -30,6 +30,7 @@ interface FetchResponse extends BaseResponse{
     selectedColumn?: string
     sortDefinition?: SortDefinition[]
     recordFormat?: RecordFormat
-    clear?: boolean
+    clear?: boolean,
+    masterRow: any[];
 }
 export default FetchResponse

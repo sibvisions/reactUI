@@ -312,13 +312,16 @@ const Menu: FC<IMenu> = (props) => {
 
     //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
     useEffect(() => {
-        if (props.menuOptions.menuBar) {
-            Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
-            const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
-            if (menuElem) {
-                menuElem.classList.add("p-menuitem--active");
-            } 
-        }
+        setTimeout(() => {
+            if (props.menuOptions.menuBar) {
+                Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
+                const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+                if (menuElem) {
+                    menuElem.classList.add("p-menuitem--active");
+                } 
+            }
+        }, 0)
+
     },[selectedMenuItem])
 
     /**

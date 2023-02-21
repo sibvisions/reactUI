@@ -62,7 +62,8 @@ export interface IDataBook {
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
     readOnly?: boolean,
-    referencedCellEditors?: {cellEditor: any, columnName: string, dataBook:string}[]
+    referencedCellEditors?: {cellEditor: any, columnName: string, dataBook:string}[],
+    rootKey?: string
 }
 
 /** The ContentStore stores active content like user, components and data*/
@@ -844,18 +845,41 @@ export default abstract class BaseContentStore {
         dataProvider:string, 
         newDataSet: Array<any>, 
         to:number, 
-        from:number, 
-        referenceKey?:string,
-        clear?:boolean
+        from:number,
+        masterRow?:any[],
+        clear?:boolean,
+        request?:any
     ) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
+        const metaData = this.dataBooks.get(screenName)?.get(dataProvider)?.metaData;
+        let notifyTreeData:any = undefined;
+
+        const getPageKey = () => {
+            let pageKey:string = "";
+            if (metaData) {
+                if (!metaData.masterReference || masterRow === undefined) {
+                    pageKey = "current"
+                }
+                else {
+                    if (masterRow && masterRow.length === 0) {
+                        pageKey = "noMasterRow";
+                    }
+                    else {
+                        let pageKeyObj:any = {};
+                        for (let i = 0; i < metaData.masterReference.referencedColumnNames.length; i++) {
+                            pageKeyObj[metaData.masterReference.referencedColumnNames[i]] = masterRow[i];
+                        }
+                        pageKey = JSON.stringify(pageKeyObj);
+                        
+                    }
+                }
+            }
+            return pageKey;
+        }
         
         const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
-            if (referenceKey !== undefined) {
-                mapProv.set(referenceKey, newDataSet)
-            } else {
-                mapProv.set("current", newDataSet);
-            }
+            mapProv.set(getPageKey(), newDataSet);
+
             if (mapScreen) {
                 if (mapScreen.has(dataProvider)) {
                     (mapScreen.get(dataProvider) as IDataBook).data = mapProv;
@@ -878,7 +902,8 @@ export default abstract class BaseContentStore {
         if (existingMap) {
             const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
-                const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
+                //const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
+                const existingData = existingProvider.data.get(getPageKey());
                 if (existingData) {
                     if (existingData.length <= from) {
                         existingData.push(...newDataSet);
@@ -893,6 +918,12 @@ export default abstract class BaseContentStore {
                             newDataSetIndex++;
                         }
                     }
+                    
+                    if (!request.filter) {
+                        existingProvider.data.set("current", existingData);
+                    }
+
+                    notifyTreeData = existingData;
                 }
                 else {
                     fillDataMap(existingProvider.data);
@@ -918,8 +949,20 @@ export default abstract class BaseContentStore {
                 fillDataMap(providerMap, dataMap, true);
             }
         }
+
+        if (request.rootKey) {
+            const dataBook = this.getDataBook(screenName, dataProvider);
+            if (dataBook) {
+                dataBook.rootKey = getPageKey();
+            } 
+        }
+
         this.subManager.notifyDataChange(screenName, dataProvider);
         this.subManager.notifyScreenDataChange(screenName);
+        if (notifyTreeData) {
+            this.subManager.notifyTreeDataChanged(dataProvider, notifyTreeData, getPageKey());
+        }
+        
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.notifyDataChange(dataProvider.split('/')[1], dataProvider);
             this.subManager.notifyScreenDataChange(dataProvider.split('/')[1]);

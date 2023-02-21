@@ -21,6 +21,7 @@ import AppProvider from "./main/contexts/AppProvider";
 import { IUIManagerProps } from './application-frame/screen-management/ui-manager/UIManager';
 import ReactUIEmbedded from './ReactUIEmbedded';
 import EmbedProvider from './main/contexts/EmbedProvider';
+import TopBar from './main/components/topbar/TopBar';
 
 export interface ICustomContent {
     customAppWrapper?: IUIManagerProps["customAppWrapper"]
@@ -45,9 +46,11 @@ const MiddleMan: FC<ICustomContent> = (props) => {
     return (
         <HashRouter>
             <AppProvider {...props}>
-                <EmbedProvider embedOptions={props.embedOptions}>
-                    {props.embedOptions !== undefined ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
-                </EmbedProvider>
+                <TopBar>
+                    <EmbedProvider embedOptions={props.embedOptions}>
+                        {props.embedOptions !== undefined ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
+                    </EmbedProvider>
+                </TopBar>
             </AppProvider>
         </HashRouter>
     )

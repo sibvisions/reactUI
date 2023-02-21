@@ -90,7 +90,8 @@ const ResetForm:FC<ILoginForm> = (props) => {
                         } as CSSProperties}
                         label={translation.get("Cancel")} 
                         icon="pi pi-times" 
-                        onClick={() => props.changeLoginMode("default")} />
+                        onClick={() => props.changeLoginMode("default")}
+                        disabled={props.loginActive} />
                     <Button 
                         type="submit" 
                         className="lost-password-button rc-button"
@@ -99,7 +100,8 @@ const ResetForm:FC<ILoginForm> = (props) => {
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
                         label={translation.get("Request")} 
-                        icon="pi pi-send" />
+                        icon="pi pi-send"
+                        disabled={props.loginActive} />
                 </div>
             </div>
         </form>
