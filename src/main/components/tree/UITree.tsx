@@ -537,16 +537,6 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
                 recurse(arr);
                 return nodeToReturn as unknown as CustomTreeNode;
-                // for (const node of arr) {
-                //     //console.log(node.key, identifier, node.key === identifier)
-                //     if ((type === "pageKey" && node.pageKeyHelper === identifier) || (type === "key" && node.key === identifier)) {
-                //         console.log("RETURNING NODE")
-                //         return node;
-                //     }
-                //     else if (node.children) {
-                //         getNode(node.children as CustomTreeNode[], identifier, type);
-                //     }
-                // }
             }
 
             const nodesCopy = [...nodes];
@@ -566,8 +556,6 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     }
                 }
             }
-
-            console.log(parentNode)
 
             if (!baseNodeData && !parentNode) {
                 return;
