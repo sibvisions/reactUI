@@ -141,6 +141,9 @@ export class SubscriptionManager {
 
     /** A function to check if a login-request is currently active */
     loginActiveSubscriber:Function = () => {};
+
+    /** Subscribes to session-expired */
+    sessionExpiredSubscriber = new Array<Function>();
  
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
@@ -558,6 +561,14 @@ export class SubscriptionManager {
     }
 
     /**
+     * Subscribes to session-expired status
+     * @param fn  - the function to update the state
+     */
+    subscribeToSessionExpired(fn:Function) {
+        this.sessionExpiredSubscriber.push(fn);
+    }
+
+    /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
      */
@@ -808,12 +819,25 @@ export class SubscriptionManager {
         this.mFAURLSubscriber.delete(name);
     }
 
+    /**
+     * Unsubscribes from app-ready parameters
+     */
     unsubscribeFromAppParamsSubscriber() {
         this.appReadyParamsSubscriber = () => {};
     }
 
+    /**
+     * Unsubscribes from login active check
+     */
     unsubscribeFromActiveLogin() {
         this.loginActiveSubscriber = () => {};
+    }
+
+    /**
+     * Unsubscribes from session-expired status
+     */
+    unsubscribeFromSessionExpired(fn:Function) {
+        this.sessionExpiredSubscriber.splice(this.sessionExpiredSubscriber.findIndex(subFunction => subFunction === fn), 1)
     }
 
     /**
@@ -1048,5 +1072,9 @@ export class SubscriptionManager {
 
     emitLoginActive(isActive:boolean) {
         this.loginActiveSubscriber.apply(undefined, [isActive])
+    }
+
+    emitSessionExpiredChanged(sessionExpired:boolean) {
+        this.sessionExpiredSubscriber.forEach(subFunc => subFunc.apply(undefined, [sessionExpired]));
     }
 }

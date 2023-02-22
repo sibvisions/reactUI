@@ -147,8 +147,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
 
+    const [sessionExpired, setSessionExpired] = useState<boolean>(false);
+
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
+
+    const aliveInterval = useRef<any>()
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -157,12 +161,22 @@ const AppProvider: FC<ICustomContent> = (props) => {
      useEffect(() => {
         contextState.subscriptions.subscribeToAppReady((ready:boolean) => setContextState(prevState => ({ ...prevState, appReady: ready })));
         contextState.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
+        contextState.subscriptions.subscribeToSessionExpired((sessionExpired:boolean) => setSessionExpired(sessionExpired));
+
+
 
         return () => {
             contextState.subscriptions.unsubscribeFromAppReady();
             contextState.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
+            contextState.subscriptions.unsubscribeFromSessionExpired((sessionExpired:boolean) => setSessionExpired(sessionExpired));
         }
     },[contextState.subscriptions]);
+
+    useEffect(() => {
+        if (sessionExpired) {
+            clearInterval(aliveInterval.current);
+        }
+    }, [sessionExpired])
 
     // Creates the startup-request and sends it to the server, inits the websocket
     useEffect(() => {
@@ -177,7 +191,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let aliveIntervalToSet:number|undefined = undefined;
         let wsPingIntervalToSet:number|undefined = undefined;
         let autoRestartSession:boolean = false;
-        let aliveInterval:string | number | NodeJS.Timeout | undefined = undefined ;
 
         /** Initialises the websocket and handles the messages the server sends and sets the ping interval. also handles reconnect */
         const initWS = (baseURL:string) => {
@@ -187,7 +200,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             let index = 0;
             let reconnectActive = false;
             let reconnectInterval = new Timer(() => {
-                if (!contextState.server.isSessionExpired) {
+                if (!sessionExpired) {
                     connectWs();
                     index++
                     if (index <= 5) {
@@ -214,7 +227,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 };
                 ws.current.onclose = (event) => {
                     pingInterval.stop();
-                    clearInterval(aliveInterval);
+                    clearInterval(aliveInterval.current);
                     if (event.code === 1000) {
                         wsIsConnected.current = false;
                         console.log("WebSocket has been closed.");
@@ -330,7 +343,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
 
                 if (contextState.server.aliveInterval >= 0) {
-                    aliveInterval = setInterval(() => {
+                    aliveInterval.current = setInterval(() => {
                         if ((Math.ceil(Date.now() / 1000) - Math.ceil(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
                             if (getClientId() !== "ClientIdNotFound") {
                                 contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);

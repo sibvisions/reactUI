@@ -100,7 +100,7 @@ const ErrorBar:FC = () => {
         context.subscriptions.emitRestart();
         context.contentStore.reset();
         sessionStorage.clear();
-        context.server.isSessionExpired = false;
+        context.subscriptions.emitSessionExpiredChanged(false);
     }
 
     /**
