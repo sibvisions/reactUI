@@ -36,6 +36,7 @@ import AppSettings from "../AppSettings";
 import BaseServer from "../server/BaseServer";
 import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 import { ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
+import FetchRequest from "../request/data/FetchRequest";
 
 // Type for ActiveScreens
 export type ActiveScreen = {
@@ -848,7 +849,7 @@ export default abstract class BaseContentStore {
         from:number,
         masterRow?:any[],
         clear?:boolean,
-        request?:any
+        request?:FetchRequest
     ) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
         const metaData = this.dataBooks.get(screenName)?.get(dataProvider)?.metaData;
@@ -919,7 +920,7 @@ export default abstract class BaseContentStore {
                         }
                     }
                     
-                    if (!request.filter) {
+                    if (!request?.filter) {
                         existingProvider.data.set("current", existingData);
                     }
 
@@ -950,7 +951,7 @@ export default abstract class BaseContentStore {
             }
         }
 
-        if (request.rootKey) {
+        if (request?.rootKey) {
             const dataBook = this.getDataBook(screenName, dataProvider);
             if (dataBook) {
                 dataBook.rootKey = getPageKey();

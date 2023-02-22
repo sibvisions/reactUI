@@ -250,6 +250,9 @@
 
     .p-datatable-wrapper {
         height: calc(100% - 1px);
+    }
+
+    &.p-datatable-scrollable .p-datatable-wrapper {
         overflow-y: hidden;
     }
 
