@@ -249,7 +249,8 @@
     }
 
     .p-datatable-wrapper {
-        height: calc(100% + 2px);
+        height: calc(100% - 1px);
+        overflow-y: hidden;
     }
 
     .p-column-title {
