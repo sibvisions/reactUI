@@ -176,7 +176,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         <>
             <WSDesignerContext.Provider value={wsContextState}>
                 {props.children}
-                {speeddialModel.length && !showDesignerView && !wsContextState.isActive &&
+                {(speeddialModel.length && !showDesignerView && !wsContextState.isActive) ? 
                     <>
                         <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
                         <SpeedDial 
@@ -191,8 +191,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                 fontSize: "1.825rem"
                             }} />
                     </>
-
-                }
+                : undefined}
             </WSDesignerContext.Provider>
         </>
 
