@@ -186,7 +186,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         <>
             <WSDesignerContext.Provider value={wsContextState}>
                 {props.children}
-                {speeddialModel.length && !showDesignerView && !wsContextState.isActive &&
+                {(speeddialModel.length && !showDesignerView && !wsContextState.isActive) ? 
                     <>
                         <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
                         <SpeedDial 
@@ -201,41 +201,38 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                 fontSize: "1.825rem"
                             }} />
                     </>
-
-                }
+                : undefined}
             </WSDesignerContext.Provider>
         </>
 
     return (
         <>
             <PopupContextProvider>
-                <TopBar>
-                    {showDesignerView ?
-                        <ReactUIDesigner
-                            isLogin={false}
-                            changeImages={() => setImagesChanged(prevState => !prevState)}
-                            uploadUrl={context.server.designerUrl}
-                            isCorporation={isCorporation(appLayout, appTheme)}
-                            logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
-                            logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
-                            logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
-                            designerSubscription={context.designerSubscriptions}
-                            appName={context.appSettings.applicationMetaData.applicationName}
-                            setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
-                            changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
-                            uploadCallback={(schemeFileName: string, themeFileName: string) => { }}
-                            transferType={context.transferType} >
-                            {content}
+                {showDesignerView ?
+                    <ReactUIDesigner
+                        isLogin={false}
+                        changeImages={() => setImagesChanged(prevState => !prevState)}
+                        uploadUrl={context.server.designerUrl}
+                        isCorporation={isCorporation(appLayout, appTheme)}
+                        logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
+                        logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
+                        logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
+                        designerSubscription={context.designerSubscriptions}
+                        appName={context.appSettings.applicationMetaData.applicationName}
+                        setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
+                        changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
+                        uploadCallback={(schemeFileName: string, themeFileName: string) => { }}
+                        transferType={context.transferType} >
+                        {content}
 
-                        </ReactUIDesigner> :
-                        (wsContextState.isActive) ?
-                            <WorkScreenDesigner wsContext={wsContextState} >
-                                {content}
-                            </WorkScreenDesigner> :
-                            <>
-                                {content}
-                            </>}
-                </TopBar>
+                    </ReactUIDesigner> :
+                    (wsContextState.isActive) ?
+                        <WorkScreenDesigner wsContext={wsContextState} >
+                            {content}
+                        </WorkScreenDesigner> :
+                        <>
+                            {content}
+                        </>}
             </PopupContextProvider>
         </>
     )

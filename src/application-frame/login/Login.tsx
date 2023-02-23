@@ -106,6 +106,8 @@ const Login: FC = () => {
     /** State of the login-data entered */
     const [loginData, setLoginData] = useState<ILoginCredentials>({ username: "", password: "" });
 
+    const [loginReqActive, setLoginReqActive] = useState<boolean>(false);
+
     /** Some stock parameters for a custom mfa-wait component */
     const [waitParams, setWaitParams] = useState<IMFAWait>({ code: "", timeout: 300000, timeoutReset: undefined });
 
@@ -115,10 +117,12 @@ const Login: FC = () => {
     useEffect(() => {
         context.subscriptions.subscribeToMFAWait("login", (code:string, timeout:number, timeoutReset?:boolean) => setWaitParams({ code: code, timeout: timeout, timeoutReset: timeoutReset }));
         context.subscriptions.subscribeToMFAURL("login", (pLink: string | MFAURLType, timeout: number, timeoutReset?:boolean) => setUrlParams({ link: pLink, timeout: timeout, timeoutReset: timeoutReset }));
+        context.subscriptions.subscribeToLoginActive((active:boolean) => setLoginReqActive(active));
 
         return () => {
             context.subscriptions.unsubscribeFromMFAWait("login");
-            context.subscriptions.unsubscribeFromMFAURL("login")
+            context.subscriptions.unsubscribeFromMFAURL("login");
+            context.subscriptions.unsubscribeFromActiveLogin();
         }
     }, [context.subscriptions])
 
@@ -238,7 +242,13 @@ const Login: FC = () => {
                     }]);
                 }
                 else {
-                    return <LoginForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} errorMessage={loginError} />;
+                    return <LoginForm 
+                        username={loginData.username} 
+                        password={loginData.password} 
+                        changeLoginData={loginDataCallback} 
+                        changeLoginMode={modeFunc} 
+                        errorMessage={loginError}
+                        loginActive={loginReqActive} />;
                 }
 
             case LOGINMODES.RESET:
@@ -251,7 +261,12 @@ const Login: FC = () => {
                     }]);
                 }
                 else {
-                    return <ResetForm username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                    return <ResetForm 
+                    username={loginData.username} 
+                    password={loginData.password} 
+                    changeLoginData={loginDataCallback} 
+                    changeLoginMode={modeFunc}
+                    loginActive={loginReqActive} />;
                 }
             case LOGINMODES.MFA_TEXT:
                 if (customLoginView?.mfaText) {
@@ -263,7 +278,12 @@ const Login: FC = () => {
                     }]);
                 }
                 else {
-                    return <MFAText username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                    return <MFAText 
+                        username={loginData.username} 
+                        password={loginData.password} 
+                        changeLoginData={loginDataCallback} 
+                        changeLoginMode={modeFunc}
+                        loginActive={loginReqActive} />;
                 }
 
             case LOGINMODES.MFA_WAIT:
@@ -276,7 +296,12 @@ const Login: FC = () => {
                     }]);
                 }
                 else {
-                    return <MFAWait username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                    return <MFAWait 
+                        username={loginData.username} 
+                        password={loginData.password} 
+                        changeLoginData={loginDataCallback} 
+                        changeLoginMode={modeFunc}
+                        loginActive={loginReqActive} />;
                 }
             case LOGINMODES.MFA_URL:
                 if (customLoginView?.mfaUrl) {
@@ -288,7 +313,12 @@ const Login: FC = () => {
                     }]);
                 }
                 else {
-                    return <MFAURL username={loginData.username} password={loginData.password} changeLoginData={loginDataCallback} changeLoginMode={modeFunc} />;
+                    return <MFAURL 
+                    username={loginData.username} 
+                    password={loginData.password} 
+                    changeLoginData={loginDataCallback} 
+                    changeLoginMode={modeFunc}
+                    loginActive={loginReqActive} />;
                 }
         }
     }

@@ -253,9 +253,11 @@ const Menu: FC<IMenu> = (props) => {
      */
     const closeOpenedMenuPanel = useCallback(() => {
         if (props.menuOptions.menuBar) {
-            if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null) {
-                props.forwardedRef.current.scrollTop = 0;
-                props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+            const highlightElem = props.forwardedRef.current.querySelector('.p-highlight');
+            const childElem = props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link');
+            if (childElem !== null && highlightElem !== null && (highlightElem as HTMLElement).parentElement !== null && !(highlightElem as HTMLElement).parentElement!.classList.contains("single-group-item")) {
+                childElem.scrollTop = 0;
+                childElem.querySelector('.p-highlight > .p-panelmenu-header-link').click();
             }
         }
     },[props.forwardedRef])
@@ -296,13 +298,13 @@ const Menu: FC<IMenu> = (props) => {
                     }
                 });
     
-                // if (foundMenuItem && !panelMenu.current?.state.activeItem) {
-                //     panelMenu.current?.setState({ activeItem: foundMenuItem });
-                // }
-                // else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
-                //     panelMenu.current?.setState({ activeItem: foundMenuItem });
-                // }
-                panelMenu.current?.setState({ activeItem: foundMenuItem });
+                if (foundMenuItem && !panelMenu.current?.state.activeItem) {
+                    panelMenu.current?.setState({ activeItem: foundMenuItem });
+                }
+                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
+                    panelMenu.current?.setState({ activeItem: foundMenuItem });
+                }
+                //panelMenu.current?.setState({ activeItem: foundMenuItem });
             }
         }
 
@@ -310,13 +312,16 @@ const Menu: FC<IMenu> = (props) => {
 
     //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
     useEffect(() => {
-        if (props.menuOptions.menuBar) {
-            Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
-            const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
-            if (menuElem) {
-                menuElem.classList.add("p-menuitem--active");
-            } 
-        }
+        setTimeout(() => {
+            if (props.menuOptions.menuBar) {
+                Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
+                const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+                if (menuElem) {
+                    menuElem.classList.add("p-menuitem--active");
+                } 
+            }
+        }, 0)
+
     },[selectedMenuItem])
 
     /**

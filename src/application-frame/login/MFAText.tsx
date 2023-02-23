@@ -96,7 +96,8 @@ const MFAText:FC<ILoginForm> = (props) => {
                         onClick={() => {
                             showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), topbar);
                             props.changeLoginMode("default")
-                        }} />
+                        }}
+                        disabled={props.loginActive} />
                     <Button 
                         type="submit" 
                         className="lost-password-button rc-button"
@@ -105,7 +106,8 @@ const MFAText:FC<ILoginForm> = (props) => {
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
                         label={translation.get("Confirm")} 
-                        icon="pi pi-send" />
+                        icon="pi pi-send"
+                        disabled={props.loginActive} />
                 </div>
             </div>
         </form>

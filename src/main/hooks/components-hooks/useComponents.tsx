@@ -83,6 +83,10 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
                 }
                 else {
                     if (compSizes.preferredSize.height === newPref.height) {
+                        // Label text was probably empty and now it's not empty anymore
+                        if (compSizes.preferredSize.width === 0 && newPref.width !== 0) {
+                            return true;
+                        }
                         return false;
                     }
                 }
@@ -133,15 +137,15 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
             }
                 
             //Set Preferred Sizes of changed Components
-            if(preferredSizes && preferredSizes.has(compId)){
-                const preferredComp = preferredSizes.get(compId);
-                if(preferredComp && (preferredSizes.size === children.size) && (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))){
-                    preferredComp.preferredSize = prefSize;
-                    preferredComp.minimumSize = minSize;
-                    preferredComp.maximumSize = maxSize
-                    setPreferredSizes(new Map(preferredSizes));
-                }
-            }
+            // if(preferredSizes && preferredSizes.has(compId)) {
+            //     const preferredComp = preferredSizes.get(compId);
+            //     if (preferredComp && (preferredSizes.size === children.size) && (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))) {
+            //         preferredComp.preferredSize = prefSize;
+            //         preferredComp.minimumSize = minSize;
+            //         preferredComp.maximumSize = maxSize;
+            //         setPreferredSizes(new Map(preferredSizes));
+            //     }
+            // }
             componentsChildren.current.set(compId, Array.from(context.contentStore.getChildren(compId).keys()));
         }
 

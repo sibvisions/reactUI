@@ -273,9 +273,9 @@ class Server extends BaseServer {
      * Calls the correct functions based on the responses received and then calls the routing decider
      * @param responses - the responses received
      */
-    async responseHandler(responses: Array<BaseResponse>) {
+    async responseHandler(responses: Array<BaseResponse>, request: any) {
         if (Array.isArray(responses)) {
-            await super.responseHandler(responses)
+            await super.responseHandler(responses, request)
             this.routingDecider(responses);
         }
         return responses

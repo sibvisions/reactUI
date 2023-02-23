@@ -110,6 +110,8 @@ export class SubscriptionManager {
      */
     treeSubscriber = new Map<string, Array<Function>>();
 
+    treeDataChangedSubscriber = new Array<Function>();
+
     /** An array of functions to update the menuitem states of its subscribers */
     menuSubscriber = new Array<Function>();
 
@@ -136,6 +138,12 @@ export class SubscriptionManager {
 
     /** An array of functions to change the deviceMode state */
     deviceModeSubscriber = new Array<Function>();
+
+    /** A function to check if a login-request is currently active */
+    loginActiveSubscriber:Function = () => {};
+
+    /** Subscribes to session-expired */
+    sessionExpiredSubscriber = new Array<Function>();
  
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
@@ -372,6 +380,10 @@ export class SubscriptionManager {
             this.treeSubscriber.set(masterDataBook, new Array<Function>(fn));
     }
 
+    subscribeToTreeDataChange(fn:Function) {
+        this.treeDataChangedSubscriber.push(fn);
+    }
+
     /**
      * Subscribes the app to app-ready, to change the app-ready state
      * @param fn  - the function to change the app-ready state
@@ -541,6 +553,22 @@ export class SubscriptionManager {
     }
 
     /**
+     * Subscribes to active-login check
+     * @param fn  - the function to update the state
+     */
+    subscribeToLoginActive(fn:Function) {
+        this.loginActiveSubscriber = fn;
+    }
+
+    /**
+     * Subscribes to session-expired status
+     * @param fn  - the function to update the state
+     */
+    subscribeToSessionExpired(fn:Function) {
+        this.sessionExpiredSubscriber.push(fn);
+    }
+
+    /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
      */
@@ -645,6 +673,10 @@ export class SubscriptionManager {
         const subscriber = this.treeSubscriber.get(masterDataBook)
         if (subscriber)
             subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
+    }
+
+    unsubscribeFromTreeDataChange(fn:Function) {
+        this.treeDataChangedSubscriber.splice(this.treeDataChangedSubscriber.findIndex(subFunction => subFunction === fn), 1)
     }
 
     /**
@@ -787,8 +819,25 @@ export class SubscriptionManager {
         this.mFAURLSubscriber.delete(name);
     }
 
+    /**
+     * Unsubscribes from app-ready parameters
+     */
     unsubscribeFromAppParamsSubscriber() {
         this.appReadyParamsSubscriber = () => {};
+    }
+
+    /**
+     * Unsubscribes from login active check
+     */
+    unsubscribeFromActiveLogin() {
+        this.loginActiveSubscriber = () => {};
+    }
+
+    /**
+     * Unsubscribes from session-expired status
+     */
+    unsubscribeFromSessionExpired(fn:Function) {
+        this.sessionExpiredSubscriber.splice(this.sessionExpiredSubscriber.findIndex(subFunction => subFunction === fn), 1)
     }
 
     /**
@@ -845,6 +894,10 @@ export class SubscriptionManager {
         this.treeSubscriber.get(masterDataBook)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
+    notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string) {
+        this.treeDataChangedSubscriber.forEach(subFunction => subFunction.apply(undefined, [dataBook, data, pageKeyHelper]))
+    }
+
     /**
      * Notifies every subscribed component of given screenName and dataProvider
      * @param screenName 
@@ -874,8 +927,8 @@ export class SubscriptionManager {
         }
             
         if (screenRowSubs) {
-            this.jobQueue.set("rowSelectAll", () => screenRowSubs.apply(undefined, []));
-            //screenRowSubs.apply(undefined, []);
+            //this.jobQueue.set("rowSelectAll", () => screenRowSubs.apply(undefined, []));
+            screenRowSubs.apply(undefined, []);
         }
     }
 
@@ -1015,5 +1068,13 @@ export class SubscriptionManager {
      */
     emitMFAURLChanged(link: string|MFAURLType, timeout:number, timeoutReset?: boolean) {
         this.mFAURLSubscriber.forEach((subFunc) => subFunc.apply(undefined, [link, timeout, timeoutReset]));
+    }
+
+    emitLoginActive(isActive:boolean) {
+        this.loginActiveSubscriber.apply(undefined, [isActive])
+    }
+
+    emitSessionExpiredChanged(sessionExpired:boolean) {
+        this.sessionExpiredSubscriber.forEach(subFunc => subFunc.apply(undefined, [sessionExpired]));
     }
 }

@@ -140,7 +140,8 @@ const MFAWait:FC<ILoginForm> = (props) => {
                         onClick={() => {
                             showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), topbar);
                             props.changeLoginMode("default")
-                        }} />
+                        }}
+                        disabled={props.loginActive} />
                 </div>
             </div>
         </div>
