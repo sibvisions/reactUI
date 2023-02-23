@@ -255,9 +255,11 @@ const Menu: FC<IMenu> = (props) => {
      */
     const closeOpenedMenuPanel = useCallback(() => {
         if (props.menuOptions.menuBar) {
-            if (props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link') !== null) {
-                props.forwardedRef.current.scrollTop = 0;
-                props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+            const highlightElem = props.forwardedRef.current.querySelector('.p-highlight');
+            const childElem = props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link');
+            if (childElem !== null && highlightElem !== null && (highlightElem as HTMLElement).parentElement !== null && !(highlightElem as HTMLElement).parentElement!.classList.contains("single-group-item")) {
+                childElem.scrollTop = 0;
+                childElem.querySelector('.p-highlight > .p-panelmenu-header-link').click();
             }
         }
     },[props.forwardedRef])
