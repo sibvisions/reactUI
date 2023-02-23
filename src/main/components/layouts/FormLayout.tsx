@@ -26,6 +26,7 @@ import Margins from "./models/Margins";
 import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
+import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -38,6 +39,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     const calculatedStyle = useRef<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    const runAfterLayout = useRunAfterLayout();
 
     /** Extract variables from baseprops */
     const {
@@ -690,14 +693,16 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 });
                 if(borderConstraint && marginConstraint){
                     if(onLayoutCallback) {
-                        /** If the layout has a preferredSize set, report it */
-                        if (baseProps.preferredSize) {
-                            onLayoutCallback({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth });
-                        }
-                        /** Report the preferredSize to the parent layout */
-                        else {
-                            onLayoutCallback({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
-                        }
+                        runAfterLayout(() => {
+                            /** If the layout has a preferredSize set, report it */
+                            if (baseProps.preferredSize) {
+                                onLayoutCallback({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth });
+                            }
+                            /** Report the preferredSize to the parent layout */
+                            else {
+                                onLayoutCallback({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
+                            }
+                        })
                     }
                     /** Set the state of the calculated Style */
                     calculatedStyle.current = {
