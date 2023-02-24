@@ -21,6 +21,7 @@ export type SortDefinition = {
 }
 
 interface SortRequest extends DataProviderRequest {
-    sortDefinition?: SortDefinition[]
+    sortDefinition?: SortDefinition[],
+    columnName?:string
 }
 export default SortRequest

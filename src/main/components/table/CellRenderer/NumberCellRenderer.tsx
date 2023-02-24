@@ -44,9 +44,9 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
 
     return (
         <>
-            <div className="cell-data-content">
+            <span className="cell-data-content">
                 {props.icon ?? displayNumberValue}
-            </div>
+            </span>
         </>
     )
 }

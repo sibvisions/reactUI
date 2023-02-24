@@ -24,7 +24,7 @@ import { ICellRender } from "../CellEditor";
 const DirectCellRenderer: FC<ICellRender> = (props) => {
     return (
         <>
-            <div className="cell-data-content" style={{ display: "flex", justifyContent: "center", alignItems:"center" }}>
+            <span className="cell-data-content" style={{ display: "flex", justifyContent: "center", alignItems:"center" }}>
                 <CellEditorWrapper
                     {...{
                         id: "",
@@ -44,7 +44,7 @@ const DirectCellRenderer: FC<ICellRender> = (props) => {
                         colIndex: props.colIndex
                     }}
                 />
-            </div>
+            </span>
         </>
     )
 }

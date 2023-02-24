@@ -76,20 +76,20 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
          */
         const sizesChanged = (compId: string, compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {
             if (compSizes) {
-                if (context.contentStore.getComponentById(compId)?.className !== COMPONENT_CLASSNAMES.LABEL) {
+                //if (context.contentStore.getComponentById(compId)?.className !== COMPONENT_CLASSNAMES.LABEL) {
                     if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
                         return false;
                     }
-                }
-                else {
-                    if (compSizes.preferredSize.height === newPref.height) {
-                        // Label text was probably empty and now it's not empty anymore
-                        if (compSizes.preferredSize.width === 0 && newPref.width !== 0) {
-                            return true;
-                        }
-                        return false;
-                    }
-                }
+                //}
+                // else {
+                //     if (compSizes.preferredSize.height === newPref.height) {
+                //         // Label text was probably empty and now it's not empty anymore
+                //         if (compSizes.preferredSize.width === 0 && newPref.width !== 0) {
+                //             return true;
+                //         }
+                //         return false;
+                //     }
+                // }
             }
             return true;
         }

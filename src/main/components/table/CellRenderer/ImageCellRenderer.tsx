@@ -31,9 +31,9 @@ const ImageCellRenderer: FC<ICellRender> = (props) => {
 
     return (
         <>
-            <div className="cell-data-content">
+            <span className="cell-data-content">
                {props.icon ?? <img className="rc-table-image" src={props.cellData ? "data:image/jpeg;base64," + props.cellData : context.server.RESOURCE_URL + castedCellEditor.defaultImageName} alt="could not be loaded"/>}
-            </div>
+            </span>
         </>
     )
 }
