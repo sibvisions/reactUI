@@ -254,7 +254,6 @@ export default abstract class BaseServer {
                         if (endpoint === REQUEST_KEYWORDS.LOGIN) {
                             this.subManager.emitLoginActive(false);
                         }
-
                         if (result.code) {
                             if (400 <= result.code && result.code <= 599) {
                                 return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
@@ -742,6 +741,7 @@ export default abstract class BaseServer {
             this.subManager.emitRestart();
             this.isExiting = true;
             this.timeoutRequest(fetch(this.BASE_URL + this.endpointMap.get(REQUEST_KEYWORDS.EXIT), this.buildReqOpts(createAliveRequest())), this.timeoutMs);
+            sessionStorage.clear();
         }
         else {
             this.subManager.emitErrorBarProperties(true, false, false, translation.get("Session expired!"));

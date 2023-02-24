@@ -41,6 +41,7 @@ import Timer from "../util/other-util/Timer";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import { initialURL } from "../..";
+import BaseResponse from "../response/BaseResponse";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
@@ -352,8 +353,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }, contextState.server.aliveInterval)
                 }
 
-                initWS(contextState.server.BASE_URL);
-
+                if ((result[0] as BaseResponse).name !== RESPONSE_NAMES.SESSION_EXPIRED) {
+                    initWS(contextState.server.BASE_URL);
+                }
+                
                 if (props.onStartup) {
                     props.onStartup();
                 }
@@ -424,8 +427,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     });
                     baseUrlToSet = data.baseUrl;
 
-                    if (data.userName) {
-                        startUpRequest.userName = data.userName;
+                    if (data.userName || data.username) {
+                        startUpRequest.userName = data.userName || data.username;
                     }
 
                     if (data.password) {
