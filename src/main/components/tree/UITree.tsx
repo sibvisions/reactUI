@@ -217,11 +217,13 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 nodeReference.children = (nodeReference.children ? nodeReference.children : []) as CustomTreeNode[];
                 const isPotentialParent = getDataBookName(childPath.length()) !== "";
                 if (!nodeReference.children.some((child:any) => child.key === childPath.toString())) {
+                    const childDataPage = getDataBookName(parentPath.length());
+                    const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
                     (nodeReference.children as CustomTreeNode[]).push({
                         key: childPath.toString(),
-                        label: metaData!.columnView_table_.length ? data[metaData!.columnView_table_[0]] : undefined,
+                        label: metaData!.columnView_tree_.length ? data[metaData!.columnView_tree_[0]] : undefined,
                         leaf: !isPotentialParent,
-                        pageKeyHelper: getDataBookName(childPath.length() - 1) + "_" + JSON.stringify(_.pick(data, metaData!.primaryKeyColumns)),
+                        pageKeyHelper: isPotentialParent ? getDataBookName(childPath.length() - 1) + "_" + JSON.stringify(_.pick(data, childMetaData!.masterReference!.referencedColumnNames)) : "",
                         data: data
                     });
                 }
@@ -415,11 +417,13 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 await Promise.allSettled(data.map(async (dataRow, i) => {
                     const path = new TreePath(i);
                     const isPotentialParent = getDataBookName(path.length()) !== "";
+                    const childDataPage = getDataBookName(1);
+                    const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
                     const addedNode: CustomTreeNode = {
                         key: path.toString(),
-                        label: metaData!.columnView_table_.length ? dataRow[metaData!.columnView_table_[0]] : undefined,
+                        label: metaData!.columnView_tree_.length ? dataRow[metaData!.columnView_tree_[0]] : undefined,
                         leaf: !isPotentialParent,
-                        pageKeyHelper: firstLvlDataBook + "_" + JSON.stringify(_.pick(dataRow, metaData!.primaryKeyColumns)),
+                        pageKeyHelper: isPotentialParent ? firstLvlDataBook + "_" + JSON.stringify(_.pick(dataRow, childMetaData!.masterReference!.referencedColumnNames)) : "",
                         data: dataRow
                     };
 
@@ -514,50 +518,38 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
     useEffect(() => {
         if (treeDataChanged.data && !treeDataChanged.pageKey.includes("noMasterRow")) {
-            const getNode = (arr: CustomTreeNode[], identifier: string, type: "pageKey"|"key") => {
-                let nodeToReturn:CustomTreeNode|undefined = undefined;
-                let found = false;
+            const getNodes = (arr: CustomTreeNode[], identifier: string, type: "pageKey"|"key") => {
+                let nodesToReturn:CustomTreeNode[] = [];
 
                 const recurse = (arr: CustomTreeNode[]) => {
                     for (const node of arr) {
                         if ((type === "pageKey" && node.pageKeyHelper === identifier) || (type === "key" && node.key === identifier)) {
-                            nodeToReturn = node;
-                            found = true;
-                            break;
+                            nodesToReturn.push(node);
                         }
-                        else if (node.children) {
+
+                        if (node.children) {
                             recurse(node.children as CustomTreeNode[]);
-                            if (found) {
-                                break;
-                            }
-                            //getNode(node.children as CustomTreeNode[], identifier, type);
                         }
                     }
                 }
 
                 recurse(arr);
-                return nodeToReturn as unknown as CustomTreeNode;
+                return nodesToReturn;
             }
 
             const nodesCopy = [...nodes];
             const baseNodeData = getDataBookName(0) === treeDataChanged.dataBook && context.contentStore.getDataBook(screenName, getDataBookName(0))!.rootKey === treeDataChanged.pageKey;
             const metaData = getMetaData(screenName, treeDataChanged.dataBook, context.contentStore) as MetaDataResponse;
-            let parentNode:CustomTreeNode | undefined = undefined;
+            let parentNodes:CustomTreeNode[] = [];
             if (!baseNodeData) {
                 if (metaData) {
                     let parentNodeKey = "";
-                    if (metaData.rootReference) {
-                        parentNodeKey = metaData.rootReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
-                        parentNode = getNode(nodesCopy, parentNodeKey, "pageKey");
-                    }
-                    if (!parentNode && metaData.masterReference) {
-                        parentNodeKey = metaData.masterReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
-                        parentNode = getNode(nodesCopy, parentNodeKey, "pageKey");
-                    }
+                    parentNodeKey = metaData.masterReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
+                    parentNodes = getNodes(nodesCopy, parentNodeKey, "pageKey");
                 }
             }
 
-            if (!baseNodeData && !parentNode) {
+            if (!baseNodeData && !parentNodes.length) {
                 return;
             }
 
@@ -565,33 +557,49 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
             treeDataChanged.data.forEach((dataRow, index) => {
                 let isPotentialParent = baseNodeData && getDataBookName(1) !== "";
-                const parentPath = new TreePath(parentNode ? JSON.parse(parentNode.key as string) : []);
-                isPotentialParent = isPotentialParent || (parentNode !== undefined && getDataBookName(new TreePath(JSON.parse(parentNode.key as string)).length() + 1) !== "");
-                let newNode:CustomTreeNode = {
-                    key: parentPath.getChildPath(index).toString(),
-                    label: metaData!.columnView_table_.length ? dataRow[metaData!.columnView_table_[0]] : undefined,
-                    leaf: !isPotentialParent,
-                    pageKeyHelper: getDataBookName(parentPath.length()) + "_" + JSON.stringify(_.pick(dataRow, metaData!.primaryKeyColumns)),
-                    data: dataRow
-                }
-
-                const oldNode = getNode(nodes, newNode.key as string, "key");
-                if (oldNode) {
-                    newNode = { ...newNode, children: oldNode.children };
-
-                    if (oldNode.leaf) {
-                        newNode = { ...newNode, leaf: true }
+                const createNode = (parentNode: CustomTreeNode|undefined) => {
+                    const parentPath = new TreePath(parentNode ? JSON.parse(parentNode.key as string) : []);
+                    const path = parentPath.getChildPath(index);
+                    const childDataPage = getDataBookName(path.length());
+                    const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
+                    isPotentialParent = isPotentialParent || (parentNode !== undefined && getDataBookName(path.length()) !== "");
+                    let newNode:CustomTreeNode = {
+                        key: path.toString(),
+                        label: metaData!.columnView_tree_.length ? dataRow[metaData!.columnView_tree_[0]] : undefined,
+                        leaf: !isPotentialParent,
+                        pageKeyHelper: isPotentialParent ? getDataBookName(parentPath.length()) + "_" + JSON.stringify(_.pick(dataRow, childMetaData!.masterReference!.referencedColumnNames)) : "",
+                        data: dataRow
                     }
+    
+                    const oldNode = getNode(nodes, path);
+                    if (oldNode) {
+                        newNode = { ...newNode, children: oldNode.children };
+    
+                        if (oldNode.leaf) {
+                            newNode = { ...newNode, leaf: true }
+                        }
+                    }
+                    newNodes.push(newNode);
                 }
-                newNodes.push(newNode);
+                if (parentNodes.length) {
+                    parentNodes.forEach(parentNode => {
+                        createNode(parentNode);
+                    })
+                }
+                else {
+                    createNode(undefined);
+                }
+
             });
 
             if (baseNodeData) {
                 setNodes(newNodes);
             }
             else {
-                if (parentNode) {
-                    parentNode.children = newNodes;
+                if (parentNodes) {
+                    parentNodes.forEach(parentNode => {
+                        parentNode.children = newNodes;
+                    })
                 }
                 setNodes(nodesCopy);
             }
