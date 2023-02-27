@@ -251,9 +251,6 @@ export default abstract class BaseServer {
                 )
                     .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                     .then(result => {
-                        if (endpoint === REQUEST_KEYWORDS.LOGIN) {
-                            this.subManager.emitLoginActive(false);
-                        }
                         if (result.code) {
                             if (400 <= result.code && result.code <= 599) {
                                 return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
@@ -263,6 +260,9 @@ export default abstract class BaseServer {
                     }, (err) => Promise.reject(err))
                     .then((results) => handleResponse ? this.responseHandler.bind(this)(results, request) : results, (err) => Promise.reject(err))
                     .then(results => {
+                        if (endpoint === REQUEST_KEYWORDS.LOGIN) {
+                            this.subManager.emitLoginActive(false);
+                        }
                         if (fn) {
                             fn.forEach(func => func.apply(undefined, []))
                         }
