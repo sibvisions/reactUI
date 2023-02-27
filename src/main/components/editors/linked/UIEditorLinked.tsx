@@ -204,7 +204,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     const isDisplayRefColNameOrConcat = useMemo(() => props.cellEditor.displayReferencedColumnName || props.cellEditor.displayConcatMask, [props.cellEditor.displayReferencedColumnName, props.cellEditor.displayConcatMask])
 
     /** True if the linkRef has already been fetched */
-    const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
+    //const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
 
     // Return the linkReference of the celleditormetadata if there is one else use the linkReference of the celleditor properties
     const getCorrectLinkReference = useCallback(() => {
@@ -236,7 +236,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             return value[props.columnName]
         }
         return ""
-    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, props.cellEditor, cellEditorMetaData, props.selectedRow, props.columnName])
+    },[isDisplayRefColNameOrConcat, props.cellEditor, cellEditorMetaData, props.selectedRow, props.columnName])
 
     /** Current state of text value of input element */
     const [text, setText] = useState(getDisplayValue(props.selectedRow ? convertColNamesToReferenceColNames(props.selectedRow.data, getCorrectLinkReference(), props.columnName)  : undefined));
@@ -393,14 +393,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 lastValue.current = props.selectedRow.data;
             }
         }
-    }, [props.selectedRow, linkRefFetchFlag, cellEditorMetaData]);
+    }, [props.selectedRow, cellEditorMetaData]);
 
     // If the lib user extends the LinkedCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
             props.onChange(cellEditorMetaData && cellEditorMetaData.linkReference.dataToDisplayMap?.get(props.selectedRow ? props.selectedRow.data : undefined))
         }
-    }, [props.selectedRow, linkRefFetchFlag, props.onChange, cellEditorMetaData])
+    }, [props.selectedRow, props.onChange, cellEditorMetaData])
 
     /**
      * Either returns the unpacked value out of an array based on the columnView which should be shown in the input , or just returns the value if there is no array
@@ -674,8 +674,21 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             sendSelectRequest(-1, null)
             sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, extractedLastValue as any, props.topbar, -1);
         }
+
+        if (props.cellEditor.validationEnabled === false) {
+            let tempArray = [];
+            for (let i = 0; i < colNames.length; i++) {
+                if (colNames[i] !== props.columnName) {
+                    tempArray.push(null);
+                }
+                else {
+                    tempArray.push(checkText);
+                }
+            }
+            sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempArray, props.context.server, lastValue.current, props.topbar, -1)
+        }
         /** If there is a match found send the value to the server */
-        if (foundData.length === 1) {
+        else if (foundData.length === 1) {
             const extractedData = getExtractedObject(foundData[0], refColNames) as any;
             const extractedPrimaryKeys = getExtractedObject(foundData[0], primaryKeys) as any;
             let filter:SelectFilter = {
@@ -709,22 +722,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         }
         /** If there is no match found set the old value except if validationenabled is false */
         else {
-            if (props.cellEditor.validationEnabled === false) {
-                let tempArray = [];
-                for (let i = 0; i < colNames.length; i++) {
-                    if (colNames[i] !== props.columnName) {
-                        tempArray.push(null);
-                    }
-                    else {
-                        tempArray.push(checkText);
-                    }
-                }
-                sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempArray, props.context.server, lastValue.current, props.topbar, -1)
-            }
-            else {
-                setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
-            }
-            
+            setText(getDisplayValue(isDisplayRefColNameOrConcat ? convertColNamesToReferenceColNames(extractedLastValue, props.cellEditor.linkReference, props.columnName) : extractedLastValue));
         }
     }
 
