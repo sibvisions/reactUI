@@ -49,6 +49,7 @@ import { getNavigationIncrement } from "../util/other-util/GetNavigationIncremen
 import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
 import * as _ from 'underscore';
+import BaseComponent from "../util/types/BaseComponent";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -447,7 +448,14 @@ class Server extends BaseServer {
                 else {
                     this.lastClosedWasPopUp = false;
                 }
-                break;
+                break
+            }
+        }
+
+        for (let entry of this.contentStore.removedContent.entries()) {
+            if (entry[1].contentParentName === closeScreenData.componentId) {
+                this.contentStore.cleanUp(entry[1].id, entry[1].name, entry[1].className, true);
+                this.contentStore.flatContent.delete(entry[1].id + "-popup");
             }
         }
         this.contentStore.closeScreen(closeScreenData.componentId);
@@ -661,13 +669,15 @@ class Server extends BaseServer {
 
     // Opens a content by calling the contentstores updatecontent method to add it to the flatcontent and updating the active-screens
     content(contentData:ContentResponse) {
-        let workScreen:IPanel|undefined
+        let workScreen:IPanel|undefined = contentData.changedComponents[0] as IPanel
         if (contentData.changedComponents && contentData.changedComponents.length) {
+            if (this.contentStore.activeScreens[0]) {
+                workScreen.contentParentName = this.contentStore.activeScreens[0].name
+            }
             this.contentStore.updateContent(contentData.changedComponents, false);
         }
         if (!contentData.update) {
             if(contentData.changedComponents && contentData.changedComponents.length) {
-                workScreen = contentData.changedComponents[0] as IPanel
                 this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
             }
         }
@@ -684,7 +694,15 @@ class Server extends BaseServer {
     // Closes a content
     closeContent(closeContentData:CloseContentResponse) {
         if (closeContentData.componentId) {
-            this.contentStore.closeScreen(closeContentData.componentId, true);
+            const comp = this.contentStore.getComponentByName(closeContentData.componentId)
+            if (comp) {
+                this.contentStore.updateContent([{ id: comp.id, "~remove": true } as BaseComponent], false)
+            }
+            
+            //this.contentStore.closeScreen(closeContentData.componentId, true);
+
+            this.contentStore.activeScreens = this.contentStore.activeScreens.filter(screen => screen.name !== closeContentData.componentId);
+            this.subManager.emitActiveScreens();
         }
     }
 
