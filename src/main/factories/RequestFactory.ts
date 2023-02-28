@@ -637,7 +637,8 @@ export const createWidthRequest = (values?: WidthRequest): WidthRequest => {
     const req:WidthRequest = {
         clientId: values?.clientId || getClientId(),
         columnName: values?.columnName,
-        width: values?.width
+        width: values?.width,
+        dataProvider: values?.dataProvider
     }
     return req;
 }

@@ -1106,8 +1106,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const handleColResizeEnd = (e:DataTableColumnResizeEndParams) => {
         if (tableRef.current) {
             const widthReq = createWidthRequest();
-            console.log(e.element, e.element.offsetWidth, e.delta)
             let newColumnWidth = e.element.offsetWidth - e.delta;
+            widthReq.dataProvider = props.dataBook;
             widthReq.columnName = e.column.props.field;
             if (props.onColResizeEnd) {
                 props.onColResizeEnd(e);

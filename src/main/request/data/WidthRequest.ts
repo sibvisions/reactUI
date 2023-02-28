@@ -13,9 +13,9 @@
  * the License.
  */
 
-import BaseRequest from "../BaseRequest";
+import DataProviderRequest from "./DataProviderRequest";
 
-interface WidthRequest extends BaseRequest {
+interface WidthRequest extends DataProviderRequest {
     columnName?: string,
     width?: number
 }
