@@ -188,8 +188,13 @@ export default abstract class BaseContentStore {
      * @param componentName - the name of the component
      * @returns the data/properties of a component based on the name
      */
-     getComponentByName(componentName: string): BaseComponent | undefined {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+     getComponentByName(componentName: string, withRemoved?:boolean): BaseComponent | undefined {
+        let mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+
+        if (withRemoved) {
+            mergedContent = new Map([...mergedContent, ...this.removedContent]);
+        }
+
         const componentEntries = mergedContent.entries();
         let foundEntry:BaseComponent|undefined;
         let entry = componentEntries.next();
@@ -529,8 +534,7 @@ export default abstract class BaseContentStore {
      * @param windowName - the name of the window to close
      */
      closeScreen(windowName: string, closeContent?:boolean, opensWelcome?:boolean) {
-        let window = this.getComponentByName(windowName);
-
+        let window = this.getComponentByName(windowName, closeContent);
         if (window) {
             this.cleanUp(window.id, window.name, window.className, closeContent);
         }
@@ -563,6 +567,11 @@ export default abstract class BaseContentStore {
             const parentId = this.getComponentById(id)?.parent;
             this.deleteChildren(id, className);
             this.flatContent.delete(id);
+
+            if (closeContent) {
+                this.removedContent.delete(id)
+            }
+
             if (parentId) {
                 this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []);
             }

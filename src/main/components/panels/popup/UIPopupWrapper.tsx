@@ -146,7 +146,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         else if (!initializeCompSizes && componentSizes) {
             handleAfterInitial();
         }
-    }, [componentSizes])
+    }, [componentSizes]);
 
     // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any
     return (

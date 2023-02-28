@@ -160,7 +160,6 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
      * @returns the correct datarow based on the given path or an empty object if none was found
      */
      const getDataRow = useCallback((path:TreePath, referencedRow:any) => {
-        console.log(path, referencedRow)
         const dataBookName = getDataBookName(path.length() - 1);
         const metaData = getMetaData(screenName, dataBookName, context.contentStore, undefined)
         const dataPage = providedData.get(dataBookName);
@@ -176,7 +175,6 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                         : "current"
                 )[path.getLast()];
             } else {
-                console.log(dataPage, )
                 //In the dataprovider map, the key to the datapage are the referenced columns and their value of the parent stringified.
                 //So the parent row (referencedRow) gets stringified and the last of the path is used to get the correct row.
                 return dataPage.get(referencedRow)[path.getLast()];
@@ -541,7 +539,6 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                             }
                         }
                     } else {
-                        console.log('no detect endnode')
                         await getChildrenForDataRow(getDataRow(path, tempTreeData.get(path.getParentPath().toString())), node)
                             .then(res => tempTreeData = new Map([...tempTreeData, ...res.treeMap]))
                         treeData.current = new Map([...treeData.current, ...tempTreeData])
