@@ -75,7 +75,8 @@ enum REQUEST_ENDPOINTS {
     CHANGES = "/api/changes",
     CLOSE_CONTENT = "/api/closeContent",
     REOPEN_SCREEN = "/api/reopenScreen",
-    SAVE = "/api/save"
+    SAVE = "/api/save",
+    WIDTH = "/api/dal/width"
 }
 
 export default class ServerFull extends BaseServer {

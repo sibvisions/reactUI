@@ -94,6 +94,7 @@ enum REQUEST_ENDPOINTS {
     FILTER = "/api/dal/filter",
     DAL_SAVE = "/api/dal/save",
     SORT = "/api/dal/sort",
+    WIDTH = "/api/dal/width",
 
     //comp
     SET_VALUE = "/api/comp/setValue",
@@ -231,7 +232,8 @@ class Server extends BaseServer {
     .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE)
     .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS.EXIT)
     .set(REQUEST_KEYWORDS.ABOUT, REQUEST_ENDPOINTS.ABOUT)
-    .set(REQUEST_KEYWORDS.MENU, REQUEST_ENDPOINTS.MENU);
+    .set(REQUEST_KEYWORDS.MENU, REQUEST_ENDPOINTS.MENU)
+    .set(REQUEST_KEYWORDS.WIDTH, REQUEST_ENDPOINTS.WIDTH);
 
     /** ----------HANDLING-RESPONSES---------- */
 

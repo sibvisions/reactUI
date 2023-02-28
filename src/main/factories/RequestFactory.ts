@@ -36,6 +36,7 @@ import SelectRowRequest from "../request/data/SelectRowRequest";
 import SelectTreeRequest from "../request/data/SelectTreeRequest";
 import SetValuesRequest from "../request/data/SetValuesRequest";
 import SortRequest from "../request/data/SortRequest";
+import WidthRequest from "../request/data/WidthRequest";
 import DispatchActionRequest from "../request/events/DispatchActionRequest";
 import FocusGainedRequest from "../request/events/FocusGainedRequest";
 import FocusLostRequest from "../request/events/FocusLostRequest";
@@ -628,6 +629,15 @@ export const createAliveRequest = (values?: AliveRequest): AliveRequest => {
  export const createAboutRequest = (values?: AboutRequest): AboutRequest => {
     const req:AboutRequest = {
         clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+export const createWidthRequest = (values?: WidthRequest): WidthRequest => {
+    const req:WidthRequest = {
+        clientId: values?.clientId || getClientId(),
+        columnName: values?.columnName,
+        width: values?.width
     }
     return req;
 }

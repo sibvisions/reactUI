@@ -18,7 +18,7 @@ import { Column } from "primereact/column";
 import { DataTable, DataTableColumnResizeEndParams, DataTableSelectionChangeParams } from "primereact/datatable";
 import _ from "underscore";
 import BaseComponent from "../../util/types/BaseComponent";
-import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest } from "../../factories/RequestFactory";
+import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest, createWidthRequest } from "../../factories/RequestFactory";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
@@ -559,7 +559,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         const columnMetaData = getColMetaData(colName, metaData);
                         if (columnMetaData?.width) {
                             newCellWidth.width = columnMetaData.width;
-                            newCellWidth.widthPreSet = true
+                            newCellWidth.widthPreSet = true;
+                            theader[i].setAttribute('column-width-set', "true");
                         }
                         else {
                             const title = theader[i].querySelector('.p-column-title');
@@ -1104,6 +1105,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      */
     const handleColResizeEnd = (e:DataTableColumnResizeEndParams) => {
         if (tableRef.current) {
+            const widthReq = createWidthRequest();
+            console.log(e.element, e.element.offsetWidth, e.delta)
+            let newColumnWidth = e.element.offsetWidth - e.delta;
+            widthReq.columnName = e.column.props.field;
             if (props.onColResizeEnd) {
                 props.onColResizeEnd(e);
             }
@@ -1113,8 +1118,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
             container.querySelector('.p-resizable-column[style*="pointer-events"]').style.removeProperty('pointer-events')
             if (props.autoResize === false) {
-                //reverse prime fit sizing
-                let newColumnWidth = e.element.offsetWidth - e.delta;
+                //reverse prime fit sizing                
                 let nextColumn = e.element.nextElementSibling as HTMLElement | undefined;
                 let nextColumnWidth = nextColumn ? nextColumn.offsetWidth + e.delta : e.delta;
 
@@ -1157,7 +1161,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     `
                 });
                 table.styleElement.innerHTML = innerHTML;
+                widthReq.width = newColumnWidth;
             }
+            else {
+                widthReq.width = e.element.offsetWidth;
+            }
+            showTopBar(context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), topbar);
         }
     }
 
@@ -1305,31 +1314,51 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             const table = tableRef.current as any;
             //resize columns
             if(props.autoResize === false) {
+                let presetColumnWidths = 0;
+                const idxToSkip:string[] = []
+                let innerHTML = '';
                 let widths:number[] = [];
                 let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
-                headers.forEach(header => {
+                headers.forEach((header, index) => {
                     const width = header.style.getPropertyValue('width') || DomHandler.getOuterWidth(header, false);
+                    if (header.getAttribute("column-width-set")) {
+                        let style = table.props.scrollable
+                            ? `flex: 0 0 ${width} !important; max-width: ${width}`
+                            : `width: ${width} !important`;
+                        presetColumnWidths += parseFloat(width);
+                        innerHTML += 
+                        `
+                            .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+                            .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+                            .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+                                ${style}
+                            }
+                        `
+                        idxToSkip.push(index.toString());
+                    }
                     widths.push(parseFloat(width))
                 });
-                const totalWidth = widths.reduce((agg, w) => agg + w, 0);
-                const tableWidth = table.table.offsetWidth;
+                const totalWidth = widths.reduce((agg, w) => agg + w, 0) - presetColumnWidths;
+                const tableWidth = table.table.offsetWidth - presetColumnWidths;
 
                 table.destroyStyleElement();
                 table.createStyleElement();
-                let innerHTML = '';
+                
                 widths.forEach((width, index) => {
-                    let colWidth = (width / totalWidth) * tableWidth;
-                    let style = table.props.scrollable 
-                        ? `flex: 0 0 ${colWidth}px !important; max-width: ${colWidth}px` 
-                        : `width: ${colWidth}px !important`;
-                    
-                    innerHTML += `
-                        .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-                        .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-                        .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
-                            ${style}
-                        }
-                    `
+                    if (!idxToSkip.includes(index.toString())) {
+                        let colWidth = (width / totalWidth) * tableWidth;
+                        let style = table.props.scrollable 
+                            ? `flex: 0 0 ${colWidth}px !important; max-width: ${colWidth}px` 
+                            : `width: ${colWidth}px !important`;
+                        
+                        innerHTML += `
+                            .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+                            .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+                            .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+                                ${style}
+                            }
+                        `
+                    }
                 });
                 table.styleElement.innerHTML = innerHTML;
             }
