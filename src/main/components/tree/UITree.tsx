@@ -38,7 +38,7 @@ import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
-import MetaDataResponse from "../../response/data/MetaDataResponse";
+import MetaDataResponse, { MetaDataReference } from "../../response/data/MetaDataResponse";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {
@@ -51,7 +51,7 @@ interface CustomTreeNode extends TreeNode {
     data: any
 }
 
-type TreeMap = Map<string, { [key: string]: number }>;
+type TreeMap = Map<string, string>;
 
 /**
  * Returns the referenced node based on the given pathdFilter
@@ -93,6 +93,8 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
      * The keys are the nodes saved as TreePath and the value is the parents primary key/referenced column
      */
     const treeData = useRef<TreeMap>(new Map());
+
+    const lastExpandedLength = useRef<number>(0);
 
     /** Current state of the node objects which are handled by PrimeReact to display in the Tree */
     const [nodes, setNodes] = useState<CustomTreeNode[]>([]);
@@ -158,9 +160,11 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
      * @returns the correct datarow based on the given path or an empty object if none was found
      */
      const getDataRow = useCallback((path:TreePath, referencedRow:any) => {
+        console.log(path, referencedRow)
         const dataBookName = getDataBookName(path.length() - 1);
         const metaData = getMetaData(screenName, dataBookName, context.contentStore, undefined)
         const dataPage = providedData.get(dataBookName);
+        const reference = getReference(dataBookName, metaData as MetaDataResponse, path);
         if (dataPage) {
             if (path.length() === 1) {
                 //if path length is 1 there is only a current in the dataprovider map except for self-joined
@@ -168,13 +172,14 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 //is the index of the saved row.
                 return dataPage.get(
                     isSelfJoined(dataBookName) 
-                        ? getSelfJoinedRootReference(metaData!.masterReference!.referencedColumnNames) 
+                        ? getSelfJoinedRootReference(reference!.columnNames)
                         : "current"
                 )[path.getLast()];
             } else {
+                console.log(dataPage, )
                 //In the dataprovider map, the key to the datapage are the referenced columns and their value of the parent stringified.
                 //So the parent row (referencedRow) gets stringified and the last of the path is used to get the correct row.
-                return dataPage.get(JSON.stringify(referencedRow))[path.getLast()];
+                return dataPage.get(referencedRow)[path.getLast()];
             }  
         }
         return {}
@@ -183,6 +188,39 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         providedData, 
         getDataBookName
     ]);
+
+    const getReference = (dataBook:string, metaData:MetaDataResponse, parentPath: TreePath) => {
+        if (isSelfJoined(dataBook) && metaData!.rootReference && dataBook !== getDataBookName(parentPath.length() - 1)) {
+            return metaData!.rootReference ?? metaData!.masterReference;
+        }
+        else {
+            return metaData!.masterReference
+        }
+    }
+
+    const getFilterObj = (metaData: MetaDataResponse, reference: MetaDataReference, data:any) => {
+        const arr = metaData!.masterReference!.columnNames.map((columnName) => {
+            // Is there a reference to the parent table?
+            if (!reference!.columnNames.includes(columnName)) {
+              return null;
+            }
+    
+            // Get the name of the column in the parent table.
+            const parentColumn = reference!.referencedColumnNames[reference!.columnNames.indexOf(columnName)];
+    
+            // Get the value of the column in the parent table.
+            if (data[parentColumn] !== undefined) {
+              return data[parentColumn];
+            } else {
+              return null;
+            }
+        });
+
+        return {
+            columnNames: reference.columnNames,
+            values: arr
+        };
+    }
 
     /**
      * Either sends a fetch to receive the next datarows and adds them to the parent node
@@ -204,6 +242,11 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         );
         const fetchDataPage = getDataBookName(parentPath.length());
         const metaData = getMetaData(screenName, fetchDataPage, context.contentStore, undefined);
+        const reference = getReference(fetchDataPage, metaData as MetaDataResponse, parentPath);
+        
+        const filter = getFilterObj(metaData as MetaDataResponse, reference as MetaDataReference, fetchObj);
+        const pkObj:any = {}
+        filter.columnNames.forEach((key, i) => pkObj[key] = filter.values[i])
 
         /**
          * Adds the child nodes to the referenced Node, if they aren't already added
@@ -213,53 +256,38 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         const addNodesToParent = (builtData:any[]) => {
             nodeReference.leaf = builtData.length === 0;
             builtData.forEach((data, i) => {
-                const childPath = parentPath.getChildPath(i);
+                const path = parentPath.getChildPath(i);
                 nodeReference.children = (nodeReference.children ? nodeReference.children : []) as CustomTreeNode[];
-                const isPotentialParent = getDataBookName(childPath.length()) !== "";
-                if (!nodeReference.children.some((child:any) => child.key === childPath.toString())) {
-                    const childDataPage = getDataBookName(parentPath.length());
+                const isPotentialParent = getDataBookName(path.length()) !== "";
+                const childPkObj:any = {}
+                if (getDataBookName(path.length())) {
+                    const childDataPage = getDataBookName(path.length());
                     const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
+                    const childReference = getReference(childDataPage, childMetaData as MetaDataResponse, path);
+                    const childFilter = getFilterObj(childMetaData as MetaDataResponse, childReference as MetaDataReference, data);
+                    childFilter.columnNames.forEach((key, i) => childPkObj[key] = childFilter.values[i]);
+                }
+                if (!nodeReference.children.some((child:any) => child.key === path.toString())) {
                     (nodeReference.children as CustomTreeNode[]).push({
-                        key: childPath.toString(),
+                        key: path.toString(),
                         label: metaData!.columnView_tree_.length ? data[metaData!.columnView_tree_[0]] : undefined,
                         leaf: !isPotentialParent,
-                        pageKeyHelper: isPotentialParent ? getDataBookName(childPath.length() - 1) + "_" + JSON.stringify(_.pick(data, childMetaData!.masterReference!.referencedColumnNames)) : "",
+                        pageKeyHelper: isPotentialParent ? getDataBookName(path.length() - 1) + "_" + JSON.stringify(childPkObj) : "",
                         data: data
                     });
                 }
-                tempTreeMap.set(childPath.toString(), _.pick(data, metaData!.primaryKeyColumns || ["ID"]));            
+                tempTreeMap.set(path.toString(), JSON.stringify(childPkObj));            
             })
         }
 
         return new Promise<{ treeMap: TreeMap }>(async (resolve, reject) => {
             if (metaData?.masterReference !== undefined) {
-                const getReferencedColumnNames = () => {
-                    if (isSelfJoined(fetchDataPage) && metaData.rootReference && fetchDataPage !== getDataBookName(parentPath.length() - 1)) {
-                        return metaData.rootReference.referencedColumnNames;
-                    }
-                    else {
-                        return metaData.masterReference!.referencedColumnNames
-                    }
-                }
-                //picking out the referenced columns of the datarow
-                const pkObj = _.pick(fetchObj, getReferencedColumnNames());
                 //stringify the pkObj to create the key for the datapages in dataprovider map
                 const pkObjStringified = JSON.stringify(pkObj);
                 if (fetchDataPage && !providedData.get(fetchDataPage).has(pkObjStringified)) {
                     const fetchReq = createFetchRequest();
                     fetchReq.dataProvider = fetchDataPage;
-                    const getFilterValues = () => {
-                        const arr = [];
-                        const referencedColNames = getReferencedColumnNames();
-                        for (let i = 0; i < Object.values(pkObj).length; i++) {
-                            arr.push(pkObj[referencedColNames[i]]);
-                        }
-                        return arr;
-                    }
-                    fetchReq.filter = {
-                        columnNames: metaData.masterReference.columnNames,
-                        values: getFilterValues()
-                    }
+                    fetchReq.filter = filter;
                     await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
                         .then(() => {
                             const builtData = providedData.get(fetchDataPage).get(pkObjStringified);
@@ -386,7 +414,6 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         if (props.dataBooks && props.dataBooks.length) {
             const firstLvlDataBook = props.dataBooks[0];
             const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
-
             let tempTreeMap = treeData.current;
 
             /**
@@ -419,11 +446,15 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     const isPotentialParent = getDataBookName(path.length()) !== "";
                     const childDataPage = getDataBookName(1);
                     const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
+                    const reference = getReference(childDataPage, childMetaData as MetaDataResponse, new TreePath())
+                    const filter = getFilterObj(childMetaData as MetaDataResponse, reference as MetaDataReference, dataRow);
+                    const pkObj:any = {}
+                    filter.columnNames.forEach((key, i) => pkObj[key] = filter.values[i]);
                     const addedNode: CustomTreeNode = {
                         key: path.toString(),
                         label: metaData!.columnView_tree_.length ? dataRow[metaData!.columnView_tree_[0]] : undefined,
                         leaf: !isPotentialParent,
-                        pageKeyHelper: isPotentialParent ? firstLvlDataBook + "_" + JSON.stringify(_.pick(dataRow, childMetaData!.masterReference!.referencedColumnNames)) : "",
+                        pageKeyHelper: isPotentialParent ? firstLvlDataBook + "_" + JSON.stringify(pkObj) : "",
                         data: dataRow
                     };
 
@@ -435,9 +466,9 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                         });
                     }
 
-                    tempTreeMap.set(path.toString(), _.pick(dataRow, metaData!.primaryKeyColumns || ["ID"]));
+                    tempTreeMap.set(path.toString(), JSON.stringify(pkObj));
                 }));
-                treeData.current = new Map([...treeData.current, ...tempTreeMap])
+                treeData.current = new Map([...treeData.current, ...tempTreeMap]);
                 setNodes(newNodes);
                 setInitialized(true);
             }
@@ -466,14 +497,41 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         async function growTree(){
             const newNodes = [...nodes];
             let tempTreeData = new Map(treeData.current);
-            for (let key of Object.keys(expandedKeys).filter(k => expandedKeys[k])) {
+
+            // for (let key of Object.keys(expandedKeys).filter(k => expandedKeys[k])) {
+            //     const path = new TreePath(JSON.parse(key));
+            //     const node = getNode(newNodes, path);
+            //     if (node) {
+            //         if (detectEndNode !== false) {
+            //             //Only fetch if there is another databook underneath
+            //             if (getDataBookName(path.length())) {
+            //                 const dataRowChildren:any[] = providedData.get(getDataBookName(path.length())).get(treeData.current.get(key));
+            //                 if(dataRowChildren) {
+            //                     await Promise.allSettled(dataRowChildren.map((data, i) => 
+            //                         getChildrenForDataRow(data, (node.children ?? [])[i] as CustomTreeNode)
+            //                             .then((res:any) => tempTreeData = new Map([...tempTreeData, ...res.treeMap]))
+            //                     ))
+            //                     .then(() => treeData.current = new Map([...treeData.current, ...tempTreeData]));
+            //                 }
+            //             }
+            //         } else {
+            //             await getChildrenForDataRow(getDataRow(path, tempTreeData.get(path.getParentPath().toString())), node)
+            //                 .then(res => tempTreeData = new Map([...tempTreeData, ...res.treeMap]))
+            //             treeData.current = new Map([...treeData.current, ...tempTreeData])
+            //         }
+            //     }  
+            // }
+            
+            if(lastExpandedLength.current < Object.keys(expandedKeys).length)
+            {
+                const key = Object.keys(expandedKeys)[Object.keys(expandedKeys).length - 1];
                 const path = new TreePath(JSON.parse(key));
                 const node = getNode(newNodes, path);
                 if (node) {
                     if (detectEndNode !== false) {
                         //Only fetch if there is another databook underneath
-                        if (getDataBookName(path.length() + 1)) {
-                            const dataRowChildren:any[] = providedData.get(getDataBookName(path.length())).get(JSON.stringify(treeData.current.get(key)));
+                        if (getDataBookName(path.length())) {
+                            const dataRowChildren:any[] = providedData.get(getDataBookName(path.length())).get(treeData.current.get(key));
                             if(dataRowChildren) {
                                 await Promise.allSettled(dataRowChildren.map((data, i) => 
                                     getChildrenForDataRow(data, (node.children ?? [])[i] as CustomTreeNode)
@@ -483,12 +541,14 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                             }
                         }
                     } else {
+                        console.log('no detect endnode')
                         await getChildrenForDataRow(getDataRow(path, tempTreeData.get(path.getParentPath().toString())), node)
                             .then(res => tempTreeData = new Map([...tempTreeData, ...res.treeMap]))
                         treeData.current = new Map([...treeData.current, ...tempTreeData])
                     }
                 }
             }
+            lastExpandedLength.current = Object.keys(expandedKeys).length;
             setNodes(newNodes);
         }
         if(isInitialized) growTree();
@@ -560,14 +620,20 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 const createNode = (parentNode: CustomTreeNode|undefined) => {
                     const parentPath = new TreePath(parentNode ? JSON.parse(parentNode.key as string) : []);
                     const path = parentPath.getChildPath(index);
-                    const childDataPage = getDataBookName(path.length());
-                    const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
+                    const childPkObj:any = {}
+                    if (getDataBookName(path.length())) {
+                        const childDataPage = getDataBookName(path.length());
+                        const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
+                        const childReference = getReference(childDataPage, childMetaData as MetaDataResponse, path);
+                        const childFilter = getFilterObj(childMetaData as MetaDataResponse, childReference as MetaDataReference, dataRow);
+                        childFilter.columnNames.forEach((key, i) => childPkObj[key] = childFilter.values[i]);
+                    }
                     isPotentialParent = isPotentialParent || (parentNode !== undefined && getDataBookName(path.length()) !== "");
                     let newNode:CustomTreeNode = {
                         key: path.toString(),
                         label: metaData!.columnView_tree_.length ? dataRow[metaData!.columnView_tree_[0]] : undefined,
                         leaf: !isPotentialParent,
-                        pageKeyHelper: isPotentialParent ? getDataBookName(parentPath.length()) + "_" + JSON.stringify(_.pick(dataRow, childMetaData!.masterReference!.referencedColumnNames)) : "",
+                        pageKeyHelper: isPotentialParent ? getDataBookName(parentPath.length()) + "_" + JSON.stringify(childPkObj) : "",
                         data: dataRow
                     }
     
