@@ -213,8 +213,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     /** Current state value of input element */
     const [text, setText] = useState(props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data[props.columnName] : undefined);
 
-    /** Reference to last value so that sendSetValue only sends when value actually changed */
-    const lastValue = useRef<any>();
+    /** True, if the user has changed the value */
+    const startedEditing = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id, name, stopCellEditing, dataRow, columnName} = props;
@@ -306,10 +306,10 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
         onLoadCallback
     );
 
-    /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
+    /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
         setText(props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data[props.columnName] : undefined);
-        lastValue.current = props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data[props.columnName] : undefined;
+        startedEditing.current = false;
     },[props.selectedRow]);
 
     // If the lib user extends the TextCellEditor with onChange, call it when selectedRow changes.
@@ -364,8 +364,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     const pwOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
         if (props.isCellEditor && stopCellEditing) {
-            if (event.key === "Enter" || event.key === "Tab") {
-                sendSetValues(dataRow, name, columnName, columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+            if ((event.key === "Enter" || event.key === "Tab") && startedEditing.current) {
+                sendSetValues(dataRow, name, columnName, columnName, text, props.context.server, props.topbar, props.rowNumber);
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -383,7 +383,10 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                     sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
                 }
             },
-            onTextChange: showSource || props.isReadOnly ? () => {} : (value: any) => setText(transformHTMLFromQuill(value.htmlValue)),
+            onTextChange: showSource || props.isReadOnly ? () => {} : (value: any) => {
+                startedEditing.current = true;
+                setText(transformHTMLFromQuill(value.htmlValue))
+            },
             value: transformHTMLToQuill(text) || "",
             formats: ["bold", "color", "font", "background", "italic", "underline", "size", "strike", "align", "list", "script", "divider"],
             modules: {
@@ -477,13 +480,14 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
             value: text || "",
             "aria-label": props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+                startedEditing.current = true;
                 if (props.onInput) {
                     props.onInput({originalEvent: event, value: event.currentTarget.value})
                 }
                 setText(event.currentTarget.value);
 
                 if (props.savingImmediate && !escapePressed.current) {
-                    sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.currentTarget.value, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                    sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.currentTarget.value, props.context.server, props.topbar, props.rowNumber)
                 }
             },
             onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
@@ -493,8 +497,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                         props.onBlur(event)
                     }
 
-                    if (!escapePressed.current) {
-                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                    if (!escapePressed.current && startedEditing.current) {
+                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber)
                     }
                     if (props.eventFocusLost) {
                         showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
@@ -527,8 +531,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
                 onBlur={() => {
                     if (!props.isReadOnly) {
-                        if (!escapePressed.current) {
-                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, lastValue.current, props.topbar, props.rowNumber)
+                        if (!escapePressed.current && startedEditing.current) {
+                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber)
                         }
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server)

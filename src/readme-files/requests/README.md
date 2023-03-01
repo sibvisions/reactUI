@@ -409,11 +409,7 @@ value | string, undefined | The value to set
     const req = createSetValueRequest();
     req.componentId = name;
     req.value = value;
-    if (lastValue !== undefined) {
-        if (value !== lastValue) {
-            api.sendRequest(req, REQUEST_KEYWORDS.SET_VALUE);
-        }
-    }
+    api.sendRequest(req, REQUEST_KEYWORDS.SET_VALUE);
 ```
 
 ## createSetValuesRequest(values?: SetValuesRequest)

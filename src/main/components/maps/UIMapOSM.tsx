@@ -235,7 +235,7 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
         }
 
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server, undefined, topbar);
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server, topbar);
             setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
         }
     },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, 
@@ -255,7 +255,7 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
                 props.onSelectedMarkerChanged(e.latlng.lat, e.latlng.lng);
             }
 
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [e.latlng.lat, e.latlng.lng], context.server, undefined, topbar);
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [e.latlng.lat, e.latlng.lng], context.server, topbar);
             setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
         }
     },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, 

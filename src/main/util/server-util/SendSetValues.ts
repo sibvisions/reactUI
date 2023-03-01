@@ -36,7 +36,6 @@ export async function sendSetValues(
     editorColumnName: string,
     value: string | number | boolean | Array<any> | null,
     server: Server|ServerFull,
-    lastValue: string | number | boolean | any | Array<any> | null | undefined,
     topbar: TopBarContextType,
     rowIndex?: number,
     selectedIndex?: number,
@@ -66,21 +65,7 @@ export async function sendSetValues(
     /** Send as array if its not already an array */
     req.values = Array.isArray(tempValues) ? tempValues : [tempValues];
 
-    if (lastValue !== undefined) {
-        if (typeof value === "object" && typeof lastValue === "object") {
-            if (!_.isEqual(value, lastValue) && !(value === null && Object.values(lastValue).every(x => x === null))) {
-                await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUES), topbar);
-            }
-        }
-        else {
-            if (value !== lastValue) {
-                await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUES), topbar);
-            }
-        }
-    }
-    else {
-        await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUES), topbar);
-    }
+    await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUES), topbar);
 }
 
 /**
@@ -88,24 +73,15 @@ export async function sendSetValues(
  * @param name - the name of the component
  * @param value - the value to send to the server
  * @param server - the server-class
- * @param lastValue - the last-value to compare to the current
  * @param topbar - the topbar to show loading
  */
 export async function sendSetValue(
     name: string,
     value: string | number | boolean | Array<any> | null,
     server: Server|ServerFull,
-    lastValue: string | number | boolean | Array<any> | null | undefined,
     topbar:TopBarContextType) {
         const req = createSetValueRequest();
         req.componentId = name;
         req.value = value;
-        if (lastValue !== undefined) {
-            if (value !== lastValue) {
-                await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUE), topbar);
-            }
-        }
-        else {
-            await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUE), topbar);
-        }
+        await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUE), topbar);
 }

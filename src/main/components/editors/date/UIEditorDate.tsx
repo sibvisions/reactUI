@@ -159,8 +159,10 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** The month/year which is currently displayed */
     const [viewDate, setViewDate] = useState<any>(convertToTimeZone(true));
 
-    /** Reference to last value so that sendSetValue only sends when value actually changed */
-    const lastValue = useRef<any>();
+    /** True, if the user has changed the value */
+    const startedEditing = useRef<boolean>(false);
+
+    const hasChanged = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -269,7 +271,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     useEffect(() => {
         setDateValue(convertToTimeZone(false));
         setViewDate(convertToTimeZone(true));
-        lastValue.current = props.selectedRow && props.selectedRow.data[props.columnName] && isValidDate(new Date(props.selectedRow.data[props.columnName])) ? props.selectedRow.data[props.columnName] : undefined;
+        startedEditing.current = false;
     },[props.selectedRow]);
 
     // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
@@ -312,17 +314,19 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
             ], new Date(), { locale: locale });
         }
 
-        let dateToSend = inputDate;
+        let dateToSend:Date|null = inputDate;
         
         if (isValidDate(inputDate)) {
             setDateValue(inputDate);
             dateToSend = toDate(formatInTimeZone(inputDate, Intl.DateTimeFormat().resolvedOptions().timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }), { timeZone: timeZone });
         }
         else if (emptyValue) {
+            dateToSend = null;
             setDateValue(null);
         }
         else {
-            setDateValue(isValidDate(lastValue.current) ? new Date(lastValue.current) : null);
+            dateToSend = props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : null;
+            setDateValue(convertToTimeZone(false));
         }
         
         sendSetValues(
@@ -330,9 +334,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
             props.name,
             props.columnName,
             props.columnName,
-            dateToSend.getTime(),
+            isValidDate(dateToSend) ? (dateToSend as Date).getTime() : null,
             props.context.server, 
-            lastValue.current,
             props.topbar,
             props.rowNumber)
     }
@@ -340,14 +343,17 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
     useMultipleEventHandler(calendar.current && calendarInput.current ? 
         //@ts-ignore
-        [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event:Event) => {
+        [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event:KeyboardEvent) => {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab', 'Escape'].indexOf(event.key) === -1 && !startedEditing.current) {
+            startedEditing.current = true;
+        }
         event.stopPropagation();
 
         if (props.onInput) {
             props.onInput(event as KeyboardEvent)
         }
 
-        if ((event as KeyboardEvent).key === "Enter") {
+        if (event.key === "Enter") {
             handleDateInput();
             alreadySaved.current = true;
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
@@ -360,7 +366,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                 }
             }
         }
-        else if ((event as KeyboardEvent).key === "Tab") {
+        else if (event.key === "Tab") {
             handleDateInput();
             alreadySaved.current = true;
             if (props.isCellEditor && props.stopCellEditing) {
@@ -375,7 +381,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                 }
             }
         }
-        else if ((event as KeyboardEvent).key === "Escape" && props.isCellEditor && props.stopCellEditing) {
+        else if (event.key === "Escape" && props.isCellEditor && props.stopCellEditing) {
             props.stopCellEditing(event);
         }
     });
@@ -427,8 +433,10 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
                 appendTo={document.body}
                 onChange={event => {
+                    //@ts-ignore
                     setDateValue(event.value ? event.value : null);
-
+                    hasChanged.current = true;
+                    
                     if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
                         (calendar.current as any).hideOverlay();
                     }
@@ -459,7 +467,16 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                             }
                             focused.current = false;
                         }
-                        !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
+
+                        if (startedEditing.current) {
+                            !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
+                        }
+                    }
+                }}
+                onHide={() => {
+                    if (hasChanged.current) {
+                        handleDateInput();
+                        hasChanged.current = false;
                     }
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
