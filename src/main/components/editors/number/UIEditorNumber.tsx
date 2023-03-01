@@ -228,7 +228,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
     useLayoutEffect(() => {
-        setValue(props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined)
+        setValue(props.selectedRow && (props.selectedRow.data[props.columnName] !== undefined && props.selectedRow.data[props.columnName] !== null)  ? formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined)
         lastValue.current = props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? props.selectedRow.data[props.columnName] : undefined;
     },[props.selectedRow]);
 
@@ -308,7 +308,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             }
 
             // Checks if the decimal length limit is hit and when it is don't allow more inputs
-            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma(event.target.value) || !checkBackspacePossible()) {
+            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma(event.target.value)) {
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
@@ -317,7 +317,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         else {
             event.stopPropagation();
         }
-
     });
 
     // TODO: It should be possible to remove this double inputnumber implementation
@@ -337,7 +336,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     minFractionDigits={writeScaleDigits.minScale}
                     maxFractionDigits={writeScaleDigits.maxScale}
                     //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                    value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                    //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                    value={value as number|null|undefined}
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
                         ...textAlignment, 
@@ -349,7 +349,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             props.onInput(event);
                         }
 
-                        setValue(event.value)
+                        //@ts-ignore
+                        if (event.value !== "-") {
+                            setValue(event.value)
+                        }
+                        else {
+                            setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
+                        }
+                        
 
                         if (props.savingImmediate) {
                             sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
@@ -388,7 +395,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={writeScaleDigits.minScale}
                 maxFractionDigits={writeScaleDigits.maxScale}
-                value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                value={value as number|null|undefined}
                 style={props.layoutStyle}
                 inputStyle={{ 
                     ...textAlignment, 
@@ -396,7 +404,13 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => {
-                    setValue(event.value);
+                    //@ts-ignore
+                    if (event.value !== "-") {
+                        setValue(event.value)
+                    }
+                    else {
+                        setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
+                    }
 
                     if (props.savingImmediate) {
                         sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
