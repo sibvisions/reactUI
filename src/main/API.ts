@@ -535,5 +535,13 @@ class API implements IAPI {
             }
         }
     }
+
+    /**
+     * Returns the value for the given key out of the application-parameters
+     * @param key - the key of which value should be returned
+     */
+    getApplicationParameter(key:string) {
+        return this.#contentStore.customProperties.get(key);
+    }
 }
 export default API
