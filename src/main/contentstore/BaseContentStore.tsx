@@ -887,8 +887,12 @@ export default abstract class BaseContentStore {
             return pageKey;
         }
         
-        const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
+        const fillDataMap = (mapProv:Map<string, any>, request?:FetchRequest, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
             mapProv.set(getPageKey(), newDataSet);
+
+            if (request && !request.filter) {
+                mapProv.set("current", newDataSet);
+            }
 
             if (mapScreen) {
                 if (mapScreen.has(dataProvider)) {
@@ -936,27 +940,27 @@ export default abstract class BaseContentStore {
                     notifyTreeData = existingData;
                 }
                 else {
-                    fillDataMap(existingProvider.data);
+                    fillDataMap(existingProvider.data, request);
                 }
             } 
             else {
                 if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
-                    fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, existingMap);
+                    fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, request, existingMap);
                 }
                 else {
                     const providerMap = new Map<string, Array<any>>();
-                    fillDataMap(providerMap, existingMap);
+                    fillDataMap(providerMap, request, existingMap);
                 }
             }
         }
         else {
             const dataMap = new Map<string, IDataBook>();
             if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
-                fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, dataMap, true);
+                fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, request, dataMap, true);
             }
             else {
                 const providerMap = new Map<string, Array<any>>();
-                fillDataMap(providerMap, dataMap, true);
+                fillDataMap(providerMap, request, dataMap, true);
             }
         }
 

@@ -39,7 +39,7 @@ export interface ISignaturPad extends BaseComponent {
  */
 const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props]] = useComponentConstants<ISignaturPad>(baseProps);
+    const [context, topbar, [props], layoutStyle] = useComponentConstants<ISignaturPad>(baseProps);
 
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow]) 
 
@@ -56,17 +56,41 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     /** The button background based on the color-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
-    const oldIndex = useRef<number>();
+    function resizedataURL(datas:string, wantedWidth:number, wantedHeight:number) {
+        return new Promise<string>((resolve) => {
+        var img = document.createElement('img');
+
+        img.onload = function()
+            {        
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+
+                canvas.width = wantedWidth;
+                canvas.height = wantedHeight;
+
+                //@ts-ignore
+                ctx.drawImage(this, 0, 0, wantedWidth, wantedHeight);
+
+                var dataURI = canvas.toDataURL();
+
+                resolve(dataURI)
+            };
+
+        img.src = datas;
+        })
+
+    }
 
     useEffect(() => {
         if (sigRef.current) {
-            if (selectedRow && selectedRow.data[props.columnName] && selectedRow.index !== oldIndex.current) {
+            if (selectedRow) {
                 sigRef.current.clear();
-                sigRef.current.fromDataURL("data:image/jpeg;base64," + selectedRow.data[props.columnName]);
-                oldIndex.current = selectedRow.index;
+                if (selectedRow.data[props.columnName]) {
+                    sigRef.current.fromDataURL("data:image/jpeg;base64," + selectedRow.data[props.columnName]);
+                }
             }
         }
-    }, [selectedRow])
+    });
 
     return (
         <div className={concatClassnames("rc-signature-pad", props.style)}>
@@ -92,7 +116,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                         '--background': btnBgd,
                         '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                     } as CSSProperties}
-                    onClick={() => {
+                    onClick={async () => {
                         if (sigRef.current) {
                             sigRef.current.clear();
                             const svReq = createSetValuesRequest();
@@ -100,7 +124,8 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                             svReq.dataProvider = props.dataRow;
                             svReq.editorColumnName = props.columnName;
                             svReq.columnNames = [props.columnName];
-                            svReq.values = [sigRef.current.toDataURL("image/png").replace("data:image/png;base64,", "")];
+                            const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
+                            svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
                             showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar)
                         }
                     }} />
@@ -111,14 +136,15 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                         '--background': btnBgd,
                         '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                     } as CSSProperties}
-                    onClick={() => {
+                    onClick={async () => {
                         if (sigRef.current) {
                             const svReq = createSetValuesRequest();
                             svReq.componentId = props.name;
                             svReq.dataProvider = props.dataRow;
                             svReq.editorColumnName = props.columnName;
                             svReq.columnNames = [props.columnName];
-                            svReq.values = [sigRef.current.toDataURL("image/png").replace("data:image/png;base64,", "")];
+                            const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
+                            svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
                             showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar);
                         }
                     }} />

@@ -136,7 +136,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
      * @param value - the number which needs to be parsed
      */
     const parseNumber = (value: string) => {
-        console.log(value, parseFloat(value.replaceAll(numberSeperators.group, '').replaceAll(numberSeperators.decimal, '.')))
         return parseFloat(value.replaceAll(numberSeperators.group, '').replaceAll(numberSeperators.decimal, '.'))
     }
 
@@ -318,8 +317,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             event.stopPropagation();
         }
     });
-
-    console.log(useGrouping, writeScaleDigits.minScale, writeScaleDigits.maxScale, value)
 
     // TODO: It should be possible to remove this double inputnumber implementation
     return (

@@ -211,7 +211,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         }
                     }
                     else {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable.");
+                        contextState.subscriptions.emitErrorBarProperties(false, false, false, "Server not reachable!", "The server is not reachable", () => {
+                            index = 0;
+                            connectWs()
+                        });
                     }
                 }
             }, 5000);
@@ -527,6 +530,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 else {
                     baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
                 }
+            }
+
+            if (convertedOptions.has("username")) {
+                startUpRequest.userName = convertedOptions.get("username");
+                convertedOptions.delete("username");
             }
 
             if (convertedOptions.has("userName")) {

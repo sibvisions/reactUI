@@ -393,7 +393,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 startedEditing.current = false;
             }
         }
-    }, [props.selectedRow, cellEditorMetaData]);
+    }, [props.selectedRow, cellEditorMetaData?.linkReference.dataToDisplayMap]);
 
     // If the lib user extends the LinkedCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
