@@ -179,7 +179,8 @@ export const createPressButtonRequest = (values?: PressButtonRequest): PressButt
 export const createDispatchActionRequest = (values?:DispatchActionRequest): DispatchActionRequest => {
     const req: DispatchActionRequest = {
         clientId: values?.clientId || getClientId(),
-        componentId: values?.componentId
+        componentId: values?.componentId,
+        isUploadButton: values?.isUploadButton
     }
     return req;
 }

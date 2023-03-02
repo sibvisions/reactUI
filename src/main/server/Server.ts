@@ -50,6 +50,9 @@ import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
 import * as _ from 'underscore';
 import BaseComponent from "../util/types/BaseComponent";
+import BaseRequest from "../request/BaseRequest";
+import ComponentRequest from "../request/comp/ComponentRequest";
+import DispatchActionRequest from "../request/events/DispatchActionRequest";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -514,18 +517,34 @@ class Server extends BaseServer {
      * Opens a fileSelectDialog and sends the selected file to the server
      * @param uploadData - the uploadResponse
      */
-    upload(uploadData: UploadResponse) {
-        const inputElem = document.createElement('input');
-        inputElem.type = 'file';
-        //@ts-ignore
-        inputElem.showPicker();
-        inputElem.onchange = (e) => {
-            const formData = new FormData();
-            formData.set("clientId", sessionStorage.getItem("clientId") || "")
-            formData.set("fileId", uploadData.fileId)
-            // @ts-ignore
-            formData.set("data", e.target.files[0])
-            this.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
+    upload(uploadData: UploadResponse, request:DispatchActionRequest) {
+        if (!request || !request.isUploadButton) {
+            try {
+                const inputElem = document.createElement('input');
+                inputElem.type = 'file';
+                //@ts-ignore
+                inputElem.showPicker();
+                inputElem.onchange = (e) => {
+                    const formData = new FormData();
+                    formData.set("clientId", sessionStorage.getItem("clientId") || "")
+                    formData.set("fileId", uploadData.fileId)
+                    // @ts-ignore
+                    formData.set("data", e.target.files[0])
+                    this.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
+                }
+            }
+            catch(e) {
+                console.log("showpicker function not supported")
+            }
+        }
+        else {
+            if (request && request.componentId) {
+                const inputElem = document.getElementById(request.componentId + "-upload");
+                if (inputElem) {
+                    inputElem.setAttribute("upload-file-id", uploadData.fileId);
+                }
+            }
+
         }
     }
 

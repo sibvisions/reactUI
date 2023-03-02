@@ -50,6 +50,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
     /** Reference for the span that is wrapping the button containing layout information */
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
@@ -107,9 +109,14 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             props.onClick(event)
         }
 
+        if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
+            inputRef.current.click();
+        }
+
         if (props.eventAction) {
             const req = createDispatchActionRequest();
             req.componentId = props.name;
+            req.isUploadButton = props.classNameEventSourceRef === "UploadButton" ? true : undefined
             showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
         }
     }
@@ -172,8 +179,26 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                 tooltipOptions={{ position: "left" }}
                 layoutstyle-wrapper={props.name + "-wrapper"}
                 {...usePopupMenu(props)}>
-                    {isHTML && props.text && <RenderButtonHTML text={props.text} />}
-                </Button>
+                {isHTML && props.text && <RenderButtonHTML text={props.text} />}
+            </Button>
+            {props.classNameEventSourceRef === "UploadButton" &&
+                <input
+                    id={props.name + "-upload"}
+                    type="file"
+                    ref={inputRef}
+                    style={{ visibility: "hidden", height: "0px", width: "0px" }}
+                    onChange={(e) => {
+                        if (inputRef.current) {
+                            const formData = new FormData();
+                            formData.set("clientId", sessionStorage.getItem("clientId") || "")
+                            formData.set("fileId", inputRef.current.getAttribute("upload-file-id") as string)
+                            // @ts-ignore
+                            formData.set("data", e.target.files[0])
+                            context.server.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
+                        }
+                    }}
+                    upload-file-id="" />
+            }
         </span>
     )
 }
