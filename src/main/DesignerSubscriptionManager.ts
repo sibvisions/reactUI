@@ -90,6 +90,11 @@ export class DesignerSubscriptionManager {
         this.contentStore = store;
     }
 
+    /** Sets the ContentStore */
+    setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
+        this.contentStore = store;
+    }
+
     /**
      * Subscribes a component to designer font-size changes
      * @param fn - the function to update the state

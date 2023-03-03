@@ -24,10 +24,12 @@ import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { SpeedDial } from "primereact/speeddial";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
-import { WorkScreenDesigner } from "@sibvisions/workscreen-designer/dist/moduleIndex";
+import { VisionX } from "@sibvisions/visionx/dist/moduleindex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
+import { DesignerHelper } from "./main/DesignerHelper";
+import ContentStore from "./main/contentstore/ContentStore";
 interface IAppWrapper {
     embedOptions?: { [key: string]: any }
     theme?: string
@@ -35,13 +37,12 @@ interface IAppWrapper {
     design?: string
 }
 
-interface IWSDesignerContext {
-    isActive:boolean,
-    toggleWSDesigner: () => void,
-    testMap: Map<string, { x: number, y: number }>
+interface IVisionXContext {
+    toggleVisionX: () => void,
+    designerHelper: DesignerHelper
 }
 
-export const WSDesignerContext = createContext<IWSDesignerContext>({ isActive: false, toggleWSDesigner: () => {}, testMap: new Map<string, { x: number, y: number }>() });
+export const WSDesignerContext = createContext<IVisionXContext>({ toggleVisionX: () => {}, designerHelper: new DesignerHelper(new ContentStore()) });
 
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
@@ -58,7 +59,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
-    const [wsContextState, setWSContextState] = useState<IWSDesignerContext>({ isActive: false, toggleWSDesigner: () => setWSContextState(prevState => ({ ...prevState, isActive: !prevState.isActive })), testMap: new Map<string, { x: number, y: number }>() });
+    const [showVisionX, setShowVisionX] = useState<boolean>(false);
+
+    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ toggleVisionX: () => setShowVisionX(prevState => !prevState), designerHelper: context.designerHelper });
 
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();
@@ -74,7 +77,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         const docStyle = window.getComputedStyle(document.documentElement)
         const mainHeight = docStyle.getPropertyValue('--main-height');
         const mainWidth = docStyle.getPropertyValue('--main-width');
-        if (showDesignerView || wsContextState.isActive) {
+        if (showDesignerView || showVisionX) {
             if (showDesignerView && !sessionStorage.getItem("reactui-designer-on")) {
                 sessionStorage.setItem("reactui-designer-on", "true");
             }
@@ -101,7 +104,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                 document.documentElement.style.setProperty("--main-width", "100vw");
             }
         }
-    }, [showDesignerView, wsContextState.isActive])
+    }, [showDesignerView, showVisionX])
 
     /**
      * Subscribes to app-name, css-version and restart
@@ -174,7 +177,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
             speeddialModel.push({
                 label: 'Workscreen-Designer',
                 icon: 'fas fa-hammer',
-                command: () => wsContextState.toggleWSDesigner()
+                command: () => vxContextState.toggleVisionX()
             })
         }
         return speeddialModel;
@@ -184,9 +187,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
     const content =
         <>
-            <WSDesignerContext.Provider value={wsContextState}>
+            <WSDesignerContext.Provider value={vxContextState}>
                 {props.children}
-                {(speeddialModel.length && !showDesignerView && !wsContextState.isActive) ? 
+                {(speeddialModel.length && !showDesignerView && !showVisionX) ? 
                     <>
                         <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
                         <SpeedDial 
@@ -226,10 +229,10 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         {content}
 
                     </ReactUIDesigner> :
-                    (wsContextState.isActive) ?
-                        <WorkScreenDesigner wsContext={wsContextState} >
+                    (showVisionX) ?
+                        <VisionX mode="reactui" vxContext={vxContextState} >
                             {content}
-                        </WorkScreenDesigner> :
+                        </VisionX> :
                         <>
                             {content}
                         </>}

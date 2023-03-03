@@ -104,19 +104,6 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
         onLoadCallback
     );
 
-    useEffect(() => {
-        if (layoutStyle?.width && layoutStyle.height && buttonWrapperRef.current) {
-            const elemRect = buttonWrapperRef.current.getBoundingClientRect();
-            wsContext.testMap.set(props.id, { x: elemRect.x, y: elemRect.y })
-        }
-
-        return () => {
-            if (wsContext.testMap.has(props.id)) {
-                wsContext.testMap.delete(props.id)
-            }
-        }
-    }, [layoutStyle?.width, layoutStyle?.height]);
-
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = (event:any) => {
         if (props.onClick) {

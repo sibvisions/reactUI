@@ -213,19 +213,6 @@ const UIPanel: FC<IPanel> = (baseProps) => {
 
     useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
 
-    useEffect(() => {
-        if (layoutStyle?.width && layoutStyle.height && panelRef.current) {
-            const elemRect = panelRef.current.getBoundingClientRect();
-            wsContext.testMap.set(props.id, { x: elemRect.x, y: elemRect.y })
-        }
-
-        return () => {
-            if (wsContext.testMap.has(props.id)) {
-                wsContext.testMap.delete(props.id)
-            }
-        }
-    }, [layoutStyle?.width, layoutStyle?.height])
-
     const getToolBarClassName = useCallback(() => {
         if (isToolBar && !isLastToolBar) {
             switch (parseInt(props.layout.split(",")[7])) {
