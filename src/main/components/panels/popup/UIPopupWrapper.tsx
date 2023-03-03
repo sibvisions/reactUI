@@ -71,7 +71,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (baseProps.onClose) {
             baseProps.onClose();
         }
-
+        
         if (baseProps.screen_modal_) {
             const csRequest = createCloseScreenRequest();
             csRequest.componentId = baseProps.name;
@@ -163,6 +163,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 ref={popupRef}
                 onShow={() => handleInitialSize()}
                 onResize={() => handleResize()}
+                closeOnEscape={false}
                 >
                 {baseProps.render}
             </Dialog>
