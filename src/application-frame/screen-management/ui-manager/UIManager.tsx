@@ -32,6 +32,7 @@ import { getScreenIdFromNavigation } from "../../../main/util/component-util/Get
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
 import { WSDesignerContext } from "../../../AppWrapper";
+import { DeviceStatus } from "../../../main/response/event/DeviceStatusResponse";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -150,7 +151,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
                     !wsContext.isActive ? (isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu") : "",
-                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
+                    ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus as DeviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuOptions.toolBar ? "toolbar-visible" : "",
                     (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",

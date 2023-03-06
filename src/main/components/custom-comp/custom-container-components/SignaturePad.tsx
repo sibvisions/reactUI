@@ -14,7 +14,7 @@
  */
 
 import { Button } from "primereact/button"
-import React, { CSSProperties, FC, useEffect, useMemo, useRef } from "react"
+import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import SignatureCanvas from 'react-signature-canvas'
 import tinycolor from "tinycolor2"
 import { createSetValuesRequest } from "../../../factories/RequestFactory"
@@ -26,10 +26,20 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames"
 import BaseComponent from "../../../util/types/BaseComponent"
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS"
 import { showTopBar } from "../../topbar/TopBar"
+import useDeviceStatus from "../../../hooks/event-hooks/useDeviceStatus"
 
 export interface ISignaturPad extends BaseComponent {
     dataRow:string,
-    columnName:string
+    columnName:string,
+    editLock?:boolean
+    saveLock?:boolean
+}
+
+enum EDITLOCK_STATUS {
+    LOCK = 0,
+    LOCK_DELETE = 1,
+    EDITING = 2,
+    NO_BUTTONS = 3
 }
 
 /**
@@ -47,6 +57,12 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
 
     const sigRef = useRef<any>(null);
 
+    const [saveLocked, setSaveLocked] = useState<boolean>(props.saveLock && selectedRow && selectedRow.data[props.columnName])
+
+    const editLockEnabled = useMemo(() => props.editLock !== false, [props.editLock]);
+
+    const [editStatus, setEditStatus] = useState<EDITLOCK_STATUS>(saveLocked ? EDITLOCK_STATUS.NO_BUTTONS : (editLockEnabled ? EDITLOCK_STATUS.LOCK : EDITLOCK_STATUS.EDITING));
+
     /** Subscribes to designer-changes so the components are updated live */
     useDesignerUpdates("default-button");
 
@@ -56,7 +72,9 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     /** The button background based on the color-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
-    function resizedataURL(datas:string, wantedWidth:number, wantedHeight:number) {
+    const deviceStatus = useDeviceStatus(true);
+
+    const resizedataURL = (datas:string, wantedWidth:number, wantedHeight:number) => {
         return new Promise<string>((resolve) => {
         var img = document.createElement('img');
 
@@ -78,7 +96,6 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
 
         img.src = datas;
         })
-
     }
 
     useEffect(() => {
@@ -88,16 +105,139 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                 if (selectedRow.data[props.columnName]) {
                     sigRef.current.fromDataURL("data:image/jpeg;base64," + selectedRow.data[props.columnName]);
                 }
+                else if (saveLocked) {
+                    setSaveLocked(false);
+                    setEditStatus(EDITLOCK_STATUS.LOCK);
+                }
             }
         }
-    });
+    }, [selectedRow]);
+
+    useEffect(() => {
+        if (selectedRow.data[props.columnName]) {
+            sigRef.current.fromDataURL("data:image/jpeg;base64," + selectedRow.data[props.columnName]);
+        }
+    }, [deviceStatus])
+
+    const getFooterButtons = useCallback(() => {
+        switch (editStatus) {
+            case EDITLOCK_STATUS.NO_BUTTONS: return
+            case EDITLOCK_STATUS.LOCK:
+            return (
+                <Button
+                    className="rc-button"
+                    icon="fas fa-pen"
+                    style={{
+                        '--background': btnBgd,
+                        '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                    } as CSSProperties}
+                    onClick={() => setEditStatus(EDITLOCK_STATUS.LOCK_DELETE)} />
+            )
+            case EDITLOCK_STATUS.LOCK_DELETE:
+                return (
+                    <>
+                        <Button
+                            className="rc-button"
+                            icon="fas fa-times"
+                            style={{
+                                '--background': btnBgd,
+                                '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                            } as CSSProperties}
+                            onClick={async () => {
+                                if (sigRef.current) {
+                                    sigRef.current.clear();
+                                    const svReq = createSetValuesRequest();
+                                    svReq.componentId = props.name;
+                                    svReq.dataProvider = props.dataRow;
+                                    svReq.editorColumnName = props.columnName;
+                                    svReq.columnNames = [props.columnName];
+                                    const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
+                                    svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
+                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar);
+                                    setEditStatus(EDITLOCK_STATUS.EDITING);
+                                }
+                            }} />
+                        <Button
+                            className="rc-button"
+                            icon="fas fa-ban"
+                            style={{
+                                '--background': btnBgd,
+                                '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                            } as CSSProperties}
+                            onClick={() => setEditStatus(EDITLOCK_STATUS.LOCK)} />
+                    </>
+                )
+            case EDITLOCK_STATUS.EDITING: default:
+                return (
+                    <>
+                        <Button
+                            className="rc-button"
+                            icon="fas fa-times"
+                            style={{
+                                '--background': btnBgd,
+                                '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                            } as CSSProperties}
+                            onClick={async () => {
+                                if (sigRef.current) {
+                                    sigRef.current.clear();
+                                    const svReq = createSetValuesRequest();
+                                    svReq.componentId = props.name;
+                                    svReq.dataProvider = props.dataRow;
+                                    svReq.editorColumnName = props.columnName;
+                                    svReq.columnNames = [props.columnName];
+                                    const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
+                                    svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
+                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar)
+                                }
+                            }} />
+                        <Button
+                            className="rc-button"
+                            icon="fas fa-check"
+                            style={{
+                                '--background': btnBgd,
+                                '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                            } as CSSProperties}
+                            onClick={async () => {
+                                if (sigRef.current) {
+                                    const svReq = createSetValuesRequest();
+                                    svReq.componentId = props.name;
+                                    svReq.dataProvider = props.dataRow;
+                                    svReq.editorColumnName = props.columnName;
+                                    svReq.columnNames = [props.columnName];
+                                    const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
+                                    svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
+                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar);
+                                    setEditStatus(props.saveLock ? EDITLOCK_STATUS.NO_BUTTONS : EDITLOCK_STATUS.LOCK);
+                                    if (props.saveLock) {
+                                        setSaveLocked(true);
+                                    }
+                                }
+                            }} />
+                    </>
+                )
+        }
+    }, [editStatus])
 
     return (
         <div className={concatClassnames("rc-signature-pad", props.style)}>
+            {saveLocked && 
+            <Button
+                className="rc-button"
+                icon="fas fa-lock"
+                tabIndex={-1}
+                style={{
+                    position: "absolute",
+                    height: "35px",
+                    width: "35px",
+                    top: "4px",
+                    left: "4px",
+                    '--background': btnBgd,
+                    '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                } as CSSProperties} />}
             <SignatureCanvas
                 ref={sigRef}
-                penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"} 
-                canvasProps={{ className: 'sigCanvas' }}
+                penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"}
+                canvasProps={{ className: concatClassnames('sigCanvas', editStatus !== EDITLOCK_STATUS.EDITING ? "signature-pad-editing-locked" : ""), width: layoutStyle?.width, height: layoutStyle?.height}}
                 onBegin={() => {
                     if (sigRef.current) {
                         sigRef.current.getCanvas().parentElement.classList.add('sigpad-drawing');
@@ -107,47 +247,9 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                     if (sigRef.current && sigRef.current.getCanvas().parentElement.classList.contains('sigpad-drawing')) {
                         sigRef.current.getCanvas().parentElement.classList.remove('sigpad-drawing')
                     }
-                }}/>
-            <div className="signature-buttons">
-                <Button
-                    className="rc-button" 
-                    icon="fas fa-times"
-                    style={{
-                        '--background': btnBgd,
-                        '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
-                    } as CSSProperties}
-                    onClick={async () => {
-                        if (sigRef.current) {
-                            sigRef.current.clear();
-                            const svReq = createSetValuesRequest();
-                            svReq.componentId = props.name;
-                            svReq.dataProvider = props.dataRow;
-                            svReq.editorColumnName = props.columnName;
-                            svReq.columnNames = [props.columnName];
-                            const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
-                            svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
-                            showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar)
-                        }
-                    }} />
-                <Button
-                    className="rc-button" 
-                    icon="fas fa-check"
-                    style={{
-                        '--background': btnBgd,
-                        '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
-                    } as CSSProperties}
-                    onClick={async () => {
-                        if (sigRef.current) {
-                            const svReq = createSetValuesRequest();
-                            svReq.componentId = props.name;
-                            svReq.dataProvider = props.dataRow;
-                            svReq.editorColumnName = props.columnName;
-                            svReq.columnNames = [props.columnName];
-                            const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
-                            svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
-                            showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar);
-                        }
-                    }} />
+                }} />
+            <div className={"signature-buttons"}>
+                {getFooterButtons()}
             </div>
         </div>
     )

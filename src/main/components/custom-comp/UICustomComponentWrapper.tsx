@@ -15,8 +15,10 @@
 
 import React, { FC, ReactElement, useLayoutEffect, useRef } from "react";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import BaseComponent from "../../util/types/BaseComponent";
+import Dimension from "../../util/types/Dimension";
 
 /** Interface for CustomComponentWrapper */
 export interface ICustomComponentWrapper extends BaseComponent {
@@ -50,7 +52,16 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
             ref.style.removeProperty("left");
             ref.style.removeProperty("width");
             ref.style.removeProperty("height");
-            sendOnLoadCallback(id, props.className, undefined, {width: 0x80000000, height: 0x80000000}, {width: 0, height: 0}, wrapperRef.current, onLoadCallback);
+            if (props.classNameEventSourceRef === "SignaturePad") {
+                let prefSize:Dimension|undefined = { width: 400, height: 200 }
+                if (props.preferredSize) {
+                    prefSize = parsePrefSize(props.preferredSize)
+                }
+                sendOnLoadCallback(id, props.className, prefSize, parseMinSize(props.maximumSize), parseMaxSize(props.minimumSize), wrapperRef.current, onLoadCallback);
+            }
+            else {
+                sendOnLoadCallback(id, props.className, undefined, {width: 0x80000000, height: 0x80000000}, {width: 0, height: 0}, wrapperRef.current, onLoadCallback);
+            }
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
