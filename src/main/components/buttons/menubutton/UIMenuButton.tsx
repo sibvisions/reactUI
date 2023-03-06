@@ -142,6 +142,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                 tempItems.push({
                     id: item.id,
                     label: item.text,
+                    disabled: item.enabled === false,
                     icon: iconProps.icon ? iconProps.icon : undefined,
                     style: {
                         color: iconProps.color
