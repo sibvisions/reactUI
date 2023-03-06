@@ -283,18 +283,18 @@ export default abstract class BaseServer {
                             const splitErr = error.split(".");
                             const code = error.substring(0, 3);
                             if (code === "410") {
-                                this.subManager.emitErrorBarProperties(false, true, false, splitErr[0], splitErr[1]);
+                                this.subManager.emitErrorBarProperties(false, true, false, 5, splitErr[0], splitErr[1]);
                             }
                             else {
-                                this.subManager.emitErrorBarProperties(false, false, false, splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                                this.subManager.emitErrorBarProperties(false, false, false, 5,  splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
                         }
                         else {
                             if (endpoint === REQUEST_KEYWORDS.STARTUP) {
-                                this.subManager.emitErrorBarProperties(false, false, false, "Startup failed!", "Check if the server is available", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
+                                this.subManager.emitErrorBarProperties(false, false, false, 6, "Startup failed!", "Check if the server is available", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
                             }
                             else {
-                                this.subManager.emitErrorBarProperties(false, false, false, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                                this.subManager.emitErrorBarProperties(false, false, false, 5, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
                         }
                         if (error !== "no valid json") {
@@ -361,7 +361,7 @@ export default abstract class BaseServer {
     timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitErrorBarProperties(false, false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds", retry);
+                this.subManager.emitErrorBarProperties(false, false, false, 7, "Server Error!", "TimeOut! Couldn't connect to the server.", retry);
                 this.subManager.emitErrorBarVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
@@ -370,7 +370,7 @@ export default abstract class BaseServer {
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitErrorBarProperties(false, false, false, "Server Error!", "TimeOut! Couldn't connect to the server after 10 seconds", retry);
+                    this.subManager.emitErrorBarProperties(false, false, false, 7, "Server Error!", "TimeOut! Couldn't connect to the server.", retry);
                     this.subManager.emitErrorBarVisible(true);
                     clearTimeout(timeoutId);
                     reject(err);
@@ -744,7 +744,7 @@ export default abstract class BaseServer {
             sessionStorage.clear();
         }
         else {
-            this.subManager.emitErrorBarProperties(true, false, false, translation.get("Session expired!"));
+            this.subManager.emitErrorBarProperties(true, false, false, 11, translation.get("Session expired!"));
             this.subManager.emitErrorBarVisible(true);
             this.subManager.emitSessionExpiredChanged(true)
         }
@@ -765,7 +765,7 @@ export default abstract class BaseServer {
     }
 
     badClient(badClientData:BadClientResponse) {
-        this.subManager.emitErrorBarProperties(false, false, true, "Invalid Server version", "This Client requires a newer Server. An update is required!");
+        this.subManager.emitErrorBarProperties(false, false, true, 10, "Invalid Server version", "This Client requires a newer Server. An update is required!");
         this.subManager.emitErrorBarVisible(true);
     }
 }

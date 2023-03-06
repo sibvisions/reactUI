@@ -205,13 +205,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     connectWs();
                     index++
                     if (index <= 5) {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
+                        contextState.subscriptions.emitErrorBarProperties(false, false, true, 8, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
                         if (index === 1) {
                             contextState.subscriptions.emitErrorBarVisible(true);
                         }
                     }
                     else {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, false, "Server not reachable!", "The server is not reachable", () => {
+                        contextState.subscriptions.emitErrorBarProperties(false, false, false, 8, "Server not reachable!", "The server is not reachable", () => {
                             index = 0;
                             connectWs()
                         });
@@ -725,7 +725,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             startUpRequest.deviceMode = contextState.appSettings.deviceMode;
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
-            startUpRequest.serverVersion = "3.0.0";
+            startUpRequest.serverVersion = "1.0.0";
             startUpRequest.timeZoneCode = contextState.appSettings.timeZone;
             if (contextState.contentStore.customStartUpProperties.length) {
                 contextState.contentStore.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
