@@ -37,10 +37,13 @@ const useRowSelect = (screenName:string, dataProvider: string, rowIndex?:number)
                 return {data: sr.dataRow, index: sr.index, selectedColumn: sr.selectedColumn};
             }
             else {
-                const data = context.contentStore.getDataBook(screenName, dataProvider)?.data?.get("current")[rowIndex]
-                if (data) {
-                    return {data: data, index: sr.index, selectedColumn: sr.selectedColumn}
-                }                
+                const current = context.contentStore.getDataBook(screenName, dataProvider)?.data?.get("current");
+                if (current) {
+                    const data = current[rowIndex]
+                    if (data) {
+                        return {data: data, index: sr.index, selectedColumn: sr.selectedColumn}
+                    }      
+                }
             }
         }
     }, [context.contentStore, dataProvider, screenName, rowIndex]);

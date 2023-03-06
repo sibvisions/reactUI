@@ -889,10 +889,7 @@ export default abstract class BaseContentStore {
         
         const fillDataMap = (mapProv:Map<string, any>, request?:FetchRequest, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
             mapProv.set(getPageKey(), newDataSet);
-
-            if (request && !request.filter) {
-                mapProv.set("current", newDataSet);
-            }
+            mapProv.set("current", newDataSet);
 
             if (mapScreen) {
                 if (mapScreen.has(dataProvider)) {

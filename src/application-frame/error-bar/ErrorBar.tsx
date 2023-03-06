@@ -102,7 +102,6 @@ const ErrorBar:FC = () => {
 
     useEffect(() => {
         if (!visible) {
-            console.log('setting prio 0')
             setErrorProps(prevState => ({...prevState, priority: 0}));
         }
     }, [visible])

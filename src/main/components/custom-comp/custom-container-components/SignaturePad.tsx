@@ -115,6 +115,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
 
     useEffect(() => {
         if (selectedRow.data[props.columnName]) {
+            sigRef.current.clear();
             sigRef.current.fromDataURL("data:image/jpeg;base64," + selectedRow.data[props.columnName]);
         }
     }, [deviceStatus])
@@ -237,7 +238,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
             <SignatureCanvas
                 ref={sigRef}
                 penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"}
-                canvasProps={{ className: concatClassnames('sigCanvas', editStatus !== EDITLOCK_STATUS.EDITING ? "signature-pad-editing-locked" : ""), width: layoutStyle?.width, height: layoutStyle?.height}}
+                canvasProps={{ className: concatClassnames('sigCanvas', editStatus !== EDITLOCK_STATUS.EDITING ? "signature-pad-editing-locked" : "")}}
                 onBegin={() => {
                     if (sigRef.current) {
                         sigRef.current.getCanvas().parentElement.classList.add('sigpad-drawing');
