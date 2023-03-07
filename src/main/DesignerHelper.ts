@@ -39,8 +39,24 @@ export class DesignerHelper {
         this.contentStore = store;
     }
 
+    isLayoutComponent(element: HTMLElement) {
+        return element.getAttribute("data-layout") !== null || element.getAttribute("data-layout") !== undefined;
+    }
+
     findClickedComponent(mouseCoords: Coordinates) {
+        const docStyle = window.getComputedStyle(document.documentElement);
+        let position = mouseCoords;
+        console.log(docStyle.getPropertyValue("--visionx-panel-wrapper-width"), docStyle.getPropertyValue("--visionx-content-padding"))
+        position.x -= (parseInt(docStyle.getPropertyValue("--visionx-panel-wrapper-width")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")));
+        position.y -= (parseInt(docStyle.getPropertyValue("--visionx-topbar-height")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")))
+        console.log(position)
         const firstPanel = document.getElementById("workscreen")?.firstChild;
-        console.log(firstPanel, mouseCoords);
+        if (firstPanel) {
+            const firstLayout = firstPanel.childNodes[0] as HTMLElement;
+            if (firstLayout && this.isLayoutComponent(firstLayout)) {
+                console.log("formlayouts children: ", firstLayout.childNodes)
+                
+            }
+        }
     }
 }

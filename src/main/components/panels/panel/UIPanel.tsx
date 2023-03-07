@@ -28,7 +28,6 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
 import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
-import { WSDesignerContext } from "../../../../AppWrapper";
 
 /** Interface for Panels */
 export interface IPanel extends BaseComponent {
@@ -145,8 +144,6 @@ export function panelGetStyle(group: boolean, layoutStyle?: CSSProperties, prefS
 const UIPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
     const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
-
-    const wsContext = useContext(WSDesignerContext);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);

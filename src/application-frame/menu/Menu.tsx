@@ -37,7 +37,6 @@ import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { ActiveScreen } from "../../main/contentstore/BaseContentStore";
 import { translation } from "../../main/util/other-util/Translation";
-import { WSDesignerContext } from "../../AppWrapper";
 
 
 /** Extends the PrimeReact MenuItem with componentId */

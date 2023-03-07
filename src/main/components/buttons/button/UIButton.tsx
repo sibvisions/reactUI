@@ -35,7 +35,6 @@ import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
-import { WSDesignerContext } from "../../../../AppWrapper";
 
 export const RenderButtonHTML: FC<{ text:string }> = (props) => {
     return (
@@ -58,8 +57,6 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
 
     /** Component constants for contexts, properties and style */
     const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButton & IExtendableButton>(baseProps);
-
-    const wsContext = useContext(WSDesignerContext);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)

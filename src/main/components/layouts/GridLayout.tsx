@@ -130,7 +130,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
     return (
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div style={calculatedStyle}>
+            <div data-layout="grid" style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>

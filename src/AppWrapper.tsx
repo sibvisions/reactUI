@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useContext, useEffect, useMemo, useRef, useState, createContext } from "react"
-import TopBar, { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
+import { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
@@ -24,7 +24,7 @@ import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { SpeedDial } from "primereact/speeddial";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
-import { VisionX } from "@sibvisions/visionx/dist/moduleindex";
+import { VisionX } from "@sibvisions/visionx/dist/moduleIndex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
@@ -60,7 +60,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
-    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ showVisionX: false, toggleVisionX: () => setVXContextState(prevState => ({...prevState, showVisionX: prevState.showVisionX})), designerHelper: context.designerHelper });
+    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ showVisionX: false, toggleVisionX: () => setVXContextState(prevState => ({...prevState, showVisionX: !prevState.showVisionX})), designerHelper: context.designerHelper });
 
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();
