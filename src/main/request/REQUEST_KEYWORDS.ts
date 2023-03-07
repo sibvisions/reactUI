@@ -72,6 +72,7 @@ enum REQUEST_KEYWORDS {
     RELOAD = "reload",
     ROLLBACK = "rollback",
     CHANGES = "changes",
-    ALIVE = "alive"
+    ALIVE = "alive",
+    WIDTH = "width"
 }
 export default REQUEST_KEYWORDS

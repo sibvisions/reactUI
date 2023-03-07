@@ -8,14 +8,6 @@ This hook gives users access to the api functions. [Check out the API-functions 
     const api = useAPI();
 ```
 
-## useGetCustomProperty(key: string)
-This hook returns the value of a customProperty set by the user on startup. The parameter is the key of the customProperty you want to get.
-
-### Usage
-```typescript
-    const customProp1 = useGetCustomProperty('privkey');
-```
-
 ## useMenuItems()
 This hook returns the menuItems of the application. This hook is used to create a custom application wrapper.
 

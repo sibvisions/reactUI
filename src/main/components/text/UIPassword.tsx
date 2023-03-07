@@ -47,8 +47,8 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text || "");
 
-    /** Reference to last value so that sendSetValue only sends when value actually changed */
-    const lastValue = useRef<any>();
+    /** True, if the user has changed the value */
+    const startedEditing = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -97,6 +97,7 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
             feedback={false} 
             style={{...layoutStyle, ...compStyle}} 
             onChange={event => {
+                startedEditing.current = true;
                 if (props.onChange) {
                     props.onChange({ originalEvent: event, value: event.currentTarget.value });
                 }
@@ -110,8 +111,10 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
                         props.onBlur(event);
                     }
 
-                    sendSetValue(props.name, pwValue, context.server, lastValue.current, topbar);
-                    lastValue.current = pwValue;
+                    if (startedEditing.current) {
+                        sendSetValue(props.name, pwValue, context.server, topbar);
+                        startedEditing.current = false;
+                    }
     
                     if (props.eventFocusLost) {
                         onFocusLost(props.name, context.server)

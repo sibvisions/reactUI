@@ -150,7 +150,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
                     : 
                         false,
                 props.context.server,
-                undefined,
                 props.topbar,
                 props.rowIndex ? props.rowIndex() : undefined,
                 props.selectedRow.index,

@@ -56,6 +56,7 @@ function makeMenu(flatItems: Map<string, BaseComponent>, parent: string, context
                             color: iconProps.color
                         },
                         color: iconProps.color,
+                        disabled: item.enabled === false,
                         command: () => {
                             const req = createDispatchActionRequest();
                             req.componentId = item.name;

@@ -62,6 +62,7 @@ export interface IAPI {
     addCSSToHeadAfter: (path:string) => void,
     extendComponent: (name: string, component: ReactElement) => void,
     addCustomLogin: (defaultView:(props: ICustomDefaultLogin) => ReactElement, resetView?: (props: ICustomResetLogin) => ReactElement, mfaTextView?: (props: ICustomMFAText) => ReactElement, mfaWaitView?: (props: ICustomMFAWait) => ReactElement, mfaUrlView?: (props: ICustomMFAUrl) => ReactElement) => void
+    getApplicationParameter: (key:string) => any
 }
 
 /** Contains the API functions */
@@ -534,6 +535,14 @@ class API implements IAPI {
                 customLoginView.mfaUrl = mfaUrlView;
             }
         }
+    }
+
+    /**
+     * Returns the value for the given key out of the application-parameters
+     * @param key - the key of which value should be returned
+     */
+    getApplicationParameter(key:string) {
+        return this.#contentStore.customProperties.get(key);
     }
 }
 export default API

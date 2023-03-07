@@ -69,15 +69,18 @@
         width: var(--menuBtnSplitWidth);
         padding: 0.5rem 0.5rem 0.5rem 0px;
     }
+}
 
-    .p-menu {
-        .p-menuitem-text {
-            line-height: unset;
-        }
-    
-        .fa, .pi {
-            font-size: 14px;
-        }
+.p-menu-overlay.p-menu {
+    .p-menuitem-text {
+        line-height: unset;
+    }
+
+    .fas, .pi {
+        text-align: center;
+        min-width: var(--menuicon-size);
+        max-width: var(--menuicon-size);
+        font-size: var(--menuicon-size);
     }
 }
 

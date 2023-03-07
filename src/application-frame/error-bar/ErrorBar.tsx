@@ -13,8 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useRef, useState } from "react";
-import { useHistory } from "react-router";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
@@ -30,7 +29,8 @@ export type IServerFailMessage = {
     sessionExpired:boolean,
     gone:boolean,
     retry:Function,
-    dontShowRestart:boolean
+    dontShowRestart:boolean,
+    priority: number
 }
 
 /**
@@ -45,10 +45,32 @@ const ErrorBar:FC = () => {
     const [visible, setVisible] = useState<boolean>(false);
 
     /** Reference for the dialog which shows the error message */
-    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {}, dontShowRestart: false });
+    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {}, dontShowRestart: false, priority: 0 });
 
     /** True, if a request has already been sent, to prevent multiple requests being sent when spamming "esc" or click */
     const alreadySent = useRef<boolean>(false);
+
+    const setErrorPropsState = useCallback((
+        header: string,
+        body: string,
+        sessionExp: boolean,
+        priority: number,
+        gone: boolean,
+        retry: Function,
+        dontShowRestart: boolean
+    ) => {
+        if (priority >= errorProps.priority) {
+            setErrorProps({
+                headerMessage: header,
+                bodyMessage: body,
+                sessionExpired: sessionExp,
+                priority: priority,
+                gone: gone,
+                retry: retry,
+                dontShowRestart: dontShowRestart
+            })
+        }
+    }, [errorProps.priority])
 
     // Subscribes to the error-bar properties of which information to show/execute
     useEffect(() => {
@@ -57,27 +79,19 @@ const ErrorBar:FC = () => {
             header: string,
             body: string,
             sessionExp: boolean,
+            priority:number,
             gone: boolean,
             retry: Function,
             dontShowRestart: boolean
         ) => {
-            if (!errorProps.sessionExpired) {
-                setErrorProps({
-                    headerMessage: header,
-                    bodyMessage: body,
-                    sessionExpired: sessionExp,
-                    gone: gone,
-                    retry: retry,
-                    dontShowRestart: dontShowRestart
-                })
-            }
+            setErrorPropsState(header, body, sessionExp, priority, gone, retry, dontShowRestart);
         });
 
         return () => {
             context.subscriptions.unsubscribeFromErrorBarVisible();
             context.subscriptions.unsubscribeFromErrorBarProps();
         }
-    }, [context.subscriptions])
+    }, [context.subscriptions, setErrorPropsState])
 
     // When the errorProps change, set alreadySent to false
     useEffect(() => {
@@ -85,6 +99,12 @@ const ErrorBar:FC = () => {
             alreadySent.current = false;
         }
     }, [errorProps])
+
+    useEffect(() => {
+        if (!visible) {
+            setErrorProps(prevState => ({...prevState, priority: 0}));
+        }
+    }, [visible])
 
     /**
      * Restarts the app when the session expires

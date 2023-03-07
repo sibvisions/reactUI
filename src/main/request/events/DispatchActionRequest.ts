@@ -17,6 +17,6 @@ import ComponentRequest from "../comp/ComponentRequest";
 
 /** Interface for PressButtonRequest */
 interface DispatchActionRequest extends ComponentRequest{
-    
+    isUploadButton?: boolean
 }
 export default DispatchActionRequest

@@ -53,8 +53,8 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
     /** Current state of the text value */
     const [text, setText] = useState(props.text || "");
 
-    /** Reference to last value so that sendSetValue only sends when value actually changed */
-    const lastValue = useRef<any>();
+    /** True, if the user has changed the value */
+    const startedEditing = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -102,6 +102,8 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
             value={text||""} 
             style={{...layoutStyle, ...compStyle}} 
             onChange={event => {
+                startedEditing.current = true;
+
                 if (props.onChange) {
                     props.onChange({ originalEvent: event, value: event.currentTarget.value });
                 }
@@ -115,8 +117,11 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
                         props.onBlur(event);
                     }
 
-                    sendSetValue(props.name, text, context.server, lastValue.current, topbar);
-                    lastValue.current = text;
+                    if (startedEditing.current) {
+                        sendSetValue(props.name, text, context.server, topbar);
+                        startedEditing.current = false;
+                    }
+
     
                     if (props.eventFocusLost) {
                         onFocusLost(props.name, context.server)

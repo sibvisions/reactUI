@@ -91,7 +91,13 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
     useLayoutEffect(() => {
         if(onLoadCallback && iconRef.current) {
             if (props.image?.includes('FontAwesome') || !props.image) {
-                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), iconRef.current, onLoadCallback)
+                let prefSize = parsePrefSize(props.preferredSize);
+                if (!props.image && props.background) {
+                    if (!props.preferredSize) {
+                        prefSize = { height: 1, width: 1 }
+                    }
+                }
+                sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), iconRef.current, onLoadCallback)
             }
         }
     },[onLoadCallback, id, props.image, props.preferredSize, props.maximumSize, props.minimumSize]);

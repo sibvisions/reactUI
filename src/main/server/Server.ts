@@ -49,6 +49,10 @@ import { getNavigationIncrement } from "../util/other-util/GetNavigationIncremen
 import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
 import * as _ from 'underscore';
+import BaseComponent from "../util/types/BaseComponent";
+import BaseRequest from "../request/BaseRequest";
+import ComponentRequest from "../request/comp/ComponentRequest";
+import DispatchActionRequest from "../request/events/DispatchActionRequest";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -94,6 +98,7 @@ enum REQUEST_ENDPOINTS {
     FILTER = "/api/dal/filter",
     DAL_SAVE = "/api/dal/save",
     SORT = "/api/dal/sort",
+    WIDTH = "/api/dal/width",
 
     //comp
     SET_VALUE = "/api/comp/setValue",
@@ -231,7 +236,8 @@ class Server extends BaseServer {
     .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE)
     .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS.EXIT)
     .set(REQUEST_KEYWORDS.ABOUT, REQUEST_ENDPOINTS.ABOUT)
-    .set(REQUEST_KEYWORDS.MENU, REQUEST_ENDPOINTS.MENU);
+    .set(REQUEST_KEYWORDS.MENU, REQUEST_ENDPOINTS.MENU)
+    .set(REQUEST_KEYWORDS.WIDTH, REQUEST_ENDPOINTS.WIDTH);
 
     /** ----------HANDLING-RESPONSES---------- */
 
@@ -445,7 +451,14 @@ class Server extends BaseServer {
                 else {
                     this.lastClosedWasPopUp = false;
                 }
-                break;
+                break
+            }
+        }
+
+        for (let entry of this.contentStore.removedContent.entries()) {
+            if (entry[1].contentParentName === closeScreenData.componentId) {
+                this.contentStore.cleanUp(entry[1].id, entry[1].name, entry[1].className, true);
+                this.contentStore.flatContent.delete(entry[1].id + "-popup");
             }
         }
         this.contentStore.closeScreen(closeScreenData.componentId);
@@ -504,18 +517,34 @@ class Server extends BaseServer {
      * Opens a fileSelectDialog and sends the selected file to the server
      * @param uploadData - the uploadResponse
      */
-    upload(uploadData: UploadResponse) {
-        const inputElem = document.createElement('input');
-        inputElem.type = 'file';
-        //@ts-ignore
-        inputElem.showPicker();
-        inputElem.onchange = (e) => {
-            const formData = new FormData();
-            formData.set("clientId", sessionStorage.getItem("clientId") || "")
-            formData.set("fileId", uploadData.fileId)
-            // @ts-ignore
-            formData.set("data", e.target.files[0])
-            this.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
+    upload(uploadData: UploadResponse, request:DispatchActionRequest) {
+        if (!request || !request.isUploadButton) {
+            try {
+                const inputElem = document.createElement('input');
+                inputElem.type = 'file';
+                //@ts-ignore
+                inputElem.showPicker();
+                inputElem.onchange = (e) => {
+                    const formData = new FormData();
+                    formData.set("clientId", sessionStorage.getItem("clientId") || "")
+                    formData.set("fileId", uploadData.fileId)
+                    // @ts-ignore
+                    formData.set("data", e.target.files[0])
+                    this.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
+                }
+            }
+            catch(e) {
+                console.log("showpicker function not supported")
+            }
+        }
+        else {
+            if (request && request.componentId) {
+                const inputElem = document.getElementById(request.componentId + "-upload");
+                if (inputElem) {
+                    inputElem.setAttribute("upload-file-id", uploadData.fileId);
+                }
+            }
+
         }
     }
 
@@ -610,7 +639,7 @@ class Server extends BaseServer {
             }
         }
         else {
-            this.subManager.emitErrorBarProperties(true, false, false, "Could not load translation", "There was a problem when fetching the translation");
+            this.subManager.emitErrorBarProperties(true, false, false, 5, "Could not load translation", "There was a problem when fetching the translation");
             this.subManager.emitErrorBarVisible(true);
         }
 
@@ -659,13 +688,15 @@ class Server extends BaseServer {
 
     // Opens a content by calling the contentstores updatecontent method to add it to the flatcontent and updating the active-screens
     content(contentData:ContentResponse) {
-        let workScreen:IPanel|undefined
+        let workScreen:IPanel|undefined = contentData.changedComponents[0] as IPanel
         if (contentData.changedComponents && contentData.changedComponents.length) {
+            if (this.contentStore.activeScreens[0]) {
+                workScreen.contentParentName = this.contentStore.activeScreens[0].name
+            }
             this.contentStore.updateContent(contentData.changedComponents, false);
         }
         if (!contentData.update) {
             if(contentData.changedComponents && contentData.changedComponents.length) {
-                workScreen = contentData.changedComponents[0] as IPanel
                 this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
             }
         }
@@ -682,7 +713,15 @@ class Server extends BaseServer {
     // Closes a content
     closeContent(closeContentData:CloseContentResponse) {
         if (closeContentData.componentId) {
-            this.contentStore.closeScreen(closeContentData.componentId, true);
+            const comp = this.contentStore.getComponentByName(closeContentData.componentId)
+            if (comp) {
+                this.contentStore.updateContent([{ id: comp.id, "~remove": true } as BaseComponent], false)
+            }
+            
+            //this.contentStore.closeScreen(closeContentData.componentId, true);
+
+            this.contentStore.activeScreens = this.contentStore.activeScreens.filter(screen => screen.name !== closeContentData.componentId);
+            this.subManager.emitActiveScreens();
         }
     }
 

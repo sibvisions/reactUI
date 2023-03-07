@@ -279,3 +279,11 @@ For more info check out the [extendComponent README](../extend-components)
         />
     )
 ```
+
+## getApplicationParameter(key:name)
+Returns the value for the given key out of the application-parameters
+
+### Usage
+```
+const myPrivateKey = api.getApplicationParameter("privkey");
+```

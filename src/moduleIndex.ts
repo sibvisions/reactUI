@@ -24,7 +24,6 @@ export { default as ScreenWrapper } from './main/components/custom-comp/ScreenWr
 
 // Hooks
 export { default as useAPI } from './main/hooks/api-hooks/useAPI';
-export { default as useGetCustomProperty } from './main/hooks/api-hooks/useGetCustomProperty';
 
 export { default as useMenuItems } from './main/hooks/data-hooks/useMenuItems';
 export { default as useDataProviders } from './main/hooks/data-hooks/useDataProviders';

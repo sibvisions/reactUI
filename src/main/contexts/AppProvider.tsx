@@ -42,6 +42,7 @@ import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import { initialURL } from "../..";
 import { DesignerHelper } from "../DesignerHelper";
+import BaseResponse from "../response/BaseResponse";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
@@ -210,13 +211,16 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     connectWs();
                     index++
                     if (index <= 5) {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
+                        contextState.subscriptions.emitErrorBarProperties(false, false, true, 8, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
                         if (index === 1) {
                             contextState.subscriptions.emitErrorBarVisible(true);
                         }
                     }
                     else {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, true, "Server not reachable!", "The server is not reachable.");
+                        contextState.subscriptions.emitErrorBarProperties(false, false, false, 8, "Server not reachable!", "The server is not reachable", () => {
+                            index = 0;
+                            connectWs()
+                        });
                     }
                 }
             }, 5000);
@@ -358,8 +362,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }, contextState.server.aliveInterval)
                 }
 
-                initWS(contextState.server.BASE_URL);
-
+                if ((result[0] as BaseResponse).name !== RESPONSE_NAMES.SESSION_EXPIRED) {
+                    initWS(contextState.server.BASE_URL);
+                }
+                
                 if (props.onStartup) {
                     props.onStartup();
                 }
@@ -430,8 +436,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     });
                     baseUrlToSet = data.baseUrl;
 
-                    if (data.userName) {
-                        startUpRequest.userName = data.userName;
+                    if (data.userName || data.username) {
+                        startUpRequest.userName = data.userName || data.username;
                     }
 
                     if (data.password) {
@@ -530,6 +536,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 else {
                     baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
                 }
+            }
+
+            if (convertedOptions.has("username")) {
+                startUpRequest.userName = convertedOptions.get("username");
+                convertedOptions.delete("username");
             }
 
             if (convertedOptions.has("userName")) {

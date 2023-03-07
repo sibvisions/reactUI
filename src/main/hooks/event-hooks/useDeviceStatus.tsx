@@ -20,11 +20,11 @@ import { DeviceStatus } from "../../response/event/DeviceStatusResponse";
 /**
  * Returns the current devicestatus of the application
  */
-const useDeviceStatus = () => {
+const useDeviceStatus = (sigpad?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of the loaded translation */
-    const [deviceStatus, setDeviceStatus] = useState<DeviceStatus>(context.appSettings.deviceStatus);
+    const [deviceStatus, setDeviceStatus] = useState<DeviceStatus|boolean>(sigpad ? false : context.appSettings.deviceStatus);
     /** Last value of deviceStatus to prevent unnecassary state updates */
     const lastDeviceStatus = useRef<DeviceStatus>(context.appSettings.deviceStatus);
 
@@ -35,12 +35,18 @@ const useDeviceStatus = () => {
                 lastDeviceStatus.current = deviceStatus;
                 setDeviceStatus(deviceStatus);
             }
+            else if (sigpad) {
+                setDeviceStatus(prevState => sigpad ? !prevState : deviceStatus);
+            }
         })
 
         return () => context.subscriptions.unsubscribeFromDeviceMode((deviceStatus: DeviceStatus) => {
             if (deviceStatus !== lastDeviceStatus.current) {
                 lastDeviceStatus.current = deviceStatus;
                 setDeviceStatus(deviceStatus);
+            }
+            else if (sigpad) {
+                setDeviceStatus(prevState => sigpad ? !prevState : deviceStatus);
             }
         })
     }, [context.subscriptions])

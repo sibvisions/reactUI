@@ -106,7 +106,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
             props.onClick(event.originalEvent);
         }
 
-        sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, undefined, topbar)
+        sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, topbar)
     }
 
     return (

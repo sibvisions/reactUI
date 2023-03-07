@@ -31,7 +31,8 @@ import { concatClassnames } from "../../../main/util/string-util/ConcatClassname
 import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
-import { WSDesignerContext } from "../../../AppWrapper";
+import { VisionXContext } from "../../../AppWrapper";
+import { DeviceStatus } from "../../../main/response/event/DeviceStatusResponse";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -46,7 +47,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** Reference for the menu component */
     const menuRef = useRef<any>(null);
 
-    const wsContext = useContext(WSDesignerContext);
+    const vxContext = useContext(VisionXContext);
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -137,7 +138,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                 appTheme
             )} >
                 <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
-                {!wsContext.isActive ? 
+                {!vxContext.showVisionX ? 
                     isCorporation(appLayout, appTheme) ?
                         <CorporateMenu
                             screenTitle={screenTitle}
@@ -153,11 +154,11 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     }
                 <div id="reactUI-main" className={concatClassnames(
                     "main",
-                    !wsContext.isActive ? (isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu") : "",
-                    !wsContext.isActive && ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
+                    !vxContext.showVisionX ? (isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu") : "",
+                    !vxContext.showVisionX && ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus as DeviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
                     menuMini ? "" : "screen-no-mini",
                     menuOptions.toolBar ? "toolbar-visible" : "",
-                    (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) || wsContext.isActive ? "menu-not-visible" : "",
+                    (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) || vxContext.showVisionX ? "menu-not-visible" : "",
                     !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
                     <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active: boolean) => setMobileStandard(active)}>

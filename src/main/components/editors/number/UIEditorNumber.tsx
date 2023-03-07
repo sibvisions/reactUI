@@ -25,7 +25,6 @@ import { formatNumber, getDecimalLength, getGrouping, getPrimePrefix, getWriteSc
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
-import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
@@ -64,18 +63,18 @@ export function getNumberSeparators(locale: string) {
     return { decimal: parts.find(part => part.type === 'decimal')!.value, group: parts.find(part => part.type === 'group')!.value};
 }
 
-export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boolean, locale: string) {
-    if (numberFormat.startsWith('0')) {
-        return getPrimePrefix(numberFormat, data, locale);
+export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boolean, locale: string, useGrouping: boolean) {
+    if (numberFormat.startsWith('0') || numberFormat.startsWith('#')) {
+        return getPrimePrefix(numberFormat, data, locale, useGrouping);
     }
     else if (!numberFormat.startsWith('0') && !numberFormat.startsWith('#')) {
         const indexHash = numberFormat.indexOf('#');
         const index0 = numberFormat.indexOf('0');
         if (indexHash !== 1 && indexHash < index0) {
-            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('#')) + (getPrimePrefix(numberFormat, data, locale) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale) : "");
+            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('#')) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
         }
         else if (index0 !== 1 && index0 < indexHash) {
-            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('0')) + (getPrimePrefix(numberFormat, data, locale) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale) : "");
+            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('0')) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
         }
     }
     return ""
@@ -114,8 +113,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     /** Current state value of input element */
     const [value, setValue] = useState<number|string|null|undefined>(props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ?  formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined);
 
-    /** Reference to last value so that sendSetValue only sends when value actually changed */
-    const lastValue = useRef<any>();
+    /** True, if the user has changed the value */
+    const startedEditing = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -178,7 +177,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
      * 0s will be added
      * @returns a string which will be added before the number
      */
-    const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? props.selectedRow.data[props.columnName] : undefined, false, props.context.appSettings.locale), [props.cellEditor.numberFormat, props.selectedRow]);
+    const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? props.selectedRow.data[props.columnName] : undefined, false, props.context.appSettings.locale, useGrouping), [props.cellEditor.numberFormat, props.selectedRow, useGrouping]);
 
     /** Returns a string which will be added behind the number, based on the numberFormat */
     const suffix = useMemo(() => getSuffix(props.cellEditor.numberFormat, props.context.appSettings.locale), [props.cellEditor.numberFormat]);
@@ -226,10 +225,10 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         onLoadCallback
     );
 
-    /** When props.selectedRow changes set the state of inputfield value to props.selectedRow and update lastValue reference */
+    /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
-        setValue(props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined)
-        lastValue.current = props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? props.selectedRow.data[props.columnName] : undefined;
+        setValue(props.selectedRow && (props.selectedRow.data[props.columnName] !== undefined && props.selectedRow.data[props.columnName] !== null)  ? formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined)
+        startedEditing.current = false;
     },[props.selectedRow]);
 
     // If the lib user extends the NumberCellEditor with onChange, call it when selectedRow changes.
@@ -308,7 +307,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             }
 
             // Checks if the decimal length limit is hit and when it is don't allow more inputs
-            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma(event.target.value) || !checkBackspacePossible()) {
+            if (decimalLength && parseInt(event.target.value + event.key).toString().length > decimalLength && isSelectedBeforeComma(event.target.value)) {
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
@@ -317,7 +316,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         else {
             event.stopPropagation();
         }
-
     });
 
     // TODO: It should be possible to remove this double inputnumber implementation
@@ -337,22 +335,30 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     minFractionDigits={writeScaleDigits.minScale}
                     maxFractionDigits={writeScaleDigits.maxScale}
                     //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                    value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                    //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                    value={value as number|null|undefined}
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
                         ...textAlignment, 
                         ...props.cellStyle
                     }}
                     onChange={event => {
-                        
+                        startedEditing.current = true;
                         if (props.onInput) {
                             props.onInput(event);
                         }
 
-                        setValue(event.value)
+                        //@ts-ignore
+                        if (event.value === "-") {
+                            setValue(event.value)
+                        }
+                        else {
+                            setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
+                        }
+                        
 
                         if (props.savingImmediate) {
-                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, props.topbar, props.rowNumber);
                         }
                     }}
                     onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
@@ -365,8 +371,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             if (props.onBlur) {
                                 props.onBlur(event)
                             }
-
-                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                            if (startedEditing.current) {
+                                sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, props.topbar, props.rowNumber);
+                            }
                         }
                     }}
                     disabled={props.isReadOnly}
@@ -388,7 +395,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={writeScaleDigits.minScale}
                 maxFractionDigits={writeScaleDigits.maxScale}
-                value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                value={value as number|null|undefined}
                 style={props.layoutStyle}
                 inputStyle={{ 
                     ...textAlignment, 
@@ -396,13 +404,24 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
                 onChange={event => {
-                    setValue(event.value);
+                    startedEditing.current = true;
+                    //@ts-ignore
+                    if (event.value === "-") {
+                        setValue(event.value)
+                    }
+                    else {
+                        setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
+                    }
 
                     if (props.savingImmediate) {
-                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, lastValue.current, props.topbar, props.rowNumber);
+                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, props.topbar, props.rowNumber);
                     }
                 }}
-                onBlur={(event) => sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, lastValue.current, props.topbar, props.rowNumber)}
+                onBlur={() => {
+                    if (startedEditing.current) {
+                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, props.topbar, props.rowNumber)
+                    }
+                }}
                 disabled={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}

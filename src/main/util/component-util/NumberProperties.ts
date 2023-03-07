@@ -39,7 +39,7 @@ export function getMinimumIntDigits(numberFormat:string) {
  * @param value - the current value of the number editor
  * @returns a string of leading zeros or undefined
  */
-export function getPrimePrefix(numberFormat:string, value:any, locale: string) {
+export function getPrimePrefix(numberFormat:string, value:any, locale: string, useGrouping: boolean) {
     const numberSeperators = getNumberSeparators(locale);
     const splitFormat = numberFormat.split('.')[0];
     let count = (splitFormat.match(/0/g) || []).length;
@@ -48,12 +48,14 @@ export function getPrimePrefix(numberFormat:string, value:any, locale: string) {
         let j = 2;
         for (let i = 0; i < count - (value ? value.toString().length : 1); i++) {
             string += "0";
-            if (j === 2) {
-                string += numberSeperators.group;
-                j = 0;
-            }
-            else {
-                j++;
+            if (useGrouping) {
+                if (j === 2) {
+                    string += numberSeperators.group;
+                    j = 0;
+                }
+                else {
+                    j++;
+                }
             }
         }
         return string

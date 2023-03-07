@@ -1,4 +1,4 @@
-/* Copyright 2022 SIB Visions GmbH
+/* Copyright 2023 SIB Visions GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,16 +13,10 @@
  * the License.
  */
 
-import { useContext } from "react";
-import { appContext } from "../../contexts/AppProvider";
+import DataProviderRequest from "./DataProviderRequest";
 
-/**
- * This hook returns the value of a customStartup property set by the user 
- * @param key - the customStartup property
- */
-const useGetCustomProperty = (key:string) => {
-    const context = useContext(appContext);
-
-    return context.contentStore.customProperties.get(key);
+interface WidthRequest extends DataProviderRequest {
+    columnName?: string,
+    width?: number
 }
-export default useGetCustomProperty
+export default WidthRequest

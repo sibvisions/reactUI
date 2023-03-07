@@ -188,8 +188,13 @@ export default abstract class BaseContentStore {
      * @param componentName - the name of the component
      * @returns the data/properties of a component based on the name
      */
-     getComponentByName(componentName: string): BaseComponent | undefined {
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+     getComponentByName(componentName: string, withRemoved?:boolean): BaseComponent | undefined {
+        let mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
+
+        if (withRemoved) {
+            mergedContent = new Map([...mergedContent, ...this.removedContent]);
+        }
+
         const componentEntries = mergedContent.entries();
         let foundEntry:BaseComponent|undefined;
         let entry = componentEntries.next();
@@ -529,8 +534,7 @@ export default abstract class BaseContentStore {
      * @param windowName - the name of the window to close
      */
      closeScreen(windowName: string, closeContent?:boolean, opensWelcome?:boolean) {
-        let window = this.getComponentByName(windowName);
-
+        let window = this.getComponentByName(windowName, closeContent);
         if (window) {
             this.cleanUp(window.id, window.name, window.className, closeContent);
         }
@@ -563,6 +567,11 @@ export default abstract class BaseContentStore {
             const parentId = this.getComponentById(id)?.parent;
             this.deleteChildren(id, className);
             this.flatContent.delete(id);
+
+            if (closeContent) {
+                this.removedContent.delete(id)
+            }
+
             if (parentId) {
                 this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []);
             }
@@ -867,8 +876,8 @@ export default abstract class BaseContentStore {
                     }
                     else {
                         let pageKeyObj:any = {};
-                        for (let i = 0; i < metaData.masterReference.referencedColumnNames.length; i++) {
-                            pageKeyObj[metaData.masterReference.referencedColumnNames[i]] = masterRow[i];
+                        for (let i = 0; i < metaData.masterReference.columnNames.length; i++) {
+                            pageKeyObj[metaData.masterReference.columnNames[i]] = masterRow[i];
                         }
                         pageKey = JSON.stringify(pageKeyObj);
                         
@@ -878,8 +887,9 @@ export default abstract class BaseContentStore {
             return pageKey;
         }
         
-        const fillDataMap = (mapProv:Map<string, any>, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
+        const fillDataMap = (mapProv:Map<string, any>, request?:FetchRequest, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
             mapProv.set(getPageKey(), newDataSet);
+            mapProv.set("current", newDataSet);
 
             if (mapScreen) {
                 if (mapScreen.has(dataProvider)) {
@@ -927,27 +937,27 @@ export default abstract class BaseContentStore {
                     notifyTreeData = existingData;
                 }
                 else {
-                    fillDataMap(existingProvider.data);
+                    fillDataMap(existingProvider.data, request);
                 }
             } 
             else {
                 if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
-                    fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, existingMap);
+                    fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, request, existingMap);
                 }
                 else {
                     const providerMap = new Map<string, Array<any>>();
-                    fillDataMap(providerMap, existingMap);
+                    fillDataMap(providerMap, request, existingMap);
                 }
             }
         }
         else {
             const dataMap = new Map<string, IDataBook>();
             if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
-                fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, dataMap, true);
+                fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, request, dataMap, true);
             }
             else {
                 const providerMap = new Map<string, Array<any>>();
-                fillDataMap(providerMap, dataMap, true);
+                fillDataMap(providerMap, request, dataMap, true);
             }
         }
 
