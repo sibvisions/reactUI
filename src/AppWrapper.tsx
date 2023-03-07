@@ -38,11 +38,12 @@ interface IAppWrapper {
 }
 
 interface IVisionXContext {
+    showVisionX: boolean
     toggleVisionX: () => void,
     designerHelper: DesignerHelper
 }
 
-export const WSDesignerContext = createContext<IVisionXContext>({ toggleVisionX: () => {}, designerHelper: new DesignerHelper(new ContentStore()) });
+export const VisionXContext = createContext<IVisionXContext>({ showVisionX: false, toggleVisionX: () => {}, designerHelper: new DesignerHelper(new ContentStore()) });
 
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
@@ -59,9 +60,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
-    const [showVisionX, setShowVisionX] = useState<boolean>(false);
-
-    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ toggleVisionX: () => setShowVisionX(prevState => !prevState), designerHelper: context.designerHelper });
+    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ showVisionX: false, toggleVisionX: () => setVXContextState(prevState => ({...prevState, showVisionX: prevState.showVisionX})), designerHelper: context.designerHelper });
 
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();
@@ -77,7 +76,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         const docStyle = window.getComputedStyle(document.documentElement)
         const mainHeight = docStyle.getPropertyValue('--main-height');
         const mainWidth = docStyle.getPropertyValue('--main-width');
-        if (showDesignerView || showVisionX) {
+        if (showDesignerView || vxContextState.showVisionX) {
             if (showDesignerView && !sessionStorage.getItem("reactui-designer-on")) {
                 sessionStorage.setItem("reactui-designer-on", "true");
             }
@@ -104,7 +103,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                 document.documentElement.style.setProperty("--main-width", "100vw");
             }
         }
-    }, [showDesignerView, showVisionX])
+    }, [showDesignerView, vxContextState.showVisionX])
 
     /**
      * Subscribes to app-name, css-version and restart
@@ -187,9 +186,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
     const content =
         <>
-            <WSDesignerContext.Provider value={vxContextState}>
+            <VisionXContext.Provider value={vxContextState}>
                 {props.children}
-                {(speeddialModel.length && !showDesignerView && !showVisionX) ? 
+                {(speeddialModel.length && !showDesignerView && !vxContextState.showVisionX) ? 
                     <>
                         <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
                         <SpeedDial 
@@ -205,7 +204,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             }} />
                     </>
                 : undefined}
-            </WSDesignerContext.Provider>
+            </VisionXContext.Provider>
         </>
 
     return (
@@ -229,7 +228,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         {content}
 
                     </ReactUIDesigner> :
-                    (showVisionX) ?
+                    (vxContextState.showVisionX) ?
                         <VisionX mode="reactui" vxContext={vxContextState} >
                             {content}
                         </VisionX> :
