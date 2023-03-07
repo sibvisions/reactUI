@@ -59,7 +59,7 @@ const ErrorBar:FC = () => {
         retry: Function,
         dontShowRestart: boolean
     ) => {
-        if (priority > errorProps.priority) {
+        if (priority >= errorProps.priority) {
             setErrorProps({
                 headerMessage: header,
                 bodyMessage: body,

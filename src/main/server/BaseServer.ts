@@ -291,7 +291,7 @@ export default abstract class BaseServer {
                         }
                         else {
                             if (endpoint === REQUEST_KEYWORDS.STARTUP) {
-                                this.subManager.emitErrorBarProperties(false, false, false, 6, "Startup failed!", "Check if the server is available", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
+                                this.subManager.emitErrorBarProperties(false, false, false, 7, "Startup failed!", "Check if the server is available", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
                             }
                             else {
                                 this.subManager.emitErrorBarProperties(false, false, false, 5, "Error occured!", "Check the console for more info", () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
@@ -361,7 +361,7 @@ export default abstract class BaseServer {
     timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitErrorBarProperties(false, false, false, 7, "Server Error!", "TimeOut! Couldn't connect to the server.", retry);
+                this.subManager.emitErrorBarProperties(false, false, false, 6, "Server Error!", "TimeOut! Couldn't connect to the server.", retry);
                 this.subManager.emitErrorBarVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
@@ -370,7 +370,7 @@ export default abstract class BaseServer {
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitErrorBarProperties(false, false, false, 7, "Server Error!", "TimeOut! Couldn't connect to the server.", retry);
+                    this.subManager.emitErrorBarProperties(false, false, false, 6, "Server Error!", "TimeOut! Couldn't connect to the server.", retry);
                     this.subManager.emitErrorBarVisible(true);
                     clearTimeout(timeoutId);
                     reject(err);
