@@ -13,9 +13,11 @@
  * the License.
  */
 
+import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 import BaseContentStore from "./contentstore/BaseContentStore";
 import ContentStore from "./contentstore/ContentStore";
 import ContentStoreFull from "./contentstore/ContentStoreFull";
+import BaseComponent from "./util/types/BaseComponent";
 
 export type Coordinates = {
   x: number,
@@ -56,7 +58,7 @@ export class DesignerHelper {
         const docStyle = window.getComputedStyle(document.documentElement);
 
         const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
-        let foundComponent = this.contentStore.getComponentByName(firstPanel.id);
+        let foundComponent:BaseComponent|undefined = undefined;
 
         let position = mouseCoords;
         position.x -= (parseInt(docStyle.getPropertyValue("--visionx-panel-wrapper-width")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")));
@@ -65,25 +67,41 @@ export class DesignerHelper {
         const searchComponentsRecursive = (currentElem: HTMLElement, position: Coordinates) => {
             if (currentElem.childNodes.length) {
                 currentElem.childNodes.forEach(childElem => {
-                    const castedChild = childElem as HTMLElement;
+                    let castedChild = childElem as HTMLElement;
                     let newPosition = { ...position }
-                    newPosition.x -= parseInt(castedChild.style.left);
-                    newPosition.y -= parseInt(castedChild.style.top);
+
+                    if (castedChild.style.left) {
+                        newPosition.x -= parseInt(castedChild.style.left);
+                    }
+                    
+                    if (castedChild.style.top) {
+                        newPosition.y -= parseInt(castedChild.style.top);
+                    }
+                    
                     if (this.mouseIsInComponent(newPosition, castedChild)) {
                         // Added extra _ for wrappers because -wrapper could be a string people would use in their components-name
                         const childComp = this.contentStore.getComponentByName(castedChild.id.replace('-_wrapper', ''));
                         if (childComp) {
                             foundComponent = childComp;
+
+                            // If child is a panel get the layout element instead of the panel element
+                            if ([COMPONENT_CLASSNAMES.PANEL, COMPONENT_CLASSNAMES.SCROLLPANEL, COMPONENT_CLASSNAMES.GROUPPANEL].indexOf(childComp.className as COMPONENT_CLASSNAMES) !== -1) {
+                                if (castedChild.childNodes.length) {
+                                    castedChild = castedChild.childNodes[0] as HTMLElement;
+                                }
+                            }
                         }
 
-                        if (this.isLayoutComponent(castedChild))
-                        searchComponentsRecursive(castedChild, newPosition);
+                        if (this.isLayoutComponent(castedChild)) {
+                            searchComponentsRecursive(castedChild, newPosition);
+                        }
                     }
                 })
             }
         }
 
         if (firstPanel && position.x >= 0 && position.y >= 0) {
+            foundComponent = this.contentStore.getComponentByName(firstPanel.id);
             searchComponentsRecursive(firstPanel, position);
         }
 
