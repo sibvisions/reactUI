@@ -139,6 +139,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
     return (
         <span
             ref={buttonWrapperRef}
+            id={props.name + "-_wrapper"}
             style={layoutStyle}
             aria-label={props.ariaLabel}
             aria-pressed={props.ariaPressed}

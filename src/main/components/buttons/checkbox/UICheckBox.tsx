@@ -110,7 +110,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
     }
 
     return (
-        <span ref={buttonWrapperRef} style={layoutStyle}>
+        <span ref={buttonWrapperRef} id={props.name + "-_wrapper"} style={layoutStyle}>
             <span
                 id={props.name}
                 aria-label={props.ariaLabel}

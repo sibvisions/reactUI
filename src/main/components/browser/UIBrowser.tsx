@@ -60,7 +60,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
     useAddLayoutStyle(browserRef.current, layoutStyle, onLoadCallback);
 
     return (
-        <span ref={browserRef} style={layoutStyle} >
+        <span ref={browserRef} style={layoutStyle}>
             <Tooltip target={"#" + props.name} />
             <iframe
                 id={props.name} 

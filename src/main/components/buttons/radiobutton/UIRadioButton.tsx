@@ -110,7 +110,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
     }
 
     return (
-        <span ref={buttonWrapperRef} style={layoutStyle}>
+        <span id={props.name + "-_wrapper"} ref={buttonWrapperRef} style={layoutStyle}>
             <span
                 id={props.name}
                 aria-label={props.ariaLabel}

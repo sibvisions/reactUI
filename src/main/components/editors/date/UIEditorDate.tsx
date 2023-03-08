@@ -389,6 +389,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     return (
         <span 
             ref={wrapperRef}
+            id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 
             aria-expanded={visible} 

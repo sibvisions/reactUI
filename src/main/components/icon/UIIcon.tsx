@@ -155,6 +155,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
     return (
         <span 
             ref={iconRef} 
+            id={props.name + "-_wrapper"}
             className={concatClassnames(
                 "rc-icon", 
                 props.focusable === false ? "no-focus-rect" : "",

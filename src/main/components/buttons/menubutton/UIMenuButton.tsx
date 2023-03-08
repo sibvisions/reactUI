@@ -205,7 +205,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
     return (
         <span
             className={concatClassnames("rc-popupmenubutton-wrapper", props.focusable === false ? "no-focus-rect" : "")}
-            id={props.name + "-wrapper"}
+            id={props.name + "-_wrapper"}
             ref={buttonWrapperRef}
             style={{ position: 'absolute', ...layoutStyle }}
             aria-label={props.ariaLabel}

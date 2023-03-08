@@ -690,12 +690,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return true;
             }
             else if (delegateFocus) {
-                getFocusComponent(props.name + "-wrapper", true)?.focus();
+                getFocusComponent(props.name + "-_wrapper", true)?.focus();
                 return false;
             }
         }
         else if (delegateFocus) {
-            getFocusComponent(props.name + "-wrapper", true)?.focus();
+            getFocusComponent(props.name + "-_wrapper", true)?.focus();
             return false;
         }
     }, [selectedRow, columnOrder, sendSelectRequest])
@@ -713,12 +713,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return true;
             }
             else if (delegateFocus) {
-                getFocusComponent(props.name + "-wrapper", false)?.focus();
+                getFocusComponent(props.name + "-_wrapper", false)?.focus();
                 return false;
             }
         }
         else if (delegateFocus) {
-            getFocusComponent(props.name + "-wrapper", false)?.focus();
+            getFocusComponent(props.name + "-_wrapper", false)?.focus();
             return false;
         }
     }, [selectedRow, columnOrder, sendSelectRequest])
@@ -739,12 +739,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return true;
             }
             else if (delegateFocus) {
-                getFocusComponent(props.name + "-wrapper", true)?.focus();
+                getFocusComponent(props.name + "-_wrapper", true)?.focus();
                 return false;
             }
         }
         else if (delegateFocus) {
-            getFocusComponent(props.name + "-wrapper", true)?.focus();
+            getFocusComponent(props.name + "-_wrapper", true)?.focus();
             return false;
         }
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
@@ -765,12 +765,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return true;
             }
             else if (delegateFocus) {
-                getFocusComponent(props.name + "-wrapper", false)?.focus();
+                getFocusComponent(props.name + "-_wrapper", false)?.focus();
                 return false;
             }
         }
         else if (delegateFocus) {
-            getFocusComponent(props.name + "-wrapper", false)?.focus();
+            getFocusComponent(props.name + "-_wrapper", false)?.focus();
             return false;
         }
     }, [selectedRow, primaryKeys, providerData, sendSelectRequest])
@@ -797,12 +797,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return true;
             }
             else if (delegateFocus) {
-                getFocusComponent(props.name + "-wrapper", true)?.focus();
+                getFocusComponent(props.name + "-_wrapper", true)?.focus();
                 return false;
             }
         }
         else if (delegateFocus) {
-            getFocusComponent(props.name + "-wrapper", true)?.focus();
+            getFocusComponent(props.name + "-_wrapper", true)?.focus();
             return false;
         }
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
@@ -829,12 +829,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return true;
             }
             else if (delegateFocus) {
-                getFocusComponent(props.name + "-wrapper", false)?.focus();
+                getFocusComponent(props.name + "-_wrapper", false)?.focus();
                 return false;
             }
         }
         else if (delegateFocus) {
-            getFocusComponent(props.name + "-wrapper", false)?.focus();
+            getFocusComponent(props.name + "-_wrapper", false)?.focus();
             return false;
         }
     }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
@@ -859,7 +859,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return true;
             }
             else if (delegateFocus) {
-                getFocusComponent(props.name + "-wrapper", true)?.focus();
+                getFocusComponent(props.name + "-_wrapper", true)?.focus();
                 return false;
             }
         }
@@ -885,7 +885,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return true;
             }
             else if (delegateFocus) {
-                getFocusComponent(props.name + "-wrapper", false)?.focus();
+                getFocusComponent(props.name + "-_wrapper", false)?.focus();
                 return false;
             }
         }
@@ -1369,7 +1369,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         <SelectedCellContext.Provider value={selectedCellId}>
             <div
                 ref={wrapRef}
-                id={props.name + "-wrapper"}
+                id={props.name + "-_wrapper"}
                 style={{
                     ...layoutStyle,
                     ...compStyle,
@@ -1392,10 +1392,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             }
                             focused.current = true;
                             if (columnOrder && !focusIsClicked.current) {
-                                if (relatedTarget === getFocusComponent(props.name + "-wrapper", false)) {
+                                if (relatedTarget === getFocusComponent(props.name + "-_wrapper", false)) {
                                     sendSelectRequest(columnOrder[0], undefined, selectedRow.index || 0);
                                 }
-                                else if (relatedTarget === getFocusComponent(props.name + "-wrapper", true)) {
+                                else if (relatedTarget === getFocusComponent(props.name + "-_wrapper", true)) {
                                     sendSelectRequest(columnOrder[columnOrder.length - 1], undefined, selectedRow.index || providerData.length - 1)
                                 }
                             }

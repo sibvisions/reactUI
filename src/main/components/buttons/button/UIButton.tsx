@@ -122,7 +122,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     }
 
     return (
-        <span id={props.name + "-wrapper"} ref={buttonWrapperRef} style={layoutStyle}>
+        <span id={props.name + "-_wrapper"} ref={buttonWrapperRef} style={layoutStyle}>
             <Button
                 id={props.name}
                 ref={buttonRef}
@@ -177,7 +177,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                 disabled={isCompDisabled(props)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
-                layoutstyle-wrapper={props.name + "-wrapper"}
+                layoutstyle-wrapper={props.name + "-_wrapper"}
                 {...usePopupMenu(props)}>
                 {isHTML && props.text && <RenderButtonHTML text={props.text} />}
             </Button>

@@ -119,6 +119,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
     return (
         <span
             ref={wrapRef}
+            id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
             className={concatClassnames(
                 "rc-editor-image",
                 props.columnMetaData?.nullable === false ? "required-field" : "",

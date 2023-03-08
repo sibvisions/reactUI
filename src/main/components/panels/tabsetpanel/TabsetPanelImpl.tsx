@@ -205,6 +205,7 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
         <LayoutContext.Provider value={componentSizes}>
             <div
                 ref={wrapperRef}
+                id={props.name + "-_wrapper"}
                 className={concatClassnames("rc-tabset", props.style)}
                 style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...props.layoutStyle, ...props.compStyle }}>
                 <TabView

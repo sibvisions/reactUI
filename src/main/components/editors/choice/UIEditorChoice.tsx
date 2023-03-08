@@ -228,7 +228,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
 
     return (
         <span
-            id={props.name + "-wrapper"}
+            id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
             ref={wrapRef}
             className={concatClassnames(
                 "rc-editor-choice",
@@ -274,7 +274,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
             {validImages[currentImageValue] && validImages[currentImageValue].icon ?
                 <i
                     ref={imgRef}
-                    layoutstyle-wrapper={props.name + "-wrapper"}
+                    layoutstyle-wrapper={props.name + "-_wrapper"}
                     id={!props.isCellEditor ? props.name : undefined}
                     className={concatClassnames(
                         "rc-editor-choice-img",

@@ -40,23 +40,53 @@ export class DesignerHelper {
     }
 
     isLayoutComponent(element: HTMLElement) {
-        return element.getAttribute("data-layout") !== null || element.getAttribute("data-layout") !== undefined;
+        return ["form", "border", "grid", "flow", "nulllayout"].indexOf(element.getAttribute("data-layout") || "") !== -1;
+    }
+
+    mouseIsInComponent(position:Coordinates, element: HTMLElement) {
+        const parsedWidth = parseInt(element.style.width);
+        const parsedHeight = parseInt(element.style.height);
+        if (position.x >= 0 && position.x <= parsedWidth && position.y >= 0 && position.y <= parsedHeight) {
+            return true;
+        }
+        return false;
     }
 
     findClickedComponent(mouseCoords: Coordinates) {
         const docStyle = window.getComputedStyle(document.documentElement);
+
+        const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
+        let foundComponent = this.contentStore.getComponentByName(firstPanel.id);
+
         let position = mouseCoords;
-        console.log(docStyle.getPropertyValue("--visionx-panel-wrapper-width"), docStyle.getPropertyValue("--visionx-content-padding"))
         position.x -= (parseInt(docStyle.getPropertyValue("--visionx-panel-wrapper-width")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")));
-        position.y -= (parseInt(docStyle.getPropertyValue("--visionx-topbar-height")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")))
-        console.log(position)
-        const firstPanel = document.getElementById("workscreen")?.firstChild;
-        if (firstPanel) {
-            const firstLayout = firstPanel.childNodes[0] as HTMLElement;
-            if (firstLayout && this.isLayoutComponent(firstLayout)) {
-                console.log("formlayouts children: ", firstLayout.childNodes)
-                
+        position.y -= (parseInt(docStyle.getPropertyValue("--visionx-topbar-height")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")));
+
+        const searchComponentsRecursive = (currentElem: HTMLElement, position: Coordinates) => {
+            if (currentElem.childNodes.length) {
+                currentElem.childNodes.forEach(childElem => {
+                    const castedChild = childElem as HTMLElement;
+                    let newPosition = { ...position }
+                    newPosition.x -= parseInt(castedChild.style.left);
+                    newPosition.y -= parseInt(castedChild.style.top);
+                    if (this.mouseIsInComponent(newPosition, castedChild)) {
+                        // Added extra _ for wrappers because -wrapper could be a string people would use in their components-name
+                        const childComp = this.contentStore.getComponentByName(castedChild.id.replace('-_wrapper', ''));
+                        if (childComp) {
+                            foundComponent = childComp;
+                        }
+
+                        if (this.isLayoutComponent(castedChild))
+                        searchComponentsRecursive(castedChild, newPosition);
+                    }
+                })
             }
         }
+
+        if (firstPanel && position.x >= 0 && position.y >= 0) {
+            searchComponentsRecursive(firstPanel, position);
+        }
+
+        return foundComponent;
     }
 }

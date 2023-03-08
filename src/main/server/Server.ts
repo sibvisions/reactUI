@@ -48,10 +48,7 @@ import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
-import * as _ from 'underscore';
 import BaseComponent from "../util/types/BaseComponent";
-import BaseRequest from "../request/BaseRequest";
-import ComponentRequest from "../request/comp/ComponentRequest";
 import DispatchActionRequest from "../request/events/DispatchActionRequest";
 
 /** Enum for server request endpoints */

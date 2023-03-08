@@ -519,7 +519,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     return (
         fieldType === FieldTypes.HTML ?
             <div 
-                ref={textRef} 
+                ref={textRef}
                 style={{ ...props.layoutStyle, background: props.cellEditor_background_ }} 
                 id={props.isCellEditor ? undefined : props.name}
                 aria-label={props.ariaLabel}

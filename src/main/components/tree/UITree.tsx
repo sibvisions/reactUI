@@ -673,7 +673,8 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
     return (
         <span 
-            ref={treeWrapperRef} 
+            ref={treeWrapperRef}
+            id={props.name + "-_wrapper"} 
             style={layoutStyle}
             tabIndex={props.tabIndex ? props.tabIndex : 0}
             onFocus={() => {

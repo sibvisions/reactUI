@@ -321,10 +321,10 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     // TODO: It should be possible to remove this double inputnumber implementation
     return (
         (!props.isCellEditor) ?
-            <span id={props.name + "-wrapper"} aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
+            <span id={props.name + "-_wrapper"} aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
                     ref={numberRef}
-                    layoutstyle-wrapper={props.name + "-wrapper"}
+                    layoutstyle-wrapper={props.name + "-_wrapper"}
                     id={props.name}
                     inputRef={numberInput}
                     className={numberClassNames}
