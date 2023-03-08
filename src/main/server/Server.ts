@@ -152,34 +152,18 @@ class Server extends BaseServer {
      * @param name - the name of the component
      */
     componentExists(name:string) {
-        for (let [, value] of this.contentStore.flatContent.entries()) {
-            if (value.name === name && value.visible !== false && value.invalid !== true) {
-                let parent = value.parent;
-                while (parent && !parent.includes("IF")) {
-                    if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)!.visible !== false) {
-                        parent = this.contentStore.getComponentById(parent)!.parent
-                    }
-                    else {
-                        return false;
-                    }
+        const comp = this.contentStore.getComponentByName(name);
+        if (comp && comp.visible !== false && comp.invalid !== true) {
+            let parent = comp.parent;
+            while (parent && !parent.includes("IF")) {
+                if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)!.visible !== false) {
+                    parent = this.contentStore.getComponentById(parent)!.parent
                 }
-                return true;
-            }
-        }
-
-        for (let [, value] of this.contentStore.replacedContent.entries()) {
-            if (value.name === name && value.visible !== false && value.invalid !== true) {
-                let parent = value.parent;
-                while (parent && !parent.includes("IF")) {
-                    if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)?.visible !== false) {
-                        parent = this.contentStore.getComponentById(parent)!.parent
-                    }
-                    else {
-                        return false;
-                    }
+                else {
+                    return false;
                 }
-                return true;
             }
+            return true;
         }
 
         if ((this.contentStore as ContentStore).dialogButtons.includes(name)) {
