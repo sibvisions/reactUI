@@ -190,7 +190,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         });
                         const diffSize = (preferredSize - fixedSize + autoSizeCount - 1) / autoSizeCount
                         autoSizeAnchors.forEach(anchor => {
-                            if(diffSize > -anchor.position){
+                            if (diffSize > -anchor.position) {
                                 anchor.position = -diffSize;
                             }
                             anchor.firstCalculation = false;
@@ -203,9 +203,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         autoSizeAnchors.forEach(anchor => {
                             fixedSize -= anchor.position;
                         });
-                        const diffSize = (preferredSize - fixedSize + autoSizeCount -1) / autoSizeCount;
+                        const diffSize = (preferredSize - fixedSize + autoSizeCount - 1) / autoSizeCount;
                         autoSizeAnchors.forEach(anchor => {
-                            if(diffSize > anchor.position){
+                            if (diffSize > anchor.position) {
                                 anchor.position = diffSize;
                             }
                             anchor.firstCalculation = false;
@@ -223,7 +223,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     const autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
                     let counter = 0;
                     autoSizeAnchors.forEach(anchor => {
-                        if(!anchor.firstCalculation){
+                        if (!anchor.firstCalculation) {
                             anchor.autoSizeCalculated = true;
                             counter++;
                         }
@@ -239,7 +239,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         anchor.relative = anchor.autoSize;
                         anchor.autoSizeCalculated = false;
                         anchor.firstCalculation = true;
-                        //anchor.used = false;
+                        anchor.used = false;
+
                         if(anchor.autoSize) {
                             anchor.position = 0;
                         }
@@ -248,19 +249,26 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 clearAutoSize();
 
-                // componentConstraints.forEach((val) => {
-                //     val.bottomAnchor.used = true;
-                //     val.leftAnchor.used = true;
-                //     val.rightAnchor.used = true;
-                //     val.topAnchor.used = true;
-                // })
+                componentConstraints.forEach((val) => {
+                    val.bottomAnchor.used = true;
+                    val.leftAnchor.used = true;
+                    val.rightAnchor.used = true;
+                    val.topAnchor.used = true;
+                })
 
                 /** Init autosize Anchor position */
                 anchors.forEach(anchor => {
-                    if(anchor.relatedAnchor && anchor.relatedAnchor.autoSize){
-                        const relatedAutoSizeAnchor = anchor.relatedAnchor;
-                        if(relatedAutoSizeAnchor.relatedAnchor && !relatedAutoSizeAnchor.relatedAnchor.autoSize){
-                            relatedAutoSizeAnchor.position= -anchor.position;
+                    const relatedAutoSizeAnchor = anchor.relatedAnchor
+                    if (relatedAutoSizeAnchor) {
+                        if (!anchor.used && relatedAutoSizeAnchor!.used && !relatedAutoSizeAnchor.name.includes("m")) {
+                        anchor.used = true;
+                        }
+
+                        if (relatedAutoSizeAnchor!.autoSize &&
+                            !anchor.autoSize &&
+                            relatedAutoSizeAnchor.relatedAnchor != null &&
+                            !relatedAutoSizeAnchor.relatedAnchor!.autoSize) {
+                                relatedAutoSizeAnchor.position = relatedAutoSizeAnchor.used ? -relatedAutoSizeAnchor.relatedAnchor!.position : -anchor.position;
                         }
                     }
                 });
@@ -480,7 +488,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                  * @param preferredSize - the preferred size
                  */
                 const calculateRelativeAnchor = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number) => {
-                    if(leftTopAnchor.relative) {
+                    if (leftTopAnchor.relative) {
                         const rightBottom = rightBottomAnchor.getRelativeAnchor();
                         if(rightBottom && rightBottom !== leftTopAnchor) {
                             let pref = rightBottom.getAbsolutePosition() - rightBottomAnchor.getAbsolutePosition() + preferredSize;
@@ -490,24 +498,25 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                             let pos = pref - size;
 
-                            if(pos < 0){
+                            if (pos < 0) {
                                 pos /= 2;
-                            } else {
+                            } 
+                            else {
                                 pos -= pos/2;
                             }
 
-                            if(rightBottom.firstCalculation || pos > rightBottom.position){
+                            if (rightBottom.firstCalculation || pos > rightBottom.position) {
                                 rightBottom.firstCalculation = false;
                                 rightBottom.position = pos;
                             }
                             pos = pref - size - pos;
-                            if(leftTopAnchor.firstCalculation || pos > - leftTopAnchor){
+                            if (leftTopAnchor.firstCalculation || pos > - leftTopAnchor) {
                                 leftTopAnchor.firstCalculation = false
                                 leftTopAnchor.position = -pos;
                             }
                         }
                     }
-                    else if(rightBottomAnchor.relative){
+                    else if (rightBottomAnchor.relative) {
                         console.warn("not yet implemented")
                     }
                 }
