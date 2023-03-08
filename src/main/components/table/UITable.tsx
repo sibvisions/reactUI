@@ -472,7 +472,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             return 410;
                         }
                         else {
-                            let height = props.tableHeaderVisible !== false ? 42 : 3
+                            let height = props.tableHeaderVisible !== false ? 42 : 4
                             if (providerData.length === 0) {
                                 height += 50;
                             }
@@ -939,8 +939,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
             return (
                 <>
-                    <span dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable ? "" : " *") }} /> 
-                    <span className="p-sortable-column-icon pi pi-fw"></span>
+                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable ? "" : " *") }} /> 
+                    <span onClick={() => handleSort(colName)} className="p-sortable-column-icon pi pi-fw"></span>
                     <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
         }

@@ -24,7 +24,7 @@ class UIFont {
     /** font-style for component, default value is normal */
     fontStyle = "normal";
     /** font-size for component, default value is css set standardFontSize */
-    fontSize = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--standard-font-size'));
+    fontSize = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--font-size'));
 
     /**
      * @constructor - sets up a UIFont object
