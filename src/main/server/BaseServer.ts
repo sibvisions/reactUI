@@ -35,11 +35,12 @@ import MetaDataResponse from "../response/data/MetaDataResponse";
 import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
 import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
 import { translation } from "../util/other-util/Translation";
-import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 import { getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import BadClientResponse from "../response/error/BadClientResponse";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { setDateLocale } from "../util/other-util/GetDateLocale";
+import BaseRequest from "../request/BaseRequest";
+import DataProviderRequest from "../request/data/DataProviderRequest";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -72,7 +73,7 @@ export default abstract class BaseServer {
     RESOURCE_URL = "";
 
     /** the request queue */
-    requestQueue: Function[] = [];
+    requestQueue: { request:BaseRequest, endpoint: string, reqFunc: Function}[] = [];
 
     /** flag if a request is in progress */
     requestInProgress = false;
@@ -115,6 +116,8 @@ export default abstract class BaseServer {
     autoRestartOnSessionExpired = false;
 
     isExiting = false;
+
+    hideTopbar:Function = () => {};
 
     /**
      * @constructor constructs server instance
@@ -244,6 +247,9 @@ export default abstract class BaseServer {
                 }
 
                 this.lastRequestTimeStamp = Date.now();
+                if (endpoint === REQUEST_KEYWORDS.SELECT_ROW) {
+                    console.log('actually sending select')
+                }
                 this.timeoutRequest(
                     fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                     this.timeoutMs, 
@@ -309,19 +315,24 @@ export default abstract class BaseServer {
 
                         this.openRequests.delete(request);
                     });
-            } else {
+            } 
+            else {
                 // If the RequestMode is Queue, add the request to the queue and advance the queue
-                this.requestQueue.push(() => this.sendRequest(
-                    request, 
-                    endpoint,
-                    fn,
-                    job,
-                    waitForOpenRequests,
-                    RequestQueueMode.IMMEDIATE,
-                    handleResponse
-                ).then(results => {
-                    resolve(results)
-                }).catch(() => resolve(null)))
+                this.requestQueue.push({
+                    request: request,
+                    endpoint: endpoint,
+                    reqFunc: () => this.sendRequest(
+                        request,
+                        endpoint,
+                        fn,
+                        job,
+                        waitForOpenRequests,
+                        RequestQueueMode.IMMEDIATE,
+                        handleResponse
+                    ).then(results => {
+                        resolve(results)
+                    }).catch(() => resolve(null))
+                })
                 this.advanceRequestQueue();
             }
         })
@@ -342,7 +353,7 @@ export default abstract class BaseServer {
     /** Advances the request queue if there is no request in progress */
     advanceRequestQueue() {
         if(!this.requestInProgress) {
-            const request = this.requestQueue.shift();
+            const request = this.requestQueue.shift()?.reqFunc;
             if (request) {
                 this.requestInProgress = true;
                 request().catch(() => {}).finally(() => {
@@ -645,7 +656,7 @@ export default abstract class BaseServer {
      * if reload is a number fetch from the reload value one row
      * @param changedProvider - the dataProviderChangedResponse
      */
-     async processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
+     processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const screenName = this.getScreenName(changedProvider.dataProvider);
 
         // If the crud operations changed, update the metadata
@@ -698,6 +709,10 @@ export default abstract class BaseServer {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
                 this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
+                .then(() => {
+                    this.requestQueue = this.requestQueue.filter(req => !((req.request as DataProviderRequest).dataProvider === changedProvider.dataProvider) || !(req.endpoint === REQUEST_KEYWORDS.SELECT_ROW));
+                    this.hideTopbar();
+                });
             } 
             else if(changedProvider.reload !== undefined) {
                 if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {

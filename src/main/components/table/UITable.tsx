@@ -25,7 +25,7 @@ import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
-import MetaDataResponse, { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
+import MetaDataResponse from "../../response/data/MetaDataResponse";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";

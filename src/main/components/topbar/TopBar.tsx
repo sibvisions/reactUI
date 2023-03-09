@@ -80,7 +80,11 @@ const TopBar:FC = ({children}) => {
             barThickness: topbarSettings.barThickness,
             shadowColor: topbarSettings.shadowColor
         });
-    }, [topbarSettings])
+    }, [topbarSettings]);
+
+    useEffect(() => {
+        context.server.hideTopbar = () => setShow(false);
+    }, [context.server])
 
     return <TopBarContext.Provider value={{
         show: () => setShow(true),
