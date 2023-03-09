@@ -39,7 +39,7 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { getFocusComponent } from "../../util/html-util/GetFocusComponent";
-import { CellEditor, ICellEditor } from "./CellEditor";
+import { CellEditor } from "./CellEditor";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";

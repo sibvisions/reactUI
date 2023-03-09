@@ -14,9 +14,8 @@
  */
 
 /** React imports */
-import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Tree, TreeExpandedKeysType, TreeSelectionParams } from 'primereact/tree';
-import * as _ from 'underscore'
 import BaseComponent from "../../util/types/BaseComponent";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import TreePath from "../../model/TreePath";
@@ -29,7 +28,6 @@ import useAllRowSelect from "../../hooks/data-hooks/useAllRowSelect";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { getMetaData } from "../../util/data-util/GetMetaData";
 import { getSelfJoinedRootReference } from "../../util/data-util/GetSelfJoinedRootReference";
-import FetchResponse from "../../response/data/FetchResponse";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";

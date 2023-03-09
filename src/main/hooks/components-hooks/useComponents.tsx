@@ -15,7 +15,6 @@
 
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import _ from "underscore";
-import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import { getExtractedObject } from "../../components/editors/linked/UIEditorLinked";
 import { appContext } from "../../contexts/AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";

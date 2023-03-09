@@ -30,7 +30,6 @@ import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperTy
 import CustomStartupProps from "../util/types/custom-types/CustomStartupProps";
 import Timer from "../util/other-util/Timer";
 import { IPanel } from "../components/panels/panel/UIPanel";
-import RecordFormat from "../util/types/RecordFormat";
 import { getMetaData } from "../util/data-util/GetMetaData";
 import AppSettings from "../AppSettings";
 import BaseServer from "../server/BaseServer";
@@ -1248,7 +1247,7 @@ export default abstract class BaseContentStore {
      */
     clearDataFromProvider(screenName:string, dataProvider: string) {
         const data = this.getDataBook(screenName, dataProvider)?.data;
-        const metaData = getMetaData(screenName, dataProvider, this, undefined);
+        //const metaData = getMetaData(screenName, dataProvider, this, undefined);
         if (data) {
             data.delete("current");
         }
