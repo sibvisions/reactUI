@@ -19,7 +19,6 @@ import { showTopBar, TopBarContextType } from "../../components/topbar/TopBar";
 import ServerFull from "../../server/ServerFull";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
-import _, { last } from "underscore";
 
 /**
  * Builds a setValuesRequest and sends it to the server

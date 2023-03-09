@@ -402,11 +402,13 @@ class Server extends BaseServer {
             }
         }
 
+        // If there is a welcome screen and it hasnt been opened yet
         if (this.appSettings.welcomeScreen.name && !this.appSettings.welcomeScreen.initOpened) {
             const pathName = (this.history as History).location.pathname as string;
             // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
             const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
-            if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || (genericData.home && !this.linkOpen)) {
+            // Check if the url screen to open is the welcome screen or the response is a home screen and there is no screen to open via url or the screen cant be found in the navigationnames
+            if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || (genericData.home && (!this.linkOpen || !screenToOpen))) {
                 openScreen()
             }
             else {

@@ -30,7 +30,6 @@ import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperTy
 import CustomStartupProps from "../util/types/custom-types/CustomStartupProps";
 import Timer from "../util/other-util/Timer";
 import { IPanel } from "../components/panels/panel/UIPanel";
-import RecordFormat from "../util/types/RecordFormat";
 import { getMetaData } from "../util/data-util/GetMetaData";
 import AppSettings from "../AppSettings";
 import BaseServer from "../server/BaseServer";
@@ -189,6 +188,7 @@ export default abstract class BaseContentStore {
      * @returns the data/properties of a component based on the name
      */
      getComponentByName(componentName: string, withRemoved?:boolean): BaseComponent | undefined {
+        let alreadyFound = false;
         let mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
 
         if (withRemoved) {
@@ -200,7 +200,11 @@ export default abstract class BaseContentStore {
         let entry = componentEntries.next();
         while (!entry.done) {
             if (entry.value[1].name === componentName) {
+                if (alreadyFound) {
+                    console.warn("Component 'name' is not unique (" + componentName + ")");
+                }
                 foundEntry = entry.value[1];
+                alreadyFound = true;
             }
             entry = componentEntries.next();
         }
@@ -1248,7 +1252,7 @@ export default abstract class BaseContentStore {
      */
     clearDataFromProvider(screenName:string, dataProvider: string) {
         const data = this.getDataBook(screenName, dataProvider)?.data;
-        const metaData = getMetaData(screenName, dataProvider, this, undefined);
+        //const metaData = getMetaData(screenName, dataProvider, this, undefined);
         if (data) {
             data.delete("current");
         }

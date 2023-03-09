@@ -20,7 +20,7 @@ import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusR
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
-import { getDateLocale, getGlobalLocale, setDateLocale } from "../../../util/other-util/GetDateLocale";
+import { getDateLocale, getGlobalLocale } from "../../../util/other-util/GetDateLocale";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";

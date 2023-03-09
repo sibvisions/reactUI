@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, ReactElement, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, ReactElement, useCallback, useLayoutEffect, useRef, useState } from "react";
 import SplitPanel, { ORIENTATIONSPLIT } from "./SplitPanel";
 import {LayoutContext} from "../../../LayoutContext";
 import BaseComponent from "../../../util/types/BaseComponent";
@@ -78,40 +78,51 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, splitRef.current ? splitRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
-    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
-    useLayoutEffect(() => {
-        if (splitRef.current) {
-            if(onLoadCallback && compSizes && compSizes.size) {
-                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
-            }
-        }
-    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes, compSizes])
-
-    // Callback which is passed to splitpanel and called initially
-    const sendLoadCallback = () => {
+    const getSplitPrefSize = useCallback(() => {
         let size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
         if (compSizes && compSizes.size) {
-            let testWidth = 0;
-            let testHeight = 0;
+            let calcWidth = 0;
+            let calcHeight = 0;
             compSizes.forEach(comp => {
-                testWidth += comp.preferredSize.width;
-                testHeight += comp.preferredSize.height;
+                calcWidth += comp.preferredSize.width;
+                calcHeight += comp.preferredSize.height;
             });
 
             if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
-                testWidth += 10;
+                calcWidth += 10;
             }
             else {
-                testHeight += 10;
+                calcHeight += 10;
             }
-            size = { height: testHeight, width: testWidth }
+            size = { height: calcHeight, width: calcWidth }
         }
+        return size;
+    }, [compSizes, props.orientation])
+
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
+    useLayoutEffect(() => {
+        if (splitRef.current) {
+            const splitPrefSize = getSplitPrefSize();
+            if (onLoadCallback) {
+                if (props.preferredSize) {
+                    sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                }
+                else {
+                    sendOnLoadCallback(id, props.className, splitPrefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                }
+            }
+        }
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, componentSizes, compSizes, getSplitPrefSize])
+
+    // Callback which is passed to splitpanel and called initially
+    const sendLoadCallback = () => {
+        const splitPrefSize = getSplitPrefSize();
         if (onLoadCallback) {
             if (props.preferredSize) {
                 sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
             }
             else {
-                sendOnLoadCallback(id, props.className, size, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                sendOnLoadCallback(id, props.className, splitPrefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
             }
         }
     }
