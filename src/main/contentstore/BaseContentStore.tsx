@@ -188,6 +188,7 @@ export default abstract class BaseContentStore {
      * @returns the data/properties of a component based on the name
      */
      getComponentByName(componentName: string, withRemoved?:boolean): BaseComponent | undefined {
+        let alreadyFound = false;
         let mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
 
         if (withRemoved) {
@@ -199,7 +200,11 @@ export default abstract class BaseContentStore {
         let entry = componentEntries.next();
         while (!entry.done) {
             if (entry.value[1].name === componentName) {
+                if (alreadyFound) {
+                    console.warn("Component 'name' is not unique (" + componentName + ")");
+                }
                 foundEntry = entry.value[1];
+                alreadyFound = true;
             }
             entry = componentEntries.next();
         }
