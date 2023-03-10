@@ -362,7 +362,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }, contextState.server.aliveInterval)
                 }
 
-                if ((result[0] as BaseResponse).name !== RESPONSE_NAMES.SESSION_EXPIRED) {
+                if (([RESPONSE_NAMES.SESSION_EXPIRED, RESPONSE_NAMES.ERROR] as string[]).indexOf((result[0] as BaseResponse).name) === -1) {
                     initWS(contextState.server.BASE_URL);
                 }
                 
