@@ -14,10 +14,13 @@
  */
 
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
+import { ORIENTATIONSPLIT } from "./components/panels/split/SplitPanel";
+import { ISplit } from "./components/panels/split/UISplitPanel";
 import BaseContentStore from "./contentstore/BaseContentStore";
 import ContentStore from "./contentstore/ContentStore";
 import ContentStoreFull from "./contentstore/ContentStoreFull";
 import BaseComponent from "./util/types/BaseComponent";
+import Dimension from "./util/types/Dimension";
 
 export type Coordinates = {
   x: number,
@@ -46,10 +49,26 @@ export class DesignerHelper {
     }
 
     mouseIsInComponent(position:Coordinates, element: HTMLElement) {
-        const parsedWidth = parseInt(element.style.width);
-        const parsedHeight = parseInt(element.style.height);
-        if (position.x >= 0 && position.x <= parsedWidth && position.y >= 0 && position.y <= parsedHeight) {
+        const size: Dimension = { width: parseInt(element.style.width), height: parseInt(element.style.height) }
+        if (position.x >= 0 && position.x <= size.width && position.y >= 0 && position.y <= size.height) {
             return true;
+        }
+        return false;
+    }
+
+    isSecondSplit(position:Coordinates, splitPanelComp:ISplit, splitPanelElem:HTMLElement, firstPanel: HTMLElement, secondPanel: HTMLElement) {
+        let secondPanelPosition:Coordinates = { x: parseInt(firstPanel.style.width) + 10, y: parseInt(splitPanelElem.style.top) }
+        if ((splitPanelComp as ISplit).orientation === ORIENTATIONSPLIT.VERTICAL) {
+            secondPanelPosition = { x: parseInt(splitPanelElem.style.left), y: parseInt(firstPanel.style.height) + 10 }
+        }
+        const secondPanelSize:Dimension = { width: parseInt(secondPanel.style.width), height: parseInt(secondPanel.style.height) }
+        if (position.x >= 0 && position.y >= 0) {
+           if (position.x >= secondPanelPosition.x && position.x <= (secondPanelPosition.x + secondPanelSize.width) 
+            && position.y >= secondPanelPosition.y && position.y <= (secondPanelPosition.y + secondPanelSize.height)) {
+                position.x -= secondPanelPosition.x;
+                position.y -= secondPanelPosition.y
+                return true;
+           }
         }
         return false;
     }
@@ -85,13 +104,32 @@ export class DesignerHelper {
                             foundComponent = childComp;
 
                             // If child is a panel get the layout element instead of the panel element
-                            if ([COMPONENT_CLASSNAMES.PANEL, COMPONENT_CLASSNAMES.SCROLLPANEL, COMPONENT_CLASSNAMES.GROUPPANEL].indexOf(childComp.className as COMPONENT_CLASSNAMES) !== -1) {
+                            if ([COMPONENT_CLASSNAMES.PANEL, COMPONENT_CLASSNAMES.SCROLLPANEL].indexOf(childComp.className as COMPONENT_CLASSNAMES) !== -1) {
                                 if (castedChild.childNodes.length) {
                                     castedChild = castedChild.childNodes[0] as HTMLElement;
                                 }
                             }
+                            else if (childComp.className === COMPONENT_CLASSNAMES.GROUPPANEL) {
+                                const groupPanelHeader = castedChild.childNodes[0] as HTMLElement;
+                                newPosition.y -= groupPanelHeader.offsetHeight;
+                                castedChild = castedChild.childNodes[1].childNodes[0] as HTMLElement;
+                            }
+                            else if (childComp.className === COMPONENT_CLASSNAMES.TABSETPANEL) {
+                                const tabsetHeader = castedChild.childNodes[0].childNodes[0] as HTMLElement;
+                                newPosition.y -= tabsetHeader.offsetHeight;
+                                castedChild = (castedChild.querySelector(".rc-panel") as HTMLElement).childNodes[0] as HTMLElement;
+                            }
+                            else if (childComp.className === COMPONENT_CLASSNAMES.SPLITPANEL) {
+                                let firstPanel = castedChild.childNodes[0].childNodes[0] as HTMLElement;
+                                let secondPanel = castedChild.childNodes[2].childNodes[0] as HTMLElement;
+                                if (this.isSecondSplit(newPosition, (childComp as ISplit), castedChild, firstPanel, secondPanel)) {
+                                    castedChild = secondPanel.childNodes[0] as HTMLElement;
+                                }
+                                else {
+                                    castedChild = firstPanel.childNodes[0] as HTMLElement;
+                                }
+                            }
                         }
-
                         if (this.isLayoutComponent(castedChild)) {
                             searchComponentsRecursive(castedChild, newPosition);
                         }
