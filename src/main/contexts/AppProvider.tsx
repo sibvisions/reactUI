@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { createContext, FC, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, FC, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import Server from "../server/Server";
 import ContentStore from "../contentstore/ContentStore";
@@ -159,7 +159,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
-    const aliveInterval = useRef<any>()
+    const aliveInterval = useRef<any>();
+
+    useLayoutEffect(() => {
+        addCSSDynamically('color-schemes/default.css', "schemeCSS", () => {});
+        addCSSDynamically('themes/basti.css', "themeCSS", () => {});
+    }, [])
 
     /**
      * Subscribes to session-expired notification and app-ready
