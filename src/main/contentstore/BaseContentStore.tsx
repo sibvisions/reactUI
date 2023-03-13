@@ -984,6 +984,12 @@ export default abstract class BaseContentStore {
         }
     }
 
+    /**
+     * Adds a LinkedCellEditor as referenced celleditors to it's referencedDatabook
+     * @param screenName - the name of the screen
+     * @param column - the column-metadata of a column
+     * @param dataProvider - the name of the dataprovider
+     */
     createReferencedCellEditors(screenName:string, column: LengthBasedColumnDescription | NumericColumnDescription, dataProvider:string) {
         const existingMapModified = this.getScreenDataproviderMap(screenName);
         const castedCellEditor = column.cellEditor as ICellEditorLinked;
