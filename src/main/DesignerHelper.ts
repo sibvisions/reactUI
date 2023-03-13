@@ -77,7 +77,7 @@ export class DesignerHelper {
         const docStyle = window.getComputedStyle(document.documentElement);
 
         const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
-        let foundComponent:BaseComponent|undefined = undefined;
+        let foundComponent:{ component: BaseComponent, element: HTMLElement, relativePosition:Coordinates }|undefined = undefined;
 
         let position = mouseCoords;
         position.x -= (parseInt(docStyle.getPropertyValue("--visionx-panel-wrapper-width")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")));
@@ -101,7 +101,8 @@ export class DesignerHelper {
                         // Added extra _ for wrappers because -wrapper could be a string people would use in their components-name
                         const childComp = this.contentStore.getComponentByName(castedChild.id.replace('-_wrapper', ''));
                         if (childComp) {
-                            foundComponent = childComp;
+                            foundComponent = { component: childComp, element: castedChild, relativePosition: newPosition };
+                            console.log(newPosition, castedChild)
 
                             // If child is a panel get the layout element instead of the panel element
                             if ([COMPONENT_CLASSNAMES.PANEL, COMPONENT_CLASSNAMES.SCROLLPANEL].indexOf(childComp.className as COMPONENT_CLASSNAMES) !== -1) {
@@ -139,10 +140,9 @@ export class DesignerHelper {
         }
 
         if (firstPanel && position.x >= 0 && position.y >= 0) {
-            foundComponent = this.contentStore.getComponentByName(firstPanel.id);
+            foundComponent = { component: this.contentStore.getComponentByName(firstPanel.id) as BaseComponent, element: firstPanel, relativePosition: position };
             searchComponentsRecursive(firstPanel, position);
         }
-
         return foundComponent;
     }
 }
