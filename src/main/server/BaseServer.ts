@@ -247,9 +247,6 @@ export default abstract class BaseServer {
                 }
 
                 this.lastRequestTimeStamp = Date.now();
-                if (endpoint === REQUEST_KEYWORDS.SELECT_ROW) {
-                    console.log('actually sending select')
-                }
                 this.timeoutRequest(
                     fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                     this.timeoutMs, 
@@ -561,7 +558,7 @@ export default abstract class BaseServer {
         });
     }
 
-    buildDataToDisplayMap(castedColumn: ICellEditorLinked, column: any, dataArray:any[], dataBook:IDataBook) {
+    buildDataToDisplayMap(screenName:string, castedColumn: ICellEditorLinked, column: any, dataArray:any[], dataBook:IDataBook, dataProvider:string) {
         let dataToDisplayMap = new Map<string, string>();
         if (castedColumn.linkReference.dataToDisplayMap) {
             dataToDisplayMap = castedColumn.linkReference.dataToDisplayMap
@@ -598,6 +595,7 @@ export default abstract class BaseServer {
             }  
         });
         castedColumn.linkReference.dataToDisplayMap = dataToDisplayMap;
+        this.subManager.notifyLinkedDisplayMapChanged(screenName, dataProvider);
     }
 
     /**
@@ -621,7 +619,7 @@ export default abstract class BaseServer {
                         if (!castedColumn || !castedColumn.linkReference) {
                             castedColumn = column.cellEditor as ICellEditorLinked
                         }
-                        this.buildDataToDisplayMap(castedColumn, column, builtData, dataBook)
+                        this.buildDataToDisplayMap(screenName, castedColumn, column, builtData, dataBook, fetchData.dataProvider)
                     })
                 }
             }
