@@ -77,7 +77,7 @@ export class DesignerHelper {
         const docStyle = window.getComputedStyle(document.documentElement);
 
         const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
-        let foundComponent:{ component: BaseComponent, element: HTMLElement, relativePosition:Coordinates }|undefined = undefined;
+        let foundComponent:{ component: BaseComponent, element: HTMLElement, relativePosition:Coordinates } | null = null;
 
         let position = mouseCoords;
         position.x -= (parseInt(docStyle.getPropertyValue("--visionx-panel-wrapper-width")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")));

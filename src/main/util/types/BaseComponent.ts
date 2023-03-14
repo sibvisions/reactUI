@@ -35,7 +35,7 @@ interface BaseComponent {
     minimumSize?: string,
     background?: string,
     foreground?: string,
-    margins?: string|Margins,
+    margins?: string,
     horizontalAlignment?: 0 | 1 | 2 | 3,
     verticalAlignment?: 0 | 1 | 2 | 3,
     font?: string,
