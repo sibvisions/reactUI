@@ -214,8 +214,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         return props.cellEditor.linkReference;
     }, [cellEditorMetaData, props.cellEditor.linkReference])
 
-    const [displayMapChanged, setDisplayMapChanged] = useState<boolean>(false);
-
     /**
      * Returns the value which should be displayed in the linkedcelleditor input.
      * Usually take the bound column but when there is a displayReferencedColumnname or a concat-mask,
@@ -238,7 +236,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             return value[props.columnName]
         }
         return ""
-    },[isDisplayRefColNameOrConcat, props.cellEditor, cellEditorMetaData?.linkReference?.dataToDisplayMap, props.selectedRow, props.columnName, displayMapChanged])
+    },[isDisplayRefColNameOrConcat, props.cellEditor, cellEditorMetaData, props.selectedRow, props.columnName])
 
     /** Current state of text value of input element */
     const [text, setText] = useState(getDisplayValue(props.selectedRow ? convertColNamesToReferenceColNames(props.selectedRow.data, getCorrectLinkReference(), props.columnName)  : undefined));
@@ -310,12 +308,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         ),
         onLoadCallback
     );
-
-    useEffect(() => {
-        props.context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
-
-        return () => props.context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
-    },[props.context.subscriptions])
 
     /** disable dropdownbutton tabIndex */
     useEffect(() => {
@@ -401,7 +393,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 startedEditing.current = false;
             }
         }
-    }, [props.selectedRow, cellEditorMetaData?.linkReference?.dataToDisplayMap, displayMapChanged]);
+    }, [props.selectedRow, cellEditorMetaData?.linkReference?.dataToDisplayMap]);
 
     // If the lib user extends the LinkedCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {

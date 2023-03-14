@@ -110,8 +110,6 @@ export class SubscriptionManager {
      */
     treeSubscriber = new Map<string, Array<Function>>();
 
-    linkedDisplayMapSubscriber = new Map<string, Map<string, Array<Function>>>();
-
     treeDataChangedSubscriber = new Array<Function>();
 
     /** An array of functions to update the menuitem states of its subscribers */
@@ -324,16 +322,6 @@ export class SubscriptionManager {
      */
     subscribeToMetaData(screenName:string, dataProvider:string, fn: Function) {
         this.handleScreenDataProviderSubscriptions(screenName, dataProvider, fn, this.metaDataSubscriber);
-    }
-
-    /**
-     * Subscribes components which to datadisplaymap, to update their map
-     * @param screenName - the name of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the data state
-     */
-    subscribeToLinkedDisplayMap(screenName:string, dataProvider:string, fn: Function) {
-        this.handleScreenDataProviderSubscriptions(screenName, dataProvider, fn, this.linkedDisplayMapSubscriber);
     }
 
     /**
@@ -620,16 +608,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscibes components from dataChange
-     * @param screenName - the screen name of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the data state
-     */
-    unsubscribeFromLinkedDisplayMap(screenName:string, dataProvider: string, fn: Function) {
-        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.linkedDisplayMapSubscriber);
-    }
-
-    /**
      * Unsubscribes a component from its screen-data (every dataprovider data)
      * @param screenName - the screen name of the screen
      */
@@ -886,15 +864,6 @@ export class SubscriptionManager {
      */
      notifyMetaDataChange(screenName:string, dataProvider: string) {
         this.metaDataSubscriber.get(screenName)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
-    }
-
-    /**
-     * Notifies the components which use datadisplaymaps that their map changed
-     * @param screenName - the screen name of the screen
-     * @param dataProvider - the dataprovider
-     */
-    notifyLinkedDisplayMapChanged(screenName:string, dataProvider: string) {
-        this.linkedDisplayMapSubscriber.get(screenName)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
     /**

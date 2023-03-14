@@ -1021,7 +1021,7 @@ export default abstract class BaseContentStore {
             }
 
             if (existingMapModified?.has(linkReference.referencedDataBook) && existingMapModified.get(linkReference.referencedDataBook)?.data?.get("current")) {
-                this.server.buildDataToDisplayMap(screenName, castedCellEditor, {cellEditor: column.cellEditor, columnName: column.name, dataBook: dataProvider}, existingMapModified.get(linkReference.referencedDataBook)?.data?.get("current"), existingMapModified.get(linkReference.referencedDataBook) as IDataBook, dataProvider);
+                this.server.buildDataToDisplayMap(castedCellEditor, {cellEditor: column.cellEditor, columnName: column.name, dataBook: dataProvider}, existingMapModified.get(linkReference.referencedDataBook)?.data?.get("current"), existingMapModified.get(linkReference.referencedDataBook) as IDataBook)
             }
         }
     }
