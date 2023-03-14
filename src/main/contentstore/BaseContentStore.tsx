@@ -910,7 +910,7 @@ export default abstract class BaseContentStore {
         }
 
         if (clear) {
-            this.clearDataFromProvider(screenName, dataProvider);
+            this.clearDataFromProvider(screenName, dataProvider, true);
         }
 
         const existingMap = this.getScreenDataproviderMap(screenName);
@@ -920,6 +920,10 @@ export default abstract class BaseContentStore {
                 //const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 const existingData = existingProvider.data.get(getPageKey());
                 if (existingData) {
+                    if (dataProvider === "CAS/PCLALA302-MD/tclientDetails#2/INVALID_PHONE_IND/tclientAddresses#5") {
+                        console.log(existingData, newDataSet, getPageKey())
+                    }
+                    
                     if (existingData.length <= from) {
                         existingData.push(...newDataSet);
                     } 
@@ -1256,16 +1260,19 @@ export default abstract class BaseContentStore {
      * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      */
-    clearDataFromProvider(screenName:string, dataProvider: string) {
-        const data = this.getDataBook(screenName, dataProvider)?.data;
-        //const metaData = getMetaData(screenName, dataProvider, this, undefined);
-        if (data) {
-            data.delete("current");
+    clearDataFromProvider(screenName:string, dataProvider: string, all?:boolean) {
+        const dataBook = this.getDataBook(screenName, dataProvider);
+        if (dataBook) {
+            if (all) {
+                dataBook.data = new Map<string, any>();
+            }
+            else {
+                const data = dataBook.data;
+                if (data) {
+                    data.delete("current");
+                }
+            }
         }
-        
-        // if (metaData && metaData.masterReference === undefined) {
-        //     this.clearDataFromSubPage(screenName, metaData.detailReferences);
-        // }
     }
 
     /**
