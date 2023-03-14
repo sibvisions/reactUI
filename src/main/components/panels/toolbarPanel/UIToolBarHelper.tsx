@@ -146,6 +146,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                 data-pr-position="left">
                 <Layout
                     id={id}
+                    name={props.name}
                     className={props.className}
                     layoutData={props.layoutData}
                     layout={props.layout}

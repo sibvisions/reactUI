@@ -30,8 +30,9 @@ import NullLayout from "./NullLayout";
  */
 
  /** Interface for layouts */
-export interface ILayout{
+export interface ILayout {
     id: string,
+    name: string
     className: string
     layout: string,
     layoutData: string,

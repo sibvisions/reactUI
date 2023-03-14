@@ -129,6 +129,7 @@ const UIFrame: FC<IFrame> = (props) => {
             <div className={props.internal ? "rc-frame-content" : ""}>
                 <Layout
                     id={props.id}
+                    name={props.name}
                     className={props.className}
                     layoutData={props.layoutData}
                     layout={props.layout}

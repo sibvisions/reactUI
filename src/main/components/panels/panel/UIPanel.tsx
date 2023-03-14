@@ -251,6 +251,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 {...usePopupMenu(props)} >
                 <Layout
                     id={id}
+                    name={props.name}
                     className={props.className}
                     layoutData={props.layoutData}
                     layout={props.layout}

@@ -37,6 +37,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     /** Current state of the calculatedStyle by the FormLayout */
     const calculatedStyle = useRef<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -50,11 +51,19 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         compSizes,
         style,
         id,
+        name,
         reportSize,
         maximumSize,
         minimumSize,
         className
     } = baseProps;
+
+    const designerHelperInfo = useMemo(() => {
+        if (!context.designerHelper.formLayouts.has(name)) {
+            context.designerHelper.formLayouts.set(name, { horizontalAnchors: [], verticalAnchors: [] })
+        }
+        return context.designerHelper.formLayouts.get(name);
+    }, [context.designerHelper])
 
     /** 
      * Function which lays out the container
@@ -119,6 +128,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     const name = anchorData.substring(0, anchorData.indexOf(","));
                     anchors.set(name, new Anchor(anchorData));
                 });
+                console.log(anchors, id)
                 /** Establish related Anchors */
                 anchors.forEach(value => {
                     value.relatedAnchor = anchors.get(value.relatedAnchorName);

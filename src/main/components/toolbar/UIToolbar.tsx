@@ -36,6 +36,7 @@ const UIToolbar: FC<any> = (props) => {
         <div id={props.name} className={concatClassnames("rc-frame-toolbar", props.style)}>
             <Layout
                 id={props.id}
+                name={props.name}
                 className="Frame-Toolbar"
                 layoutData={""}
                 layout="FlowLayout,0,0,0,0,0,0,0,0,0,3,true"

@@ -14,6 +14,7 @@
  */
 
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
+import Anchor from "./components/layouts/models/Anchor";
 import { ORIENTATIONSPLIT } from "./components/panels/split/SplitPanel";
 import { ISplit } from "./components/panels/split/UISplitPanel";
 import BaseContentStore from "./contentstore/BaseContentStore";
@@ -27,9 +28,16 @@ export type Coordinates = {
   y: number
 }
 
+type FormLayoutInformation = {
+    horizontalAnchors: Anchor[],
+    verticalAnchors: Anchor[]
+}
+
 export class DesignerHelper {
     /** Contentstore instance */
     contentStore: BaseContentStore|ContentStore|ContentStoreFull;
+
+    formLayouts: Map<string, FormLayoutInformation> = new Map<string, FormLayoutInformation>();
 
     /**
      * @constructor constructs submanager instance

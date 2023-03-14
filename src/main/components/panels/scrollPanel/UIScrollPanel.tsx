@@ -153,6 +153,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             >
                 <Layout
                     id={id}
+                    name={props.name}
                     className={props.className}
                     layoutData={props.layoutData}
                     layout={props.layout}
