@@ -703,7 +703,7 @@ export default abstract class BaseServer {
                 if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
                     this.missingDataFetches.push(changedProvider.dataProvider);
                 }
-                this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
+                this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider, true);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
                 this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
