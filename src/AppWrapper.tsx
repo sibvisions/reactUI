@@ -19,7 +19,7 @@ import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { appContext } from "./main/contexts/AppProvider";
-import { createOpenScreenRequest } from "./main/factories/RequestFactory";
+import { createCloseScreenRequest, createOpenScreenRequest } from "./main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { SpeedDial } from "primereact/speeddial";
@@ -27,6 +27,10 @@ import { ReactUIDesigner } from "@sibvisions/reactui-designer";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
+import BaseResponse from "./main/response/BaseResponse";
+import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
+import DialogResponse from "./main/response/ui/DialogResponse";
+import ErrorResponse from "./main/response/error/ErrorResponse";
 interface IAppWrapper {
     embedOptions?: { [key: string]: any }
     theme?: string
@@ -66,6 +70,8 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
+
+    const prevLocation = useRef<string>(history.location.pathname);
 
     /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
     useEffect(() => {
@@ -119,15 +125,35 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
             history.listen(() => {
                 if (history.action === "POP") {
                     let currentlyOpening = false;
+
+                    // Checks if the response contains a dialog to save the screen when closing and keeps the url if there is a dialog.
+                    const checkAskBefore = (prevPath: string, responses: BaseResponse[], comp?:IPanel) => {
+                        let callCloseScreen = true;
+                        responses.forEach(response => {
+                            if (response.name === RESPONSE_NAMES.ERROR && (response as ErrorResponse).message === "Cancel closing") {
+                                history.replace(prevPath);
+                                callCloseScreen = false
+                            }
+                        });
+
+                        if (callCloseScreen && comp) {
+                            context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true, context.appSettings.welcomeScreen.name ? true : false);
+                        }
+                    }
+
                     if (!openedWithHistory.current) {
                         const pathName = history.location.pathname;
                         const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
                         if (navName) {
                             const navValue = context.contentStore.navigationNames.get(navName);
                             if (navValue && navValue.componentId && context.contentStore.activeScreens[0] && context.contentStore.activeScreens[0].name !== navValue.screenId) {
+                                let prevPathCopy = prevLocation.current
                                 const openReq = createOpenScreenRequest();
                                 openReq.componentId = navValue.componentId;
-                                showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar);
+                                showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar)
+                                .then((responses: BaseResponse[]) => {
+                                    checkAskBefore(prevPathCopy, responses)
+                                });
 
                                 currentlyOpening = true;
                                 openedWithHistory.current = true;
@@ -138,7 +164,13 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                 context.contentStore.activeScreens.forEach(active => {
                                     const comp = context.contentStore.getComponentByName(active.name) as IPanel;
                                     if (comp && comp.className === COMPONENT_CLASSNAMES.PANEL) {
-                                        context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true, context.appSettings.welcomeScreen.name ? true : false);
+                                        let prevPathCopy = prevLocation.current
+                                        const csRequest = createCloseScreenRequest();
+                                        csRequest.componentId = comp.name;
+                                        showTopBar(context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar)
+                                        .then((responses: BaseResponse[]) => {
+                                            checkAskBefore(prevPathCopy, responses, comp)
+                                        });
                                     }
                                 })
                             }
@@ -154,6 +186,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         openedWithHistory.current = false;
                     }
                 }
+                prevLocation.current = history.location.pathname;
             });
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps

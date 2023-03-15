@@ -109,7 +109,21 @@ export function fetchLinkedRefDatabook(screenName: string, databook: string, sel
  * @param keys - the keys you want to extract
  */
 export function getExtractedObject(value:any|undefined, keys:string[]):any {
-    return _.pick(value, keys) as any;
+    function toString(o: any) {
+        if (o) {
+            Object.keys(o).forEach(k => {
+                if (typeof o[k] === 'object') {
+                    return toString(o[k]);
+                }
+    
+                o[k] = '' + o[k];
+            });
+    
+            return o;
+        }
+    }
+
+    return toString(_.pick(value, keys) as any);
 }
 
 /**
@@ -369,30 +383,25 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             props.context.contentStore, props.name);
     }, [props.selectedRow])
 
+    useEffect(() => {
+        if (cellEditorMetaData) {
+            if (!cellEditorMetaData.linkReference) {
+                props.context.contentStore.createReferencedCellEditors(props.screenName, props.cellEditor, props.columnName, props.dataRow)
+            }
+        }
+    }, [])
+
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow*/
     useEffect(() => {
         if (props.selectedRow) {
             if (isDisplayRefColNameOrConcat) {
-                if (cellEditorMetaData) {
-                    if (cellEditorMetaData.linkReference) {
-                        if (cellEditorMetaData.linkReference.dataToDisplayMap?.size || props.cellEditor.displayReferencedColumnName) {
-                            const linkReference = getCorrectLinkReference();
-                            const index = linkReference.columnNames.findIndex(colName => colName === props.columnName);
-                            const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName), [linkReference.referencedColumnNames[index]]);
-                            setText(getDisplayValue(extractedObject))
-                            startedEditing.current = false;
-                        }
-                    }
-                    else {
-                        const refDB = props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook);
-                        if (refDB) {
-                            if (refDB.referencedCellEditors) {
-                                refDB.referencedCellEditors.push({cellEditor: props.cellEditor, columnName: props.columnName, dataBook: props.dataRow});
-                            }
-                            else {
-                                refDB.referencedCellEditors = [{cellEditor: props.cellEditor, columnName: props.columnName, dataBook: props.dataRow}];
-                            }
-                        }
+                const linkReference = getCorrectLinkReference();
+                if (linkReference) {
+                    if (linkReference.dataToDisplayMap?.size || props.cellEditor.displayReferencedColumnName) {
+                        const index = linkReference.columnNames.findIndex(colName => colName === props.columnName);
+                        const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName), [linkReference.referencedColumnNames[index]]);
+                        setText(getDisplayValue(extractedObject))
+                        startedEditing.current = false;
                     }
                 }
             }
@@ -401,7 +410,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 startedEditing.current = false;
             }
         }
-    }, [props.selectedRow, cellEditorMetaData?.linkReference?.dataToDisplayMap, displayMapChanged]);
+    }, [props.selectedRow, cellEditorMetaData, displayMapChanged]);
 
     // If the lib user extends the LinkedCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
