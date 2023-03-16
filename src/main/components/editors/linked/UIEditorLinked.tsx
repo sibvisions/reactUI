@@ -279,7 +279,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     /** True, if the dropdown should be displayed as table */
     const tableOptions = useMemo(() => {
-        if (!showTable) {
+        if (!showTable && isDisplayRefColNameOrConcat) {
             return false;
         }
         else if (props.cellEditor.columnView) {
@@ -775,7 +775,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (props.cellEditor.displayReferencedColumnName) {
             return providedData[index][props.cellEditor.displayReferencedColumnName];
         }
-        else if (!tableOptions) {
+        else if (!tableOptions && isDisplayRefColNameOrConcat) {
             return <div key={0}>{getDisplayValue(unpackSuggestionArray(d, "reference"))}</div>
         }
         else {
@@ -827,7 +827,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             })
         }
 
-    }, [providedData, metaData]);
+    }, [providedData, metaData, tableOptions]);
 
     // Creates a header for the table when linked-overlay is in table-mode
     const groupedItemTemplate = useCallback(d => {
