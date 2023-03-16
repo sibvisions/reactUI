@@ -32,7 +32,6 @@ import { DesignerHelper } from "./main/DesignerHelper";
 import ContentStore from "./main/contentstore/ContentStore";
 import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
-import DialogResponse from "./main/response/ui/DialogResponse";
 import ErrorResponse from "./main/response/error/ErrorResponse";
 interface IAppWrapper {
     embedOptions?: { [key: string]: any }

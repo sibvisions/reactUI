@@ -28,9 +28,20 @@ export type Coordinates = {
   y: number
 }
 
-type FormLayoutInformation = {
+export type FormLayoutInformation = {
     horizontalAnchors: Anchor[],
-    verticalAnchors: Anchor[]
+    verticalAnchors: Anchor[],
+    anchorToColumnMap: Map<string, number>
+    horizontalColumnToAnchorMap: Map<string, { leftTopAnchor: Anchor, rightBottomAnchor: Anchor }>
+    verticalColumnToAnchorMap: Map<string, { leftTopAnchor: Anchor, rightBottomAnchor: Anchor }>
+}
+
+enum LAYOUTS {
+    BORDERLAYOUT = 0,
+    FORMLAYOUT = 1,
+    FLOWLAYOUT = 2,
+    GRIDLAYOUT = 3,
+    NULLLAYOUT = 4
 }
 
 export class DesignerHelper {
@@ -52,8 +63,21 @@ export class DesignerHelper {
         this.contentStore = store;
     }
 
-    isLayoutComponent(element: HTMLElement) {
-        return ["form", "border", "grid", "flow", "nulllayout"].indexOf(element.getAttribute("data-layout") || "") !== -1;
+    getLayoutType(element:HTMLElement) {
+        switch (element.getAttribute("data-layout")) {
+            case "border":
+                return LAYOUTS.BORDERLAYOUT;
+            case "form":
+                return LAYOUTS.FORMLAYOUT;
+            case "flow":
+                return LAYOUTS.FLOWLAYOUT;
+            case "grid":
+                return LAYOUTS.GRIDLAYOUT;
+            case "nulllayout":
+                return LAYOUTS.NULLLAYOUT;
+            default:
+                return -1;
+        }
     }
 
     mouseIsInComponent(position:Coordinates, element: HTMLElement) {
@@ -85,7 +109,8 @@ export class DesignerHelper {
         const docStyle = window.getComputedStyle(document.documentElement);
 
         const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
-        let foundComponent:{ component: BaseComponent, element: HTMLElement, relativePosition:Coordinates } | null = null;
+        let foundComponent: { component: BaseComponent, element: HTMLElement, relativePosition: Coordinates } | null = null;
+        let lastLayout: { component: BaseComponent, element: HTMLElement, layoutInfo: FormLayoutInformation } | null = null;
 
         let position = mouseCoords;
         position.x -= (parseInt(docStyle.getPropertyValue("--visionx-panel-wrapper-width")) + parseInt(docStyle.getPropertyValue("--visionx-content-padding")));
@@ -104,13 +129,11 @@ export class DesignerHelper {
                     if (castedChild.style.top) {
                         newPosition.y -= parseInt(castedChild.style.top);
                     }
-                    
                     if (this.mouseIsInComponent(newPosition, castedChild)) {
                         // Added extra _ for wrappers because -wrapper could be a string people would use in their components-name
                         const childComp = this.contentStore.getComponentByName(castedChild.id.replace('-_wrapper', ''));
                         if (childComp) {
                             foundComponent = { component: childComp, element: castedChild, relativePosition: newPosition };
-                            console.log(newPosition, castedChild)
 
                             // If child is a panel get the layout element instead of the panel element
                             if ([COMPONENT_CLASSNAMES.PANEL, COMPONENT_CLASSNAMES.SCROLLPANEL].indexOf(childComp.className as COMPONENT_CLASSNAMES) !== -1) {
@@ -139,8 +162,13 @@ export class DesignerHelper {
                                 }
                             }
                         }
-                        if (this.isLayoutComponent(castedChild)) {
-                            searchComponentsRecursive(castedChild, newPosition);
+                        if (this.getLayoutType(castedChild) !== -1 && castedChild.getAttribute("data-name")) {
+                            const layoutComponent = this.contentStore.getComponentByName(castedChild.getAttribute("data-name") as string);
+                            if (layoutComponent) {
+                                lastLayout = { component: layoutComponent, element: castedChild, layoutInfo: this.formLayouts.get(layoutComponent.name) as FormLayoutInformation };
+                                searchComponentsRecursive(castedChild, newPosition);
+                            }
+
                         }
                     }
                 })
@@ -151,6 +179,7 @@ export class DesignerHelper {
             foundComponent = { component: this.contentStore.getComponentByName(firstPanel.id) as BaseComponent, element: firstPanel, relativePosition: position };
             searchComponentsRecursive(firstPanel, position);
         }
+        console.log(lastLayout)
         return foundComponent;
     }
 }

@@ -44,7 +44,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         isToolBar,
         parent,
         className,
-        panelType
+        panelType,
+        name
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -387,7 +388,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div data-layout="flow" style={calculatedStyle}>
+            <div data-layout="flow" data-name={name} style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>

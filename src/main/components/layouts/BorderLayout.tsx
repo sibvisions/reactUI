@@ -46,7 +46,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         id,
         layout,
         className,
-        panelType
+        panelType,
+        name
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -355,7 +356,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div data-layout="border" style={calculatedStyle}>
+            <div data-layout="border" data-name={name} style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>

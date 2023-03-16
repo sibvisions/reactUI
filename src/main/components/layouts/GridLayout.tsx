@@ -37,7 +37,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         style,
         id,
         reportSize,
-        className
+        className,
+        name
     } = baseProps
 
     /** Current state of the calculatedStyle by the GridLayout */
@@ -130,7 +131,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
     return (
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div data-layout="grid" style={calculatedStyle}>
+            <div data-layout="grid" data-name={name} style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>

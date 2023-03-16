@@ -27,6 +27,7 @@ import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
+import { FormLayoutInformation } from "../../DesignerHelper";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -58,11 +59,17 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         className
     } = baseProps;
 
-    const designerHelperInfo = useMemo(() => {
+    const layoutInfo = useMemo(() => {
         if (!context.designerHelper.formLayouts.has(name)) {
-            context.designerHelper.formLayouts.set(name, { horizontalAnchors: [], verticalAnchors: [] })
+            context.designerHelper.formLayouts.set(name, {
+                horizontalAnchors: [],
+                verticalAnchors: [],
+                anchorToColumnMap: new Map<string, number>(),
+                horizontalColumnToAnchorMap: new Map<string, { leftTopAnchor: Anchor, rightBottomAnchor: Anchor }>(),
+                verticalColumnToAnchorMap: new Map<string, { leftTopAnchor: Anchor, rightBottomAnchor: Anchor }>()
+            })
         }
-        return context.designerHelper.formLayouts.get(name);
+        return context.designerHelper.formLayouts.get(name) as FormLayoutInformation;
     }, [context.designerHelper])
 
     /** 
@@ -121,18 +128,45 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
             /** Fills the Anchors- and Constraints map */
             const setAnchorsAndConstraints = () => {
-                anchors.clear(); componentConstraints.clear();
+                const clearLayoutInfo = () => {
+                    layoutInfo.horizontalAnchors = [];
+                    layoutInfo.verticalAnchors = [];
+                    layoutInfo.anchorToColumnMap.clear();
+                    layoutInfo.horizontalColumnToAnchorMap.clear();
+                    layoutInfo.verticalColumnToAnchorMap.clear();
+                }
+
+                anchors.clear(); componentConstraints.clear(); clearLayoutInfo();
                 /** Parse layout info and fill Anchors-Map */
                 const splitAnchors: Array<string> = layoutData.split(";");
                 splitAnchors.forEach(anchorData => {
                     const name = anchorData.substring(0, anchorData.indexOf(","));
                     anchors.set(name, new Anchor(anchorData));
                 });
-                console.log(anchors, id)
+
+                const fillAnchorColumnMap = (anchor: Anchor) => {
+                    if (anchor.name.length > 1) {
+                        let column = 9999;
+                        if (anchor.name === "lm" || anchor.name === "tm") {
+                            column = 0;
+                        }
+                        else if (anchor.name === "rm" || anchor.name === "bm") {
+                            column = -1
+                        }
+                        else {
+                            column = parseInt(anchor.name.substring(1));
+                        }
+                        layoutInfo.anchorToColumnMap.set(anchor.name, column)
+                    }
+                }
+
                 /** Establish related Anchors */
-                anchors.forEach(value => {
-                    value.relatedAnchor = anchors.get(value.relatedAnchorName);
+                anchors.forEach(anchor => {
+                    fillAnchorColumnMap(anchor)
+                    anchor.relatedAnchor = anchors.get(anchor.relatedAnchorName);
                 });
+
+                console.log(name, layoutInfo.anchorToColumnMap);
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
                 children.forEach(component => {
                     const anchorNames = component.constraints.split(";");
@@ -143,6 +177,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
                         const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
                         componentConstraints.set(component.id, constraint);
+                        console.log(component)
+                        console.log(topAnchor.name, layoutInfo.anchorToColumnMap.get(topAnchor.name), bottomAnchor.name, layoutInfo.anchorToColumnMap.get(bottomAnchor.name));
+                        console.log(leftAnchor.name, layoutInfo.anchorToColumnMap.get(leftAnchor.name), rightAnchor.name, layoutInfo.anchorToColumnMap.get(rightAnchor.name));
                     }
                 });
             }
@@ -244,20 +281,44 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 /**
                  * clears auto size position of anchors
                  */
-                const clearAutoSize = () => {
-                    anchors.forEach(anchor => {
+                const clearAutoSize = (anchorList:Anchor[], pAnchor: Anchor) => {
+                    let anchor:Anchor | undefined = pAnchor;
+                    const pos = anchorList.length;
+
+                    const containsAnchor = (anchor:Anchor) => {
+                        for (let i = 0; i < anchorList.length; i++) {
+                            if (anchorList[i].name === anchor.name) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+
+                    while (anchor && !containsAnchor(anchor)) {
+                        anchorList.splice(pos, 0, anchor);
+
                         anchor.relative = anchor.autoSize;
                         anchor.autoSizeCalculated = false;
                         anchor.firstCalculation = true;
                         anchor.used = false;
-
                         if(anchor.autoSize) {
                             anchor.position = 0;
                         }
-                    })
+                        
+                        anchor = anchor.relatedAnchor;
+                    }
+                    pAnchor.used = true;
                 }
 
-                clearAutoSize();
+                children.forEach(component => {
+                    const constraint = componentConstraints.get(component.id);
+                    if (component.visible !== false && constraint && constraint.leftAnchor && constraint.rightAnchor && constraint.topAnchor && constraint.bottomAnchor) {
+                        clearAutoSize(layoutInfo.horizontalAnchors, constraint.leftAnchor);
+                        clearAutoSize(layoutInfo.horizontalAnchors, constraint.rightAnchor);
+                        clearAutoSize(layoutInfo.verticalAnchors, constraint.topAnchor);
+                        clearAutoSize(layoutInfo.verticalAnchors, constraint.bottomAnchor);
+                    }
+                })
 
                 componentConstraints.forEach((val) => {
                     val.bottomAnchor.used = true;
@@ -771,7 +832,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={calculatedStyle.current?.componentSizes || new Map<string, React.CSSProperties>()}>
-            <div data-layout="form" style={{...calculatedStyle.current?.style}}>
+            <div data-layout="form" data-name={name} style={{...calculatedStyle.current?.style}}>
                 {components}
             </div>
         </LayoutContext.Provider>

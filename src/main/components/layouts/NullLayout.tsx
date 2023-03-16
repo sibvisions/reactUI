@@ -31,7 +31,8 @@ const NullLayout: FC<ILayout> = (baseProps) => {
         style,
         id,
         reportSize,
-        className
+        className,
+        name
     } = baseProps
 
     /** Current state of the calculatedStyle by the FormLayout */
@@ -95,7 +96,7 @@ const NullLayout: FC<ILayout> = (baseProps) => {
     return (
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div data-layout="nulllayout" style={calculatedStyle}>
+            <div data-layout="nulllayout" data-name={name} style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>

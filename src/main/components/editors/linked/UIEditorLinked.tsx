@@ -858,6 +858,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         <span 
             ref={wrapperRef}
             aria-label={props.ariaLabel} 
+            id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
             {...usePopupMenu(props)} 
             style={{
                 ...props.layoutStyle
