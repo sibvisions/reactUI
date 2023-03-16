@@ -275,8 +275,21 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** Button background */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]);
 
+    const showTable = false;
+
     /** True, if the dropdown should be displayed as table */
-    const tableOptions = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnCount > 1 : metaDataReferenced ? metaDataReferenced.columnView_table_.length > 1 : false, [props.cellEditor.columnView, metaDataReferenced]); 
+    const tableOptions = useMemo(() => {
+        if (!showTable) {
+            return false;
+        }
+        else if (props.cellEditor.columnView) {
+            return props.cellEditor.columnView.columnCount > 1;
+        }
+        else if (metaDataReferenced) {
+            return metaDataReferenced.columnView_table_.length > 1;
+        }
+        return false
+    }, [props.cellEditor.columnView, metaDataReferenced]); 
 
     /** If the columnView of the celleditor is empty use "columnView_table of the referenced databook instead" */
     const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaDataReferenced ? metaDataReferenced.columnView_table_ : [], [props.cellEditor.columnView, metaDataReferenced]);
@@ -761,6 +774,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     const itemTemplate = useCallback((d:any[], index) => {
         if (props.cellEditor.displayReferencedColumnName) {
             return providedData[index][props.cellEditor.displayReferencedColumnName];
+        }
+        else if (!tableOptions) {
+            return <div key={0}>{getDisplayValue(unpackSuggestionArray(d, "reference"))}</div>
         }
         else {
             const suggestionObj = unpackSuggestionArray(d, "display");
