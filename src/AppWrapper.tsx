@@ -54,9 +54,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** History of react-router-dom */
     const history = useHistory();
 
-    /** True if a screen was opened by clicking browser back or forward button (prevents openscreen loop) */
-    const openedWithHistory = useRef<boolean>(false);
-
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
@@ -124,10 +121,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         if (context.transferType !== "full") {
             history.listen(() => {
                 if (history.action === "POP") {
-                    let currentlyOpening = false;
 
                     // Checks if the response contains a dialog to save the screen when closing and keeps the url if there is a dialog.
-                    const checkAskBefore = (prevPath: string, responses: BaseResponse[], comp?:IPanel) => {
+                    const checkAskBefore = (prevPath: string, responses: BaseResponse[], comp?: IPanel) => {
                         let callCloseScreen = true;
                         responses.forEach(response => {
                             if (response.name === RESPONSE_NAMES.ERROR && (response as ErrorResponse).message === "Cancel closing") {
@@ -141,49 +137,46 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         }
                     }
 
-                    if (!openedWithHistory.current) {
-                        const pathName = history.location.pathname;
-                        const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
-                        if (navName) {
-                            const navValue = context.contentStore.navigationNames.get(navName);
-                            if (navValue && navValue.componentId && context.contentStore.activeScreens[0] && context.contentStore.activeScreens[0].name !== navValue.screenId) {
-                                let prevPathCopy = prevLocation.current
-                                const openReq = createOpenScreenRequest();
-                                openReq.componentId = navValue.componentId;
-                                showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar)
+                    const pathName = history.location.pathname;
+                    const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
+                    if (navName) {
+                        const navValue = context.contentStore.navigationNames.get(navName);
+                        // If the same screen isn't already open or there are no screens open at all and there is a screen to open through pathname, open it.
+                        if (navValue && navValue.componentId &&
+                            ((context.contentStore.activeScreens[0] && context.contentStore.activeScreens[0].name !== navValue.screenId) || !context.contentStore.activeScreens.length)) {
+                            let prevPathCopy = prevLocation.current
+                            const openReq = createOpenScreenRequest();
+                            openReq.componentId = navValue.componentId;
+                            showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar)
                                 .then((responses: BaseResponse[]) => {
                                     checkAskBefore(prevPathCopy, responses)
                                 });
-
-                                currentlyOpening = true;
-                                openedWithHistory.current = true;
-                            }
                         }
-                        else {
-                            if (context.contentStore.activeScreens.length) {
-                                context.contentStore.activeScreens.forEach(active => {
-                                    const comp = context.contentStore.getComponentByName(active.name) as IPanel;
-                                    if (comp && comp.className === COMPONENT_CLASSNAMES.PANEL) {
-                                        let prevPathCopy = prevLocation.current
-                                        const csRequest = createCloseScreenRequest();
-                                        csRequest.componentId = comp.name;
-                                        showTopBar(context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar)
+                    }
+                    else {
+                        // If there is no screen to open because of the url and a screen is currently open, close it.
+                        if (context.contentStore.activeScreens.length) {
+                            context.contentStore.activeScreens.forEach(active => {
+                                const comp = context.contentStore.getComponentByName(active.name) as IPanel;
+                                if (comp && comp.className === COMPONENT_CLASSNAMES.PANEL) {
+                                    let prevPathCopy = prevLocation.current
+                                    const csRequest = createCloseScreenRequest();
+                                    csRequest.componentId = comp.name;
+                                    showTopBar(context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar)
                                         .then((responses: BaseResponse[]) => {
                                             checkAskBefore(prevPathCopy, responses, comp)
                                         });
-                                    }
-                                })
-                            }
-
-                            if (context.appSettings.welcomeScreen.name) {
-                                showTopBar(context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen.name), topbar)
-                            }
-
+                                }
+                            })
                         }
-                    }
 
-                    if (!currentlyOpening) {
-                        openedWithHistory.current = false;
+                        // Open a welcome screen if available or route to home instead of displaying blank page
+                        if (context.appSettings.welcomeScreen.name) {
+                            showTopBar(context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen.name), topbar)
+                        }
+                        else if (pathName === "/") {
+                            history.replace("/home")
+                        }
                     }
                 }
                 prevLocation.current = history.location.pathname;
