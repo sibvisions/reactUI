@@ -65,7 +65,7 @@ enum REQUEST_ENDPOINTS {
     LOGIN = "/api/v2/login",
     LOGOUT = "/api/logout",
     CLOSE_SCREEN = "/api/closeScreen",
-    OPEN_SCREEN = "/api/v2/openScreen",
+    OPEN_SCREEN = "/api/v3/openScreen",
     UPLOAD = "/upload",
     CHANGE_PASSWORD = "/api/changePassword",
     RESET_PASSWORD = "/api/resetPassword",
@@ -74,7 +74,7 @@ enum REQUEST_ENDPOINTS {
     ROLLBACK = "/api/rollback",
     CHANGES = "/api/changes",
     CLOSE_CONTENT = "/api/closeContent",
-    REOPEN_SCREEN = "/api/reopenScreen",
+    REOPEN_SCREEN = "/api/v3/reopenScreen",
     SAVE = "/api/save",
     WIDTH = "/api/dal/width"
 }

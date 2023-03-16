@@ -58,10 +58,10 @@ enum REQUEST_ENDPOINTS {
     UI_REFRESH = "/api/uiRefresh",
     DEVICE_STATUS = "/api/deviceStatus",
     CLOSE_FRAME = "/api/closeFrame",
-    OPEN_SCREEN = "/api/v2/openScreen",
+    OPEN_SCREEN = "/api/v3/openScreen",
     CLOSE_SCREEN = "/api/closeScreen",
     CLOSE_CONTENT = "/api/closeContent",
-    REOPEN_SCREEN = "/api/reopenScreen",
+    REOPEN_SCREEN = "/api/v3/reopenScreen",
     ABOUT = "/api/about",
     MENU = "/api/menu",
 
