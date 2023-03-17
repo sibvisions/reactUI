@@ -20,7 +20,7 @@ import BaseComponent from "../../util/types/BaseComponent";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { ILayout } from "./Layout";
 import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
-import Anchor from "./models/Anchor";
+import Anchor, { ORIENTATION } from "./models/Anchor";
 import Constraints from "./models/Constraints";
 import Margins from "./models/Margins";
 import Gaps from "./models/Gaps";
@@ -65,8 +65,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 horizontalAnchors: [],
                 verticalAnchors: [],
                 anchorToColumnMap: new Map<string, number>(),
-                horizontalColumnToAnchorMap: new Map<string, { leftTopAnchor: Anchor, rightBottomAnchor: Anchor }>(),
-                verticalColumnToAnchorMap: new Map<string, { leftTopAnchor: Anchor, rightBottomAnchor: Anchor }>()
+                horizontalColumnToAnchorMap: new Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>(),
+                verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>()
             })
         }
         return context.designerHelper.formLayouts.get(name) as FormLayoutInformation;
@@ -144,9 +144,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     anchors.set(name, new Anchor(anchorData));
                 });
 
-                const fillAnchorColumnMap = (anchor: Anchor) => {
+                const fillAnchorToColumnMap = (anchor: Anchor) => {
                     if (anchor.name.length > 1) {
                         let column = 9999;
+                        const anchorDirection = anchor.name.substring(0, 1);
                         if (anchor.name === "lm" || anchor.name === "tm") {
                             column = 0;
                         }
@@ -156,17 +157,58 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         else {
                             column = parseInt(anchor.name.substring(1));
                         }
-                        layoutInfo.anchorToColumnMap.set(anchor.name, column)
+                        layoutInfo.anchorToColumnMap.set(anchor.name, column);
+                        return { column: column, direction: anchorDirection }
                     }
+                }
+
+                const fillColumnToAnchorMaps = (anchor: Anchor, horizontal: boolean, column: number, direction: string) => {
+                    if (anchor.name.length > 1) {
+                        const mapToFill = horizontal ? layoutInfo.horizontalColumnToAnchorMap : layoutInfo.verticalColumnToAnchorMap;
+                        const directionHelper = horizontal ? "l" : "t"
+                        const leftTop = horizontal ? "leftAnchor" : "topAnchor";
+                        const rightBottom = horizontal ? "rightAnchor" : "bottomAnchor"
+                        const entry = mapToFill.get(column.toString());
+                        if (entry) {
+                            if (direction === directionHelper) {
+                                (entry as any)[leftTop] = anchor;
+                            }
+                            else {
+                                (entry as any)[rightBottom] = anchor;
+                            }
+                        }
+                        else {
+                            // other anchor is a placeholder
+                            if (direction === directionHelper) {
+                                //@ts-ignore
+                                mapToFill.set(column.toString(), horizontal ? { leftAnchor: anchor, rightAnchor: new Anchor("xx,xx,-,x,xx") } : { topAnchor: anchor, bottomAnchor: new Anchor("xx,xx,-,x,xx") })
+                            }
+                            else {
+                                //@ts-ignore
+                                mapToFill.set(column.toString(), horizontal ? { leftAnchor: new Anchor("xx,xx,-,x,xx"), rightAnchor: anchor } : { topAnchor: new Anchor("xx,xx,-,x,xx"), bottomAnchor: anchor })
+                            }
+                        }
+                    }
+                }
+
+                const createDesignerAnchors = (name: string) => {
+                    const orientation = ["l", "r"].indexOf(name) !== -1 ? ORIENTATION.HORIZONTAL : ORIENTATION.VERTICAL;
+                }
+
+                const fillAnchorMaps = (anchor: Anchor) => {
+                    const colAndDir = fillAnchorToColumnMap(anchor)
+                    if (colAndDir) {
+                        fillColumnToAnchorMaps(anchor, anchor.orientation === ORIENTATION.HORIZONTAL, colAndDir.column, colAndDir.direction);
+                    }
+                    
                 }
 
                 /** Establish related Anchors */
                 anchors.forEach(anchor => {
-                    fillAnchorColumnMap(anchor)
+                    fillAnchorMaps(anchor)
                     anchor.relatedAnchor = anchors.get(anchor.relatedAnchorName);
                 });
 
-                console.log(name, layoutInfo.anchorToColumnMap);
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
                 children.forEach(component => {
                     const anchorNames = component.constraints.split(";");
@@ -177,9 +219,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
                         const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
                         componentConstraints.set(component.id, constraint);
-                        console.log(component)
-                        console.log(topAnchor.name, layoutInfo.anchorToColumnMap.get(topAnchor.name), bottomAnchor.name, layoutInfo.anchorToColumnMap.get(bottomAnchor.name));
-                        console.log(leftAnchor.name, layoutInfo.anchorToColumnMap.get(leftAnchor.name), rightAnchor.name, layoutInfo.anchorToColumnMap.get(rightAnchor.name));
                     }
                 });
             }

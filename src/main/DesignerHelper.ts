@@ -32,8 +32,8 @@ export type FormLayoutInformation = {
     horizontalAnchors: Anchor[],
     verticalAnchors: Anchor[],
     anchorToColumnMap: Map<string, number>
-    horizontalColumnToAnchorMap: Map<string, { leftTopAnchor: Anchor, rightBottomAnchor: Anchor }>
-    verticalColumnToAnchorMap: Map<string, { leftTopAnchor: Anchor, rightBottomAnchor: Anchor }>
+    horizontalColumnToAnchorMap: Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>
+    verticalColumnToAnchorMap: Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>
 }
 
 enum LAYOUTS {
