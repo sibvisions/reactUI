@@ -610,13 +610,13 @@ export default abstract class BaseContentStore {
      * @param navName - the navigation name of a screen
      * @param componentId - the componentId to add a screen
      */
-     setNavigationName(navName:string, componentId: string) {
+     setNavigationName(navName:string, componentId: string, name?:string) {
         let existingNav = this.navigationNames.get(navName);
         if (existingNav) {
             existingNav.componentId = componentId;
         }
         else {
-            this.navigationNames.set(navName, { componentId: componentId, screenId: "" });
+            this.navigationNames.set(navName, { componentId: componentId, screenId: name ? name : "" });
         }
             
     }
