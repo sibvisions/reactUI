@@ -7,6 +7,7 @@
         width: 400px;
         height: 200px;
         border: 1px solid #ced4da;
+        border-radius: var(--editor-border-radius);
     }
 
     .signature-pad-editing-locked {
