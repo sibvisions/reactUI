@@ -60,7 +60,75 @@ export function getLastAnchor(layoutInfo:FormLayoutInformation, orientation: ORI
     return lastAnchor
 }
 
+export function getNextAnchorName(name: string, negative: boolean) {
+    if (["l", "r", "t", "b"].indexOf(name) !== -1) {
+        return name + "m";
+    }
+    else if (name === "lm") {
+        return "r0";
+    }
+    else if (name === "rm") {
+        return "l-1";
+    }
+    else if (name === "tm") {
+        return "b0";
+    }
+    else if (name === "bm") {
+        return "t-1";
+    }
+    else {
+        const firstChar = name.substring(0, 1);
+        const columnValue = getColumnValue(name);
+        if (!negative) {
+            if (firstChar === "l") {
+                return "r" + columnValue.toString();
+            }
+            else if (firstChar === "r") {
+                return "l" + (columnValue + 1).toString();
+            }
+            else if (firstChar === "t") {
+                return "b" + columnValue.toString();
+            }
+            else if (firstChar === "b") {
+                return "t" + (columnValue + 1).toString();
+            }
+        }
+        else {
+            if (firstChar === "r") {
+                return "l" + columnValue.toString();
+            }
+            else if (firstChar === "l") {
+                return "r" + (columnValue - 1).toString();
+            }
+            else if (firstChar === "b") {
+                return "t" + columnValue.toString();
+            }
+            else if (firstChar === "t") {
+                return "b" + (columnValue - 1).toString();
+            }
+        }
+    }
+    return name;
+}
+
 export function createDesignerAnchors(layoutInfo:FormLayoutInformation, name: string) {
+    const getAnchorsToCreate = (lastAnchor: Anchor, orientation: ORIENTATION, negative: boolean) => {
+        const anchorsToCreate: string[] = [];
+        let anchorName = getNextAnchorName(lastAnchor.name, negative);
+        let currentColumnValue = getColumnValue(anchorName);
+        let columnValueToCreate = getColumnValue(name);
+        console.log(anchorName, currentColumnValue, columnValueToCreate, layoutInfo, name)
+        // Continue loop if not negative and currentColumnValue is smaller or equal than the col to create, if negative and greater or equal than col to create.
+        // And if the new anchor name is not the same as the anchor name to create
+        while (((!negative && currentColumnValue <= columnValueToCreate) || (negative && currentColumnValue >= columnValueToCreate)) && anchorName !== name) {
+            anchorsToCreate.push(anchorName);
+            anchorName = getNextAnchorName(anchorName, negative);
+            currentColumnValue = getColumnValue(anchorName);
+        }
+        anchorsToCreate.push(name);
+        return anchorsToCreate;
+    }
+
     const createAnchorData = (name: string) => {
         let anchorData = "";
     }
@@ -68,7 +136,7 @@ export function createDesignerAnchors(layoutInfo:FormLayoutInformation, name: st
     const orientation = ["l", "r"].indexOf(name.substring(0, 1)) !== -1 ? ORIENTATION.HORIZONTAL : ORIENTATION.VERTICAL;
     const negative = name.substring(1).includes("-");
     const lastAnchor = getLastAnchor(layoutInfo, orientation, negative);
-    //console.log(lastAnchor)
+    console.log(getAnchorsToCreate(lastAnchor, orientation, negative));
 }
 
 export function fillAnchorToColumnMap(layoutInfo:FormLayoutInformation, anchor: Anchor) {
@@ -99,17 +167,8 @@ export function fillColumnToAnchorMaps(layoutInfo:FormLayoutInformation, anchor:
         else {
             //const firstChar = anchor.name.substring(0, 1);
             const getAnchorNameToCreate = () => {
-                if (anchor.name === "lm") {
-                    return "r0";
-                }
-                else if (anchor.name === "rm") {
-                    return "l-1";
-                }
-                else if (anchor.name === "tm") {
-                    return "b0";
-                }
-                else if (anchor.name === "bm") {
-                    return "t-1";
+                if (["lm", "rm", "tm", "bm"].indexOf(anchor.name) !== -1) {
+                    return getNextAnchorName(anchor.name, false);
                 }
                 else {
                     const firstChar = anchor.name.substring(0, 1);
@@ -128,7 +187,8 @@ export function fillColumnToAnchorMaps(layoutInfo:FormLayoutInformation, anchor:
             // other anchor is a placeholder
             if (direction === directionHelper) {
                 //console.log(anchor)
-                createDesignerAnchors(layoutInfo, getAnchorNameToCreate())
+                //TODO: only call create after all anchors registered themselves and look for placeholder anchors then replace them
+                //createDesignerAnchors(layoutInfo, getAnchorNameToCreate())
                 //@ts-ignore
                 mapToFill.set(column.toString(), horizontal ? { leftAnchor: anchor, rightAnchor: new Anchor("xx,xx,-,x,xx") } : { topAnchor: anchor, bottomAnchor: new Anchor("xx,xx,-,x,xx") })
             }
