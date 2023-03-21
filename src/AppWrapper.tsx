@@ -28,7 +28,7 @@ import { VisionX } from "@sibvisions/visionx/dist/moduleIndex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
-import { DesignerHelper } from "./main/DesignerHelper";
+import { DesignerHelper } from "./main/designer/DesignerHelper";
 import ContentStore from "./main/contentstore/ContentStore";
 import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";

@@ -96,7 +96,7 @@ const NullLayout: FC<ILayout> = (baseProps) => {
     return (
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div data-layout="nulllayout" data-name={name} style={calculatedStyle}>
+            <div className="rc-layout-element" data-layout="nulllayout" data-name={name} style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>

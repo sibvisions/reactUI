@@ -27,7 +27,7 @@ import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { FormLayoutInformation } from "../../DesignerHelper";
+import { FormLayoutInformation } from "../../designer/DesignerHelper";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -131,9 +131,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 const clearLayoutInfo = () => {
                     layoutInfo.horizontalAnchors = [];
                     layoutInfo.verticalAnchors = [];
-                    layoutInfo.anchorToColumnMap.clear();
-                    layoutInfo.horizontalColumnToAnchorMap.clear();
-                    layoutInfo.verticalColumnToAnchorMap.clear();
                 }
 
                 anchors.clear(); componentConstraints.clear(); clearLayoutInfo();
@@ -144,68 +141,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     anchors.set(name, new Anchor(anchorData));
                 });
 
-                const fillAnchorToColumnMap = (anchor: Anchor) => {
-                    if (anchor.name.length > 1) {
-                        let column = 9999;
-                        const anchorDirection = anchor.name.substring(0, 1);
-                        if (anchor.name === "lm" || anchor.name === "tm") {
-                            column = 0;
-                        }
-                        else if (anchor.name === "rm" || anchor.name === "bm") {
-                            column = -1
-                        }
-                        else {
-                            column = parseInt(anchor.name.substring(1));
-                        }
-                        layoutInfo.anchorToColumnMap.set(anchor.name, column);
-                        return { column: column, direction: anchorDirection }
-                    }
-                }
-
-                const fillColumnToAnchorMaps = (anchor: Anchor, horizontal: boolean, column: number, direction: string) => {
-                    if (anchor.name.length > 1) {
-                        const mapToFill = horizontal ? layoutInfo.horizontalColumnToAnchorMap : layoutInfo.verticalColumnToAnchorMap;
-                        const directionHelper = horizontal ? "l" : "t"
-                        const leftTop = horizontal ? "leftAnchor" : "topAnchor";
-                        const rightBottom = horizontal ? "rightAnchor" : "bottomAnchor"
-                        const entry = mapToFill.get(column.toString());
-                        if (entry) {
-                            if (direction === directionHelper) {
-                                (entry as any)[leftTop] = anchor;
-                            }
-                            else {
-                                (entry as any)[rightBottom] = anchor;
-                            }
-                        }
-                        else {
-                            // other anchor is a placeholder
-                            if (direction === directionHelper) {
-                                //@ts-ignore
-                                mapToFill.set(column.toString(), horizontal ? { leftAnchor: anchor, rightAnchor: new Anchor("xx,xx,-,x,xx") } : { topAnchor: anchor, bottomAnchor: new Anchor("xx,xx,-,x,xx") })
-                            }
-                            else {
-                                //@ts-ignore
-                                mapToFill.set(column.toString(), horizontal ? { leftAnchor: new Anchor("xx,xx,-,x,xx"), rightAnchor: anchor } : { topAnchor: new Anchor("xx,xx,-,x,xx"), bottomAnchor: anchor })
-                            }
-                        }
-                    }
-                }
-
-                const createDesignerAnchors = (name: string) => {
-                    const orientation = ["l", "r"].indexOf(name) !== -1 ? ORIENTATION.HORIZONTAL : ORIENTATION.VERTICAL;
-                }
-
-                const fillAnchorMaps = (anchor: Anchor) => {
-                    const colAndDir = fillAnchorToColumnMap(anchor)
-                    if (colAndDir) {
-                        fillColumnToAnchorMaps(anchor, anchor.orientation === ORIENTATION.HORIZONTAL, colAndDir.column, colAndDir.direction);
-                    }
-                    
-                }
-
                 /** Establish related Anchors */
                 anchors.forEach(anchor => {
-                    fillAnchorMaps(anchor)
                     anchor.relatedAnchor = anchors.get(anchor.relatedAnchorName);
                 });
 
@@ -343,7 +280,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         if(anchor.autoSize) {
                             anchor.position = 0;
                         }
-                        
+
                         anchor = anchor.relatedAnchor;
                     }
                     pAnchor.used = true;
@@ -871,7 +808,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={calculatedStyle.current?.componentSizes || new Map<string, React.CSSProperties>()}>
-            <div data-layout="form" data-name={name} style={{...calculatedStyle.current?.style}}>
+            <div className="rc-layout-element" data-layout="form" data-name={name} style={{...calculatedStyle.current?.style}}>
                 {components}
             </div>
         </LayoutContext.Provider>

@@ -13,15 +13,16 @@
  * the License.
  */
 
-import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
-import Anchor from "./components/layouts/models/Anchor";
-import { ORIENTATIONSPLIT } from "./components/panels/split/SplitPanel";
-import { ISplit } from "./components/panels/split/UISplitPanel";
-import BaseContentStore from "./contentstore/BaseContentStore";
-import ContentStore from "./contentstore/ContentStore";
-import ContentStoreFull from "./contentstore/ContentStoreFull";
-import BaseComponent from "./util/types/BaseComponent";
-import Dimension from "./util/types/Dimension";
+import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
+import Anchor from "../components/layouts/models/Anchor";
+import { ORIENTATIONSPLIT } from "../components/panels/split/SplitPanel";
+import { ISplit } from "../components/panels/split/UISplitPanel";
+import BaseContentStore from "../contentstore/BaseContentStore";
+import ContentStore from "../contentstore/ContentStore";
+import ContentStoreFull from "../contentstore/ContentStoreFull";
+import BaseComponent from "../util/types/BaseComponent";
+import Dimension from "../util/types/Dimension";
+import { fillAnchorMaps } from "./FormLayoutUtil";
 
 export type Coordinates = {
   x: number,
@@ -61,6 +62,28 @@ export class DesignerHelper {
     /** Sets the ContentStore */
     setContentStore(store: BaseContentStore|ContentStore|ContentStoreFull) {
         this.contentStore = store;
+    }
+
+    initialiseLayoutInfos() {
+        const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
+        const layoutList = firstPanel.querySelectorAll(".rc-layout-element");
+        layoutList.forEach(layoutElem => {
+            const castedElem = layoutElem as HTMLElement;
+            switch (this.getLayoutType(castedElem)) {
+                case LAYOUTS.FORMLAYOUT:
+                    if (this.formLayouts.has(castedElem.getAttribute("data-name") as string)) {
+                        const layoutInfo = this.formLayouts.get(castedElem.getAttribute("data-name") as string) as FormLayoutInformation;
+                        layoutInfo.horizontalAnchors.forEach(anchor => {
+                            fillAnchorMaps(layoutInfo, anchor);
+                        });
+
+                        layoutInfo.verticalAnchors.forEach(anchor => {
+                            fillAnchorMaps(layoutInfo, anchor);
+                        });
+                    }
+                    break;
+            }
+        })
     }
 
     getLayoutType(element:HTMLElement) {
@@ -109,6 +132,7 @@ export class DesignerHelper {
         const docStyle = window.getComputedStyle(document.documentElement);
 
         const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
+        console.log(firstPanel.querySelectorAll(".rc-layout-element"))
         let foundComponent: { component: BaseComponent, element: HTMLElement, relativePosition: Coordinates } | null = null;
         let lastLayout: { component: BaseComponent, element: HTMLElement, layoutInfo: FormLayoutInformation } | null = null;
 

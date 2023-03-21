@@ -41,7 +41,7 @@ import Timer from "../util/other-util/Timer";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import { initialURL } from "../..";
-import { DesignerHelper } from "../DesignerHelper";
+import { DesignerHelper } from "../designer/DesignerHelper";
 import BaseResponse from "../response/BaseResponse";
 
 /** Checks if the contentstore is for transfermode full */
