@@ -389,13 +389,13 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             context.subscriptions.subscribeToTreeChange(props.dataBooks[0], updateRebuildTree);
         }
 
-        context.subscriptions.subscribeToTreeDataChange((dataBook:string, data: any[], pageKeyHelper:string) => setTreeDataChanged({ dataBook: dataBook, data: data, pageKey: pageKeyHelper}))
+        context.subscriptions.subscribeToTreeDataChange(props.dataBooks.join("_"), (dataBook:string, data: any[], pageKeyHelper:string) => setTreeDataChanged({ dataBook: dataBook, data: data, pageKey: pageKeyHelper}))
         
         return () => {
             if (props.dataBooks && props.dataBooks.length) {
                 context.subscriptions.unsubscribeFromTreeChange(props.dataBooks[0], updateRebuildTree);
             }
-            context.subscriptions.unsubscribeFromTreeDataChange((dataBook:string, data: any[], pageKeyHelper:string) => setTreeDataChanged({ dataBook: dataBook, data: data, pageKey: pageKeyHelper}));
+            context.subscriptions.unsubscribeFromTreeDataChange(props.dataBooks.join("_"));
         }
     }, [
         context.subscriptions, 
@@ -518,8 +518,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             //     }  
             // }
             
-            if(lastExpandedLength.current < Object.keys(expandedKeys).length)
-            {
+            if(lastExpandedLength.current < Object.keys(expandedKeys).length) {
                 const key = Object.keys(expandedKeys)[Object.keys(expandedKeys).length - 1];
                 const path = new TreePath(JSON.parse(key));
                 const node = getNode(newNodes, path);
@@ -530,13 +529,14 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                             const dataRowChildren:any[] = providedData.get(getDataBookName(path.length())).get(treeData.current.get(key));
                             if(dataRowChildren) {
                                 await Promise.allSettled(dataRowChildren.map((data, i) => 
-                                    getChildrenForDataRow(data, (node.children ?? [])[i] as CustomTreeNode)
+                                    getChildrenForDataRow(data, node.children ? node.children[i] as CustomTreeNode : node)
                                         .then((res:any) => tempTreeData = new Map([...tempTreeData, ...res.treeMap]))
                                 ))
                                 .then(() => treeData.current = new Map([...treeData.current, ...tempTreeData]));
                             }
                         }
-                    } else {
+                    } 
+                    else {
                         await getChildrenForDataRow(getDataRow(path, tempTreeData.get(path.getParentPath().toString())), node)
                             .then(res => tempTreeData = new Map([...tempTreeData, ...res.treeMap]))
                         treeData.current = new Map([...treeData.current, ...tempTreeData])
@@ -598,9 +598,15 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             let parentNodes:CustomTreeNode[] = [];
             if (!baseNodeData) {
                 if (metaData) {
-                    let parentNodeKey = "";
-                    parentNodeKey = metaData.masterReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
-                    parentNodes = getNodes(nodesCopy, parentNodeKey, "pageKey");
+                    if (metaData.masterReference) {
+                        let parentNodeKey = "";
+                        parentNodeKey = metaData.masterReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
+                        parentNodes = getNodes(nodesCopy, parentNodeKey, "pageKey");
+                    }
+                    else {
+                        console.warn("masterreference for databook: ", treeDataChanged.dataBook + " in tree: " + props.name + "not set!")
+                    }
+
                 }
             }
 

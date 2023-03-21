@@ -112,7 +112,7 @@ export class SubscriptionManager {
 
     linkedDisplayMapSubscriber = new Map<string, Map<string, Array<Function>>>();
 
-    treeDataChangedSubscriber = new Array<Function>();
+    treeDataChangedSubscriber = new Map<string, Function>();
 
     /** An array of functions to update the menuitem states of its subscribers */
     menuSubscriber = new Array<Function>();
@@ -392,8 +392,8 @@ export class SubscriptionManager {
             this.treeSubscriber.set(masterDataBook, new Array<Function>(fn));
     }
 
-    subscribeToTreeDataChange(fn:Function) {
-        this.treeDataChangedSubscriber.push(fn);
+    subscribeToTreeDataChange(databookString:string, fn:Function) {
+        this.treeDataChangedSubscriber.set(databookString, fn);
     }
 
     /**
@@ -697,8 +697,8 @@ export class SubscriptionManager {
             subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
     }
 
-    unsubscribeFromTreeDataChange(fn:Function) {
-        this.treeDataChangedSubscriber.splice(this.treeDataChangedSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    unsubscribeFromTreeDataChange(dataBookString:string) {
+        this.treeDataChangedSubscriber.delete(dataBookString)
     }
 
     /**
@@ -926,7 +926,12 @@ export class SubscriptionManager {
     }
 
     notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string) {
-        this.treeDataChangedSubscriber.forEach(subFunction => subFunction.apply(undefined, [dataBook, data, pageKeyHelper]))
+        this.treeDataChangedSubscriber.forEach((v, k) => {
+            const splitDataBooks = k.split("_");
+            if (splitDataBooks.includes(dataBook)) {
+                v();
+            }
+        });
     }
 
     /**

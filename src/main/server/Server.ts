@@ -389,6 +389,9 @@ class Server extends BaseServer {
                                     this.linkOpen = "";
                                 }
                             }
+                            else {
+                                this.contentStore.setNavigationName(workScreen.screen_navigationName_ + getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames), workScreen.screen_className_ as string, workScreen.name)
+                            }
                         }
                         
                         this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);
@@ -753,7 +756,7 @@ class Server extends BaseServer {
                 }
                 
                 if (!GResponse.update && firstComp && firstComp.screen_navigationName_ && !firstComp.screen_modal_) {
-                    const increment = getNavigationIncrement(firstComp.screen_navigationName_, this.contentStore.navigationNames)
+                    const increment = getNavigationIncrement(firstComp.screen_navigationName_, this.contentStore.navigationNames);
                     if (highestPriority < 2 
                         && this.contentStore.navigationNames.has(firstComp.screen_navigationName_ + increment)
                         && (!this.linkOpen || this.linkOpen === firstComp.screen_navigationName_ + increment)

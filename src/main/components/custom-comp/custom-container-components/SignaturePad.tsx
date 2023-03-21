@@ -238,7 +238,13 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
             <SignatureCanvas
                 ref={sigRef}
                 penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"}
-                canvasProps={{ className: concatClassnames('sigCanvas', editStatus !== EDITLOCK_STATUS.EDITING ? "signature-pad-editing-locked" : "")}}
+                canvasProps={{ 
+                    className: concatClassnames('sigCanvas', editStatus !== EDITLOCK_STATUS.EDITING ? "signature-pad-editing-locked" : ""), 
+                    style: { 
+                        width: layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, 
+                        height: layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200
+                    } 
+                }}
                 onBegin={() => {
                     if (sigRef.current) {
                         sigRef.current.getCanvas().parentElement.classList.add('sigpad-drawing');
