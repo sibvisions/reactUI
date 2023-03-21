@@ -299,13 +299,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 }
             }
 
-            const checkBackspacePossible = () => {
-                if (event.key === "Backspace" && ((typeof value === "string" && value.replaceAll('0', '').replaceAll('.', '').replaceAll(',', '').length <= 1) || value?.toString().length === 1)) {
-                    return false;
-                }
-                return true;
-            }
-
             let selectedLength = 0;
 
             if (window.getSelection()?.toString()) {
@@ -341,8 +334,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     minFractionDigits={writeScaleDigits.minScale}
                     maxFractionDigits={writeScaleDigits.maxScale}
                     //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                    //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
-                    value={value as number|null|undefined}
+                    value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                    //value={value as number|null|undefined}
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
                         ...textAlignment, 
@@ -401,8 +394,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={writeScaleDigits.minScale}
                 maxFractionDigits={writeScaleDigits.maxScale}
-                //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
-                value={value as number|null|undefined}
+                value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                //value={value as number|null|undefined}
                 style={props.layoutStyle}
                 inputStyle={{ 
                     ...textAlignment, 
