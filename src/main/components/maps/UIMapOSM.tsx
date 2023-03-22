@@ -39,6 +39,8 @@ import IconProps from "../comp-props/IconProps";
 import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
 import { IExtendableMap } from "../../extend-components/maps/ExtendMapGoogle";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 
 /** Interface for Map components */
 export interface IMap extends BaseComponent {
@@ -70,11 +72,8 @@ const UIMapOSM: FC<IMap & IExtendableMap> = (baseProps) => {
     /** Reference for the map element */
     const mapRef = useRef<any>(null);
 
-    /** The positioning and size of the component */
-    const layoutStyle = useLayoutValue(baseProps.id);
-
-    /** Current state of the properties for the component sent by the server */
-    const [props] = useProperties<IMap & IExtendableMap>(baseProps.id, baseProps);
+    /** Component constants */
+    const [,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IMap & IExtendableMap>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
@@ -107,9 +106,9 @@ const UIMapOSM: FC<IMap & IExtendableMap> = (baseProps) => {
      */
     if (layoutStyle) {
         return (
-            <div ref={mapRef} id={props.name + "-_wrapper"} {...popupMenu} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
+            <div ref={mapRef} id={props.name + "-_wrapper"} className="rc-map-wrapper" {...popupMenu} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
                 <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
-                    <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition}/>
+                    <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition} style={concatClassnames(styleClassNames)} />
                 </MapContainer>
             </div>
         )

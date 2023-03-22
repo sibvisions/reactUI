@@ -32,7 +32,7 @@ import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
  */
 const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -131,7 +131,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
                 id={props.name}
                 className={concatClassnames(
                     "rc-scrollpanel",
-                    props.style
+                    styleClassNames
                 )}
                 style={props.screen_modal_ || props.content_modal_
                     ? {

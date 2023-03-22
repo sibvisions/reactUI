@@ -26,6 +26,10 @@
     user-select: none; 
 }
 
+.f_default_editorbackground .rc-panel-group-content {
+    background: var(--input-background)
+}
+
 .rc-panel-group-content {
     background-image: var(--backgroundImage);
     overflow: hidden;

@@ -48,7 +48,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButtonSelectable & IExtendableSelectable>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableSelectable>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, cbRef.current ? cbRef.current.element : undefined);
@@ -118,7 +118,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) =>
                     "rc-checkbox",
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
-                    props.style
+                    styleClassNames
                 )}
                 onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}

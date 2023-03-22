@@ -41,7 +41,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
     const iconRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<BaseComponent & IExtendableIcon>(baseProps);
+    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<BaseComponent & IExtendableIcon>(baseProps);
 
     /** Properties for icon */
     const iconProps = useMemo(() => parseIconData(props.foreground, props.image), [props.foreground, props.image]);
@@ -159,7 +159,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
             className={concatClassnames(
                 "rc-icon", 
                 props.focusable === false ? "no-focus-rect" : "",
-                props.style
+                styleClassNames
             )}
             style={{...layoutStyle, ...compStyle, justifyContent: alignments.ha, alignItems: alignments.va}}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}

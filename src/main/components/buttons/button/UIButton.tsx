@@ -56,7 +56,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButton & IExtendableButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButton & IExtendableButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)
@@ -137,7 +137,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
                     props.focusable === false ? "no-focus-rect" : "",
-                    props.style
+                    styleClassNames
                 )}
                 style={{
                     ...btnStyle.style,

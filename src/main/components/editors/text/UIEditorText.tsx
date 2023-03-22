@@ -467,7 +467,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                 props.focusable === false ? "no-focus-rect" : "",
                 props.isReadOnly ? "rc-input-readonly" : "",
                 props.borderVisible === false ? "invisible-border" : "",
-                props.style
+                props.styleClassNames
             ),
             style: { 
                 ...props.layoutStyle, 

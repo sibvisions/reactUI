@@ -48,7 +48,7 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<ITextField & IExtendableText>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextField & IExtendableText>(baseProps);
 
     /** Current state of the text value */
     const [text, setText] = useState(props.text || "");
@@ -97,7 +97,7 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
                 "rc-input", 
                 props.focusable === false ? "no-focus-rect" : "",
                 isCompDisabled(props) ? "rc-input-readonly" : "",
-                props.style
+                styleClassNames
             )}
             value={text||""} 
             style={{...layoutStyle, ...compStyle}} 

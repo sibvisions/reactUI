@@ -135,7 +135,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
             {((props.selectedRow && props.selectedRow.data[props.columnName]) || props.cellEditor.defaultImageName) &&
                 <img
                     id={!props.isCellEditor ? props.name : undefined}
-                    className={concatClassnames(imageStyle, props.style)}
+                    className={concatClassnames(imageStyle, props.styleClassNames)}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
                     //style={imageStyle.img}

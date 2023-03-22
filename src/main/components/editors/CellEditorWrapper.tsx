@@ -40,7 +40,8 @@ export interface ICellEditorWrapperProps {
     isReadOnly: boolean
     rowNumber: number
     cellFormatting?: CellFormatting[]
-    colIndex?: number
+    colIndex?: number,
+    styleClassNames: string[]
 }
 
 /** The complete interface for ReactUI CellEditors. It extends the server-sent properties, wrapper properties and in-table-properties */
@@ -54,7 +55,7 @@ export interface IRCCellEditor extends IEditor, ICellEditorWrapperProps, IInTabl
  */
 const CellEditorWrapper:FC<any> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
-    const [context, topbar, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
+    const [context, topbar, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle, styleClassNames] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
 
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataRow);
@@ -74,7 +75,8 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
             cellStyle: cellStyle,
             isReadOnly: isReadOnly,
             cellFormatting: baseProps.cellFormatting,
-            colIndex: baseProps.colIndex
+            colIndex: baseProps.colIndex,
+            styleClassNames: styleClassNames
         }
     );
 }

@@ -33,6 +33,7 @@ import { IExtendableNumberEditor } from "../../../extend-components/editors/Exte
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import { classNames } from "primereact/utils";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -70,11 +71,14 @@ export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boole
     else if (!numberFormat.startsWith('0') && !numberFormat.startsWith('#')) {
         const indexHash = numberFormat.indexOf('#');
         const index0 = numberFormat.indexOf('0');
-        if (indexHash !== 1 && indexHash < index0) {
-            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('#')) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
-        }
-        else if (index0 !== 1 && index0 < indexHash) {
-            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('0')) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
+        const indexPeriod = numberFormat.indexOf('.');
+        if (indexPeriod !== 0) {
+            if (indexHash < index0) {
+                return numberFormat.replaceAll("'", '').substring(0, indexHash) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
+            }
+            else if (index0 < indexHash) {
+                return numberFormat.replaceAll("'", '').substring(0, index0) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
+            }
         }
     }
     return ""
@@ -88,11 +92,11 @@ export function getSuffix(numberFormat:string, locale: string) {
         }
         const indexHash = numberFormat.lastIndexOf('#');
         const index0 = numberFormat.lastIndexOf('0');
-        if (indexHash !== 1 && indexHash > index0) {
-            return numberFormat.replaceAll("'", '').substring(numberFormat.lastIndexOf('#') + 1)
+        if (indexHash > index0) {
+            return numberFormat.replaceAll("'", '').substring(indexHash + 1)
         }
-        else if (index0 !== 1 && index0 > indexHash) {
-            return numberFormat.replaceAll("'", '').substring(numberFormat.lastIndexOf('0') + 1)
+        else if (index0 > indexHash) {
+            return numberFormat.replaceAll("'", '').substring(index0 + 1)
         }
     }
     return ""
@@ -147,14 +151,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** The classnames for the number-cell-editor */
     const numberClassNames = useMemo(() => {
-        return concatClassnames(
+        return classNames(
             "rc-editor-number",
             props.columnMetaData?.nullable === false ? "required-field" : "",
             props.isCellEditor ? "open-cell-editor" : undefined,
             props.focusable === false ? "no-focus-rect" : "",
             props.isReadOnly ? "rc-input-readonly" : "",
             props.borderVisible === false ? "invisible-border" : "",
-            props.style
+            props.styleClassNames
         )
     }, [props.columnMetaData?.nullable]);
 
@@ -351,8 +355,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                         if (event.value === "-") {
                             setValue(event.value)
                         }
-                        else {
+                        else if (event.value !== null) {
+                            console.log(event.value, formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value))
                             setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
+                        }
+                        else {
+                            setValue(null)
                         }
                         
 
@@ -371,6 +379,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                                 props.onBlur(event)
                             }
                             if (startedEditing.current) {
+                                console.log(value)
                                 sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, props.topbar, props.rowNumber);
                             }
                         }

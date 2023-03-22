@@ -26,6 +26,7 @@ import Dimension from "../../../util/types/Dimension";
 import ChildWithProps from "../../../util/types/ChildWithProps";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { IExtendableSplitPanel } from "../../../extend-components/panels/ExtendSplitPanel";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 
 /** Interface for UISplitPanel */
 export interface ISplit extends BaseComponent{
@@ -40,7 +41,7 @@ export interface ISplit extends BaseComponent{
  */
 const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
     /** Component constants */
-    const [,, [props], layoutStyle] = useComponentConstants<ISplit & IExtendableSplitPanel>(baseProps, {visibility: 'hidden'});
+    const [,, [props], layoutStyle,, styleClassNames] = useComponentConstants<ISplit & IExtendableSplitPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children */
     const [children, components, compSizes] = useComponents(props.id, props.className);
@@ -163,7 +164,7 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
                 onInitial={sendLoadCallback}
                 toolTipText={props.toolTipText}
                 popupMenu={{...usePopupMenu(props)}}
-                styleClassName={props.style}
+                styleClassName={concatClassnames(styleClassNames)}
             />
         </LayoutContext.Provider>
     )

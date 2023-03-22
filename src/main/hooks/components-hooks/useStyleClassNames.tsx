@@ -1,4 +1,4 @@
-/* Copyright 2022 SIB Visions GmbH
+/* Copyright 2023 SIB Visions GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,14 +13,16 @@
  * the License.
  */
 
-.rc-scrollpanel {
-    background-image: var(--backgroundImage);
+import { useMemo } from "react";
 
-    &.f_standard_border {
-        border: var(--input-border-width) solid var(--input-border-color);
-    }
+/**
+ * Returns the component constants which almost every component uses
+ * @param baseProps - the baseproperties a component receives from the server
+ * @param fb - the fallback value for styles
+ */
+const useStyleClassNames = (style:string|undefined): string[] => {
+    const styleClassNames = useMemo(() => style ? style.split(",") : [], [style]);
 
-    &.f_default_editorbackground {
-        background: var(--input-background)
-    }
+    return styleClassNames;
 }
+export default useStyleClassNames

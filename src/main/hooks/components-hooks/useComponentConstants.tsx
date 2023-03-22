@@ -22,6 +22,7 @@ import { AppContextType } from "../../contexts/AppProvider";
 import BaseComponent from "../../util/types/BaseComponent";
 import { TopBarContextType } from "../../components/topbar/TopBar";
 import { IPanel } from "../../components/panels/panel/UIPanel";
+import useStyleClassNames from "./useStyleClassNames";
 
 /**
  * Returns the component constants which almost every component uses
@@ -29,7 +30,7 @@ import { IPanel } from "../../components/panels/panel/UIPanel";
  * @param fb - the fallback value for styles
  */
 const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSProperties):
-[AppContextType, TopBarContextType, [T], CSSProperties|undefined, CSSProperties] => {
+[AppContextType, TopBarContextType, [T], CSSProperties|undefined, CSSProperties, string[]] => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();
 
@@ -42,6 +43,8 @@ const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSPro
     /** get the component style of the component */
     const compStyle = useComponentStyle(props);
 
-    return [context, topbar, [props], layoutStyle, compStyle];
+    const styleClassNames = useStyleClassNames(props.style)
+
+    return [context, topbar, [props], layoutStyle, compStyle, styleClassNames];
 }
 export default useComponentConstants

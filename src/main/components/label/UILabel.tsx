@@ -39,7 +39,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [,, [props], layoutStyle, compStyle] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
+    const [,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -84,7 +84,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
                 "rc-label",
                 isHTML ? " rc-label-html" : "",
                 props.eventMousePressed ? "mouse-pressed-event" : "",
-                props.style
+                styleClassNames
             )}
             style={{
                 //When the label is html, flex direction is column va and ha alignments need to be swapped

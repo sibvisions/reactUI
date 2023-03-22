@@ -19,6 +19,7 @@ import { createTabRequest } from "../../../factories/RequestFactory";
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import IconProps from "../../comp-props/IconProps";
 import { showTopBar } from "../../topbar/TopBar";
 import { IPanel } from "../panel/UIPanel";
@@ -43,7 +44,7 @@ export type TabProperties = {
  */
 const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<ITabsetPanel & IExtendableTabsetPanel>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITabsetPanel & IExtendableTabsetPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, compSizes] = useComponents(baseProps.id, props.className);
@@ -92,7 +93,7 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => 
             layoutStyle={layoutStyle}
             onTabChange={handleSelect}
             onTabClose={handleClose}
-            style={props.style} />
+            style={concatClassnames(styleClassNames)} />
     )
 }
 export default UITabsetPanel

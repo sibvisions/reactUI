@@ -243,7 +243,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
                     className={concatClassnames(
                         "rc-editor-checkbox-label",
                         props.eventMousePressed ? "mouse-pressed-event" : "",
-                        props.style
+                        props.styleClassNames
                     )}
                     style={{ 
                         caretColor: "transparent", 

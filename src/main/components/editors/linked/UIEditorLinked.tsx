@@ -881,7 +881,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     props.isCellEditor ? "open-cell-editor" : undefined,
                     props.focusable === false ? "no-focus-rect" : "",
                     props.borderVisible === false ? "invisible-border" : "",
-                    props.style
+                    props.styleClassNames
                 )}
                 inputClassName={props.isReadOnly ? "rc-input-readonly" : ""}
                 panelClassName={concatClassnames(

@@ -1,6 +1,6 @@
 .tagpanel {
     border: 1px solid #ced4da;
-    border-radius: 2px;
+    border-radius: var(--editor-border-radius);
     color: #495057;
 
     .rc-button.mouse-border {
