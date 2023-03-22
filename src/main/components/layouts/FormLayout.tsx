@@ -61,7 +61,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     const layoutInfo = useMemo(() => {
         if (!context.designerHelper.formLayouts.has(name)) {
+            const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
             context.designerHelper.formLayouts.set(name, {
+                horizontalGap: gaps.horizontalGap,
+                verticalGap: gaps.verticalGap,
                 horizontalAnchors: [],
                 verticalAnchors: [],
                 anchorToColumnMap: new Map<string, number>(),

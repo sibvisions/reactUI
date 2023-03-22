@@ -30,10 +30,12 @@ export type Coordinates = {
 }
 
 export type FormLayoutInformation = {
+    horizontalGap: number,
+    verticalGap: number,
     horizontalAnchors: Anchor[],
     verticalAnchors: Anchor[],
-    anchorToColumnMap: Map<string, number>
-    horizontalColumnToAnchorMap: Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>
+    anchorToColumnMap: Map<string, number>,
+    horizontalColumnToAnchorMap: Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>,
     verticalColumnToAnchorMap: Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>
 }
 

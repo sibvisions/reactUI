@@ -111,13 +111,78 @@ export function getNextAnchorName(name: string, negative: boolean) {
     return name;
 }
 
+export function getPreviousAnchorName(name: string, negative: boolean) {
+    if (["lm", "rm", "tm", "bm"].indexOf(name) !== -1) {
+        return name.substring(0, 1);
+    }
+    else {
+        const firstChar = name.substring(0, 1);
+        const columnValue = getColumnValue(name);
+        if (!negative) {
+            if (firstChar === "l") {
+                return "r" + (columnValue - 1).toString();
+            }
+            else if (firstChar === "r") {
+                return "l" + columnValue.toString();
+            }
+            else if (firstChar === "t") {
+                return "b" + (columnValue - 1).toString();
+            }
+            else if (firstChar === "b") {
+                return "t" + columnValue.toString();
+            }
+        }
+        else {
+            if (firstChar === "r") {
+                return "l" + (columnValue - 1).toString();
+            }
+            else if (firstChar === "l") {
+                return "r" + columnValue.toString();
+            }
+            else if (firstChar === "b") {
+                return "t" + (columnValue - 1).toString();
+            }
+            else if (firstChar === "t") {
+                return "b" + columnValue.toString();
+            }
+        }
+    }
+    return name;
+}
+
+export function createAnchorData(layoutInfo: FormLayoutInformation, name: string, lastAnchor: Anchor, orientation: ORIENTATION, negative: boolean) {
+    const firstChar = name.substring(0, 1)
+    let anchorData = "";
+    anchorData += name + "," + lastAnchor.name + "," + "-,"
+    if (orientation === ORIENTATION.HORIZONTAL) {
+        if (firstChar === "l") {
+            anchorData += negative ? "a" : layoutInfo.horizontalGap.toString();
+        }
+        else if (firstChar === "r") {
+            anchorData += negative ? "-" + layoutInfo.horizontalGap.toString() : "a";
+        }
+
+        anchorData += "," + (negative ? "-" + layoutInfo.horizontalGap.toString() : layoutInfo.horizontalGap.toString());
+    }
+    else {
+        if (firstChar === "t") {
+            anchorData += negative ? "a" : layoutInfo.verticalGap.toString();
+        }
+        else if (firstChar === "b") {
+            anchorData += negative ? "-" + layoutInfo.verticalGap.toString() : "a";
+        }
+
+        anchorData += "," + (negative ? "-" + layoutInfo.verticalGap.toString() : layoutInfo.verticalGap.toString());
+    }
+    return anchorData
+}
+
 export function createDesignerAnchors(layoutInfo:FormLayoutInformation, name: string) {
-    const getAnchorsToCreate = (lastAnchor: Anchor, orientation: ORIENTATION, negative: boolean) => {
+    const getAnchorsToCreate = (lastAnchor: Anchor, negative: boolean) => {
         const anchorsToCreate: string[] = [];
         let anchorName = getNextAnchorName(lastAnchor.name, negative);
         let currentColumnValue = getColumnValue(anchorName);
         let columnValueToCreate = getColumnValue(name);
-        console.log(anchorName, currentColumnValue, columnValueToCreate, layoutInfo, name)
         // Continue loop if not negative and currentColumnValue is smaller or equal than the col to create, if negative and greater or equal than col to create.
         // And if the new anchor name is not the same as the anchor name to create
         while (((!negative && currentColumnValue <= columnValueToCreate) || (negative && currentColumnValue >= columnValueToCreate)) && anchorName !== name) {
@@ -129,14 +194,19 @@ export function createDesignerAnchors(layoutInfo:FormLayoutInformation, name: st
         return anchorsToCreate;
     }
 
-    const createAnchorData = (name: string) => {
-        let anchorData = "";
-    }
-
     const orientation = ["l", "r"].indexOf(name.substring(0, 1)) !== -1 ? ORIENTATION.HORIZONTAL : ORIENTATION.VERTICAL;
     const negative = name.substring(1).includes("-");
-    const lastAnchor = getLastAnchor(layoutInfo, orientation, negative);
-    console.log(getAnchorsToCreate(lastAnchor, orientation, negative));
+    let lastAnchor = getLastAnchor(layoutInfo, orientation, negative);
+
+    const anchorsToCreate = getAnchorsToCreate(lastAnchor, negative);
+    anchorsToCreate.forEach(name => {
+        const newAnchor = new Anchor(createAnchorData(layoutInfo, name, lastAnchor, orientation, negative));
+        newAnchor.relatedAnchor = lastAnchor;
+        fillAnchorMaps(layoutInfo, newAnchor);
+        lastAnchor = newAnchor;
+    })
+    console.log("anchors to create: ", getAnchorsToCreate(lastAnchor, negative));
+    console.log("layoutInfo: ", layoutInfo)
 }
 
 export function fillAnchorToColumnMap(layoutInfo:FormLayoutInformation, anchor: Anchor) {
@@ -182,6 +252,14 @@ export function fillColumnToAnchorMaps(layoutInfo:FormLayoutInformation, anchor:
 }
 
 export function fillAnchorMaps(layoutInfo:FormLayoutInformation, pAnchor: Anchor) {
+    // Martin fragen weil Formlayout die liste cleart
+    const listToCheck = pAnchor.getOrientationFromData(pAnchor.anchorData) === ORIENTATION.HORIZONTAL ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors;
+    if (pAnchor.relatedAnchor) {
+        if (!listToCheck.some(anchor => anchor.name === pAnchor.name)) {
+            listToCheck.splice(listToCheck.indexOf(pAnchor.relatedAnchor as Anchor) + 1, 0, pAnchor);
+        }
+    }
+
     const colAndDir = fillAnchorToColumnMap(layoutInfo, pAnchor);
     if (colAndDir) {
         fillColumnToAnchorMaps(layoutInfo, pAnchor, pAnchor.orientation === ORIENTATION.HORIZONTAL, colAndDir.column, colAndDir.direction);
