@@ -282,7 +282,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
     if (mapReady === false)
         return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} {...popupMenu} id={props.name} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <div ref={mapWrapperRef} className="rc-map-wrapper" {...popupMenu} id={props.name} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <GMap ref={mapInnerRef} className={concatClassnames(styleClassNames)} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )

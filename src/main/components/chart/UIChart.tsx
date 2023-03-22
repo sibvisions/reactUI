@@ -629,7 +629,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     useAddLayoutStyle(chartRef.current, layoutStyle, onLoadCallback)
 
     return (
-        <span ref={chartRef} className={concatClassnames(styleClassNames)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <span ref={chartRef} className={concatClassnames("rc-chart", styleClassNames)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
                 id={props.name}
                 type={chartType}
