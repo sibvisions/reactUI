@@ -20,7 +20,7 @@ import BaseComponent from "../../util/types/BaseComponent";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { ILayout } from "./Layout";
 import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
-import Anchor, { ORIENTATION } from "./models/Anchor";
+import Anchor from "./models/Anchor";
 import Constraints from "./models/Constraints";
 import Margins from "./models/Margins";
 import Gaps from "./models/Gaps";

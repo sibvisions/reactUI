@@ -22,7 +22,7 @@ import ContentStore from "../contentstore/ContentStore";
 import ContentStoreFull from "../contentstore/ContentStoreFull";
 import BaseComponent from "../util/types/BaseComponent";
 import Dimension from "../util/types/Dimension";
-import { fillAnchorMaps } from "./FormLayoutUtil";
+import { createDesignerAnchors, fillAnchorMaps, getNextAnchorName } from "./FormLayoutUtil";
 
 export type Coordinates = {
   x: number,
@@ -73,13 +73,41 @@ export class DesignerHelper {
                 case LAYOUTS.FORMLAYOUT:
                     if (this.formLayouts.has(castedElem.getAttribute("data-name") as string)) {
                         const layoutInfo = this.formLayouts.get(castedElem.getAttribute("data-name") as string) as FormLayoutInformation;
-                        layoutInfo.horizontalAnchors.forEach(anchor => {
+                        const combinedAnchorList = [...layoutInfo.horizontalAnchors, ...layoutInfo.verticalAnchors]
+                        combinedAnchorList.forEach(anchor => {
                             fillAnchorMaps(layoutInfo, anchor);
                         });
 
-                        layoutInfo.verticalAnchors.forEach(anchor => {
-                            fillAnchorMaps(layoutInfo, anchor);
-                        });
+                        let maxHorizontalColumn = 0;
+                        let minHorizontalColumn = 0;
+
+                        const getAnchorNameToCreate = (anchor: Anchor) => {
+                            if (["lm", "rm", "tm", "bm"].indexOf(anchor.name) !== -1) {
+                                return getNextAnchorName(anchor.name, false);
+                            }
+                            else {
+                                const firstChar = anchor.name.substring(0, 1);
+                                if (firstChar === "l") {
+                                    return anchor.name.replace("l", "r");
+                                }
+                                else if (firstChar === "r") {
+                                    return anchor.name.replace("r", "l");
+                                }
+                                else if (firstChar === "t") {
+                                    return anchor.name.replace("t", "b");
+                                }
+                            }
+                            return anchor.name.replace("b", "t");
+                        }
+
+                        layoutInfo.horizontalColumnToAnchorMap.forEach((anchorPair, column) => {
+                            if (anchorPair.leftAnchor.name === "xx") {
+                                createDesignerAnchors(layoutInfo, getAnchorNameToCreate(anchorPair.rightAnchor))
+                            }
+                            else if (anchorPair.rightAnchor.name === "xx") {
+                                createDesignerAnchors(layoutInfo, getAnchorNameToCreate(anchorPair.leftAnchor))
+                            }
+                        })
                     }
                     break;
             }

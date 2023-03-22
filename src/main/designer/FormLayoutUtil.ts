@@ -165,25 +165,6 @@ export function fillColumnToAnchorMaps(layoutInfo:FormLayoutInformation, anchor:
             }
         }
         else {
-            //const firstChar = anchor.name.substring(0, 1);
-            const getAnchorNameToCreate = () => {
-                if (["lm", "rm", "tm", "bm"].indexOf(anchor.name) !== -1) {
-                    return getNextAnchorName(anchor.name, false);
-                }
-                else {
-                    const firstChar = anchor.name.substring(0, 1);
-                    if (firstChar === "l") {
-                        return anchor.name.replace("l", "r");
-                    }
-                    else if (firstChar === "r") {
-                        return anchor.name.replace("r", "l");
-                    }
-                    else if (firstChar === "t") {
-                        return anchor.name.replace("t", "b");
-                    }
-                }
-                return anchor.name.replace("b", "t");
-            }
             // other anchor is a placeholder
             if (direction === directionHelper) {
                 //console.log(anchor)
