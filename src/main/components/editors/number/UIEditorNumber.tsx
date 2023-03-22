@@ -352,8 +352,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                         if (event.value === "-") {
                             setValue(event.value)
                         }
-                        else {
+                        else if (event.value !== null) {
+                            console.log(event.value, formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value))
                             setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
+                        }
+                        else {
+                            setValue(null)
                         }
                         
 
@@ -372,6 +376,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                                 props.onBlur(event)
                             }
                             if (startedEditing.current) {
+                                console.log(value)
                                 sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, props.topbar, props.rowNumber);
                             }
                         }
