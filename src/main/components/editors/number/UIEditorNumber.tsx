@@ -315,6 +315,10 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 event.stopPropagation();
                 return false;
             }
+            else if (numberInput.current && typeof value === "string" && numberInput.current.value.indexOf(value) === numberInput.current.selectionStart && event.key === "-") {
+                startedEditing.current = true;
+                setValue(parseInt("-" + value));
+            }
         }
         else {
             event.stopPropagation();
@@ -356,7 +360,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             setValue(event.value)
                         }
                         else if (event.value !== null) {
-                            console.log(event.value, formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value))
                             setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
                         }
                         else {
@@ -379,7 +382,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                                 props.onBlur(event)
                             }
                             if (startedEditing.current) {
-                                console.log(value)
                                 sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, props.topbar, props.rowNumber);
                             }
                         }
