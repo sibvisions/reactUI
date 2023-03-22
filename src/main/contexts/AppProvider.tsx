@@ -217,8 +217,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
                     else {
                         contextState.subscriptions.emitErrorBarProperties(false, false, false, 8, "Server not reachable!", "The server is not reachable", () => {
-                            index = 0;
-                            connectWs()
+                            return new Promise<void>((resolve) => {
+                                index = 0;
+                                connectWs().then(() => resolve());
+                                if (getClientId() !== "ClientIdNotFound") {
+                                    contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                                }
+                            })
+
                         });
                     }
                 }
@@ -226,115 +232,119 @@ const AppProvider: FC<ICustomContent> = (props) => {
             reconnectInterval.stop();
 
             const connectWs = () => {
-                console.log('connecting WebSocket')
-                const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
-
-                ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + encodeURIComponent(getClientId())
-                + (isReconnect.current ? "&reconnect" : ""));
-                ws.current.onopen = () => {
-                    ws.current?.send("PING");
-                };
-                ws.current.onclose = (event) => {
-                    pingInterval.stop();
-                    clearInterval(aliveInterval.current);
-                    if (event.code === 1000) {
-                        wsIsConnected.current = false;
-                        console.log("WebSocket has been closed.");
-                    }
-                    else if (event.code !== 1008) {
-                        isReconnect.current = true;
-                        wsIsConnected.current = false;
-                        console.log("WebSocket has been closed, reconnecting in 5 seconds.");
-                        if (!reconnectActive) {
-                            reconnectInterval.start();
-                            reconnectActive = true;
-                        }
-                        
-                        if (index > 5 && reconnectActive) {
-                            reconnectInterval.stop();
-                            reconnectActive = false;
-                        }
-                        
-                        // setTimeout(() => connectWs(), 3000);
-                    }
-                    else {
-                        if (index > 5 && reconnectActive) {
-                            reconnectInterval.stop();
-                            reconnectActive = false;
-                        }
-                        console.log("WebSocket has been closed.");
-                    }
-                };
-
-                ws.current.onerror = () => console.error("WebSocket error");
-
-                ws.current.onmessage = (e) => {
-                    if (e.data instanceof Blob) {
-                        const reader = new FileReader()
+                return new Promise<void>((resolve) => {
+                    console.log('connecting WebSocket')
+                    const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
     
-                        reader.onloadend = () => { 
-                            let jscmd = JSON.parse(String(reader.result)); 
-                
-                            if (jscmd.command === "dyn:relaunch") {
-                                contextState.contentStore.reset();
-                                relaunchArguments.current = jscmd.arguments;
-                                if (ws.current && ws.current.readyState !== WebSocket.CLOSED) {
-                                    ws.current.close(1000);
-                                }
-                                contextState.server.isExiting = true;
-                                contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
-                                contextState.appSettings.setAppReadyParamFalse();
-                                contextState.subscriptions.emitAppReady(false);
-                                contextState.subscriptions.emitRestart();
-                                contextState.contentStore.reset();
-                                sessionStorage.clear();
-                            }
-                            else if (jscmd.command === "api/reopenScreen") {
-                                const openReq = createOpenScreenRequest();
-                                openReq.className = jscmd.arguments.className;
-                                showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
-                            }
-                            else if (jscmd.command === "dyn:reloadCss") {
-                                contextState.subscriptions.emitAppCssVersion(jscmd.arguments.version);
-                            }
-                            else if (jscmd.command === "api/menu") {
-                                const menuReq = createBaseRequest();
-                                showTopBar(contextState.server.sendRequest(menuReq, REQUEST_KEYWORDS.MENU), topbar);
-                            }
+                    ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + encodeURIComponent(getClientId())
+                    + (isReconnect.current ? "&reconnect" : ""));
+                    ws.current.onopen = () => {
+                        ws.current?.send("PING");
+                        resolve();
+                    };
+                    ws.current.onclose = (event) => {
+                        pingInterval.stop();
+                        clearInterval(aliveInterval.current);
+                        if (event.code === 1000) {
+                            wsIsConnected.current = false;
+                            console.log("WebSocket has been closed.");
+                            resolve();
                         }
-                        reader.readAsText(e.data);
-                    }
-                    else {
-                        if (e.data === "api/changes") {
-                            contextState.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
+                        else if (event.code !== 1008) {
+                            isReconnect.current = true;
+                            wsIsConnected.current = false;
+                            console.log("WebSocket has been closed, reconnecting in 5 seconds.");
+                            if (!reconnectActive) {
+                                reconnectInterval.start();
+                                reconnectActive = true;
+                            }
+                            
+                            if (index > 5 && reconnectActive) {
+                                reconnectInterval.stop();
+                                reconnectActive = false;
+                            }
+                            
+                            // setTimeout(() => connectWs(), 3000);
                         }
-                        else if (e.data === "OK" && !wsIsConnected.current) {
-                            if (isReconnect.current) {
-                                isReconnect.current = false;
-                                console.log("WebSocket reconnected.");
-                                if (reconnectActive) {
-                                    reconnectInterval.stop();
-                                    reconnectActive = false;
-                                }
-                                
-                                
-                                index = 0;
-                                contextState.subscriptions.emitErrorBarVisible(false);
-                                wsIsConnected.current = true;
+                        else {
+                            if (index > 5 && reconnectActive) {
+                                reconnectInterval.stop();
+                                reconnectActive = false;
                             }
-                            else {
-                                console.log("WebSocket opened.");
-                                wsIsConnected.current = true;
-                            }
+                            console.log("WebSocket has been closed.");
+                            resolve();
+                        }
+                    };
+    
+                    ws.current.onerror = () => console.error("WebSocket error");
+    
+                    ws.current.onmessage = (e) => {
+                        if (e.data instanceof Blob) {
+                            const reader = new FileReader()
         
-                            if (contextState.server.wsPingInterval > 0) {
-                                pingInterval.start();
+                            reader.onloadend = () => { 
+                                let jscmd = JSON.parse(String(reader.result)); 
+                    
+                                if (jscmd.command === "dyn:relaunch") {
+                                    contextState.contentStore.reset();
+                                    relaunchArguments.current = jscmd.arguments;
+                                    if (ws.current && ws.current.readyState !== WebSocket.CLOSED) {
+                                        ws.current.close(1000);
+                                    }
+                                    contextState.server.isExiting = true;
+                                    contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
+                                    contextState.appSettings.setAppReadyParamFalse();
+                                    contextState.subscriptions.emitAppReady(false);
+                                    contextState.subscriptions.emitRestart();
+                                    contextState.contentStore.reset();
+                                    sessionStorage.clear();
+                                }
+                                else if (jscmd.command === "api/reopenScreen") {
+                                    const openReq = createOpenScreenRequest();
+                                    openReq.className = jscmd.arguments.className;
+                                    showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
+                                }
+                                else if (jscmd.command === "dyn:reloadCss") {
+                                    contextState.subscriptions.emitAppCssVersion(jscmd.arguments.version);
+                                }
+                                else if (jscmd.command === "api/menu") {
+                                    const menuReq = createBaseRequest();
+                                    showTopBar(contextState.server.sendRequest(menuReq, REQUEST_KEYWORDS.MENU), topbar);
+                                }
+                            }
+                            reader.readAsText(e.data);
+                        }
+                        else {
+                            if (e.data === "api/changes") {
+                                contextState.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
+                            }
+                            else if (e.data === "OK" && !wsIsConnected.current) {
+                                if (isReconnect.current) {
+                                    isReconnect.current = false;
+                                    console.log("WebSocket reconnected.");
+                                    if (reconnectActive) {
+                                        reconnectInterval.stop();
+                                        reconnectActive = false;
+                                    }
+                                    
+                                    
+                                    index = 0;
+                                    contextState.subscriptions.emitErrorBarVisible(false);
+                                    wsIsConnected.current = true;
+                                }
+                                else {
+                                    console.log("WebSocket opened.");
+                                    wsIsConnected.current = true;
+                                }
+            
+                                if (contextState.server.wsPingInterval > 0) {
+                                    pingInterval.start();
+                                }
                             }
                         }
                     }
-                }
+                })
             }
-        
             connectWs()
         }
 
