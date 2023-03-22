@@ -48,7 +48,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
 
     /** True, if the togglebutton is selected */
     const [checked, setChecked] = useState<boolean|undefined>(props.selected)
@@ -156,7 +156,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
                     props.focusable === false ? "no-focus-rect" : "",
-                    props.style,
+                    styleClassNames,
                     isCompDisabled(props) ? "togglebutton-disabled" : ""
                 )}
                 style={{

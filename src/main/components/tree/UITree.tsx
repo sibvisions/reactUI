@@ -73,7 +73,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     const treeWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<ITree & IExtendableTree>(baseProps);
+    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<ITree & IExtendableTree>(baseProps);
 
     /** Name of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBooks && props.dataBooks.length ? props.dataBooks[0] : undefined) as string;
@@ -700,7 +700,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         >  
             <Tree
                 id={props.name}
-                className={concatClassnames("rc-tree", props.style)}
+                className={concatClassnames("rc-tree", styleClassNames)}
                 value={nodes}
                 selectionMode="single"
                 selectionKeys={selectedKey}

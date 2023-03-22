@@ -172,7 +172,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const tableRef = useRef<DataTable>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<TableProps & IExtendableTable>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<TableProps & IExtendableTable>(baseProps);
 
     /** Name of the screen */
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id, props.dataBook]);
@@ -1424,7 +1424,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         "rc-table",
                         props.autoResize === false ? "no-auto-resize" : "",
                         getNavTableClassName(props.parent),
-                        props.style
+                        styleClassNames
                     )}
                     value={virtualEnabled ? virtualRows : providerData}
                     selection={selectedCell}

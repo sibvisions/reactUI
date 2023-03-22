@@ -36,6 +36,7 @@ import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableMapGoogle } from "../../extend-components/maps/ExtendMapGoogle";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 
 /**
  * This component displays a map view with Google Maps
@@ -49,7 +50,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
     const mapInnerRef = useRef(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IMap & IExtendableMapGoogle>(baseProps);
+    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<IMap & IExtendableMapGoogle>(baseProps);
 
     /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
@@ -282,7 +283,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
         return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
         <div ref={mapWrapperRef} {...popupMenu} id={props.name} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
-            <GMap ref={mapInnerRef} className={props.style} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
+            <GMap ref={mapInnerRef} className={concatClassnames(styleClassNames)} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
         </div>
     )
 }

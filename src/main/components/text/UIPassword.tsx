@@ -42,7 +42,7 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
     const passwordRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<ITextField & IExtendableText>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextField & IExtendableText>(baseProps);
 
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text || "");
@@ -91,7 +91,7 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
                 "rc-input", 
                 props.focusable === false ? "no-focus-rect" : "",
                 isCompDisabled(props) ? "rc-input-readonly" : "",
-                props.style
+                styleClassNames
             )}
             value={pwValue||""} 
             feedback={false} 

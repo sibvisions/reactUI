@@ -61,7 +61,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle] = useComponentConstants<IMenuButton & IExtendableMenuButton>(baseProps);
+    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IMenuButton & IExtendableMenuButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle);
@@ -225,7 +225,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                     props.borderPainted === false ? "border-notpainted" : '',
                     btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
                     `gap-${btnStyle.iconGapPos}`,
-                    props.style
+                    styleClassNames
                 )}
                 style={{
                     ...btnStyle.style,

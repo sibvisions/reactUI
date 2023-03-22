@@ -49,7 +49,7 @@ enum EDITLOCK_STATUS {
  */
 const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<ISignaturPad>(baseProps);
+    const [context, topbar, [props], layoutStyle,,styleClassNames] = useComponentConstants<ISignaturPad>(baseProps);
 
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow]) 
 
@@ -220,7 +220,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     }, [editStatus])
 
     return (
-        <div className={concatClassnames("rc-signature-pad", props.style)}>
+        <div className={concatClassnames("rc-signature-pad", styleClassNames)}>
             {saveLocked && 
             <Button
                 className="rc-button"

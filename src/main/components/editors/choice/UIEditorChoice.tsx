@@ -279,7 +279,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
                     className={concatClassnames(
                         "rc-editor-choice-img",
                         props.isReadOnly ? "choice-read-only" : "",
-                        props.style,
+                        props.styleClassNames,
                         validImages[currentImageValue].icon
                     )}
                     onClick={(event) => {
@@ -302,7 +302,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
                     className={concatClassnames(
                         "rc-editor-choice-img",
                         props.isReadOnly ? "choice-read-only" : "",
-                        props.style
+                        props.styleClassNames
                     )}
                     alt=""
                     onClick={(event) => {

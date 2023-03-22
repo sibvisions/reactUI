@@ -33,7 +33,7 @@ export interface IWindow extends IPanel {
 
 const UIMobileLauncher: FC<IWindow> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
@@ -45,7 +45,7 @@ const UIMobileLauncher: FC<IWindow> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     return (
-        <div id={props.name} ref={panelRef} className={concatClassnames(props.style, "rc-mobile-launcher")} style={{...layoutStyle, ...compStyle}}>
+        <div id={props.name} ref={panelRef} className={concatClassnames(styleClassNames, "rc-mobile-launcher")} style={{...layoutStyle, ...compStyle}}>
             <UIFrame 
                 {...props} 
                 frameStyle={layoutStyle} 

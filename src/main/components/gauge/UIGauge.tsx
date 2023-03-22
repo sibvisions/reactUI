@@ -60,7 +60,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle] = useComponentConstants<IGauge>(baseProps);
+    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IGauge>(baseProps);
 
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
@@ -163,7 +163,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                 id={props.name} 
                 {...usePopupMenu(props)} 
                 ref={wrapperRef} 
-                className={concatClassnames("ui-gauge", props.style)}
+                className={concatClassnames("ui-gauge", styleClassNames)}
                 style={props.id === "login-gauge" ? props.name === "login-gauge-wait" ? { height: "100px", width: "100px" } : { height: "75px", width: "75px" } : layoutStyle} 
                 data-pr-tooltip={props.toolTipText} 
                 data-pr-position="left"

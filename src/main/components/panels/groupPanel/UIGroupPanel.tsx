@@ -32,7 +32,7 @@ import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
  */
 const UIGroupPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -74,7 +74,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
-                className={concatClassnames("rc-panel-group", props.style)}
+                className={concatClassnames("rc-panel-group", styleClassNames)}
                 id={props.name}
                 {...usePopupMenu(props)}
                 style={props.screen_modal_ || props.content_modal_ ?

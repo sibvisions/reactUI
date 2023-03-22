@@ -105,7 +105,7 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
  */
 const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -171,7 +171,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
     return (
         <OpenFrameContext.Provider value={{ openFrames: openFrames, openFramesCallback: openFramesCallback, tabMode: props.tabMode === true }}>
             <div
-                className={concatClassnames("rc-desktop-panel", props.style)}
+                className={concatClassnames("rc-desktop-panel", styleClassNames)}
                 ref={panelRef}
                 id={props.name}
                 style={{ ...layoutStyle, backgroundColor: props.background }} >

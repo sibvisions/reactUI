@@ -14,6 +14,28 @@
  */
 
 /** Helper method to concatenate class names and filter out falsy values */
-export function concatClassnames(...classNames: (string | null | undefined)[]) {
-    return classNames.filter(Boolean).join(' ');
+export function concatClassnames(...classNames: any) {
+    if (classNames) {
+        let classes:any[] = [];
+
+        for (let i = 0; i < classNames.length; i++) {
+            let className = classNames[i];
+
+            if (!className) continue;
+
+            const type = typeof className;
+
+            if (type === 'string' || type === 'number') {
+                classes.push(className);
+            } else if (type === 'object') {
+                const _classes = Array.isArray(className) ? className : Object.entries(className).map(([key, value]) => (!!value ? key : null));
+
+                classes = _classes.length ? classes.concat(_classes.filter((c) => !!c)) : classes;
+            }
+        }
+
+        return classes.join(' ');
+    }
+
+    return undefined;
 }

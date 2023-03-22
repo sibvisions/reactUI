@@ -23,6 +23,7 @@ import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import Dimension from "../../../util/types/Dimension";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
+import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 
 /** Interface for ToolbarPanels */
 export interface IToolBarPanel extends IPanel {
@@ -36,7 +37,7 @@ export interface IToolBarPanel extends IPanel {
  */
 const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle] = useComponentConstants<IToolBarPanel>(baseProps, {visibility: 'hidden'});
+    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IToolBarPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -76,7 +77,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
-                className={props.style}
+                className={concatClassnames(styleClassNames)}
                 id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,

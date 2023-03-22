@@ -38,6 +38,7 @@ import MetaDataResponse from "../../response/data/MetaDataResponse";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -187,7 +188,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     const chartRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle] = useComponentConstants<IChart>(baseProps);
+    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IChart>(baseProps);
 
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
@@ -628,7 +629,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     useAddLayoutStyle(chartRef.current, layoutStyle, onLoadCallback)
 
     return (
-        <span ref={chartRef} className={props.style} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <span ref={chartRef} className={concatClassnames(styleClassNames)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
                 id={props.name}
                 type={chartType}

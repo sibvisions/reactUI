@@ -48,7 +48,7 @@ export interface IInternalFrame extends IWindow {
  */
 const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle] = useComponentConstants<IInternalFrame>(baseProps, {visibility: 'hidden'});
+    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<IInternalFrame>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
@@ -316,7 +316,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                         height: 200
                     }}
                     dragHandleClassName="rc-frame-header"
-                    className={concatClassnames("rc-frame", props.style)}
+                    className={concatClassnames("rc-frame", styleClassNames)}
                     enableResizing={props.resizable !== false}
                 >
                     <UIFrame

@@ -33,6 +33,7 @@ import { IExtendableNumberEditor } from "../../../extend-components/editors/Exte
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import { classNames } from "primereact/utils";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -147,14 +148,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** The classnames for the number-cell-editor */
     const numberClassNames = useMemo(() => {
-        return concatClassnames(
+        return classNames(
             "rc-editor-number",
             props.columnMetaData?.nullable === false ? "required-field" : "",
             props.isCellEditor ? "open-cell-editor" : undefined,
             props.focusable === false ? "no-focus-rect" : "",
             props.isReadOnly ? "rc-input-readonly" : "",
             props.borderVisible === false ? "invisible-border" : "",
-            props.style
+            props.styleClassNames
         )
     }, [props.columnMetaData?.nullable]);
 
