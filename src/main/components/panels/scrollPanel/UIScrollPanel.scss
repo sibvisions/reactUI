@@ -19,4 +19,8 @@
     &.f_standard_border {
         border: var(--input-border-width) solid var(--input-border-color);
     }
+
+    &.f_default_editorbackground {
+        background: var(--input-background)
+    }
 }
