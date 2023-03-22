@@ -71,11 +71,14 @@ export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boole
     else if (!numberFormat.startsWith('0') && !numberFormat.startsWith('#')) {
         const indexHash = numberFormat.indexOf('#');
         const index0 = numberFormat.indexOf('0');
-        if (indexHash !== 1 && indexHash < index0) {
-            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('#')) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
-        }
-        else if (index0 !== 1 && index0 < indexHash) {
-            return numberFormat.replaceAll("'", '').substring(0, numberFormat.indexOf('0')) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
+        const indexPeriod = numberFormat.indexOf('.');
+        if (indexPeriod !== 0) {
+            if (indexHash < index0) {
+                return numberFormat.replaceAll("'", '').substring(0, indexHash) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
+            }
+            else if (index0 < indexHash) {
+                return numberFormat.replaceAll("'", '').substring(0, index0) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
+            }
         }
     }
     return ""
@@ -89,11 +92,11 @@ export function getSuffix(numberFormat:string, locale: string) {
         }
         const indexHash = numberFormat.lastIndexOf('#');
         const index0 = numberFormat.lastIndexOf('0');
-        if (indexHash !== 1 && indexHash > index0) {
-            return numberFormat.replaceAll("'", '').substring(numberFormat.lastIndexOf('#') + 1)
+        if (indexHash > index0) {
+            return numberFormat.replaceAll("'", '').substring(indexHash + 1)
         }
-        else if (index0 !== 1 && index0 > indexHash) {
-            return numberFormat.replaceAll("'", '').substring(numberFormat.lastIndexOf('0') + 1)
+        else if (index0 > indexHash) {
+            return numberFormat.replaceAll("'", '').substring(index0 + 1)
         }
     }
     return ""
