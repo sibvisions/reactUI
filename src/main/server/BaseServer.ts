@@ -581,10 +581,11 @@ export default abstract class BaseServer {
                 else if (cellEditor.displayConcatMask) {
                     let displayString = "";
                     if (cellEditor.displayConcatMask.includes("*")) {
-                        displayString = cellEditor.displayConcatMask
+                        // Replacing "*" in case the actual value which needs to be displayed is "*"
+                        displayString = cellEditor.displayConcatMask.replaceAll("*", "[asterisk_xyz]")
                         const count = (cellEditor.displayConcatMask.match(/\*/g) || []).length;
                         for (let i = 0; i < count; i++) {
-                            displayString = displayString.replace('*', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
+                            displayString = displayString.replace('[asterisk_xyz]', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
                         }
                     }
                     else {
