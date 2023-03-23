@@ -42,7 +42,9 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
         if (props.cellData !== null) {
             return getPrefix(castedCellEditor.numberFormat, props.cellData, true, context.appSettings.locale, useGrouping) + formatNumber(castedCellEditor.numberFormat, context.appSettings.locale, props.cellData) + getSuffix(castedCellEditor.numberFormat, context.appSettings.locale)
         }
-        return getPrefix(castedCellEditor.numberFormat, props.cellData, true, context.appSettings.locale, useGrouping) + props.cellData + + getSuffix(castedCellEditor.numberFormat, context.appSettings.locale)
+        else {
+            return ""
+        }
     }, [props.cellData, castedMetaData, castedCellEditor]);
 
     return (
