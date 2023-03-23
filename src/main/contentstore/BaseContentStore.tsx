@@ -36,6 +36,7 @@ import BaseServer from "../server/BaseServer";
 import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 import { ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import FetchRequest from "../request/data/FetchRequest";
+import * as _ from "underscore"
 
 // Type for ActiveScreens
 export type ActiveScreen = {
@@ -999,7 +1000,7 @@ export default abstract class BaseContentStore {
                 if (!dataBook.referencedCellEditors) {
                     dataBook.referencedCellEditors = [{ cellEditor: cellEditor, columnName: columnName, dataBook: dataProvider }];
                 }
-                else if (!dataBook.referencedCellEditors.some(ref => ref.columnName === columnName)) {
+                else if (!dataBook.referencedCellEditors.some(ref => ref.columnName === columnName && ref.dataBook === dataProvider && _.isEqual(ref.cellEditor, cellEditor))) {
                     dataBook.referencedCellEditors.push({ cellEditor: cellEditor, columnName: columnName, dataBook: dataProvider });
                 }
             }

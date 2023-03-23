@@ -77,7 +77,10 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
                 return convertReferenceColNamesToColNames(value, castedCellEditor.linkReference)[props.colName]
             }
         }
-        return value[props.colName]
+        if (value[props.colName] !== undefined) {
+            return value[props.colName]
+        }
+        return props.cellData;
     },[isDisplayRefColNameOrConcat, linkRefFetchFlag, castedCellEditor, props.colName, displayMapChanged])
 
     /** The displayValue to display */ 
