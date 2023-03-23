@@ -60,7 +60,8 @@ export type AppContextType = {
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
-    appReady: boolean
+    appReady: boolean,
+    designerActive: boolean
 } |
 {
     transferType: "full",
@@ -73,7 +74,8 @@ export type AppContextType = {
     appSettings: AppSettings,
     ctrlPressed: boolean,
     appReady: boolean,
-    launcherReady: boolean
+    launcherReady: boolean,
+    designerActive: boolean
 }
 
 /** Contentstore instance */
@@ -113,6 +115,7 @@ const initValue: AppContextType = {
     designerHelper: designerHelper,
     ctrlPressed: false,
     appReady: false,
+    designerActive: false
 }
 
 /** Context containing the server and contentstore */

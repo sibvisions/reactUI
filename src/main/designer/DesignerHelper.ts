@@ -14,7 +14,7 @@
  */
 
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
-import Anchor from "../components/layouts/models/Anchor";
+import Anchor, { ORIENTATION } from "../components/layouts/models/Anchor";
 import { ORIENTATIONSPLIT } from "../components/panels/split/SplitPanel";
 import { ISplit } from "../components/panels/split/UISplitPanel";
 import BaseContentStore from "../contentstore/BaseContentStore";
@@ -22,7 +22,7 @@ import ContentStore from "../contentstore/ContentStore";
 import ContentStoreFull from "../contentstore/ContentStoreFull";
 import BaseComponent from "../util/types/BaseComponent";
 import Dimension from "../util/types/Dimension";
-import { createDesignerAnchors, fillAnchorMaps, getNextAnchorName } from "./FormLayoutUtil";
+import { createColumnAnchorPair, createAnchors, fillAnchorMaps, getNextAnchorName } from "./FormLayoutUtil";
 
 export type Coordinates = {
   x: number,
@@ -30,6 +30,7 @@ export type Coordinates = {
 }
 
 export type FormLayoutInformation = {
+    name: string,
     horizontalGap: number,
     verticalGap: number,
     horizontalAnchors: Anchor[],
@@ -66,54 +67,69 @@ export class DesignerHelper {
         this.contentStore = store;
     }
 
-    initialiseLayoutInfos() {
-        const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
-        const layoutList = firstPanel.querySelectorAll(".rc-layout-element");
-        layoutList.forEach(layoutElem => {
-            const castedElem = layoutElem as HTMLElement;
-            switch (this.getLayoutType(castedElem)) {
-                case LAYOUTS.FORMLAYOUT:
-                    if (this.formLayouts.has(castedElem.getAttribute("data-name") as string)) {
-                        const layoutInfo = this.formLayouts.get(castedElem.getAttribute("data-name") as string) as FormLayoutInformation;
-                        const combinedAnchorList = [...layoutInfo.horizontalAnchors, ...layoutInfo.verticalAnchors]
-                        combinedAnchorList.forEach(anchor => {
-                            fillAnchorMaps(layoutInfo, anchor);
-                        });
+    fillFormLayoutInfo(layoutInfo: FormLayoutInformation) {
+        const combinedAnchorList = [...layoutInfo.horizontalAnchors, ...layoutInfo.verticalAnchors]
+        combinedAnchorList.forEach(anchor => {
+            fillAnchorMaps(layoutInfo, anchor);
+        });
 
-                        let maxHorizontalColumn = 0;
-                        let minHorizontalColumn = 0;
+        let minHorizontalColumn = 0;
+        let maxHorizontalColumn = 0;
+        let minVerticalColumn = 0;
+        let maxVerticalColumn = 0;
 
-                        const getAnchorNameToCreate = (anchor: Anchor) => {
-                            if (["lm", "rm", "tm", "bm"].indexOf(anchor.name) !== -1) {
-                                return getNextAnchorName(anchor.name, false);
-                            }
-                            else {
-                                const firstChar = anchor.name.substring(0, 1);
-                                if (firstChar === "l") {
-                                    return anchor.name.replace("l", "r");
-                                }
-                                else if (firstChar === "r") {
-                                    return anchor.name.replace("r", "l");
-                                }
-                                else if (firstChar === "t") {
-                                    return anchor.name.replace("t", "b");
-                                }
-                            }
-                            return anchor.name.replace("b", "t");
-                        }
-
-                        layoutInfo.horizontalColumnToAnchorMap.forEach((anchorPair, column) => {
-                            if (anchorPair.leftAnchor.name === "xx") {
-                                createDesignerAnchors(layoutInfo, getAnchorNameToCreate(anchorPair.rightAnchor))
-                            }
-                            else if (anchorPair.rightAnchor.name === "xx") {
-                                createDesignerAnchors(layoutInfo, getAnchorNameToCreate(anchorPair.leftAnchor))
-                            }
-                        })
-                    }
-                    break;
+        const getAnchorNameToCreate = (anchor: Anchor) => {
+            if (["lm", "rm", "tm", "bm"].indexOf(anchor.name) !== -1) {
+                return getNextAnchorName(anchor.name, false);
             }
-        })
+            else {
+                const firstChar = anchor.name.substring(0, 1);
+                if (firstChar === "l") {
+                    return anchor.name.replace("l", "r");
+                }
+                else if (firstChar === "r") {
+                    return anchor.name.replace("r", "l");
+                }
+                else if (firstChar === "t") {
+                    return anchor.name.replace("t", "b");
+                }
+            }
+            return anchor.name.replace("b", "t");
+        }
+
+        layoutInfo.horizontalColumnToAnchorMap.forEach((anchorPair, column) => {
+            if (anchorPair.leftAnchor.name === "xx") {
+                createAnchors(layoutInfo, getAnchorNameToCreate(anchorPair.rightAnchor))
+            }
+            else if (anchorPair.rightAnchor.name === "xx") {
+                createAnchors(layoutInfo, getAnchorNameToCreate(anchorPair.leftAnchor))
+            }
+
+            if (!isNaN(parseInt(column))) {
+                minHorizontalColumn = Math.min(minHorizontalColumn, parseInt(column));
+                maxHorizontalColumn = Math.max(maxHorizontalColumn, parseInt(column));
+            }
+        });
+
+        createColumnAnchorPair(layoutInfo, minHorizontalColumn - 1, ORIENTATION.HORIZONTAL);
+        createColumnAnchorPair(layoutInfo, maxHorizontalColumn + 1, ORIENTATION.HORIZONTAL);
+
+        layoutInfo.verticalColumnToAnchorMap.forEach((anchorPair, column) => {
+            if (anchorPair.topAnchor.name === "xx") {
+                createAnchors(layoutInfo, getAnchorNameToCreate(anchorPair.bottomAnchor))
+            }
+            else if (anchorPair.bottomAnchor.name === "xx") {
+                createAnchors(layoutInfo, getAnchorNameToCreate(anchorPair.topAnchor))
+            }
+
+            if (!isNaN(parseInt(column))) {
+                minVerticalColumn = Math.min(minVerticalColumn, parseInt(column));
+                maxVerticalColumn = Math.max(maxVerticalColumn, parseInt(column));
+            }
+        });
+
+        createColumnAnchorPair(layoutInfo, minVerticalColumn - 1, ORIENTATION.VERTICAL);
+        createColumnAnchorPair(layoutInfo, maxVerticalColumn + 1, ORIENTATION.VERTICAL);
     }
 
     getLayoutType(element:HTMLElement) {
@@ -162,7 +178,6 @@ export class DesignerHelper {
         const docStyle = window.getComputedStyle(document.documentElement);
 
         const firstPanel = document.getElementById("workscreen")?.firstChild as HTMLElement;
-        console.log(firstPanel.querySelectorAll(".rc-layout-element"))
         let foundComponent: { component: BaseComponent, element: HTMLElement, relativePosition: Coordinates } | null = null;
         let lastLayout: { component: BaseComponent, element: HTMLElement, layoutInfo: FormLayoutInformation } | null = null;
 
@@ -233,7 +248,6 @@ export class DesignerHelper {
             foundComponent = { component: this.contentStore.getComponentByName(firstPanel.id) as BaseComponent, element: firstPanel, relativePosition: position };
             searchComponentsRecursive(firstPanel, position);
         }
-        console.log(lastLayout)
         return foundComponent;
     }
 }

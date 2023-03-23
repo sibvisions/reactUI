@@ -119,6 +119,10 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         }
     }, [context.subscriptions]);
 
+    useEffect(() => {
+        context.designerActive = vxContextState.showVisionX;
+    }, [vxContextState.showVisionX])
+
     // Open screens on refresh or on browser navigation forward and back buttons
     useEffect(() => {
         if (context.transferType !== "full") {

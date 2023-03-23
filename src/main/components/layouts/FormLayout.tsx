@@ -28,6 +28,7 @@ import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import { FormLayoutInformation } from "../../designer/DesignerHelper";
+import { VisionXContext } from "../../../AppWrapper";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -60,20 +61,27 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     } = baseProps;
 
     const layoutInfo = useMemo(() => {
-        if (!context.designerHelper.formLayouts.has(name)) {
-            const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
-            context.designerHelper.formLayouts.set(name, {
-                horizontalGap: gaps.horizontalGap,
-                verticalGap: gaps.verticalGap,
-                horizontalAnchors: [],
-                verticalAnchors: [],
-                anchorToColumnMap: new Map<string, number>(),
-                horizontalColumnToAnchorMap: new Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>(),
-                verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>()
-            })
+        if (context.designerActive) {
+            if (!context.designerHelper.formLayouts.has(name)) {
+                const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
+                context.designerHelper.formLayouts.set(name, {
+                    name: name,
+                    horizontalGap: gaps.horizontalGap,
+                    verticalGap: gaps.verticalGap,
+                    horizontalAnchors: [],
+                    verticalAnchors: [],
+                    anchorToColumnMap: new Map<string, number>(),
+                    horizontalColumnToAnchorMap: new Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>(),
+                    verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>()
+                })
+            }
+            return context.designerHelper.formLayouts.get(name) as FormLayoutInformation;
         }
-        return context.designerHelper.formLayouts.get(name) as FormLayoutInformation;
-    }, [context.designerHelper])
+        else {
+            return null;
+        }
+
+    }, [context.designerHelper, context.designerActive]);
 
     /** 
      * Function which lays out the container
@@ -132,11 +140,18 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             /** Fills the Anchors- and Constraints map */
             const setAnchorsAndConstraints = () => {
                 const clearLayoutInfo = () => {
-                    layoutInfo.horizontalAnchors = [];
-                    layoutInfo.verticalAnchors = [];
+                    const castedLayoutInfo = layoutInfo as FormLayoutInformation;
+                    castedLayoutInfo.horizontalAnchors = [];
+                    castedLayoutInfo.verticalAnchors = [];
+                    castedLayoutInfo.anchorToColumnMap.clear();
+                    castedLayoutInfo.horizontalColumnToAnchorMap.clear();
+                    castedLayoutInfo.verticalColumnToAnchorMap.clear();
                 }
 
-                anchors.clear(); componentConstraints.clear(); clearLayoutInfo();
+                anchors.clear(); componentConstraints.clear();
+                if (layoutInfo !== null) {
+                    clearLayoutInfo();
+                }
                 /** Parse layout info and fill Anchors-Map */
                 const splitAnchors: Array<string> = layoutData.split(";");
                 splitAnchors.forEach(anchorData => {
@@ -260,9 +275,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 /**
                  * clears auto size position of anchors
                  */
-                const clearAutoSize = (anchorList:Anchor[], pAnchor: Anchor) => {
+                const clearAutoSize = (layoutInfo:FormLayoutInformation|null, pAnchor: Anchor, isHorizontal: boolean) => {
                     let anchor:Anchor | undefined = pAnchor;
-                    const pos = anchorList.length;
+                    let anchorList = layoutInfo !== null ? (isHorizontal ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors) : [];
+                    //
+                    const pos = anchorList ? anchorList.length : 0;
 
                     const containsAnchor = (anchor:Anchor) => {
                         for (let i = 0; i < anchorList.length; i++) {
@@ -275,7 +292,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                     while (anchor && !containsAnchor(anchor)) {
                         anchorList.splice(pos, 0, anchor);
-
+                        
                         anchor.relative = anchor.autoSize;
                         anchor.autoSizeCalculated = false;
                         anchor.firstCalculation = true;
@@ -292,12 +309,44 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 children.forEach(component => {
                     const constraint = componentConstraints.get(component.id);
                     if (component.visible !== false && constraint && constraint.leftAnchor && constraint.rightAnchor && constraint.topAnchor && constraint.bottomAnchor) {
-                        clearAutoSize(layoutInfo.horizontalAnchors, constraint.leftAnchor);
-                        clearAutoSize(layoutInfo.horizontalAnchors, constraint.rightAnchor);
-                        clearAutoSize(layoutInfo.verticalAnchors, constraint.topAnchor);
-                        clearAutoSize(layoutInfo.verticalAnchors, constraint.bottomAnchor);
+                        clearAutoSize(layoutInfo, constraint.leftAnchor, true);
+                        clearAutoSize(layoutInfo, constraint.rightAnchor, true);
+                        clearAutoSize(layoutInfo, constraint.topAnchor, false);
+                        clearAutoSize(layoutInfo, constraint.bottomAnchor, false);
                     }
                 })
+
+                if (layoutInfo !== null) {
+                    // add border-anchors to layoutInfo if they aren't already added
+                    if (!layoutInfo.horizontalAnchors.some(anchor => anchor.name === "l")) {
+                        layoutInfo.horizontalAnchors.splice(0, 0, anchors.get("l") as Anchor);
+                    }
+                    if (!layoutInfo.horizontalAnchors.some(anchor => anchor.name === "r")) {
+                        if (layoutInfo.horizontalAnchors.some(anchor => anchor.name === "rm"))  {
+                            const marginIndex = layoutInfo.horizontalAnchors.findIndex(anchor => anchor.name === "rm");
+                            layoutInfo.horizontalAnchors.splice(marginIndex, 0, anchors.get("r") as Anchor);
+                        }
+                        else {
+                            layoutInfo.horizontalAnchors.push(anchors.get("r") as Anchor);
+                            layoutInfo.horizontalAnchors.push(anchors.get("rm") as Anchor);
+                        }
+                    }
+                    if (!layoutInfo.verticalAnchors.some(anchor => anchor.name === "t")) {
+                        layoutInfo.verticalAnchors.splice(0, 0, anchors.get("t") as Anchor);
+                    }
+                    if (!layoutInfo.verticalAnchors.some(anchor => anchor.name === "b")) {
+                        if (layoutInfo.verticalAnchors.some(anchor => anchor.name === "bm"))  {
+                            const marginIndex = layoutInfo.verticalAnchors.findIndex(anchor => anchor.name === "bm");
+                            layoutInfo.verticalAnchors.splice(marginIndex, 0, anchors.get("b") as Anchor);
+                        }
+                        else {
+                            layoutInfo.verticalAnchors.push(anchors.get("b") as Anchor);
+                            layoutInfo.verticalAnchors.push(anchors.get("bm") as Anchor);
+                        }
+                    }
+
+                    context.designerHelper.fillFormLayoutInfo(layoutInfo);
+                }
 
                 componentConstraints.forEach((val) => {
                     val.bottomAnchor.used = true;
@@ -782,7 +831,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             calculateAnchors();
             calculateTargetDependentAnchors();
             buildComponents();
-        }, [baseProps.preferredSize]
+        }, [baseProps.preferredSize, layoutInfo]
     );
 
     //XXX: maybe refactor so that this memo returns the actual style instead of setting a ref

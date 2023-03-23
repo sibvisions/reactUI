@@ -28,6 +28,59 @@ export function getColumnValue(name: string) {
     }
 }
 
+export function fillAnchorToColumnMap(layoutInfo:FormLayoutInformation, anchor: Anchor) {
+    if (anchor.name.length > 1) {
+        let column = 9999;
+        const anchorDirection = anchor.name.substring(0, 1);
+        column = getColumnValue(anchor.name);
+        layoutInfo.anchorToColumnMap.set(anchor.name, column);
+        return { column: column, direction: anchorDirection }
+    }
+}
+
+export function fillColumnToAnchorMaps(layoutInfo:FormLayoutInformation, anchor: Anchor, horizontal: boolean, column: number, direction: string) {
+    if (anchor.name.length > 1) {
+        const mapToFill = horizontal ? layoutInfo.horizontalColumnToAnchorMap : layoutInfo.verticalColumnToAnchorMap;
+        const directionHelper = horizontal ? "l" : "t"
+        const leftTop = horizontal ? "leftAnchor" : "topAnchor";
+        const rightBottom = horizontal ? "rightAnchor" : "bottomAnchor"
+        const entry = mapToFill.get(column.toString());
+        if (entry) {
+            if (direction === directionHelper) {
+                (entry as any)[leftTop] = anchor;
+            }
+            else {
+                (entry as any)[rightBottom] = anchor;
+            }
+        }
+        else {
+            // other anchor is a placeholder
+            if (direction === directionHelper) {
+                //@ts-ignore
+                mapToFill.set(column.toString(), horizontal ? { leftAnchor: anchor, rightAnchor: new Anchor("xx,xx,-,x,xx") } : { topAnchor: anchor, bottomAnchor: new Anchor("xx,xx,-,x,xx") })
+            }
+            else {
+                //@ts-ignore
+                mapToFill.set(column.toString(), horizontal ? { leftAnchor: new Anchor("xx,xx,-,x,xx"), rightAnchor: anchor } : { topAnchor: new Anchor("xx,xx,-,x,xx"), bottomAnchor: anchor })
+            }
+        }
+    }
+}
+
+export function fillAnchorMaps(layoutInfo:FormLayoutInformation, pAnchor: Anchor) {
+    const listToCheck = pAnchor.getOrientationFromData(pAnchor.anchorData) === ORIENTATION.HORIZONTAL ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors;
+    if (pAnchor.relatedAnchor) {
+        if (!listToCheck.some(anchor => anchor.name === pAnchor.name)) {
+            listToCheck.splice(listToCheck.indexOf(pAnchor.relatedAnchor as Anchor) + 1, 0, pAnchor);
+        }
+    }
+
+    const colAndDir = fillAnchorToColumnMap(layoutInfo, pAnchor);
+    if (colAndDir) {
+        fillColumnToAnchorMaps(layoutInfo, pAnchor, pAnchor.orientation === ORIENTATION.HORIZONTAL, colAndDir.column, colAndDir.direction);
+    }
+}
+
 // Returns the lastAnchor based on orientation and negative
 export function getLastAnchor(layoutInfo:FormLayoutInformation, orientation: ORIENTATION, negative:boolean) {
     const listToCheck = orientation === ORIENTATION.HORIZONTAL ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors;
@@ -150,6 +203,10 @@ export function getPreviousAnchorName(name: string, negative: boolean) {
     return name;
 }
 
+export function isAnchorNegative(name: string) {
+    return name.substring(1).includes("-");
+}
+
 export function createAnchorData(layoutInfo: FormLayoutInformation, name: string, lastAnchor: Anchor, orientation: ORIENTATION, negative: boolean) {
     const firstChar = name.substring(0, 1)
     let anchorData = "";
@@ -177,7 +234,7 @@ export function createAnchorData(layoutInfo: FormLayoutInformation, name: string
     return anchorData
 }
 
-export function createDesignerAnchors(layoutInfo:FormLayoutInformation, name: string) {
+export function createAnchors(layoutInfo:FormLayoutInformation, name: string) {
     const getAnchorsToCreate = (lastAnchor: Anchor, negative: boolean) => {
         const anchorsToCreate: string[] = [];
         let anchorName = getNextAnchorName(lastAnchor.name, negative);
@@ -195,7 +252,7 @@ export function createDesignerAnchors(layoutInfo:FormLayoutInformation, name: st
     }
 
     const orientation = ["l", "r"].indexOf(name.substring(0, 1)) !== -1 ? ORIENTATION.HORIZONTAL : ORIENTATION.VERTICAL;
-    const negative = name.substring(1).includes("-");
+    const negative = isAnchorNegative(name);
     let lastAnchor = getLastAnchor(layoutInfo, orientation, negative);
 
     const anchorsToCreate = getAnchorsToCreate(lastAnchor, negative);
@@ -205,63 +262,15 @@ export function createDesignerAnchors(layoutInfo:FormLayoutInformation, name: st
         fillAnchorMaps(layoutInfo, newAnchor);
         lastAnchor = newAnchor;
     })
-    console.log("anchors to create: ", getAnchorsToCreate(lastAnchor, negative));
-    console.log("layoutInfo: ", layoutInfo)
 }
 
-export function fillAnchorToColumnMap(layoutInfo:FormLayoutInformation, anchor: Anchor) {
-    if (anchor.name.length > 1) {
-        let column = 9999;
-        const anchorDirection = anchor.name.substring(0, 1);
-        column = getColumnValue(anchor.name);
-        layoutInfo.anchorToColumnMap.set(anchor.name, column);
-        return { column: column, direction: anchorDirection }
+export function createColumnAnchorPair(layoutInfo:FormLayoutInformation, column:number, orientation: ORIENTATION) {
+    console.log('CREATING COLUMN PAIR', column)
+    if (orientation === ORIENTATION.HORIZONTAL) {
+        createAnchors(layoutInfo, (column < 0 ? "l" : "r") + column.toString());
     }
-}
-
-export function fillColumnToAnchorMaps(layoutInfo:FormLayoutInformation, anchor: Anchor, horizontal: boolean, column: number, direction: string) {
-    if (anchor.name.length > 1) {
-        const mapToFill = horizontal ? layoutInfo.horizontalColumnToAnchorMap : layoutInfo.verticalColumnToAnchorMap;
-        const directionHelper = horizontal ? "l" : "t"
-        const leftTop = horizontal ? "leftAnchor" : "topAnchor";
-        const rightBottom = horizontal ? "rightAnchor" : "bottomAnchor"
-        const entry = mapToFill.get(column.toString());
-        if (entry) {
-            if (direction === directionHelper) {
-                (entry as any)[leftTop] = anchor;
-            }
-            else {
-                (entry as any)[rightBottom] = anchor;
-            }
-        }
-        else {
-            // other anchor is a placeholder
-            if (direction === directionHelper) {
-                //console.log(anchor)
-                //TODO: only call create after all anchors registered themselves and look for placeholder anchors then replace them
-                //createDesignerAnchors(layoutInfo, getAnchorNameToCreate())
-                //@ts-ignore
-                mapToFill.set(column.toString(), horizontal ? { leftAnchor: anchor, rightAnchor: new Anchor("xx,xx,-,x,xx") } : { topAnchor: anchor, bottomAnchor: new Anchor("xx,xx,-,x,xx") })
-            }
-            else {
-                //@ts-ignore
-                mapToFill.set(column.toString(), horizontal ? { leftAnchor: new Anchor("xx,xx,-,x,xx"), rightAnchor: anchor } : { topAnchor: new Anchor("xx,xx,-,x,xx"), bottomAnchor: anchor })
-            }
-        }
+    else {
+        createAnchors(layoutInfo, (column < 0 ? "t" : "b") + column.toString());
     }
-}
-
-export function fillAnchorMaps(layoutInfo:FormLayoutInformation, pAnchor: Anchor) {
-    // Martin fragen weil Formlayout die liste cleart
-    const listToCheck = pAnchor.getOrientationFromData(pAnchor.anchorData) === ORIENTATION.HORIZONTAL ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors;
-    if (pAnchor.relatedAnchor) {
-        if (!listToCheck.some(anchor => anchor.name === pAnchor.name)) {
-            listToCheck.splice(listToCheck.indexOf(pAnchor.relatedAnchor as Anchor) + 1, 0, pAnchor);
-        }
-    }
-
-    const colAndDir = fillAnchorToColumnMap(layoutInfo, pAnchor);
-    if (colAndDir) {
-        fillColumnToAnchorMaps(layoutInfo, pAnchor, pAnchor.orientation === ORIENTATION.HORIZONTAL, colAndDir.column, colAndDir.direction);
-    }
+    console.log("created column pair", column, layoutInfo)
 }
