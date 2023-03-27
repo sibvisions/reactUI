@@ -28,11 +28,11 @@ import { VisionX } from "@sibvisions/visionx/dist/moduleIndex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
-import { DesignerHelper } from "./main/designer/DesignerHelper";
 import ContentStore from "./main/contentstore/ContentStore";
 import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
 import ErrorResponse from "./main/response/error/ErrorResponse";
+import ContentStoreFull from "./main/contentstore/ContentStoreFull";
 interface IAppWrapper {
     embedOptions?: { [key: string]: any }
     theme?: string
@@ -43,10 +43,10 @@ interface IAppWrapper {
 interface IVisionXContext {
     showVisionX: boolean
     toggleVisionX: () => void,
-    designerHelper: DesignerHelper
+    contentStore: ContentStore|ContentStoreFull
 }
 
-export const VisionXContext = createContext<IVisionXContext>({ showVisionX: false, toggleVisionX: () => {}, designerHelper: new DesignerHelper(new ContentStore()) });
+export const VisionXContext = createContext<IVisionXContext>({ showVisionX: false, toggleVisionX: () => {}, contentStore: new ContentStore() });
 
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
@@ -60,7 +60,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
-    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ showVisionX: false, toggleVisionX: () => setVXContextState(prevState => ({...prevState, showVisionX: !prevState.showVisionX})), designerHelper: context.designerHelper });
+    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ showVisionX: false, toggleVisionX: () => setVXContextState(prevState => ({...prevState, showVisionX: !prevState.showVisionX})), contentStore: context.contentStore });
 
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();
@@ -118,10 +118,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
             context.subscriptions.unsubscribeFromTheme("appwrapper");
         }
     }, [context.subscriptions]);
-
-    useEffect(() => {
-        context.designerActive = vxContextState.showVisionX;
-    }, [vxContextState.showVisionX])
 
     // Open screens on refresh or on browser navigation forward and back buttons
     useEffect(() => {

@@ -27,8 +27,7 @@ import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { FormLayoutInformation } from "../../designer/DesignerHelper";
-import { VisionXContext } from "../../../AppWrapper";
+import { FormLayoutInformation, useVisionXDesigner } from "@sibvisions/visionx/dist/moduleIndex";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -42,6 +41,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    const designer = useVisionXDesigner();
 
     const runAfterLayout = useRunAfterLayout();
 
@@ -61,10 +62,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     } = baseProps;
 
     const layoutInfo = useMemo(() => {
-        if (context.designerActive) {
-            if (!context.designerHelper.formLayouts.has(name)) {
+        if (designer) {
+            if (!designer.formLayouts.has(name)) {
                 const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
-                context.designerHelper.formLayouts.set(name, {
+                designer.formLayouts.set(name, {
                     name: name,
                     horizontalGap: gaps.horizontalGap,
                     verticalGap: gaps.verticalGap,
@@ -75,13 +76,13 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>()
                 })
             }
-            return context.designerHelper.formLayouts.get(name) as FormLayoutInformation;
+            return designer.formLayouts.get(name) as FormLayoutInformation;
         }
         else {
             return null;
         }
 
-    }, [context.designerHelper, context.designerActive]);
+    }, [designer]);
 
     /** 
      * Function which lays out the container
@@ -345,7 +346,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                     }
 
-                    context.designerHelper.fillFormLayoutInfo(layoutInfo);
+                    designer.fillFormLayoutInfo(layoutInfo);
                 }
 
                 componentConstraints.forEach((val) => {
@@ -839,6 +840,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     //otherwise this calculation would run separately and would need a re render
     useMemo(() => {
         const children = context.contentStore.getChildren(id, className);
+        console.log(children, compSizes)
         /** 
          * If compSizes is set (every component in this layout reported its preferred size) 
          * and the compSize is the same as children size calculate the layout 

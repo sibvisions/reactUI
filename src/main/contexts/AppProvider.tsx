@@ -41,7 +41,6 @@ import Timer from "../util/other-util/Timer";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import { initialURL } from "../..";
-import { DesignerHelper } from "../designer/DesignerHelper";
 import BaseResponse from "../response/BaseResponse";
 
 /** Checks if the contentstore is for transfermode full */
@@ -56,12 +55,10 @@ export type AppContextType = {
     contentStore: ContentStore,
     subscriptions: SubscriptionManager,
     designerSubscriptions: DesignerSubscriptionManager,
-    designerHelper: DesignerHelper,
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
     appReady: boolean,
-    designerActive: boolean
 } |
 {
     transferType: "full",
@@ -69,13 +66,11 @@ export type AppContextType = {
     contentStore: ContentStoreFull,
     subscriptions: SubscriptionManager,
     designerSubscriptions: DesignerSubscriptionManager,
-    designerHelper: DesignerHelper,
     api: API,
     appSettings: AppSettings,
     ctrlPressed: boolean,
     appReady: boolean,
     launcherReady: boolean,
-    designerActive: boolean
 }
 
 /** Contentstore instance */
@@ -84,8 +79,6 @@ const contentStore = new ContentStore();
 const subscriptions = new SubscriptionManager(contentStore);
 /** DesignerSubscriptionManager instance */
 const designerSubscriptions = new DesignerSubscriptionManager(contentStore);
-/** DesignerHelper instance */
-const designerHelper = new DesignerHelper(contentStore);
 /** AppSettings instance */
 const appSettings = new AppSettings(contentStore, subscriptions);
 /** Server instance */
@@ -112,10 +105,8 @@ const initValue: AppContextType = {
     appSettings: appSettings,
     subscriptions: subscriptions,
     designerSubscriptions: designerSubscriptions,
-    designerHelper: designerHelper,
     ctrlPressed: false,
-    appReady: false,
-    designerActive: false
+    appReady: false
 }
 
 /** Context containing the server and contentstore */
@@ -686,7 +677,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.api.setContentStore(contextState.contentStore);
                 contextState.appSettings.setContentStore(contextState.contentStore);
                 contextState.designerSubscriptions.setContentStore(contextState.contentStore);
-                contextState.designerHelper.setContentStore(contextState.contentStore);
 
                 contextState.server = new ServerFull(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
                 contextState.api.setServer(contextState.server);

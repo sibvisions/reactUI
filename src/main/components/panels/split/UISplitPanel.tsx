@@ -29,7 +29,7 @@ import { IExtendableSplitPanel } from "../../../extend-components/panels/ExtendS
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 
 /** Interface for UISplitPanel */
-export interface ISplit extends BaseComponent{
+export interface ISplit extends BaseComponent {
     dividerAlignment: number,
     dividerPosition: number,
     orientation: 0|1
