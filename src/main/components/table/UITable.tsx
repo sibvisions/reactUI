@@ -297,6 +297,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
 
+    const clickedResizer = useRef<boolean>(false);
+
     const heldMouseEvents = useRef<Set<Function>>(new Set());
     /** Hook for MouseListener */
     useMouseListener(
@@ -1116,7 +1118,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             const table = tableRef.current as any;
             const container = table.el;
 
-            container.querySelector('.p-resizable-column[style*="pointer-events"]').style.removeProperty('pointer-events')
+            //container.querySelector('.p-resizable-column[style*="pointer-events"]').style.removeProperty('pointer-events')
             if (props.autoResize === false) {
                 //reverse prime fit sizing                
                 let nextColumn = e.element.nextElementSibling as HTMLElement | undefined;
@@ -1271,25 +1273,30 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * @param columnName - the column name
      */
     const handleSort = (columnName:string) => {
-        if (metaData && metaData.columns.find(column => column.name === columnName)?.sortable) {
-            const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
-            const sortReq = createSortRequest();
-            sortReq.dataProvider = props.dataBook;
-            sortReq.columnName = columnName
-            let sortDefToSend: SortDefinition[] = sortDefinitions || [];
-            if (context.ctrlPressed) {
-                if (!sortDef) {
-                    sortDefToSend.push({ columnName: columnName, mode: "Ascending" })
+        if (clickedResizer.current) {
+            clickedResizer.current = false;
+        }
+        else {
+            if (metaData && metaData.columns.find(column => column.name === columnName)?.sortable) {
+                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
+                const sortReq = createSortRequest();
+                sortReq.dataProvider = props.dataBook;
+                sortReq.columnName = columnName
+                let sortDefToSend: SortDefinition[] = sortDefinitions || [];
+                if (context.ctrlPressed) {
+                    if (!sortDef) {
+                        sortDefToSend.push({ columnName: columnName, mode: "Ascending" })
+                    }
+                    else {
+                        sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === columnName)] = { columnName: columnName, mode: getNextSort(sortDef?.mode) }
+                    }
                 }
                 else {
-                    sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === columnName)] = { columnName: columnName, mode: getNextSort(sortDef?.mode) }
+                    sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
                 }
+                sortReq.sortDefinition = sortDefToSend;
+                showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
             }
-            else {
-                sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
-            }
-            sortReq.sortDefinition = sortDefToSend;
-            showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
         }
     }
 
@@ -1300,7 +1307,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             DomHandler.find(tableRef.current.el, "th .p-column-resizer")
             : undefined,
         'mousedown',
-        (elem:any) => elem instanceof Element ? (elem.parentElement as HTMLElement).style.setProperty('pointer-events', 'none') : undefined,
+        (elem:any) => {
+            clickedResizer.current = true;
+            //elem instanceof Element ? (elem.parentElement as HTMLElement).style.setProperty('pointer-events', 'none') : undefined
+        },
         true
     )
 
