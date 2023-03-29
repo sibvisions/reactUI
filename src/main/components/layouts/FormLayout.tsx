@@ -20,14 +20,13 @@ import BaseComponent from "../../util/types/BaseComponent";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { ILayout } from "./Layout";
 import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
-import Anchor, { ORIENTATION } from "./models/Anchor";
 import Constraints from "./models/Constraints";
 import Margins from "./models/Margins";
 import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { FormLayoutInformation, useVisionXDesigner } from "@sibvisions/visionx/dist/moduleIndex";
+import { FormLayoutInformation, useVisionXDesigner, Anchor } from "@sibvisions/visionx/dist/moduleIndex";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -162,43 +161,35 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 /** Establish related Anchors */
                 anchors.forEach(anchor => {
-                    if (layoutInfo !== null) {
-                        const listToAdd = anchor.getOrientationFromData(anchor.anchorData) === ORIENTATION.HORIZONTAL ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors;
-                        if (!listToAdd.some(pAnchor => pAnchor.name === anchor.name)) {
-                            listToAdd.push(anchor);
-                        }
-                    }
+                    // if (layoutInfo !== null) {
+                    //     const listToAdd = anchor.getOrientationFromData(anchor.anchorData) === ORIENTATION.HORIZONTAL ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors;
+                    //     if (!listToAdd.some(pAnchor => pAnchor.name === anchor.name)) {
+                    //         listToAdd.push(anchor);
+                    //     }
+                    // }
                     anchor.relatedAnchor = anchors.get(anchor.relatedAnchorName);
                 });
 
                 if (layoutInfo !== null) {
-                    // add border-anchors to layoutInfo if they aren't already added
-                    if (!layoutInfo.horizontalAnchors.some(anchor => anchor.name === "l")) {
-                        layoutInfo.horizontalAnchors.splice(0, 0, anchors.get("l") as Anchor);
-                    }
-                    if (!layoutInfo.horizontalAnchors.some(anchor => anchor.name === "r")) {
-                        if (layoutInfo.horizontalAnchors.some(anchor => anchor.name === "rm"))  {
-                            const marginIndex = layoutInfo.horizontalAnchors.findIndex(anchor => anchor.name === "rm");
-                            layoutInfo.horizontalAnchors.splice(marginIndex, 0, anchors.get("r") as Anchor);
+                    anchors.forEach(pAnchor => {
+                        let anchor:Anchor|undefined = pAnchor;
+                        let anchorList = (["l", "r"].indexOf(anchor.name.substring(0, 1)) !== -1 ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors);
+                        const pos = anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) !== -1 ? anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) + 1 : anchorList.length;
+    
+                        const containsAnchor = (anchor:Anchor) => {
+                            for (let i = 0; i < anchorList.length; i++) {
+                                if (anchorList[i].name === anchor.name) {
+                                    return true;
+                                }
+                            }
+                            return false;
                         }
-                        else {
-                            layoutInfo.horizontalAnchors.push(anchors.get("r") as Anchor);
-                            layoutInfo.horizontalAnchors.push(anchors.get("rm") as Anchor);
+
+                        while (anchor && !containsAnchor(anchor)) {
+                            anchorList.splice(pos, 0, anchor);
+                            anchor = anchor.relatedAnchor;
                         }
-                    }
-                    if (!layoutInfo.verticalAnchors.some(anchor => anchor.name === "t")) {
-                        layoutInfo.verticalAnchors.splice(0, 0, anchors.get("t") as Anchor);
-                    }
-                    if (!layoutInfo.verticalAnchors.some(anchor => anchor.name === "b")) {
-                        if (layoutInfo.verticalAnchors.some(anchor => anchor.name === "bm"))  {
-                            const marginIndex = layoutInfo.verticalAnchors.findIndex(anchor => anchor.name === "bm");
-                            layoutInfo.verticalAnchors.splice(marginIndex, 0, anchors.get("b") as Anchor);
-                        }
-                        else {
-                            layoutInfo.verticalAnchors.push(anchors.get("b") as Anchor);
-                            layoutInfo.verticalAnchors.push(anchors.get("bm") as Anchor);
-                        }
-                    }
+                    })
 
                     designer.fillFormLayoutInfo(layoutInfo, anchors);
                 }
