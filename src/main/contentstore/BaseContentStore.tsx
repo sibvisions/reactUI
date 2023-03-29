@@ -1121,8 +1121,14 @@ export default abstract class BaseContentStore {
 
                         if (changedColumn.cellEditor !== undefined) {
                             currentCol.cellEditor = changedColumn.cellEditor;
+
                             if (currentCol.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
-                                this.createReferencedCellEditors(screenName, currentCol.cellEditor as ICellEditorLinked, currentCol.name, metaData.dataProvider);
+                                const castedCol = currentCol.cellEditor as ICellEditorLinked
+                                const refDataBook = this.getDataBook(screenName, castedCol.linkReference.referencedDataBook);
+                                if (refDataBook && refDataBook.referencedCellEditors && refDataBook.referencedCellEditors.length) {
+                                    refDataBook.referencedCellEditors.splice(refDataBook.referencedCellEditors.findIndex(refCell =>  refCell.columnName === currentCol.name && refCell.dataBook === metaData.dataProvider), 1)
+                                }
+                                this.createReferencedCellEditors(screenName, castedCol, currentCol.name, metaData.dataProvider);
                             }      
                             changed = true;
                         }
