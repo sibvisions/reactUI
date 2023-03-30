@@ -63,6 +63,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     const layoutInfo = useMemo(() => {
         if (designer) {
             if (!designer.formLayouts.has(name)) {
+                const compConstraintMap:Map<string, string> = new Map<string, string>();
+                components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
                 const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
                 designer.formLayouts.set(name, {
                     name: name,
@@ -72,7 +74,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     verticalAnchors: [],
                     anchorToColumnMap: new Map<string, number>(),
                     horizontalColumnToAnchorMap: new Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>(),
-                    verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>()
+                    verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>(),
+                    componentConstraints: compConstraintMap
                 })
             }
             return designer.formLayouts.get(name) as FormLayoutInformation;
@@ -158,15 +161,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     const name = anchorData.substring(0, anchorData.indexOf(","));
                     anchors.set(name, new Anchor(anchorData));
                 });
-
+                
                 /** Establish related Anchors */
                 anchors.forEach(anchor => {
-                    // if (layoutInfo !== null) {
-                    //     const listToAdd = anchor.getOrientationFromData(anchor.anchorData) === ORIENTATION.HORIZONTAL ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors;
-                    //     if (!listToAdd.some(pAnchor => pAnchor.name === anchor.name)) {
-                    //         listToAdd.push(anchor);
-                    //     }
-                    // }
                     anchor.relatedAnchor = anchors.get(anchor.relatedAnchorName);
                 });
 
