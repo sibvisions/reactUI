@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useContext, useMemo, useRef } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { appContext } from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import BaseComponent from "../../util/types/BaseComponent";
@@ -824,7 +824,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         }
 
         return calculatedStyle.current;
-    }, [layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore])
+    }, [layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore, components])
 
     return(
         /** Provide the allowed sizes of the children as a context */
