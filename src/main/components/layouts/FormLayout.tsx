@@ -62,9 +62,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     const layoutInfo = useMemo(() => {
         if (designer) {
+            const compConstraintMap:Map<string, string> = new Map<string, string>();
+            components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
             if (!designer.formLayouts.has(name)) {
-                const compConstraintMap:Map<string, string> = new Map<string, string>();
-                components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
                 const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
                 designer.formLayouts.set(name, {
                     name: name,
@@ -75,8 +75,12 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     anchorToColumnMap: new Map<string, number>(),
                     horizontalColumnToAnchorMap: new Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>(),
                     verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>(),
-                    componentConstraints: compConstraintMap
+                    componentConstraints: compConstraintMap,
+                    originalConstraints: new Map(compConstraintMap)
                 })
+            }
+            else {
+                designer.formLayouts.get(name)!.originalConstraints = new Map(compConstraintMap);
             }
             return designer.formLayouts.get(name) as FormLayoutInformation;
         }
@@ -197,10 +201,15 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     /** Get Anchors */
                     const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
                     const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
+                    
                     /** Fill Constraints-Map */
                     if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
                         const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
                         componentConstraints.set(component.id, constraint);
+
+                        if (layoutInfo !== null) {
+                            layoutInfo.componentConstraints.set(component.name, component.constraints);
+                        }
                     }
                 });
             }
@@ -704,10 +713,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                         bba.position = tba.position + preferredHeight;
                     }
-                    lba.position -= margins.marginLeft;
-                    rba.position -= margins.marginLeft;
-                    tba.position -= margins.marginTop;
-                    bba.position -= margins.marginTop;
 
                     children.forEach(component => {
                         if(component.visible !== false){
@@ -739,7 +744,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 let marginConstraint: Constraints | undefined
                 let borderConstraint: Constraints | undefined;
 
-                if(tma && bma && rma && lma){
+                if(tma && bma && rma && lma) {
                     marginConstraint = new Constraints(tma, lma, bma, rma);
                 }
 
@@ -786,8 +791,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         style: {
                             height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
                             width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
-                            left:  style?.left || marginConstraint.leftAnchor.getAbsolutePosition(),
-                            top:  style?.top || marginConstraint.topAnchor.getAbsolutePosition(),
+                            left:  style?.left || borderConstraint.leftAnchor.getAbsolutePosition(),
+                            top:  style?.top || borderConstraint.topAnchor.getAbsolutePosition(),
                             position: "relative",
                         },
                         componentSizes: (style.height !== undefined && style.width !== undefined) ? sizeMap : undefined
