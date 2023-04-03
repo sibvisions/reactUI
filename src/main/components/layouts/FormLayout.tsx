@@ -636,10 +636,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                         bba.position = tba.position + preferredHeight;
                     }
-                    lba.position -= margins.marginLeft;
-                    rba.position -= margins.marginLeft;
-                    tba.position -= margins.marginTop;
-                    bba.position -= margins.marginTop;
 
                     children.forEach(component => {
                         if(component.visible !== false){
@@ -718,8 +714,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         style: {
                             height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
                             width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
-                            left:  style?.left || marginConstraint.leftAnchor.getAbsolutePosition(),
-                            top:  style?.top || marginConstraint.topAnchor.getAbsolutePosition(),
+                            left:  style?.left || borderConstraint.leftAnchor.getAbsolutePosition(),
+                            top:  style?.top || borderConstraint.topAnchor.getAbsolutePosition(),
                             position: "relative",
                         },
                         componentSizes: (style.height !== undefined && style.width !== undefined) ? sizeMap : undefined
