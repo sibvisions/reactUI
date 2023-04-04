@@ -64,6 +64,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             "P", 
             prefSize,
             props.className,
+            styleClassNames,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 

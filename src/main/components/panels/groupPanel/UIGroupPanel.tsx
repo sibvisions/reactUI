@@ -59,6 +59,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             "G", 
             prefSize,
             props.className,
+            styleClassNames,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 

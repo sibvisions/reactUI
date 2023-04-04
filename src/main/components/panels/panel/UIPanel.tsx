@@ -65,6 +65,7 @@ export function panelReportSize(id: string,
     type: "P" | "S" | "G",
     calcPref: Dimension,
     className: string,
+    styleClassNames: string[],
     calcMin?: Dimension,
     propPref?: string,
     propMin?: string,
@@ -84,6 +85,14 @@ export function panelReportSize(id: string,
             adjustedSize.width += minusWidth ? 17 : 0
             if (scrollCallback && (scrollSize?.height !== adjustedSize.height || scrollSize.width !== adjustedSize.width)) {
                 scrollCallback({ height: adjustedSize.height, width: adjustedSize.width })
+            }
+        }
+
+        if (styleClassNames.includes("f_standard_border")) {
+            const borderWidth = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--input-border-width"));
+            if (!isNaN(borderWidth)) {
+                adjustedSize.height += borderWidth * 2;
+                adjustedSize.width += borderWidth * 2;
             }
         }
         sendOnLoadCallback(
@@ -202,6 +211,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
             "P",
             prefSize,
             props.className, 
+            styleClassNames,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 
@@ -271,7 +281,8 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                         context.transferType
                     )}
                     isToolBar={isToolBar}
-                    parent={props.parent} />
+                    parent={props.parent}
+                    hasBorder={styleClassNames.includes("f_standard_border")} />
             </div>
         </>
     )

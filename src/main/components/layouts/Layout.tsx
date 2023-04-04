@@ -47,7 +47,8 @@ export interface ILayout {
     alignChildrenIfOverflow?: boolean,
     panelType?: string,
     isToolBar?: boolean,
-    parent?:string
+    parent?:string,
+    hasBorder?:boolean
 }
 
 /**

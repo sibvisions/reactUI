@@ -45,6 +45,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         parent,
         className,
         panelType,
+        hasBorder,
         name
     } = baseProps
 
@@ -228,10 +229,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
 
             const flowLayoutInfo = calculateGrid();
-            const prefSize:Dimension = { width: (flowLayoutInfo.gridWidth * flowLayoutInfo.columns + gaps.horizontalGap * (flowLayoutInfo.columns-1)) + margins.marginLeft + margins.marginRight,
-                                         height: (flowLayoutInfo.gridHeight * flowLayoutInfo.rows + gaps.verticalGap * (flowLayoutInfo.rows-1)) + margins.marginTop + margins.marginBottom };
+            const prefSize:Dimension = { width: (flowLayoutInfo.gridWidth * flowLayoutInfo.columns + gaps.horizontalGap * (flowLayoutInfo.columns-1)),
+                                         height: (flowLayoutInfo.gridHeight * flowLayoutInfo.rows + gaps.verticalGap * (flowLayoutInfo.rows-1)) };
             let left:number;
             let width:number;
+            const borderWidth = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--input-border-width"));
 
             if (outerHa === HORIZONTAL_ALIGNMENT.STRETCH) {
                 left = margins.marginLeft;
@@ -239,7 +241,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
             else {
                 if (style.width) {
-                    left = ((style.width as number) - prefSize.width) * getAlignmentFactor(outerHa) + margins.marginLeft;
+                    left = ((style.width as number - (hasBorder && !isNaN(borderWidth) ? borderWidth * 2 : 0)) - prefSize.width) * getAlignmentFactor(outerHa) + margins.marginLeft;
                 }
                 else {
                     left = 0;
@@ -256,7 +258,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
             else {
                 if (style.height) {
-                    top = ((style.height as number) - prefSize.height) * getAlignmentFactor(outerVa) + margins.marginTop;
+                    top = ((style.height as number) - prefSize.height - (hasBorder && !isNaN(borderWidth) ? borderWidth * 2 : 0)) * getAlignmentFactor(outerVa) + margins.marginTop;
                 }
                 else {
                     top = 0;
