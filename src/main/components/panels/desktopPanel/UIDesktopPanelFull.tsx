@@ -80,6 +80,7 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
                 }} />
                 <Layout
                     id={props.id}
+                    name={props.name}
                     className={props.className}
                     layoutData={props.layoutData}
                     layout={props.layout}
@@ -143,6 +144,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
             "P",
             prefSize,
             props.className,
+            styleClassNames,
             minSize,
             props.preferredSize,
             props.minimumSize,
@@ -185,6 +187,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
                     : 
                         <Layout
                             id={props.id}
+                            name={props.name}
                             className={props.className}
                             layoutData={props.layoutData}
                             layout={props.layout}

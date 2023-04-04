@@ -32,6 +32,7 @@ import NullLayout from "./NullLayout";
  /** Interface for layouts */
 export interface ILayout{
     id: string,
+    name: string
     className: string
     layout: string,
     layoutData: string,
@@ -46,7 +47,8 @@ export interface ILayout{
     alignChildrenIfOverflow?: boolean,
     panelType?: string,
     isToolBar?: boolean,
-    parent?:string
+    parent?:string,
+    hasBorder?:boolean
 }
 
 /**

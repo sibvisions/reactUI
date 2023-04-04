@@ -109,6 +109,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             "P", 
             prefSize,
             props.className,
+            styleClassNames,
             { height: 17, width: 17 },
             props.preferredSize, 
             props.minimumSize, 
@@ -153,6 +154,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             >
                 <Layout
                     id={id}
+                    name={props.name}
                     className={props.className}
                     layoutData={props.layoutData}
                     layout={props.layout}

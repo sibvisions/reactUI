@@ -59,6 +59,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             "G", 
             prefSize,
             props.className,
+            styleClassNames,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 
@@ -95,6 +96,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                     style={{ ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {}) }}>
                     <Layout
                         id={id}
+                        name={props.name}
                         className={props.className}
                         layoutData={props.layoutData}
                         layout={props.layout}

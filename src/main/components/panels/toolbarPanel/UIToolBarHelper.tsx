@@ -112,6 +112,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
             "P", 
             prefSize,
             props.className,
+            [],
             minSize, 
             props.preferredSize, 
             props.minimumSize, 
@@ -146,6 +147,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                 data-pr-position="left">
                 <Layout
                     id={id}
+                    name={props.name}
                     className={props.className}
                     layoutData={props.layoutData}
                     layout={props.layout}
@@ -187,6 +189,7 @@ const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
             "P",
             { height: 0, width: 0 },
             props.className,
+            [],
             { height: 0, width: 0 },
             props.preferredSize,
             props.minimumSize,

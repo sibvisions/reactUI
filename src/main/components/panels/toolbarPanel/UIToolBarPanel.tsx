@@ -64,6 +64,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             "P", 
             prefSize,
             props.className,
+            styleClassNames,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 
@@ -93,6 +94,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                 {...usePopupMenu(props)} >
                 <Layout
                     id={id}
+                    name={props.name}
                     className={props.className}
                     layoutData={""}
                     layout={props.layout}

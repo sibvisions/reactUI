@@ -56,6 +56,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
             style={{...layoutStyle, backgroundColor: props.background}} >
             <Layout
                 id={props.id}
+                name={props.name}
                 className={props.className}
                 layoutData={props.layoutData}
                 layout={props.layout}
