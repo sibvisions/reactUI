@@ -26,7 +26,7 @@ import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { FormLayoutInformation, useVisionXDesigner, Anchor } from "@sibvisions/visionx/dist/moduleIndex";
+import { FormLayoutInformation, useVisionXDesigner, Anchor, fillFormLayoutInfo } from "@sibvisions/visionx/dist/moduleIndex";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -192,7 +192,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                     })
 
-                    designer.fillFormLayoutInfo(layoutInfo, anchors);
+                    fillFormLayoutInfo(layoutInfo, anchors);
                 }
 
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
