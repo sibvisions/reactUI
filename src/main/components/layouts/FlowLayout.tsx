@@ -45,7 +45,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         parent,
         className,
         panelType,
-        hasBorder
+        hasBorder,
+        name
     } = baseProps
 
     /** Use context to gain access for contentstore and server methods */
@@ -111,7 +112,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
          * @returns 
          */
          const isFirstToolBar = (id:string) => {
-            if (toolBarsFiltered && !id.includes("-tbMain")) {
+            if (toolBarsFiltered && toolBarsFiltered.length && !id.includes("-tbMain")) {
                 return toolBarsFiltered.findIndex(entry => entry[1].id === id) === 0 ? true : false;
             }
             return true;
@@ -124,7 +125,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
          * @returns 
          */
         const isLastToolBar = (id:string) => {
-            if (toolBarsFiltered && !id.includes("-tbMain")) {
+            if (toolBarsFiltered && toolBarsFiltered.length && !id.includes("-tbMain")) {
                 return toolBarsFiltered.findIndex(entry => entry[1].id === id) === toolBarsFiltered.length - 1 ? true : false;
             }
             return false;
@@ -173,7 +174,10 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 /** If the current component is the first */
                 let bFirst = true;
 
-                let tbExtraSize = toolBarsFiltered ? 5 : 0
+                let tbExtraSize = toolBarsFiltered && toolBarsFiltered.length ? 5 : 0
+
+                const boundsWidth = style.width as number - margins.marginLeft - margins.marginRight;
+                const boundsHeight = style.height as number - margins.marginTop - margins.marginBottom;
 
                 childrenSorted.forEach(component => {
                     if (component.visible !== false) {
@@ -188,7 +192,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             height = Math.max(height, prefSize.height);
 
                             /** If autowrapping is true and the width of the row is greater than the width of the layout, add a new row */
-                            if (!bFirst && autoWrap && (style.width as number) > 0 && calcWidth > (style.width as number)) {
+                            if (!bFirst && autoWrap && boundsWidth > 0 && calcWidth > boundsWidth) {
                                 calcWidth = prefSize.width;
                                 anzRows++;
                             }
@@ -208,7 +212,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             width = Math.max(width, prefSize.width);
 
                             /** If autowrapping is true and the height of the column is greater than the height of the layout, add a new column */
-                            if (!bFirst && autoWrap && (style.height as number) > 0 && calcHeight > (style.height as number)) {
+                            if (!bFirst && autoWrap && boundsHeight > 0 && calcHeight > boundsHeight) {
                                 calcHeight = prefSize.height;
                                 anzCols++;
                             }
@@ -240,7 +244,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
             else {
                 if (style.width) {
-                    left = ((style.width as number - (hasBorder && !isNaN(borderWidth) ? borderWidth * 2 : 0)) - prefSize.width) * getAlignmentFactor(outerHa) + margins.marginLeft;
+                    left = ((style.width as number - margins.marginLeft - margins.marginRight - prefSize.width - (hasBorder && !isNaN(borderWidth) ? borderWidth * 2 : 0))) * getAlignmentFactor(outerHa) + margins.marginLeft;
                 }
                 else {
                     left = 0;
@@ -257,7 +261,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
             else {
                 if (style.height) {
-                    top = ((style.height as number) - prefSize.height - (hasBorder && !isNaN(borderWidth) ? borderWidth * 2 : 0)) * getAlignmentFactor(outerVa) + margins.marginTop;
+                    top = ((style.height as number) - margins.marginBottom - margins.marginTop - prefSize.height - (hasBorder && !isNaN(borderWidth) ? borderWidth * 2 : 0)) * getAlignmentFactor(outerVa) + margins.marginTop;
                 }
                 else {
                     top = 0;
@@ -361,7 +365,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
             if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {
                 runAfterLayout(() => {
-                    reportSize({ height: prefSize.height, width: prefSize.width });
+                    reportSize({ height: prefSize.height + margins.marginTop + margins.marginBottom, width: prefSize.width + margins.marginLeft + margins.marginRight });
                 });
             }
             if (baseProps.popupSize) {
@@ -375,8 +379,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
             else {
                 setCalculatedStyle({ 
-                    height: prefSize.height, 
-                    width: prefSize.width, 
+                    height: prefSize.height + margins.marginTop + margins.marginBottom, 
+                    width: prefSize.width + margins.marginLeft + margins.marginRight, 
                     position: 'relative', 
                     left: toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0, 
                     top: toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
