@@ -244,7 +244,7 @@ export default class ContentStore extends BaseContentStore {
                     this.addToNotifyList(newComponent, notifyList);
                 }
 
-                if (newComponent.parent) {
+                if (newComponent.parent || newComponent.visible) {
                     if (existingComponent) {
                         this.validateComponent(existingComponent)
                     }
