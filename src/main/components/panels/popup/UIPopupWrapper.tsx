@@ -25,6 +25,7 @@ import { LayoutContext } from "../../../LayoutContext";
 import _ from "underscore";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import Dimension from "../../../util/types/Dimension";
+import Server from "../../../server/Server";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -91,8 +92,11 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
+                        console.log(baseProps.name);
+                        (context.server as Server).closeContent({ name: "closeContent", componentId: baseProps.name })
                     }
-                    context.contentStore.closeScreen(baseProps.name, true);
+
+                    //context.contentStore.closeScreen(baseProps.name, true);
                 }
             });
         }
