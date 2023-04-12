@@ -919,10 +919,11 @@ export default abstract class BaseContentStore {
             const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
                 //const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
-                const existingData = existingProvider.data.get(getPageKey());
+                let existingData = existingProvider.data.get(getPageKey());
                 if (existingData) {
                     if (existingData.length <= from) {
-                        existingData.push(...newDataSet);
+                        existingData = [...existingData, ...newDataSet];
+                        //existingData.push(...newDataSet);
                     } 
                     else {
                         let newDataSetIndex = 0;
