@@ -121,7 +121,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         if (context.transferType !== "full") {
             history.listen(() => {
                 if (history.action === "POP") {
-
                     // Checks if the response contains a dialog to save the screen when closing and keeps the url if there is a dialog.
                     const checkAskBefore = (prevPath: string, responses: BaseResponse[], comp?: IPanel) => {
                         let callCloseScreen = true;
@@ -151,6 +150,12 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                 .then((responses: BaseResponse[]) => {
                                     checkAskBefore(prevPathCopy, responses)
                                 });
+                        }
+                        else {
+                            const user = context.contentStore.currentUser;
+                            if (!user.displayName) {
+                                window.location.reload();
+                            }
                         }
                     }
                     else {

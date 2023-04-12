@@ -23,6 +23,7 @@ import ContentStore from "../../contentstore/ContentStore";
 import { MenuOptions, VisibleButtons } from "../../AppSettings";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { translation } from "../../util/other-util/Translation";
+import UserData from "../../model/UserData";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -45,6 +46,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         const logoutRequest = createLogoutRequest();
         localStorage.removeItem("authKey")
         context.contentStore.reset();
+        (context.contentStore as ContentStore).currentUser  = new UserData();
         showTopBar(context.server.sendRequest(logoutRequest, REQUEST_KEYWORDS.LOGOUT), topbar)
     }, [context.server, context.contentStore]);
 
