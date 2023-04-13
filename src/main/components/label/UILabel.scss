@@ -28,6 +28,9 @@
         padding-top: 9px;
         padding-bottom: 9px;
         caret-color: transparent;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
