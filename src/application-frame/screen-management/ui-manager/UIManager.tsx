@@ -102,6 +102,14 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-width')),
     menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-collapsed-width')) : 0), menuCollapsed);
 
+    useEffect(() => {
+        const user = (context.contentStore as ContentStore).currentUser;
+        if (!user.displayName) {
+            sessionStorage.clear();
+            window.location.reload();
+        }
+    }, [])
+
     // Subscribes to the menu-visibility and theme
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions) => setMenuOptions(menuOptions));
@@ -116,7 +124,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const CustomWrapper = props.customAppWrapper;
 
     return (
-        (CustomWrapper) ?
+        ((context.contentStore as ContentStore).currentUser.displayName) ? 
+            (CustomWrapper) ?
             <div
                 className={concatClassnames(
                     "reactUI",
@@ -166,6 +175,8 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     </ResizeProvider>
                 </div>
             </div>
+            :
+            <></>
     )
 }
 export default UIManager

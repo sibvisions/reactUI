@@ -157,6 +157,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         else {
                             const user = context.contentStore.currentUser;
                             if (!user.displayName) {
+                                sessionStorage.clear();
                                 window.location.reload();
                             }
                         }

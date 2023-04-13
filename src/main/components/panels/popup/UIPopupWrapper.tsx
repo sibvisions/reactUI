@@ -92,7 +92,6 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 if (res[0] === undefined || res[0].name !== "message.error") {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
-                        console.log(baseProps.name);
                         (context.server as Server).closeContent({ name: "closeContent", componentId: baseProps.name })
                     }
 

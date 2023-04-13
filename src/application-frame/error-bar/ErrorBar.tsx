@@ -115,12 +115,14 @@ const ErrorBar:FC = () => {
         // }
         context.server.isExiting = true;
         context.server.timeoutRequest(fetch(context.server.BASE_URL + context.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), context.server.buildReqOpts(createAliveRequest())), context.server.timeoutMs);
-        context.appSettings.setAppReadyParamFalse();
-        context.subscriptions.emitAppReady(false);
-        context.subscriptions.emitRestart();
-        context.contentStore.reset();
         sessionStorage.clear();
-        context.subscriptions.emitSessionExpiredChanged(false);
+        window.location.reload();
+        // context.appSettings.setAppReadyParamFalse();
+        // context.subscriptions.emitAppReady(false);
+        // context.subscriptions.emitRestart();
+        // context.contentStore.reset();
+        // sessionStorage.clear();
+        // context.subscriptions.emitSessionExpiredChanged(false);
     }
 
     /**
