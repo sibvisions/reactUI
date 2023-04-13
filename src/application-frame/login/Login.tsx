@@ -16,7 +16,7 @@
 import React, { FC, useEffect, useState, ReactElement } from "react";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../screen-management/ResizeHandler";
-import BaseComponent from "../../main/util/types/BaseComponent";
+import IBaseComponent from "../../main/util/types/IBaseComponent";
 import LoginForm from "./LoginForm"
 import ResetForm from "./ResetForm";
 import MFAText from "./MFAText";
@@ -334,7 +334,7 @@ const Login: FC = () => {
                 <ResizeProvider login={true}>
                     <ResizeHandler>
                         <div className="rc-glasspane login-glass" />
-                        {componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)}
+                        {componentHandler(context.appSettings.desktopPanel as IBaseComponent, context.contentStore)}
                         <div className="login-form-position-wrapper">
                             {getCorrectLoginForm()}
                         </div>

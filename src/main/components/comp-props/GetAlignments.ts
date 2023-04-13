@@ -14,7 +14,7 @@
  */
 
 import { CSSProperties } from "react";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { IEditor } from "../editors/IEditor";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../layouts/models/ALIGNMENT";
 
@@ -67,7 +67,7 @@ function translateAlignments(pha:number|undefined, pva:number|undefined):Alignme
  * Returns true, if the component is an editor
  * @param props - the properties of the component
  */
-function isEditor(props:IEditor|BaseComponent): props is IEditor {
+function isEditor(props:IEditor|IBaseComponent): props is IEditor {
     return (props as IEditor).cellEditor !== undefined;
 }
 
@@ -77,7 +77,7 @@ function isEditor(props:IEditor|BaseComponent): props is IEditor {
  * @param props - Properties of the component
  * @returns Horizontal- and verticalalignment of CellEditor or undefined if none are set
  */
-export function getAlignments(props: IEditor|BaseComponent):Alignments {
+export function getAlignments(props: IEditor|IBaseComponent):Alignments {
     if (isEditor(props)) {
         if (props.cellEditor_horizontalAlignment_ !== undefined && props.cellEditor_verticalAlignment_ !== undefined)
             return translateAlignments(props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);

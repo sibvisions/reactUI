@@ -21,7 +21,6 @@ import { IWindow } from "../launcher/UIMobileLauncher";
 import { OpenFrameContext } from "../panels/desktopPanel/UIDesktopPanelFull";
 import { checkSizes, sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import UIFrame from "./UIFrame";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import useEventHandler from "../../hooks/event-hooks/useEventHandler";
@@ -29,8 +28,9 @@ import Dimension from "../../util/types/Dimension";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import Bounds from "../layouts/models/Bounds";
+import { IComponentConstants } from "../BaseComponent";
 
-export interface IInternalFrame extends IWindow {
+export interface IInternalFrame extends IWindow, IComponentConstants {
     iconifiable?: boolean
     maximizable?:boolean
     closable?: boolean
@@ -46,10 +46,7 @@ export interface IInternalFrame extends IWindow {
  * This component displays an internal window which can be moved and resized (if resizable is true).
  * @param baseProps - the base properties of this component sent by the server.
  */
-const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
-    /** Component constants */
-    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<IInternalFrame>(baseProps, {visibility: 'hidden'});
-
+const UIInternalFrame: FC<IInternalFrame> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
     
@@ -63,7 +60,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     const [packSize, setPackSize] = useState<CSSProperties>();
 
     /** Extracting onLoadCallback and id from baseProps */
-    const { onLoadCallback, id } = baseProps;
+    const { onLoadCallback, id } = props;
 
     /** Flag, true, if framestyle needs to be initially set */
     const initFrame = useRef<boolean>(true);
@@ -74,7 +71,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     /** Returns the Element which this InternalFrame is centered to, or undefined if it wasn't found */
     const getCenterRelativeElem = useCallback(() => {
         if (props.centerRelativeTo) {
-            const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
+            const relativeComp = props.context.contentStore.getComponentById(props.centerRelativeTo);
             if (relativeComp) {
                 if (relativeComp.parent?.includes("IF") && !frameContext.tabMode) {
                     return document.getElementById(relativeComp.name)?.closest(".rc-frame") as HTMLElement
@@ -120,8 +117,8 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         boundsReq.height = boundsObj.height;
         boundsReq.x  = boundsObj.x;
         boundsReq.y = boundsObj.y;
-        context.server.sendRequest(boundsReq, REQUEST_KEYWORDS.BOUNDS);
-    }, [context.server, topbar])
+        props.context.server.sendRequest(boundsReq, REQUEST_KEYWORDS.BOUNDS);
+    }, [props.context.server, props.topbar])
 
     // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout
     const getPreferredFrameSize = (pSize:Dimension) => {
@@ -145,10 +142,10 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
 
     // When the frame has already initialised, props.pack is true and a pack-size has already been calculated, update the size of the window and send a boundsreq to the server
     useEffect(() => {
-        if (!initFrame.current && rndRef.current && props.pack && packSize && context.contentStore.getComponentById(props.id)) {
+        if (!initFrame.current && rndRef.current && props.pack && packSize && props.context.contentStore.getComponentById(props.id)) {
             rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
             setFrameStyle(packSize);
-            (context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
+            (props.context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
         }
     }, [props.pack, packSize]);
 
@@ -184,7 +181,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
 
     // Initially sets the framestyle and sends a boundsrquest to the server, also tells the frameContext the name of the opened frame
     useEffect(() => {
-        if (context.transferType === "full" && context.launcherReady && initFrame.current) {
+        if (props.context.transferType === "full" && props.context.launcherReady && initFrame.current) {
             if (rndRef.current) {
                 if (bounds && (bounds.height || bounds.width)) {
                     rndRef.current.updateSize({ width: bounds.width + 8, height: bounds.height + 35 });
@@ -192,16 +189,16 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                     initFrame.current = false;
                 }
                 else {
-                    if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
+                    if (!props.pack && props.layoutStyle && props.layoutStyle.width && props.layoutStyle.height) {
                         //height + 35 because of header + border + padding, width + 8 because of padding + border 
-                        rndRef.current.updateSize({ width: layoutStyle.width as number + 8, height: layoutStyle.height as number + 35 });
-                        setFrameStyle(layoutStyle);
+                        rndRef.current.updateSize({ width: props.layoutStyle.width as number + 8, height: props.layoutStyle.height as number + 35 });
+                        setFrameStyle(props.layoutStyle);
                         initFrame.current = false;
                     }
                     else if (packSize) {
                         rndRef.current.updateSize({ width: packSize.width as number + 8, height: packSize.height as number + 35 });
                         setFrameStyle(packSize);
-                        (context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
+                        (props.context.contentStore.getComponentById(props.id) as IInternalFrame).pack = false;
                         initFrame.current = false;
                     }
                 }
@@ -221,7 +218,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     // When the server sends a dispose, call closeScreen
     useEffect(() => {
         if (props.dispose) {
-            context.contentStore.closeScreen(props.name, props.content_className_ ? true : false)
+            props.context.contentStore.closeScreen(props.name, props.content_className_ ? true : false)
         }   
     }, [props.dispose])
 
@@ -236,8 +233,8 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
             else {
                 if (props.centerRelativeTo) {
                     const relativeElem = getCenterRelativeElem();
-                    const relativeComp = context.contentStore.getComponentById(props.centerRelativeTo);
-                    const relativeCompParent = relativeComp ? context.contentStore.getComponentByName(context.contentStore.getScreenName(relativeComp.id) as string) : undefined;
+                    const relativeComp = props.context.contentStore.getComponentById(props.centerRelativeTo);
+                    const relativeCompParent = relativeComp ? props.context.contentStore.getComponentByName(props.context.contentStore.getScreenName(relativeComp.id) as string) : undefined;
                     
                     let parentElem;
                     if (relativeCompParent) {
@@ -271,7 +268,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                 }
             }
         }
-    }, [layoutStyle?.width, layoutStyle?.height, frameStyle, positionFlag, bounds]);
+    }, [props.layoutStyle?.width, props.layoutStyle?.height, frameStyle, positionFlag, bounds]);
 
     // Called on resize, sends a bounds-request to the server and sets the new framestyle
     const doResize = useCallback((e, dir, ref) => {
@@ -316,7 +313,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                         height: 200
                     }}
                     dragHandleClassName="rc-frame-header"
-                    className={concatClassnames("rc-frame", styleClassNames)}
+                    className={concatClassnames("rc-frame", props.styleClassNames)}
                     enableResizing={props.resizable !== false}
                 >
                     <UIFrame
@@ -327,18 +324,18 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                         iconImage={props.iconImage}
                         children={children}
                         components={components.filter(comp => comp.props["~additional"] !== true)}
-                        compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
+                        compSizes={componentSizes ? new Map([...componentSizes].filter(comp => props.context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
                 </Rnd>}
             </>
             :
             <UIFrame
                 {...props}
-                frameStyle={layoutStyle}
+                frameStyle={props.layoutStyle}
                 sizeCallback={getPreferredFrameSize}
                 iconImage={props.iconImage}
                 children={children}
                 components={components.filter(comp => comp.props["~additional"] !== true)}
-                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
+                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => props.context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined} />
     )
 }
 export default UIInternalFrame

@@ -17,11 +17,8 @@ import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import { ITextField } from "./UIText";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
-import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
-
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../util/component-util/IsCompDisabled";
 import { sendSetValue } from "../../util/server-util/SendSetValues";
@@ -30,8 +27,6 @@ import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableText } from "../../extend-components/text/ExtendText";
 import useRequestFocus from "../../hooks/event-hooks/useRequestFocus";
-import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
 
 /** Interface for TextAreas */
 interface ITextArea extends ITextField {
@@ -42,13 +37,7 @@ interface ITextArea extends ITextField {
  * This component displays a textarea not linked to a databook
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
-    /** Reference for the textarea */
-    const inputRef = useRef<any>(null);
-
-    /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextArea & IExtendableText>(baseProps);
-
+const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text || "");
 
@@ -56,51 +45,30 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
     const startedEditing = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, inputRef.current ? inputRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
-    useRequestFocus(id, props.requestFocus, inputRef.current, context);
-
-    const designerUpdate = useDesignerUpdates("inputfield");
+    useRequestFocus(id, props.requestFocus, props.forwardedRef.current, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if(onLoadCallback && inputRef.current){
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), inputRef.current, onLoadCallback)
+        if(onLoadCallback && props.forwardedRef.current){
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    useHandleDesignerUpdate(
-        designerUpdate,
-        inputRef.current,
-        layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
-
     return (
         <InputTextarea 
-            ref={inputRef} 
+            ref={props.forwardedRef} 
             id={props.name}
             className={concatClassnames(
                 "rc-input", 
                 props.focusable === false ? 
                 "no-focus-rect" : "",
                 isCompDisabled(props) ? "rc-input-readonly" : "",
-                styleClassNames
+                props.styleClassNames
             )}
             value={text||""}
-            style={{...layoutStyle, ...compStyle, resize: 'none'}} 
+            style={{...props.layoutStyle, ...props.compStyle, resize: 'none'}} 
             onChange={event => {
                 startedEditing.current = true;
                 if (props.onChange) {
@@ -109,7 +77,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
 
                 setText(event.currentTarget.value)
             }} 
-            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
             onBlur={(event) => {
                 if (!isCompDisabled(props)) {
                     if (props.onBlur) {
@@ -117,13 +85,13 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
                     }
 
                     if (startedEditing.current) {
-                        sendSetValue(props.name, text, context.server, topbar);
+                        sendSetValue(props.name, text, props.context.server, props.topbar);
                         startedEditing.current = false;
                     }
 
     
                     if (props.eventFocusLost) {
-                        onFocusLost(props.name, context.server)
+                        onFocusLost(props.name, props.context.server)
                     }
                 }
             }}

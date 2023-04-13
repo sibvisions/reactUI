@@ -20,7 +20,7 @@ import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParam
 import AppSettings from "./AppSettings";
 import { History } from "history";
 import React, { ReactElement } from "react";
-import BaseComponent from "./util/types/BaseComponent";
+import IBaseComponent from "./util/types/IBaseComponent";
 import { SubscriptionManager } from "./SubscriptionManager";
 import BaseServer from "./server/BaseServer";
 import ServerFull from "./server/ServerFull";
@@ -409,7 +409,7 @@ class API implements IAPI {
      */
     removeComponent(name:string) {
         if (this.#contentStore.getComponentByName(name)) {
-            const comp = this.#contentStore.getComponentByName(name) as BaseComponent;
+            const comp = this.#contentStore.getComponentByName(name) as IBaseComponent;
             this.#contentStore.removedCustomComponents.set(name, comp);
             const notifyList = new Array<string>();
             if (comp.parent) {

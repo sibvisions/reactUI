@@ -30,7 +30,6 @@ import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
 import MetaDataResponse from "../../../response/data/MetaDataResponse";
 import useMetaData from "../../../hooks/data-hooks/useMetaData";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
@@ -43,9 +42,8 @@ import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableLinkedEditor } from "../../../extend-components/editors/ExtendLinkedEditor";
 import _ from "underscore";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { SelectFilter } from "../../../request/data/SelectRowRequest";
+import { IComponentConstants } from "../../BaseComponent";
 
 // Type for linkreferences
 type LinkReference = {
@@ -184,12 +182,9 @@ export function convertReferenceColNamesToColNames(value:any, linkReference: Lin
  * when text is entered into the inputfield, the dropdownlist gets filtered
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
+const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentConstants> = (props) => {
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<any>(null);
-
-    /** Reference for the wrapper of the linkedcelleditor element */
-    const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
@@ -269,11 +264,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** True if the initialFilter has been set */
     const [initialFilter, setInitialFilter] = useState<boolean>(false);
 
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates("linked-date");
-
     /** Button background */
-    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]);
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [props.designerUpdate]);
 
     const showTable = false;
 
@@ -308,35 +300,15 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         return linkReference.referencedColumnNames;
     }, [metaDataReferenced, getCorrectLinkReference]);
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, linkedInput.current, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if(onLoadCallback && wrapperRef.current) {
-            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef.current, onLoadCallback)
+        if(onLoadCallback && props.forwardedRef.current) {
+            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        wrapperRef.current,
-        props.layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.cellEditor.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
 
     useEffect(() => {
         props.context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
@@ -856,7 +828,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     return (
         <span 
-            ref={wrapperRef}
+            ref={props.forwardedRef}
             aria-label={props.ariaLabel} 
             id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
             {...usePopupMenu(props)} 

@@ -35,6 +35,7 @@ import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { formatInTimeZone, toDate } from 'date-fns-tz'
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for cellEditor property of DateCellEditor */
 export interface ICellEditorDate extends ICellEditor {
@@ -95,12 +96,9 @@ const parseMultiple = (
  * which opens a datepicker to choose a date and change the value in its databook
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
+const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants> = (props) => {
     /** Reference for the calendar element */
     const calendar = useRef<CustomCalendar>(null);
-
-    /** Reference for the wrapper element of the calendar */
-    const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
@@ -188,49 +186,26 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
 
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates("linked-date");
-
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
-    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [designerUpdate]);
-
-    /** Hook for MouseListener */ //@ts-ignore
-    useMouseListener(props.name, calendar.current ? calendar.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [props.designerUpdate]);
 
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, calendarInput.current as HTMLElement|undefined, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (onLoadCallback && wrapperRef.current) {
+        if (onLoadCallback && props.forwardedRef.current) {
             sendOnLoadCallback(
                 id,
                 props.cellEditor.className,
                 parsePrefSize(props.preferredSize), 
                 parseMaxSize(props.maximumSize), 
                 parseMinSize(props.minimumSize), 
-                wrapperRef.current, 
+                props.forwardedRef.current, 
                 onLoadCallback
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        wrapperRef.current,
-        props.layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.cellEditor.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
 
     // When the cell-editor is opened focus the input and forward the pressed key when opening, on unmount save the date-input if the screen is still opened
     useEffect(() => {
@@ -388,7 +363,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
 
     return (
         <span 
-            ref={wrapperRef}
+            ref={props.forwardedRef}
             id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 

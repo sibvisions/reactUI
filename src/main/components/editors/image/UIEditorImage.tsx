@@ -19,7 +19,6 @@ import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import useImageStyle from "../../../hooks/style-hooks/useImageStyle";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Dimension from "../../../util/types/Dimension";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
@@ -28,7 +27,7 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableImageEditor } from "../../../extend-components/editors/ExtendImageEditor";
 import { removeLayoutStyle } from "../../../util/component-util/RemoveLayoutStyle";
-import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor {
@@ -46,10 +45,7 @@ export interface IEditorImage extends IRCCellEditor {
  *  This component displays an image
  * @param props - Initial properties sent by the server for this component
  */
-export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) => {
-    /** Reference for wrapper span */
-    const wrapRef = useRef<HTMLSpanElement>(null);
-
+export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponentConstants> = (props) => {
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props
 
@@ -59,17 +55,14 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
     /**CSS properties for ImageViewer */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_, props.cellEditor.preserveAspectRatio);
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (!props.cellEditor.defaultImageName || !props.selectedRow || (props.selectedRow && !props.selectedRow.data[props.columnName])) {
-            removeLayoutStyle(wrapRef.current);
-            const prefSize:Dimension = wrapRef.current ? { width: wrapRef.current.offsetWidth, height: wrapRef.current.offsetHeight } : { width: 0, height: 0 }
+            removeLayoutStyle(props.forwardedRef.current);
+            const prefSize:Dimension = props.forwardedRef.current ? { width: props.forwardedRef.current.offsetWidth, height: props.forwardedRef.current.offsetHeight } : { width: 0, height: 0 }
             if (props.preferredSize) {
                 const parsedSize = parsePrefSize(props.preferredSize) as Dimension
                 prefSize.height = parsedSize.height;
@@ -106,9 +99,6 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
         }   
     }
 
-    /** Adds the layoutstyle to given element */
-    useAddLayoutStyle(wrapRef.current, props.layoutStyle, onLoadCallback);
-
     // If the lib user extends the ImageCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
         if (props.onChange) {
@@ -118,7 +108,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
 
     return (
         <span
-            ref={wrapRef}
+            ref={props.forwardedRef}
             id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
             className={concatClassnames(
                 "rc-editor-image",

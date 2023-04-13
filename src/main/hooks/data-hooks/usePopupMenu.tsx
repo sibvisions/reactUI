@@ -15,7 +15,7 @@
 
 import React, { createContext, PropsWithChildren, FC, useContext, useCallback, useState, useRef, SyntheticEvent } from "react";
 import { ContextMenu } from 'primereact/contextmenu';
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { MenuItem } from "primereact/menuitem";
 import { createComponentRequest, createDispatchActionRequest, getClientId } from "../../factories/RequestFactory";
 import { appContext } from "../../contexts/AppProvider";
@@ -37,7 +37,7 @@ const PopupContext = createContext<{
 });
 
 // Creates the popupmenu
-function makeMenu(flatItems: Map<string, BaseComponent>, parent: string, context: any): MenuItem[] {
+function makeMenu(flatItems: Map<string, IBaseComponent>, parent: string, context: any): MenuItem[] {
     return Array.from(flatItems.values())
         .filter(item => item.parent === parent)
         .map(item => {

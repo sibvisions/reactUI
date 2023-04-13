@@ -20,10 +20,8 @@ import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IButtonSelectable } from "../IButton";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
 import useButtonMouseImages from "../../../hooks/event-hooks/useButtonMouseImages";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
@@ -31,8 +29,6 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { IExtendableToggleButton } from "../../../extend-components/buttons/ExtendToggleButton";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
 import { RenderButtonHTML } from "../button/UIButton";
 
@@ -40,39 +36,27 @@ import { RenderButtonHTML } from "../button/UIButton";
  * This component displays a Button which can be toggled on and off
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (baseProps) => {
+const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
-
-    /** Reference for the span that is wrapping the button containing layout information */
-    const buttonWrapperRef = useRef<HTMLSpanElement>(null);
-
-    /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
 
     /** True, if the togglebutton is selected */
     const [checked, setChecked] = useState<boolean|undefined>(props.selected)
 
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current ? buttonRef.current.container : undefined)
+    const btnStyle = useButtonStyling(props, props.layoutStyle, props.compStyle, buttonRef.current ? buttonRef.current.container : undefined)
 
     /** Extracting onLoadCallback and id from baseProps */
-    const { onLoadCallback, id } = baseProps;
+    const { onLoadCallback, id } = props;
 
     /** Hook to display mouseOverImages and mousePressedImage */
     useButtonMouseImages(btnStyle.iconProps, btnStyle.pressedIconProps, btnStyle.mouseOverIconProps, buttonRef.current ? buttonRef.current.container : undefined);
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.container : undefined, context);
+    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.container : undefined, props.context);
 
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
-
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates(props.text ? "default-button" : "icon-only-button");
 
     /** Adding HTML-text to button manually */
     useLayoutEffect(() => {
@@ -93,28 +77,11 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = buttonWrapperRef.current;
+        const wrapperRef = props.forwardedRef.current;
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, isHTML]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        buttonWrapperRef.current,
-        layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, isHTML, props.designerUpdate]);
 
     //If lib-user extends Togglebutton with onChange, call it when selected changes
     useEffect(() => {
@@ -133,14 +100,14 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
 
         const req = createDispatchActionRequest();
         req.componentId = props.name;
-        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+        showTopBar(props.context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), props.topbar);
     }
 
     return (
         <span
-            ref={buttonWrapperRef}
+            ref={props.forwardedRef}
             id={props.name + "-_wrapper"}
-            style={layoutStyle}
+            style={props.layoutStyle}
             aria-label={props.ariaLabel}
             aria-pressed={props.ariaPressed}
         >
@@ -157,7 +124,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
                     props.focusable === false ? "no-focus-rect" : "",
-                    styleClassNames,
+                    props.styleClassNames,
                     isCompDisabled(props) ? "togglebutton-disabled" : ""
                 )}
                 style={{
@@ -174,7 +141,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
                         '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
                         '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
                         '--iconColor': btnStyle.iconProps.color,
-                        '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
+                        '--iconImage': `url(${props.context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
                         '--iconTextGap': `${props.imageTextGap || 4}px`,
                         '--iconCenterGap': `${btnStyle.iconCenterGap}px`
                     } : {})
@@ -187,8 +154,8 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
                 tabIndex={btnStyle.tabIndex}
                 checked={checked}
                 onChange={handleOnChange}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}>
                     {isHTML && props.text && <RenderButtonHTML text={props.text} />}

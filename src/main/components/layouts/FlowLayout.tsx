@@ -17,7 +17,7 @@ import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 import {appContext} from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import Margins from "./models/Margins";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import { ILayout } from "./Layout";
@@ -80,7 +80,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         /** If the orientation is horizontal */
         const isRowOrientation = parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL;
 
-        const toolBarsFiltered:[string, BaseComponent][]|undefined = parent ? 
+        const toolBarsFiltered:[string, IBaseComponent][]|undefined = parent ? 
             id.includes("-tbMain") ? 
                 [...context.contentStore.getChildren(id, className)] 
             : 

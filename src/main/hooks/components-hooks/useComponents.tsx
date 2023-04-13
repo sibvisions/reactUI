@@ -17,7 +17,7 @@ import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useS
 import _ from "underscore";
 import { appContext } from "../../contexts/AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import Dimension from "../../util/types/Dimension";
 
 export type ComponentSizes = {
@@ -31,7 +31,7 @@ export type ComponentSizes = {
  * @param id - the id of the component
  * @returns a layouts rendered Childcomponents and their preferred size
  */
-const useComponents = (id: string, className:string): [Array<BaseComponent>, Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
+const useComponents = (id: string, className:string): [Array<IBaseComponent>, Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
 

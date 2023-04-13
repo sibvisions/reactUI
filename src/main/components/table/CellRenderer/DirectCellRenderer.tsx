@@ -13,15 +13,20 @@
  * the License.
  */
 
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 import CellEditorWrapper from "../../editors/CellEditorWrapper";
 import { ICellRender } from "../CellEditor";
+import useConstants from "../../../hooks/components-hooks/useConstants";
 
 /**
  * This Component renders Direct-Cell-Editors, which can be clicked directly and don't have to be opened extra. Eg. Checkbox and Choice
  * @param props - the properties received from the table
  */
 const DirectCellRenderer: FC<ICellRender> = (props) => {
+    const forwardedRef = useRef<any>();
+
+    const [context, topbar] = useConstants();
+
     return (
         <>
             <span className="cell-data-content" style={{ display: "flex", justifyContent: "center", alignItems:"center" }}>
@@ -41,7 +46,11 @@ const DirectCellRenderer: FC<ICellRender> = (props) => {
                         isCellEditor: true,
                         cellScreenName: props.dataProvider.split("/")[1],
                         rowNumber: props.rowNumber,
-                        colIndex: props.colIndex
+                        colIndex: props.colIndex,
+                        forwardedRef: forwardedRef,
+                        context: context,
+                        topbar: topbar,
+                        layoutStyle: { width: "100%", height: "100%" }
                     }}
                 />
             </span>

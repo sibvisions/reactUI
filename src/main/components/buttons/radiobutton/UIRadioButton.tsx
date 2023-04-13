@@ -18,9 +18,7 @@ import { RadioButton, RadioButtonChangeParams } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { IButtonSelectable } from "../IButton";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
@@ -28,8 +26,6 @@ import { sendSetValue } from "../../../util/server-util/SendSetValues";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableSelectable } from "../../../extend-components/buttons/ExtendCheckbox";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { RenderButtonHTML } from "../button/UIButton";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
 
@@ -37,61 +33,32 @@ import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
  * This component displays a RadioButton and its label
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) => {
+const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (props) => {
     /** Reference for the RadioButton element */
     const rbRef = useRef<any>(null)
 
     /** Reference for label element of RadioButton */
     const labelRef = useRef<any>(null);
 
-    /** Reference for the span that is wrapping the button containing layout information */
-    const buttonWrapperRef = useRef<HTMLSpanElement>(null);
-
-    /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableSelectable>(baseProps);
-
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current ? rbRef.current.element : undefined);
+    const btnStyle = useButtonStyling(props, props.layoutStyle, props.compStyle, labelRef.current, rbRef.current ? rbRef.current.element : undefined);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    const {onLoadCallback, id} = props;
 
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, rbRef.current ? rbRef.current.inputRef ? rbRef.current.inputRef.current : undefined : undefined, context);
+    useRequestFocus(id, props.requestFocus, rbRef.current ? rbRef.current.inputRef ? rbRef.current.inputRef.current : undefined : undefined, props.context);
 
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates("radiobutton");
-
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = buttonWrapperRef.current;
+        const wrapperRef = props.forwardedRef.current;
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, compStyle, designerUpdate]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        buttonWrapperRef.current,
-        layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.compStyle, props.designerUpdate]);
 
     //If lib-user extends Radiobutton with onChange, call it when selected changes
     useEffect(() => {
@@ -106,11 +73,11 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
             props.onClick(event.originalEvent);
         }
 
-        sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, topbar)
+        sendSetValue(props.name, props.selected === undefined ? true : !props.selected, props.context.server, props.topbar)
     }
 
     return (
-        <span id={props.name + "-_wrapper"} ref={buttonWrapperRef} style={layoutStyle}>
+        <span id={props.name + "-_wrapper"} ref={props.forwardedRef} style={props.layoutStyle}>
             <span
                 id={props.name}
                 aria-label={props.ariaLabel}
@@ -118,10 +85,10 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
                     "rc-radiobutton",
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
-                    styleClassNames
+                    props.styleClassNames
                     )}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
                 style={{
                     ...btnStyle.style,
                     '--radioJustify': btnStyle.style.justifyContent, 
@@ -134,7 +101,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
                         '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
                         '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
                         '--iconColor': btnStyle.iconProps.color,
-                        '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
+                        '--iconImage': `url(${props.context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
                     } : {})
                 } as any}>
                 <RadioButton

@@ -20,20 +20,17 @@ import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
-import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { formatNumber, getDecimalLength, getGrouping, getPrimePrefix, getWriteScaleDigits } from "../../../util/component-util/NumberProperties";
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { IExtendableNumberEditor } from "../../../extend-components/editors/ExtendNumberEditor";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { classNames } from "primereact/utils";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -107,10 +104,7 @@ export function getSuffix(numberFormat:string, locale: string) {
  * when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
-    /** Reference for the NumberCellEditor element */
-    const numberRef = useRef<InputNumber>(null);
-
+const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentConstants> = (props) => {
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
 
@@ -125,9 +119,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
-
-    /** Hook for MouseListener */ // @ts-ignore
-    useMouseListener(props.name, numberRef.current ? numberRef.current.element : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, numberInput.current as HTMLElement|undefined, props.context);
@@ -145,9 +136,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
-
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates("inputfield");
 
     /** The classnames for the number-cell-editor */
     const numberClassNames = useMemo(() => {
@@ -205,29 +193,11 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (onLoadCallback && numberRef.current) {
+        if (onLoadCallback && props.forwardedRef.current) {
             //@ts-ignore
-            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), numberRef.current.element, onLoadCallback)
+            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current.element, onLoadCallback)
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        //@ts-ignore
-        numberRef.current ? numberRef.current.element : undefined,
-        props.layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
@@ -330,7 +300,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         (!props.isCellEditor) ?
             <span id={props.name + "-_wrapper"} aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
-                    ref={numberRef}
+                    ref={props.forwardedRef}
                     layoutstyle-wrapper={props.name + "-_wrapper"}
                     id={props.name}
                     inputRef={numberInput}
@@ -396,7 +366,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             </span>
             :
             <InputNumber
-                ref={numberRef}
+                ref={props.forwardedRef}
                 inputRef={numberInput}
                 className={numberClassNames}
                 useGrouping={useGrouping}

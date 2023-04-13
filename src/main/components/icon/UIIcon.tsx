@@ -13,36 +13,27 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import BaseComponent from "../../util/types/BaseComponent";
+import React, { FC, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { Tooltip } from "primereact/tooltip";
 import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import { parseIconData } from "../comp-props/ComponentProperties";
 import useImageStyle from "../../hooks/style-hooks/useImageStyle";
-import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { getAlignments } from "../comp-props/GetAlignments";
 import Dimension from "../../util/types/Dimension";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
-
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableIcon } from "../../extend-components/icon/ExtendIcon";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import { IComponentConstants } from "../BaseComponent";
 
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
-    /** Reference for the span that is wrapping the icon containing layout information */
-    const iconRef = useRef<HTMLSpanElement>(null);
-
-    /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<BaseComponent & IExtendableIcon>(baseProps);
-
+const UIIcon: FC<IBaseComponent & IExtendableIcon & IComponentConstants> = (props) => {
     /** Properties for icon */
     const iconProps = useMemo(() => parseIconData(props.foreground, props.image), [props.foreground, props.image]);
 
@@ -51,9 +42,6 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
 
     /**CSS properties for icon */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, iconRef.current ? iconRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** True, if the icon is loaded */
     const [iconIsLoaded, setIconIsLoaded] = useState<boolean>(false);
@@ -89,7 +77,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout when the icon is a FontAwesome icon */
     useLayoutEffect(() => {
-        if(onLoadCallback && iconRef.current) {
+        if(onLoadCallback && props.forwardedRef.current) {
             if (props.image?.includes('FontAwesome') || !props.image) {
                 let prefSize = parsePrefSize(props.preferredSize);
                 if (!props.image && props.background) {
@@ -97,12 +85,10 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
                         prefSize = { height: 1, width: 1 }
                     }
                 }
-                sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), iconRef.current, onLoadCallback)
+                sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
             }
         }
     },[onLoadCallback, id, props.image, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    useAddLayoutStyle(iconRef.current, layoutStyle, onLoadCallback)
 
     // If the lib user extends the Icon with onChange, call it when the image changes.
     useEffect(() => {
@@ -136,7 +122,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
                     id={props.name}
                     {...popupMenu}
                     alt="icon"
-                    src={context.server.RESOURCE_URL + icon}
+                    src={props.context.server.RESOURCE_URL + icon}
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}
                     onLoad={iconLoaded}
                     onError={iconLoaded}
@@ -154,14 +140,14 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
 
     return (
         <span 
-            ref={iconRef} 
+            ref={props.forwardedRef} 
             id={props.name + "-_wrapper"}
             className={concatClassnames(
                 "rc-icon", 
                 props.focusable === false ? "no-focus-rect" : "",
-                styleClassNames
+                props.styleClassNames
             )}
-            style={{...layoutStyle, ...compStyle, justifyContent: alignments.ha, alignItems: alignments.va}}
+            style={{...props.layoutStyle, ...props.compStyle, justifyContent: alignments.ha, alignItems: alignments.va}}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         >
             <Tooltip target={"#" + props.name} />

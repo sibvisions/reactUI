@@ -15,7 +15,7 @@
 
 import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
 import { createCloseFrameRequest } from "../../factories/RequestFactory";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import UIMenuBar from "../menubar/UIMenuBar";
 import UIToolbar from "../toolbar/UIToolbar";
@@ -39,7 +39,7 @@ export interface IFrame extends IInternalFrame {
     internal?: boolean
     sizeCallback?:Function,
     iconImage?:string,
-    children?: BaseComponent[],
+    children?: IBaseComponent[],
     components?: any,
     compSizes?: Map<string, ComponentSizes>
 }

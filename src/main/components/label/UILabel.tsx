@@ -15,7 +15,7 @@
 
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Tooltip } from 'primereact/tooltip';
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import { getAlignments, translateTextAlign } from "../comp-props/GetAlignments";
@@ -28,21 +28,18 @@ import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableLabel } from "../../extend-components/label/ExtendLabel";
 import useIsHTMLText from "../../hooks/components-hooks/useIsHTMLText";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import { IComponentConstants } from "../BaseComponent";
 
 /**
  * Displays a simple label
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
-    const wrapRef = useRef<HTMLSpanElement>(null);
+const UILabel: FC<IBaseComponent & IExtendableLabel & IComponentConstants> = (props) => {
     /** Reference for label element */
     const labelRef = useRef<HTMLSpanElement>(null);
 
-    /** Component constants */
-    const [,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
-
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** Alignments for label */
     const lblAlignments = getAlignments(props);
@@ -61,7 +58,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
         if (labelRef.current && onLoadCallback) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, props.layoutStyle?.width, props.layoutStyle?.height]);
 
     // If the lib user extends the label with onChange, call it when the label-text changes.
     useEffect(() => {
@@ -70,7 +67,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
         }
     }, [props.text]);
 
-    useAddLayoutStyle(wrapRef.current, layoutStyle, onLoadCallback, props.text);
+    useAddLayoutStyle(props.className, props.forwardedRef.current, props.layoutStyle, onLoadCallback, props.text);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
@@ -78,21 +75,21 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
         <Tooltip target={"#" + props.name + "-text"} />
         <span
             {...usePopupMenu(props)}
-            ref={wrapRef}
+            ref={props.forwardedRef}
             id={props.name}
             className={concatClassnames(
                 "rc-label",
                 isHTML ? " rc-label-html" : "",
                 props.eventMousePressed ? "mouse-pressed-event" : "",
-                styleClassNames
+                props.styleClassNames
             )}
             style={{
                 //When the label is html, flex direction is column va and ha alignments need to be swapped
                 justifyContent: !isHTML ? lblAlignments.ha : lblAlignments.va,
                 alignItems: !isHTML ? lblAlignments.va : lblAlignments.ha,
                 ...lblTextAlignment,
-                ...layoutStyle,
-                ...compStyle
+                ...props.layoutStyle,
+                ...props.compStyle
             }}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <span 

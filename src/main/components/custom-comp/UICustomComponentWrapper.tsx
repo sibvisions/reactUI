@@ -17,11 +17,11 @@ import React, { FC, ReactElement, useLayoutEffect, useRef } from "react";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import Dimension from "../../util/types/Dimension";
 
 /** Interface for CustomComponentWrapper */
-export interface ICustomComponentWrapper extends BaseComponent {
+export interface ICustomComponentWrapper extends IBaseComponent {
     component: ReactElement,
     isGlobal:boolean
 }

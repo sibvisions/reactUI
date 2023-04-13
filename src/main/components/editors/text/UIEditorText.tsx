@@ -25,7 +25,6 @@ import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
@@ -35,8 +34,7 @@ import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableTextEditor } from "../../../extend-components/editors/ExtendTextEditor";
 import CELLEDITOR_CLASSNAMES from "../CELLEDITOR_CLASSNAMES";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {
@@ -206,10 +204,7 @@ export function isCellEditorReadOnly(props:IRCCellEditor) {
  * the CellEditor becomes a normal texteditor, a textarea or a passwor field, when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
-    /** Reference for the TextCellEditor element */
-    const textRef = useRef<any>();
-
+const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants> = (props) => {
     /** Current state value of input element */
     const [text, setText] = useState(props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data[props.columnName] : undefined);
 
@@ -235,13 +230,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     const popupMenu = usePopupMenu(props);
 
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, textRef.current, props.context)
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, textRef.current ? textRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates("inputfield");
+    useRequestFocus(id, props.requestFocus, props.forwardedRef.current, props.context)
 
     /** Returns the field-type of the TextCellEditor */
     const getFieldType = useCallback(() => {
@@ -284,27 +273,10 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout, password ref has a inconsistency */
     useLayoutEffect(() => {
-        if(onLoadCallback && textRef.current && fieldType !== FieldTypes.HTML) {
-            sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback);
+        if(onLoadCallback && props.forwardedRef.current && fieldType !== FieldTypes.HTML) {
+            sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.cellEditor?.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        fieldType !== FieldTypes.HTML ? textRef.current : undefined,
-        props.layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
@@ -379,8 +351,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
             onLoad: () => {
-                if (textRef.current && onLoadCallback) {
-                    sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), textRef.current, onLoadCallback)
+                if (props.forwardedRef.current && onLoadCallback) {
+                    sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
                 }
             },
             onTextChange: showSource || props.isReadOnly ? () => {} : (value: any) => {
@@ -458,7 +430,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                 </>
             )
         } : {
-            ...(fieldType === FieldTypes.PASSWORD ? { inputRef: textRef } : { ref: textRef }),
+            ...(fieldType === FieldTypes.PASSWORD ? { inputRef: props.forwardedRef } : { ref: props.forwardedRef }),
             id: props.isCellEditor ? undefined : props.name,
             className: concatClassnames(
                 getClassName(fieldType), 
@@ -519,7 +491,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     return (
         fieldType === FieldTypes.HTML ?
             <div 
-                ref={textRef}
+                ref={props.forwardedRef}
                 style={{ ...props.layoutStyle, background: props.cellEditor_background_ }} 
                 id={props.isCellEditor ? undefined : props.name}
                 aria-label={props.ariaLabel}

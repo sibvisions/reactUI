@@ -14,21 +14,19 @@
  */
 
 import React, { FC, useLayoutEffect, useRef } from "react";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { RingGauge, ArcGauge, MeterGauge, SpeedometerGauge } from "ui-gauges";
 import { Tooltip } from "primereact/tooltip";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
-import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import { IComponentConstants } from "../BaseComponent";
 
 /** Interface for Gauge properties sent by server */
-export interface IGauge extends BaseComponent {
+export interface IGauge extends IBaseComponent {
     title: string
     gaugeStyle: number
     minWarningValue: number
@@ -55,15 +53,9 @@ export enum GAUGE_STYLES {
  * This component displays gauges with various styles
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIGauge: FC<IGauge> = (baseProps) => {
-    /** Reference for the span that is wrapping the chart containing layout information */
-    const wrapperRef = useRef<HTMLSpanElement>(null);
-
-    /** Component constants */
-    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IGauge>(baseProps);
-
+const UIGauge: FC<IGauge & IComponentConstants> = (props) => {
     /** ComponentId of the screen */
-    const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
+    const screenName = props.context.contentStore.getScreenName(props.id, props.dataBook) as string;
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id, maxValue, data, columnLabel, gaugeStyle, title, minErrorValue, minWarningValue, maxWarningValue, maxErrorValue, name} = props;
@@ -74,32 +66,27 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataBook);
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, wrapperRef.current ? wrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (wrapperRef.current && onLoadCallback) {
+        if (props.forwardedRef.current && onLoadCallback) {
             sendOnLoadCallback(
                 id,
                 props.className, 
                 parsePrefSize(props.preferredSize), 
                 parseMaxSize(props.maximumSize), 
                 parseMinSize(props.minimumSize), 
-                wrapperRef.current, 
+                props.forwardedRef.current, 
                 onLoadCallback
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
-    useAddLayoutStyle(wrapperRef.current, layoutStyle, onLoadCallback);
-
     // Sets the gauge properties on render
     useLayoutEffect(() => {
-        if(wrapperRef.current && !gauge.current) {
+        if(props.forwardedRef.current && !gauge.current) {
             switch(gaugeStyle) {
                 case GAUGE_STYLES.STYLE_METER:
-                    gauge.current = new MeterGauge(wrapperRef.current, {
+                    gauge.current = new MeterGauge(props.forwardedRef.current, {
                         id: name,
                         value: data, 
                         title,
@@ -110,7 +97,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                     });
                     break;
                 case GAUGE_STYLES.STYLE_FLAT:
-                    gauge.current = new ArcGauge(wrapperRef.current, {
+                    gauge.current = new ArcGauge(props.forwardedRef.current, {
                         id: name,
                         value: data, 
                         title,
@@ -121,7 +108,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                     });
                     break;
                 case GAUGE_STYLES.STYLE_RING:
-                    gauge.current = new RingGauge(wrapperRef.current, {
+                    gauge.current = new RingGauge(props.forwardedRef.current, {
                         id: name,
                         value: data, 
                         title,
@@ -133,7 +120,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
                     });
                     break;
                 default:
-                    gauge.current = new SpeedometerGauge(wrapperRef.current, {
+                    gauge.current = new SpeedometerGauge(props.forwardedRef.current, {
                         id: name,
                         value: data, 
                         title,
@@ -147,7 +134,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
         } else if(gauge.current) {
             gauge.current.update({
                 id: name,
-                value: props.id === "login-gauge" ? baseProps.data : data, 
+                value: props.id === "login-gauge" ? props.data : data, 
                 title,
                 label: columnLabel, 
                 max: maxValue,
@@ -162,9 +149,9 @@ const UIGauge: FC<IGauge> = (baseProps) => {
             <span 
                 id={props.name} 
                 {...usePopupMenu(props)} 
-                ref={wrapperRef} 
-                className={concatClassnames("ui-gauge", styleClassNames)}
-                style={props.id === "login-gauge" ? props.name === "login-gauge-wait" ? { height: "100px", width: "100px" } : { height: "75px", width: "75px" } : layoutStyle} 
+                ref={props.forwardedRef} 
+                className={concatClassnames("ui-gauge", props.styleClassNames)}
+                style={props.id === "login-gauge" ? props.name === "login-gauge-wait" ? { height: "100px", width: "100px" } : { height: "75px", width: "75px" } : props.layoutStyle} 
                 data-pr-tooltip={props.toolTipText} 
                 data-pr-position="left"
                 tabIndex={getTabIndex(props.focusable, props.tabIndex)}>

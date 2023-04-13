@@ -13,19 +13,16 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef } from "react";
-import { appContext } from "../../../contexts/AppProvider";
+import React, { FC, useCallback, useLayoutEffect, useMemo } from "react";
 import { Tooltip } from "primereact/tooltip";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
-import useLayoutValue from "../../../hooks/style-hooks/useLayoutValue";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import Dimension from "../../../util/types/Dimension";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import Layout from "../../layouts/Layout";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for ToolbarHelper */
 export interface IToolBarHelper extends IPanel {
@@ -39,13 +36,7 @@ export interface IToolBarHelper extends IPanel {
  * not additional components when toolbarhelper is center
  * @param props the properties received by the parent
  */
-const ToolBarHelper:FC<IToolBarHelper> = (props) => {
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext)
-
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.id, { visibility: "hidden" });
-
+const ToolBarHelper:FC<IToolBarHelper & IComponentConstants> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(props.id, props.className);
 
@@ -54,12 +45,6 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
 
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
-
-    /** Reference for the panel element */
-    const panelRef = useRef<any>(null);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** Filters the components to only have the additional components when toolbarhelper is main, and not additional when toolbarhelper is center */
     const filteredComponents = useMemo(() => {
@@ -130,17 +115,17 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                     props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? getTBPosClassName(props.constraints, props.isNavTable) : "",
                     props.style
                 )}
-                ref={panelRef}
+                ref={props.forwardedRef}
                 id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,
-                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
                     display: filteredComponents.length === 0 ? "none" : ""
                 } : {
-                    ...layoutStyle,
+                    ...props.layoutStyle,
                     backgroundColor: props.background,
-                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {}),
                     display: filteredComponents.length === 0 ? "none" : ""
                 }}
                 data-pr-tooltip={props.toolTipText}
@@ -160,11 +145,11 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
                     components={filteredComponents}
                     style={panelGetStyle(
                         false,
-                        layoutStyle,
+                        props.layoutStyle,
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
                         props.screen_size_,
-                        context.transferType
+                        props.context.transferType
                     )}
                     parent={props.parent} />
             </div>
@@ -178,10 +163,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
  * or the "center" part of the toolbar (contains the screen/layout).
  * @param baseProps the properties received by the server
  */
-const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
-    /** Component constants */
-    const [context,, [props]] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});
-
+const UIToolBarHelper: FC<IToolBarHelper & IComponentConstants> = (props) => {
     /** Reports itself to the layout */
     useLayoutEffect(() => {
         const reportFunc = () => panelReportSize(
@@ -201,7 +183,7 @@ const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
                 reportFunc();
             }
             else if (props.toolBarVisible === undefined) {
-                if (context.contentStore.getChildren(props.id, props.className).size === 0 && props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                if (props.context.contentStore.getChildren(props.id, props.className).size === 0 && props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
                     reportFunc();
                 }
             }
@@ -211,7 +193,7 @@ const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     return (
         (props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) ?
             (props.toolBarVisible === undefined) ?
-                (context.contentStore.getChildren(props.id, props.className).size > 0) ?
+                (props.context.contentStore.getChildren(props.id, props.className).size > 0) ?
                     <ToolBarHelper {...props} />
                     :
                     <div style={{ visibility: "hidden" }} />

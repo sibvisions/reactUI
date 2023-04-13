@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { CSSProperties, useLayoutEffect } from "react";
+import { CSSProperties, useLayoutEffect, useMemo } from "react";
 import { removeLayoutStyle } from "../../util/component-util/RemoveLayoutStyle";
 import LoadCallBack from "../../util/types/LoadCallBack";
 import useAddLayoutStyle from "./useAddLayoutStyle";
@@ -27,7 +27,7 @@ import useAddLayoutStyle from "./useAddLayoutStyle";
  * @param loadCallBack - the size report function
  * @param loadCallBackFunc - the original loadback function received in 'usecomponents'
  */
-const useHandleDesignerUpdate = (designerUpdate:boolean|undefined, ref: any, layoutStyle: CSSProperties|undefined, loadCallBack:Function, loadCallBackFunc:LoadCallBack|undefined) => {
+const useHandleDesignerUpdate = (className: string, designerUpdate:boolean|undefined, ref: any, layoutStyle: CSSProperties|undefined, loadCallBack:Function, loadCallBackFunc:LoadCallBack|undefined, labelText: string|undefined) => {
     useLayoutEffect(() => {
         if (ref && designerUpdate !== undefined) {
             const cloneElem = ref.cloneNode(true) as HTMLElement;
@@ -39,6 +39,6 @@ const useHandleDesignerUpdate = (designerUpdate:boolean|undefined, ref: any, lay
         }
     }, [designerUpdate])
 
-    useAddLayoutStyle(ref, layoutStyle, loadCallBackFunc)
+    useAddLayoutStyle(className, ref, layoutStyle, loadCallBackFunc, labelText)
 }
 export default useHandleDesignerUpdate

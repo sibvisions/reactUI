@@ -16,7 +16,7 @@
 import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { appContext } from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { ILayout } from "./Layout";
 import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
@@ -41,8 +41,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    const designer = useVisionXDesigner();
-
     const runAfterLayout = useRunAfterLayout();
 
     /** Extract variables from baseprops */
@@ -61,12 +59,12 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     } = baseProps;
 
     const layoutInfo = useMemo(() => {
-        if (designer) {
+        if (context.designer) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
             components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
-            if (!designer.formLayouts.has(name)) {
+            if (!context.designer.formLayouts.has(name)) {
                 const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
-                designer.formLayouts.set(name, {
+                context.designer.formLayouts.set(name, {
                     name: name,
                     horizontalGap: gaps.horizontalGap,
                     verticalGap: gaps.verticalGap,
@@ -80,15 +78,15 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 })
             }
             else {
-                designer.formLayouts.get(name)!.originalConstraints = new Map(compConstraintMap);
+                context.designer.formLayouts.get(name)!.originalConstraints = new Map(compConstraintMap);
             }
-            return designer.formLayouts.get(name) as FormLayoutInformation;
+            return context.designer.formLayouts.get(name) as FormLayoutInformation;
         }
         else {
             return null;
         }
 
-    }, [designer]);
+    }, [context.designer]);
 
     /** 
      * Function which lays out the container
@@ -101,7 +99,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
      */
     const calculateLayout = useCallback((
         compSizes: Map<string, ComponentSizes>,
-        children: Map<string, BaseComponent>,
+        children: Map<string, IBaseComponent>,
         layout: string,
         layoutData: string,
         onLayoutCallback: Function | undefined,

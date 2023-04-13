@@ -15,8 +15,8 @@
 
 import LoadCallBack from "./LoadCallBack"
 
-/** Interface for BaseComponent every components possible properties */
-interface BaseComponent {
+/** Interface for IBaseComponent every components possible properties */
+interface IBaseComponent {
     onLoadCallback?: LoadCallBack
     id: string,
     parent?: string,
@@ -60,4 +60,4 @@ interface BaseComponent {
     invalid?:boolean,
     contentParentName?:string
 }
-export default BaseComponent
+export default IBaseComponent

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 
 /** Interface for cellEditor property of CellEditors */
 export interface ICellEditor{
@@ -27,7 +27,7 @@ export interface ICellEditor{
 }
 
 /** Base Interface for CellEditors */
-export interface IEditor extends BaseComponent{
+export interface IEditor extends IBaseComponent{
     borderVisible?: boolean
     cellEditor?: ICellEditor,
     cellEditor_editable_:boolean,

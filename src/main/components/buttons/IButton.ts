@@ -12,10 +12,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
+import { IComponentConstants } from "../BaseComponent";
 
 /** Interface for Buttons contains properties which are sent by the server */
-export interface IButton extends BaseComponent {
+export interface IButton extends IBaseComponent, IComponentConstants {
     accelerator: string,
     horizontalTextPosition?:number,
     verticalTextPosition?:number,

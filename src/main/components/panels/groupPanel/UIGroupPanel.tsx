@@ -16,38 +16,27 @@
 import React, { CSSProperties, FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
 import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import Dimension from "../../../util/types/Dimension";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
-import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
+import { IComponentConstants } from "../../BaseComponent";
 
 /**
  * This component is a panel with a header, useful to group components
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIGroupPanel: FC<IPanel> = (baseProps) => {
-    /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
-
+const UIGroupPanel: FC<IPanel & IComponentConstants> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [, components, componentSizes] = useComponents(props.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
-
-    /** Reference for the panel element */
-    const panelRef = useRef<any>(null);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -59,7 +48,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
             "G", 
             prefSize,
             props.className,
-            styleClassNames,
+            props.styleClassNames,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 
@@ -68,24 +57,22 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
         )
     }, [onLoadCallback]);
 
-    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
-
     return (
         <>
             <Tooltip target={"#" + props.name} />
             <div
-                ref={panelRef}
-                className={concatClassnames("rc-panel-group", styleClassNames)}
+                ref={props.forwardedRef}
+                className={concatClassnames("rc-panel-group", props.styleClassNames)}
                 id={props.name}
                 {...usePopupMenu(props)}
                 style={props.screen_modal_ || props.content_modal_ ?
                     { height: (prefSize?.height as number), width: prefSize?.width }
-                    : { ...layoutStyle, background: compStyle.background }}
+                    : { ...props.layoutStyle, background: props.compStyle.background }}
                 data-pr-tooltip={props.toolTipText}
                 data-pr-position="left" >
                 <div
                     className="rc-panel-group-caption"
-                    style={{ ...compStyle }}
+                    style={{ ...props.compStyle }}
                     dangerouslySetInnerHTML={{ __html: props.text as string }} >
                     {/* <span>
                         {props.text}
@@ -93,7 +80,7 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                 </div>
                 <div
                     className="rc-panel-group-content"
-                    style={{ ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {}) }}>
+                    style={{ ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {}) }}>
                     <Layout
                         id={id}
                         name={props.name}
@@ -109,11 +96,11 @@ const UIGroupPanel: FC<IPanel> = (baseProps) => {
                         components={components}
                         style={panelGetStyle(
                             true,
-                            layoutStyle,
+                            props.layoutStyle,
                             prefSize,
                             props.screen_modal_ || props.content_modal_,
                             props.screen_size_,
-                            context.transferType
+                            props.context.transferType
                         )}
                         parent={props.parent} />
                 </div>

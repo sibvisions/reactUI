@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, ReactElement, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Dialog } from 'primereact/dialog';
 import { appContext } from "../../../contexts/AppProvider";
 import { createCloseContentRequest, createCloseScreenRequest } from "../../../factories/RequestFactory";
@@ -44,7 +44,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, componentSizes] = useComponents(baseProps.id + "-popup", baseProps.className);
+    const [,, componentSizes] = useComponents(baseProps.id + "-popup", baseProps.className);
 
     /** Current state of the size of the popup-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());

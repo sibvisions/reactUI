@@ -14,7 +14,7 @@
  */
 
 import React, { FC } from "react"
-import BaseComponent from "../util/types/BaseComponent";
+import IBaseComponent from "../util/types/IBaseComponent";
 import UILabel from "../components/label/UILabel";
 import Dummy from "../components/dummy";
 import UIIcon from "../components/icon/UIIcon";
@@ -56,6 +56,7 @@ import UITable from "../components/table/UITable";
 import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
 import UITabsetPanel from "../components/panels/tabsetpanel/UITabsetPanel";
+import BaseComponent from "../components/BaseComponent";
 
 
 /**
@@ -169,10 +170,10 @@ const componentsMapV2 = new Map<string, React.ComponentType<any>>([...baseCompon
 
 /**
  * Returns the JSXElement for the given base component
- * @param baseComponent - the basecomponent to build
+ * @param IBaseComponent - the IBaseComponent to build
  * @returns the resulting JSXElement
  */
-export const componentHandler = (baseComponent: BaseComponent, contentStore:BaseContentStore) => {
+export const componentHandler = (baseComponent: IBaseComponent, contentStore:BaseContentStore) => {
     let Comp:Function|undefined;
 
     if (baseComponent.name && (baseComponent.name.startsWith(".") || baseComponent.name.startsWith("#"))) {
@@ -183,7 +184,7 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Base
     // else just create the standard component
     if (contentStore.globalComponents.has(baseComponent.className)) {
         Comp = contentStore.globalComponents.get(baseComponent.className) as Function;
-        return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
+        return createCustomComponentWrapper({...baseComponent, component: <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>, isGlobal: true})
     }
     else if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
         Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef as string);
@@ -198,7 +199,7 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Base
         Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
 
         if (Comp) {
-            return <Comp {...baseComponent} key={baseComponent.id} />;
+            return <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent> ;
         }
         else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
             return <Dummy {...baseComponent} key={baseComponent.id} />

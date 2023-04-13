@@ -35,6 +35,8 @@ const MFAURL: FC<ILoginForm> = (props) => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();
 
+    const gaugeRef = useRef<any>();
+
     /** State of the link object */
     const [link, setLink] = useState<MFAURLType | string>({ width: 500, height: 300, url: "", target: "_self" });
 
@@ -149,6 +151,13 @@ const MFAURL: FC<ILoginForm> = (props) => {
                         {translation.get("Waiting for verification.")}
                     </div>
                     <UIGauge
+                        context={context}
+                        topbar={topbar}
+                        translation={new Map<string, string>()}
+                        compStyle={{}}
+                        forwardedRef={gaugeRef}
+                        styleClassNames={[]}
+                        designerUpdate={undefined}
                         id="login-gauge"
                         name="login-gauge-url"
                         className="ui-gauge"

@@ -42,6 +42,7 @@ import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import { initialURL } from "../..";
 import BaseResponse from "../response/BaseResponse";
+import { Designer } from "@sibvisions/visionx/dist/moduleIndex";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
@@ -59,6 +60,7 @@ export type AppContextType = {
     appSettings: AppSettings,
     ctrlPressed: boolean,
     appReady: boolean,
+    designer: Designer|null
 } |
 {
     transferType: "full",
@@ -71,6 +73,7 @@ export type AppContextType = {
     ctrlPressed: boolean,
     appReady: boolean,
     launcherReady: boolean,
+    designer: Designer|null
 }
 
 /** Contentstore instance */
@@ -106,7 +109,8 @@ const initValue: AppContextType = {
     subscriptions: subscriptions,
     designerSubscriptions: designerSubscriptions,
     ctrlPressed: false,
-    appReady: false
+    appReady: false,
+    designer: null
 }
 
 /** Context containing the server and contentstore */

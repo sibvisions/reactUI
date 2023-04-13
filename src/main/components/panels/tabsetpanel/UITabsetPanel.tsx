@@ -16,7 +16,6 @@
 import React, { FC, useCallback, useRef } from "react"
 import { IExtendableTabsetPanel } from "../../../extend-components/panels/ExtendTabsetPanel";
 import { createTabRequest } from "../../../factories/RequestFactory";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
@@ -24,6 +23,7 @@ import IconProps from "../../comp-props/IconProps";
 import { showTopBar } from "../../topbar/TopBar";
 import { IPanel } from "../panel/UIPanel";
 import TabsetPanelImpl from "./TabsetPanelImpl";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for TabsetPanel */
 export interface ITabsetPanel extends IPanel {
@@ -42,12 +42,9 @@ export type TabProperties = {
  * This component handles the selection and closure of tabs and calls the TabsetImpl component to render the TabsetPanel
  * @param baseProps - the properties sent by the Layout component
  */
-const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => {
-    /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITabsetPanel & IExtendableTabsetPanel>(baseProps, {visibility: 'hidden'});
-
+const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel & IComponentConstants> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, compSizes] = useComponents(baseProps.id, props.className);
+    const [, components, compSizes] = useComponents(props.id, props.className);
 
     /** Reference value if there is currently a tab closing action */
     const closing = useRef(false);
@@ -68,7 +65,7 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => 
                 props.onTabChange(tabId);
             } 
 
-            showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.SELECT_TAB), topbar);
+            showTopBar(props.context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.SELECT_TAB), props.topbar);
         }
         closing.current = false;
     }
@@ -80,7 +77,7 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => 
             props.onTabClose(tabId);
         }
         
-        showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.CLOSE_TAB), topbar);
+        showTopBar(props.context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.CLOSE_TAB), props.topbar);
         closing.current = true
     }
 
@@ -89,11 +86,11 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => 
             {...props}
             components={components} 
             compSizes={compSizes} 
-            compStyle={compStyle}
-            layoutStyle={layoutStyle}
+            compStyle={props.compStyle}
+            layoutStyle={props.layoutStyle}
             onTabChange={handleSelect}
             onTabClose={handleClose}
-            style={concatClassnames(styleClassNames)} />
+            style={concatClassnames(props.styleClassNames)} />
     )
 }
 export default UITabsetPanel

@@ -19,7 +19,6 @@ import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusR
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getAlignments } from "../../comp-props/GetAlignments";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
@@ -30,10 +29,9 @@ import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableCheckboxEditor } from "../../../extend-components/editors/ExtendCheckboxEditor";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { RenderButtonHTML } from "../../buttons/button/UIButton";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -51,18 +49,12 @@ export interface IEditorCheckBox extends IRCCellEditor {
  * The CheckBoxCellEditor displays a CheckBox and its label and edits its value in its databook
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props) => {
-    /** Reference for the span that is wrapping the button containing layout information */
-    const wrapRef = useRef<any>(null);
-
+const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & IComponentConstants> = (props) => {
     /** Reference for the CheckBox element */
     const cbRef = useRef<any>(null);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** Current state of wether the CheckBox is currently checked or not */
     const [checked, setChecked] = useState(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
@@ -76,39 +68,19 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates("checkbox");
-
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if(onLoadCallback && wrapRef.current){
-            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapRef.current, onLoadCallback)
+        if(onLoadCallback && props.forwardedRef.current){
+            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        wrapRef.current,
-        props.layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     // Sets the background-color if cellFormatting is set in a cell-editor
     useLayoutEffect(() => {
-        if (props.isCellEditor && wrapRef.current) {
+        if (props.isCellEditor && props.forwardedRef.current) {
             if (props.cellFormatting && props.colIndex !== undefined && props.cellFormatting[props.colIndex]) {
                 if (props.cellFormatting[props.colIndex].background) {
-                    (wrapRef.current.parentElement as HTMLElement).style.background = props.cellFormatting[props.colIndex].background as string
+                    (props.forwardedRef.current.parentElement as HTMLElement).style.background = props.cellFormatting[props.colIndex].background as string
                 }
             }
         }
@@ -170,7 +142,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
 
     return (
         <span
-            ref={wrapRef}
+            ref={props.forwardedRef}
             id={!props.isCellEditor ? props.name : undefined}
             aria-label={props.ariaLabel}
             className={concatClassnames(

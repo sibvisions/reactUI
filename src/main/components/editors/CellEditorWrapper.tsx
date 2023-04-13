@@ -24,6 +24,7 @@ import { CellFormatting, IInTableEditor } from "../table/CellEditor";
 import { TopBarContextType } from "../topbar/TopBar";
 import { IEditor } from "./IEditor";
 import { isCellEditorReadOnly } from "./text/UIEditorText";
+import useRepaintResizer from "../../hooks/designer-hooks/useRepaintResizer";
 
 /** Interface which contains values the CellEditorWrapper passes down to the CellEditor it renders */
 export interface ICellEditorWrapperProps {
@@ -53,30 +54,29 @@ export interface IRCCellEditor extends IEditor, ICellEditorWrapperProps, IInTabl
  * A Wrapper Component for CellEditors
  * @param baseProps - the properties of a component sent by the server
  */
-const CellEditorWrapper:FC<any> = (baseProps) => {
+const CellEditorWrapper:FC<any> = (props) => {
     /** Current state of the properties for the component sent by the server */
-    const [context, topbar, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle, styleClassNames] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
+    const [screenName, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(props);
 
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataRow);
+
+    useRepaintResizer(props.name, props.layoutStyle);
+
     /** If the CellEditor is read-only */
     const isReadOnly = useMemo(() => (props.isReadOnly !== undefined && props.isCellEditor) ? props.isReadOnly : isCellEditorReadOnly(props), [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled, props.isReadOnly]);
 
     return createEditor(
         {
             ...props,
-            context: context,
-            topbar: topbar,
-            layoutStyle: layoutStyle,
             translation: translation,
             screenName: screenName,
             columnMetaData: columnMetaData,
             selectedRow: selectedRow,
             cellStyle: cellStyle,
             isReadOnly: isReadOnly,
-            cellFormatting: baseProps.cellFormatting,
-            colIndex: baseProps.colIndex,
-            styleClassNames: styleClassNames
+            cellFormatting: props.cellFormatting,
+            colIndex: props.colIndex,
         }
     );
 }

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import BaseComponent from "../types/BaseComponent";
+import IBaseComponent from "../types/IBaseComponent";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import Dimension from "../types/Dimension";
 import MapLocation from "../types/MapLocation";
@@ -81,7 +81,7 @@ export function parseMapLocation(location:string|undefined):MapLocation|undefine
  * @param componentSizes - the map of componentsizes of a layout
  * @returns the preferred size of the given component.
  */
-export function getPreferredSize(component:BaseComponent, componentSizes:Map<string, ComponentSizes>) {
+export function getPreferredSize(component:IBaseComponent, componentSizes:Map<string, ComponentSizes>) {
     if (componentSizes.has(component.id)) {
         //If prefSize is less than maxSize and more than minSize is already checked in sendOnLoadCallBack!
         return componentSizes.get(component.id)!.preferredSize;
@@ -95,7 +95,7 @@ export function getPreferredSize(component:BaseComponent, componentSizes:Map<str
  * @param componentSizes - a panels/layouts compSizes map in which the minimumSizes are saved
  * @returns 
  */
-export function getMinimumSize(component:BaseComponent, componentSizes:Map<string, ComponentSizes>) {
+export function getMinimumSize(component:IBaseComponent, componentSizes:Map<string, ComponentSizes>) {
     let minimumSize:Dimension = { height: 0, width: 0 }
     if (componentSizes.has(component.id)) {
         if (component.minimumSize || componentSizes.get(component.id)!.minimumSize !== undefined) {

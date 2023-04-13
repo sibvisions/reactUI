@@ -17,7 +17,7 @@ import React, { createContext, FC, useCallback, useEffect, useLayoutEffect, useM
 import { Column } from "primereact/column";
 import { DataTable, DataTableColumnResizeEndParams, DataTableSelectionChangeParams } from "primereact/datatable";
 import _ from "underscore";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest, createWidthRequest } from "../../factories/RequestFactory";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
@@ -26,7 +26,6 @@ import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
 import MetaDataResponse from "../../response/data/MetaDataResponse";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
 import useSortDefinitions from "../../hooks/data-hooks/useSortDefinitions";
@@ -43,17 +42,15 @@ import { CellEditor } from "./CellEditor";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
-
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import Dimension from "../../util/types/Dimension";
 import { IExtendableTable } from "../../extend-components/table/ExtendTable";
 import { ICellEditorLinked } from "../editors/linked/UIEditorLinked";
-import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
+import { IComponentConstants } from "../BaseComponent";
 
 
 /** Interface for Table */
-export interface TableProps extends BaseComponent {
+export interface TableProps extends IBaseComponent {
     classNameComponentRef: string,
     columnLabels: Array<string>,
     columnNames: Array<string>,
@@ -164,26 +161,18 @@ function isVisible(ele:HTMLElement, container:HTMLElement, cell:any, rowHeight:n
  * This component displays a DataTable
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
-    /** Reference for the div wrapping the Table */
-    const wrapRef = useRef<HTMLDivElement>(null);
-
+const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props) => {
     /** Reference for the Table */
     const tableRef = useRef<DataTable>(null);
 
-    /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<TableProps & IExtendableTable>(baseProps);
-
     /** Name of the screen */
-    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id, props.dataBook]);
+    const screenName = useMemo(() => props.context.contentStore.getScreenName(props.id, props.dataBook) as string, [props.context.contentStore, props.id, props.dataBook]);
 
     /** Metadata of the databook */
     const metaData = useMetaData(screenName, props.dataBook, undefined);
 
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(screenName, props.dataBook);
-
-    const designerUpdate = useDesignerUpdates('table');
 
     /**
      * Get the set data-height, with the designer it's not possible to set lower than 16px (nothing will change below).
@@ -197,7 +186,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         else {
             return rowHeight + 8;
         }
-    }, [designerUpdate])
+    }, [props.designerUpdate])
 
     /**
      * Returns the number of records visible based on row height.
@@ -210,8 +199,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             headerHeight = table.table.querySelector('.p-datatable-thead').offsetHeight;
         }
 
-        return Math.floor((layoutStyle?.height as number - headerHeight) / tableRowHeight)
-    }, [layoutStyle?.height, designerUpdate, tableRowHeight])
+        return Math.floor((props.layoutStyle?.height as number - headerHeight) / tableRowHeight)
+    }, [props.layoutStyle?.height, props.designerUpdate, tableRowHeight])
 
     /** The amount of virtual rows loaded */
     const rows = useMemo(() => {
@@ -346,8 +335,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
         //await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
-        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), topbar);
-    }, [props.dataBook, props.name, context.server])
+        await showTopBar(props.context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), props.topbar);
+    }, [props.dataBook, props.name, props.context.server])
 
 
 
@@ -433,12 +422,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const tabNavigationMode = props.tabNavigationMode || Navigation.NAVIGATION_CELL_AND_FOCUS;
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps
+    const {onLoadCallback, id} = props
 
     //Returns navtable classname
     const getNavTableClassName = (parent?:string) => {
         if (parent) {
-            const parentProps = context.contentStore.getComponentById(parent);
+            const parentProps = props.context.contentStore.getComponentById(parent);
             if (parentProps?.className === "ToolBarPanel" && (parentProps as IToolBarPanel).toolBarVisible !== false) {
                 switch((parentProps as IToolBarPanel).toolBarArea) {
                     case 0:
@@ -463,7 +452,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
-        if(wrapRef.current){
+        if(props.forwardedRef.current){
             if(onLoadCallback) {
                 if (props.preferredSize) {
                     sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
@@ -482,7 +471,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                 height += providerData.length * tableRowHeight
                             }
 
-                            if (layoutStyle && (estTableWidth + 4) > (layoutStyle!.width as number)) {
+                            if (props.layoutStyle && (estTableWidth + 4) > (props.layoutStyle!.width as number)) {
                                 height += 17;
                             }
                             return height
@@ -496,22 +485,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }    
         }
     }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, providerData]);
-
-    useHandleDesignerUpdate(
-        designerUpdate,
-        wrapRef.current,
-        layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
 
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
@@ -978,11 +951,11 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         dataProvider={props.dataBook}
                         cellData={rowData[colName]}
                         cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
-                        resource={context.server.RESOURCE_URL}
+                        resource={props.context.server.RESOURCE_URL}
                         cellId={() => ({
                             selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()
                         })}
-                        tableContainer={wrapRef.current ? wrapRef.current : undefined}
+                        tableContainer={props.forwardedRef.current ? props.forwardedRef.current : undefined}
                         selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
                         selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
                         enterNavigationMode={enterNavigationMode}
@@ -999,10 +972,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         dataProviderReadOnly={metaData?.readOnly}
                         setIsEditing={setIsEditing}
                         stopEditing={() => {
-                            const table = context.contentStore.flatContent.get(id);
+                            const table = props.context.contentStore.flatContent.get(id);
                             if (table) {
                                 (table as TableProps).startEditing = false;
-                                context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
+                                props.context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
                             }
                         }}
                         rowNumber={tableInfo.rowIndex}
@@ -1045,8 +1018,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             />
         })
     }, [
-        props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
-        context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
+        props.columnNames, props.columnLabels, props.dataBook, props.context.contentStore, props.id,
+        props.context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
         enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
         props.startEditing, isSelecting
     ])
@@ -1078,14 +1051,14 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             const length = last - first + 1;
             setListLoading(true);
             firstRowIndex.current = first;
-            if((providerData.length < last + length * 2) && !context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
+            if((providerData.length < last + length * 2) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = props.dataBook;
                 fetchReq.fromRow = providerData.length;
                 fetchReq.rowCount = length * 4;
-                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar).then((result) => {
+                showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar).then((result) => {
                     if (props.onLazyLoadFetch && result[0]) {
-                        props.onLazyLoadFetch(context.server.buildDatasets(result[0]))
+                        props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))
                     }
 
                     setListLoading(false);
@@ -1168,7 +1141,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             else {
                 widthReq.width = e.element.offsetWidth;
             }
-            showTopBar(context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), topbar);
+            showTopBar(props.context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), props.topbar);
         }
     }
 
@@ -1249,20 +1222,20 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     break;
                 case "Insert":
                     if (metaData?.insertEnabled) {
-                        context.contentStore.insertDataProviderData(screenName, props.dataBook);
+                        props.context.contentStore.insertDataProviderData(screenName, props.dataBook);
                         const insertReq = createInsertRecordRequest();
                         insertReq.dataProvider = props.dataBook;
-                        showTopBar(context.server.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD), topbar);
+                        showTopBar(props.context.server.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD), props.topbar);
                     }
                     break;
                 case "Delete":
                     if (metaData?.deleteEnabled) {
-                        context.contentStore.deleteDataProviderData(screenName, props.dataBook);
+                        props.context.contentStore.deleteDataProviderData(screenName, props.dataBook);
                         const selectReq = createSelectRowRequest();
                         selectReq.dataProvider = props.dataBook;
                         selectReq.componentId = props.name;
                         selectReq.rowNumber = selectedRow && selectedRow.index !== undefined ? selectedRow.index : undefined;
-                        showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), topbar)
+                        showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), props.topbar)
                     }
             }
         }
@@ -1283,7 +1256,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 sortReq.dataProvider = props.dataBook;
                 sortReq.columnName = columnName
                 let sortDefToSend: SortDefinition[] = sortDefinitions || [];
-                if (context.ctrlPressed) {
+                if (props.context.ctrlPressed) {
                     if (!sortDef) {
                         sortDefToSend.push({ columnName: columnName, mode: "Ascending" })
                     }
@@ -1295,7 +1268,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
                 }
                 sortReq.sortDefinition = sortDefToSend;
-                showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
+                showTopBar(props.context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), props.topbar);
             }
         }
     }
@@ -1373,16 +1346,16 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 table.styleElement.innerHTML = innerHTML;
             }
         }
-    }, [layoutStyle?.width, estTableWidth]);
+    }, [props.layoutStyle?.width, estTableWidth]);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
             <div
-                ref={wrapRef}
+                ref={props.forwardedRef}
                 id={props.name + "-_wrapper"}
                 style={{
-                    ...layoutStyle,
-                    ...compStyle,
+                    ...props.layoutStyle,
+                    ...props.compStyle,
                     outline: "none",
                     caretColor: "transparent"
                 } as any}
@@ -1398,7 +1371,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     setTimeout(() => {
                         if (!focused.current) {
                             if (props.eventFocusGained) {
-                                onFocusGained(props.name, context.server);
+                                onFocusGained(props.name, props.context.server);
                             }
                             focused.current = true;
                             if (columnOrder && !focusIsClicked.current) {
@@ -1414,11 +1387,11 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     },50)
                 }}
                 onBlur={event => {
-                    if (wrapRef.current
-                        && !wrapRef.current.contains(event.relatedTarget as Node) 
+                    if (props.forwardedRef.current
+                        && !props.forwardedRef.current.contains(event.relatedTarget as Node) 
                         &&  (event.relatedTarget && !(event.relatedTarget as HTMLElement).classList.contains("celleditor-dropdown-virtual-scroller"))) {
                         if (props.eventFocusLost) {
-                            onFocusLost(props.name, context.server);
+                            onFocusLost(props.name, props.context.server);
                         }
                         focused.current = false;
                     }
@@ -1434,13 +1407,13 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         "rc-table",
                         props.autoResize === false ? "no-auto-resize" : "",
                         getNavTableClassName(props.parent),
-                        styleClassNames
+                        props.styleClassNames
                     )}
                     value={virtualEnabled ? virtualRows : providerData}
                     selection={selectedCell}
                     selectionMode="single"
                     cellSelection
-                    scrollHeight={layoutStyle?.height ? `${layoutStyle?.height}px` : undefined}
+                    scrollHeight={props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined}
                     scrollable={virtualEnabled}
                     virtualScrollerOptions={ virtualEnabled ? { 
                         itemSize, 

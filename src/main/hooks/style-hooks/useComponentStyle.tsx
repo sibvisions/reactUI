@@ -14,7 +14,7 @@
  */
 
 import { CSSProperties, useLayoutEffect, useMemo, useState } from "react"
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 
 // map to quickly get to the syscolor css variables
 const sysColorMap = new Map<string, string>([["mandatorybackground", "--mandatory-background"], ["readonlybackground", "--readonly-background"], ["invalideditorbackground", "invalid-background"]])
@@ -105,7 +105,7 @@ export function getFontProperties(font?:string) {
  * Returns the style as CSSProperties and if its initially set
  * @param props - the properties of the components
  */
-const useComponentStyle = (props: BaseComponent):CSSProperties => {
+const useComponentStyle = (props: IBaseComponent):CSSProperties => {
     const compStyle = useMemo(() => {
         const fontProps = getFontProperties(props.font);
         const bgdProps = getColorProperties(props.background, true);

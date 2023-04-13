@@ -16,15 +16,13 @@
 // API docs for ChartJS Version used in Prime React - https://www.chartjs.org/docs/2.7.3/
 // https://github.com/chartjs/Chart.js/issues/5224
 
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useLayoutEffect, useMemo } from "react";
 import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
 import useRowSelect from "../../hooks/data-hooks/useRowSelect";
-import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
@@ -35,13 +33,13 @@ import * as _ from 'underscore';
 import { createSelectRowRequest } from "../../factories/RequestFactory";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import MetaDataResponse from "../../response/data/MetaDataResponse";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { showTopBar } from "../topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { IComponentConstants } from "../BaseComponent";
 
 /** Interface for Chartproperties sent by server */
-export interface IChart extends BaseComponent {
+export interface IChart extends IBaseComponent, IComponentConstants {
     chartStyle: number
     dataBook: string
     xColumnName: string
@@ -183,15 +181,9 @@ function getLabels(values:any[], translation?: Map<string,string>, onlyIfNaN: bo
  * This component displays charts with various styles
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIChart: FC<IChart> = (baseProps) => {
-    /** Reference for the span that is wrapping the chart containing layout information */
-    const chartRef = useRef<HTMLSpanElement>(null);
-
-    /** Component constants */
-    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IChart>(baseProps);
-
+const UIChart: FC<IChart> = (props) => {
     /** ComponentId of the screen */
-    const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
+    const screenName = props.context.contentStore.getScreenName(props.id, props.dataBook) as string;
 
     /** The data provided by the databook */
     const [providerData]:any[][] = useDataProviderData(screenName, props.dataBook);
@@ -200,16 +192,10 @@ const UIChart: FC<IChart> = (baseProps) => {
     const [selectedRow] = useRowSelect(screenName, props.dataBook);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** The metadata for the given databook */
     const metaData:MetaDataResponse = useMetaData(screenName, props.dataBook) as MetaDataResponse
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, chartRef.current ? chartRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** process the providerData to geta usable data list as well as the min & max values */
     const [data, min, max, xmin, xmax] = useMemo(() => {
@@ -398,7 +384,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 transform: 'float',
                 defaultValue: .5
             }
-        }, chartRef.current);
+        }, props.forwardedRef.current);
 
         const opacity = [
             CHART_STYLES.AREA,
@@ -591,7 +577,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                                 values: Object.values(_.pick(foundData, metaData.primaryKeyColumns))
                             }
                             selectReq.selectedColumn = label
-                            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), topbar);
+                            showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), props.topbar);
                         }
 
                     }
@@ -612,24 +598,21 @@ const UIChart: FC<IChart> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (chartRef.current) {
+        if (props.forwardedRef.current) {
             sendOnLoadCallback(
                 id,
                 props.className,
                 parsePrefSize(props.preferredSize), 
                 parseMaxSize(props.maximumSize), 
                 parseMinSize(props.minimumSize), 
-                chartRef.current, 
+                props.forwardedRef.current, 
                 onLoadCallback
             )
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
-    /** Adds the layoutStyle to the ref */
-    useAddLayoutStyle(chartRef.current, layoutStyle, onLoadCallback)
-
     return (
-        <span ref={chartRef} id={props.name + "-_wrapper"} className={concatClassnames("rc-chart", styleClassNames)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <span ref={props.forwardedRef} id={props.name + "-_wrapper"} className={concatClassnames("rc-chart", props.styleClassNames)} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
                 id={props.name}
                 type={chartType}

@@ -19,7 +19,7 @@ import useLayoutValue from "../style-hooks/useLayoutValue";
 import useConstants from "../components-hooks/useConstants";
 import useComponentStyle from "../style-hooks/useComponentStyle";
 import { AppContextType } from "../../contexts/AppProvider";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { TopBarContextType } from "../../components/topbar/TopBar";
 import { IPanel } from "../../components/panels/panel/UIPanel";
 import useStyleClassNames from "./useStyleClassNames";
@@ -29,7 +29,7 @@ import useStyleClassNames from "./useStyleClassNames";
  * @param baseProps - the baseproperties a component receives from the server
  * @param fb - the fallback value for styles
  */
-const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSProperties):
+const useComponentConstants = <T extends IBaseComponent> (baseProps:T, fb?:CSSProperties):
 [AppContextType, TopBarContextType, [T], CSSProperties|undefined, CSSProperties, string[]] => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();

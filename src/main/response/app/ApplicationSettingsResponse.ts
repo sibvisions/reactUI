@@ -14,7 +14,7 @@
  */
 
 import BaseResponse from "../BaseResponse"
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 
 /** Interface for ApplicationSettingsResponse */
 interface ApplicationSettingsResponse extends BaseResponse {
@@ -27,6 +27,6 @@ interface ApplicationSettingsResponse extends BaseResponse {
     home?:boolean,
     logout?:boolean,
     userSettings?:boolean
-    desktop?: Array<BaseComponent>
+    desktop?: Array<IBaseComponent>
 }
 export default ApplicationSettingsResponse;

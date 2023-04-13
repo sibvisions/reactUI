@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useRef } from "react";
+import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 
 /**
  * Adds an event-handler to the target, also handles cleanup
@@ -21,29 +22,31 @@ import { useEffect, useRef } from "react";
  * @param event - the event
  * @param handler - the function which should be executed
  */
-const useEventHandler = <K extends keyof HTMLElementEventMap>(target?: HTMLElement, event?: K, handler?: (e: HTMLElementEventMap[K]) => any) => {
+const useEventHandler = <K extends keyof HTMLElementEventMap>(target?: HTMLElement, event?: K, handler?: (e: HTMLElementEventMap[K]) => any, isTable?: boolean, className?: string) => {
     const targetRef = useRef<HTMLElement>();
     const handlerRef = useRef<(e: HTMLElementEventMap[K]) => any>();
     const eventRef = useRef<K>();
 
     useEffect(() => {
-        if(!target?.addEventListener){
-            return
-        }
-
-        if (targetRef.current && handlerRef.current && eventRef.current) {
-            targetRef.current.removeEventListener(eventRef.current, handlerRef.current);
-        }
-        targetRef.current = target;
-        handlerRef.current = handler;
-        eventRef.current = event;
-        if (target && event && handler) {
-            target.addEventListener(event, handler);
-        }
-
-        return () =>  {
+        if (isTable || className !== COMPONENT_CLASSNAMES.TABLE) {
+            if(!target?.addEventListener){
+                return
+            }
+    
             if (targetRef.current && handlerRef.current && eventRef.current) {
                 targetRef.current.removeEventListener(eventRef.current, handlerRef.current);
+            }
+            targetRef.current = target;
+            handlerRef.current = handler;
+            eventRef.current = event;
+            if (target && event && handler) {
+                target.addEventListener(event, handler);
+            }
+    
+            return () =>  {
+                if (targetRef.current && handlerRef.current && eventRef.current) {
+                    targetRef.current.removeEventListener(eventRef.current, handlerRef.current);
+                }
             }
         }
     }, [target, event, handler])

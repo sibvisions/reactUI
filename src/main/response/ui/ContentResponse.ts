@@ -14,11 +14,11 @@
  */
 
 import BaseResponse from "../BaseResponse"
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 
 /** Interface for ContentResponse */
 interface ContentResponse extends BaseResponse {
-    changedComponents: Array<BaseComponent>,
+    changedComponents: Array<IBaseComponent>,
     update: boolean,
 }
 export default ContentResponse

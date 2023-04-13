@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import React, { CSSProperties, FC, forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import _ from "underscore";
 import { appContext } from "../../contexts/AppProvider";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
@@ -32,6 +32,8 @@ import LinkedCellRenderer from "./CellRenderer/LinkedCellRenderer";
 import NumberCellRenderer from "./CellRenderer/NumberCellRenderer";
 import TextCellRenderer from "./CellRenderer/TextCellRenderer";
 import { SelectedCellContext } from "./UITable";
+import BaseComponent from "../BaseComponent";
+import useConstants from "../../hooks/components-hooks/useConstants";
 
 // Interface for in-table-editors
 export interface IInTableEditor {
@@ -127,7 +129,16 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 isCellEditor: true,
                 cellScreenName: props.dataProvider.split("/")[1],
                 rowNumber: props.rowNumber,
-                isReadOnly: props.isReadOnly
+                isReadOnly: props.isReadOnly,
+                forwardedRef: props.forwardedRef,
+                context: props.context,
+                topbar: props.topbar,
+                layoutStyle: { 
+                    width: calcWidth, 
+                    height: calcHeight, 
+                    //marginLeft: calcMarginLeft, 
+                    //marginTop: calcMarginTop 
+                }
             }} />
     }
     return editor
@@ -149,8 +160,9 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Reference which contains the pressed key for input editors */
     const passRef = useRef<string>("")
 
-    /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext);
+    const forwardedRef = useRef<any>(null);
+
+    const [context, topbar] = useConstants();
 
     /** Context for the selected cell */
     const cellContext = useContext(SelectedCellContext);
@@ -363,7 +375,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
             ((edit && !waiting && isEditable) ?
                 <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                    {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable}, stopCellEditing, passRef.current)}
+                    {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable, forwardedRef: forwardedRef, context: context, topbar: topbar}, stopCellEditing, passRef.current)}
                 </div>
                 :
                 <div
@@ -381,7 +393,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                 </div>
             ) : (edit && isEditable ?
                 <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                    {displayEditor(columnMetaData, { ...props, isReadOnly: !isEditable }, stopCellEditing, passRef.current)}
+                    {displayEditor(columnMetaData, { ...props, isReadOnly: !isEditable, forwardedRef: forwardedRef, context: context, topbar: topbar}, stopCellEditing, passRef.current)}
                 </div>
                 :
                 <div

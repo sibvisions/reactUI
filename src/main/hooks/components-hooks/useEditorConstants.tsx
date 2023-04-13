@@ -23,38 +23,31 @@ import { IRCCellEditor } from "../../components/editors/CellEditorWrapper";
 import { TopBarContextType } from "../../components/topbar/TopBar";
 import CELLEDITOR_CLASSNAMES from "../../components/editors/CELLEDITOR_CLASSNAMES";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
+import { IComponentConstants } from "../../components/BaseComponent";
 
 /**
  * This hook returns constants for cell-editors
  * @param baseProps - the properties of the editor
  * @returns 
  */
-const useEditorConstants = <T extends IRCCellEditor>(baseProps: T, fb?: CSSProperties): [
-    AppContextType,
-    TopBarContextType,
-    [T],
-    CSSProperties | undefined,
+const useEditorConstants = <T extends IRCCellEditor & IComponentConstants>(props: T, fb?: CSSProperties): [
     string,
     NumericColumnDescription | LengthBasedColumnDescription | undefined,
     any,
     CSSProperties,
-    string[]
 ] => {
-    /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<T>(baseProps, fb);
-
     /** gets the cellstyle of a cell-editor */
-    const cellStyle = useCellEditorStyle(props, compStyle);
+    const cellStyle = useCellEditorStyle(props, props.compStyle);
 
     /** The component id of the screen */
-    const screenName = useMemo(() => baseProps.isCellEditor ? baseProps.cellScreenName as string : context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow, baseProps.isCellEditor, baseProps.cellScreenName])
+    const screenName = useMemo(() => props.isCellEditor ? props.cellScreenName as string : props.context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow, props.isCellEditor, props.cellScreenName])
 
     /** The metadata for the specific column */
-    const columnMetaData = useMetaData(screenName, props.dataRow, props.columnName, baseProps.cellEditor?.className === CELLEDITOR_CLASSNAMES.NUMBER ? "numeric" : undefined);
+    const columnMetaData = useMetaData(screenName, props.dataRow, props.columnName, props.cellEditor?.className === CELLEDITOR_CLASSNAMES.NUMBER ? "numeric" : undefined);
 
     /** The currently selected row */
     const [selectedRow] = useRowSelect(screenName, props.dataRow, props.isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
 
-    return [context, topbar, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle, styleClassNames]
+    return [screenName, columnMetaData, [selectedRow], cellStyle]
 }
 export default useEditorConstants

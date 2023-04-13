@@ -17,14 +17,12 @@ import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
-import BaseComponent from "../../../util/types/BaseComponent";
+import IBaseComponent from "../../../util/types/IBaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
 import { MenuItem } from "primereact/menuitem";
 import { IButton } from "../IButton";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { parseIconData } from "../../comp-props/ComponentProperties";
@@ -34,8 +32,6 @@ import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { IExtendableMenuButton } from "../../../extend-components/buttons/ExtendMenuButton";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
 import { RenderButtonHTML } from "../button/UIButton";
 
@@ -53,33 +49,21 @@ interface IMenuButtonItem extends MenuItem {
  * This component displays a Button which contains a dropdown menu
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
+const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
-    /** Reference for the span that is wrapping the button containing layout information */
-    const buttonWrapperRef = useRef<HTMLSpanElement>(null);
-
-    /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IMenuButton & IExtendableMenuButton>(baseProps);
-
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, layoutStyle, compStyle);
+    const btnStyle = useButtonStyling(props, props.layoutStyle, props.compStyle);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const { onLoadCallback, id } = baseProps;
+    const { onLoadCallback, id } = props;
 
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<MenuItem>>();
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.defaultButton : undefined, context);
-
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates("menubutton");
+    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.defaultButton : undefined, props.context);
 
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
@@ -103,27 +87,11 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = buttonWrapperRef.current;
+        const wrapperRef = props.forwardedRef.current;
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate, isHTML]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        buttonWrapperRef.current,
-        layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback),
-        onLoadCallback
-    );
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.designerUpdate, isHTML]);
 
     useLayoutEffect(() => {
         //TODO: Maybe it'll be possible to change the tabindex of the menubutton without dom manipulation in PrimeReact
@@ -135,7 +103,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
 
     /** Builds the menuitems and sets the state */
     useEffect(() => {
-        const buildMenu = (foundItems: Map<string, BaseComponent>) => {
+        const buildMenu = (foundItems: Map<string, IBaseComponent>) => {
             let tempItems: Array<IMenuButtonItem> = [];
             foundItems.forEach(item => {
                 let iconProps = parseIconData(props.foreground, item.image);
@@ -151,7 +119,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                     template: (iconProps.icon && !iconProps.icon?.includes('fa')) ? (item, options) => {
                         return (
                             <a className="p-menuitem-link" role="menuitem" onClick={options.onClick}>
-                                <img className='rc-popupmenubutton-custom-icon' src={context.server.RESOURCE_URL + item.icon} />
+                                <img className='rc-popupmenubutton-custom-icon' src={props.context.server.RESOURCE_URL + item.icon} />
                                 <span className={options.labelClassName}>{item.label}</span>
                             </a>
                         )
@@ -165,20 +133,20 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
 
                         const req = createDispatchActionRequest();
                         req.componentId = item.name;
-                        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+                        showTopBar(props.context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), props.topbar);
                     }
                 });
             });
             setItems(tempItems);
         }
         if (props.popupMenu) {
-            buildMenu(context.contentStore.getChildren(props.popupMenu, props.className));
+            buildMenu(props.context.contentStore.getChildren(props.popupMenu, props.className));
         }
-    }, [context.contentStore, context.server, props]);
+    }, [props.context.contentStore, props.context.server, props]);
 
     // Focus handling, so that always the entire button is focused and not only one of the parts of the button
     useEventHandler(
-        buttonWrapperRef.current ? buttonRef.current.defaultButton : undefined,
+        props.forwardedRef.current ? buttonRef.current.defaultButton : undefined,
         "click",
         (event) => {
             (event.target as HTMLElement).focus();
@@ -191,7 +159,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
 
     // If lib-user extends MenuButton with onMenuBtnClick, call it when the MenuButton is clicked (right side of SplitButton)
     useEventHandler(
-        buttonWrapperRef.current ? buttonWrapperRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined,
+        props.forwardedRef.current ? props.forwardedRef.current.querySelector(".p-splitbutton-menubutton") as HTMLElement : undefined,
         "click",
         (event) => {
             (event.target as HTMLElement).focus();
@@ -206,15 +174,15 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
         <span
             className={concatClassnames("rc-popupmenubutton-wrapper", props.focusable === false ? "no-focus-rect" : "")}
             id={props.name + "-_wrapper"}
-            ref={buttonWrapperRef}
-            style={{ position: 'absolute', ...layoutStyle }}
+            ref={props.forwardedRef}
+            style={{ position: 'absolute', ...props.layoutStyle }}
             aria-label={props.ariaLabel}
             onFocus={(e) => {
                 if (props.eventFocusGained) {
-                    onFocusGained(props.name, context.server)
+                    onFocusGained(props.name, props.context.server)
                 }
             }}
-            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+            onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={btnStyle.tabIndex}
         >
             <SplitButton
@@ -225,7 +193,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                     props.borderPainted === false ? "border-notpainted" : '',
                     btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
                     `gap-${btnStyle.iconGapPos}`,
-                    styleClassNames
+                    props.styleClassNames
                 )}
                 style={{
                     ...btnStyle.style,
@@ -241,7 +209,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
                         '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
                         '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
                         '--iconColor': btnStyle.iconProps.color,
-                        '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
+                        '--iconImage': `url(${props.context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
                         '--iconTextGap': `${props.imageTextGap || 4}px`,
                     } : {})
                 }}

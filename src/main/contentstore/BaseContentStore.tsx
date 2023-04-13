@@ -18,7 +18,7 @@ import { History } from "history";
 import SignaturePad, { ISignaturPad } from "../components/custom-comp/custom-container-components/SignaturePad";
 import TreePath from "../model/TreePath";
 import { SubscriptionManager } from "../SubscriptionManager";
-import BaseComponent from "../util/types/BaseComponent";
+import IBaseComponent from "../util/types/IBaseComponent";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import { IToolBarHelper } from "../components/panels/toolbarPanel/UIToolBarHelper";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
@@ -79,19 +79,19 @@ export default abstract class BaseContentStore {
     abstract server: BaseServer;
 
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
-    flatContent = new Map<string, BaseComponent>();
+    flatContent = new Map<string, IBaseComponent>();
 
     /** A Map which stores the children of components, the key is the id of the component and the value is a set of the children id's */
     componentChildren = new Map<string, Set<string>>();
 
     /** A Map which stores the component which are displayed in the desktop-panel, the key is the components id and the value the component */
-    desktopContent = new Map<string, BaseComponent>();
+    desktopContent = new Map<string, IBaseComponent>();
 
     /** A Map which stores removed, but not deleted components, the key is the components id and the value the component */
-    removedContent = new Map<string, BaseComponent>();
+    removedContent = new Map<string, IBaseComponent>();
 
     /** A Map which stores removed, but not deleted components of the desktop-panel, the key is the components id and the value the component */
-    removedDesktopContent = new Map<string, BaseComponent>();
+    removedDesktopContent = new Map<string, IBaseComponent>();
 
     /** A Map which stores custom-screens made by the user, the key is the components title and the value a function to build the custom-screen*/
     customScreens = new Map<string, Function>();
@@ -103,10 +103,10 @@ export default abstract class BaseContentStore {
     replaceScreens = new Map<string, Function>();
 
     /** A map which stores removed custom components made by the user, the key is the components title and the value is the component-object */
-    removedCustomComponents = new Map<string, BaseComponent>();
+    removedCustomComponents = new Map<string, IBaseComponent>();
 
     /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
-    replacedContent = new Map<string, BaseComponent>();
+    replacedContent = new Map<string, IBaseComponent>();
 
     /** A Map which stores the navigation names for screens to route, the key is the navigation name of the screen and the value is an object containing the screenId and the componentId */
     navigationNames = new Map<string, { screenId: string, componentId: string}>();
@@ -188,7 +188,7 @@ export default abstract class BaseContentStore {
      * @param componentName - the name of the component
      * @returns the data/properties of a component based on the name
      */
-     getComponentByName(componentName: string, withRemoved?:boolean): BaseComponent | undefined {
+     getComponentByName(componentName: string, withRemoved?:boolean): IBaseComponent | undefined {
         let alreadyFound = false;
         let mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
 
@@ -197,7 +197,7 @@ export default abstract class BaseContentStore {
         }
 
         const componentEntries = mergedContent.entries();
-        let foundEntry:BaseComponent|undefined;
+        let foundEntry:IBaseComponent|undefined;
         let entry = componentEntries.next();
         while (!entry.done) {
             if (entry.value[1].name === componentName) {
@@ -217,11 +217,11 @@ export default abstract class BaseContentStore {
      * @param componentId - the id of the component
      * @returns the data/properties of a component based on the id
      */
-    getComponentById(componentId?: string): BaseComponent | undefined {
+    getComponentById(componentId?: string): IBaseComponent | undefined {
         if (componentId) {
             const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
             const componentEntries = mergedContent.entries();
-            let foundEntry: BaseComponent | undefined;
+            let foundEntry: IBaseComponent | undefined;
             let entry = componentEntries.next();
             while (!entry.done) {
                 if (entry.value[1].id === componentId) {
@@ -237,11 +237,11 @@ export default abstract class BaseContentStore {
     }
 
     /**
-     * Returns the parent of a component as BaseComponent Object or undefined if the parent wasn't found
+     * Returns the parent of a component as IBaseComponent Object or undefined if the parent wasn't found
      * @param parentId - the parent you wish to find
      */
-    getParent(parentId:string): BaseComponent|undefined {
-        let parent:BaseComponent|undefined = undefined
+    getParent(parentId:string): IBaseComponent|undefined {
+        let parent:IBaseComponent|undefined = undefined
         const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
         if (parentId) {
             parent = mergedContent.get(parentId);
@@ -254,13 +254,13 @@ export default abstract class BaseContentStore {
      * Also handles the toolbarpanel helpers
      * @param child - the component which is being added.
      */
-    addAsChild(child: BaseComponent) {
+    addAsChild(child: IBaseComponent) {
         if (child.parent) {
             const children:Set<string> = this.componentChildren.get(child.parent) || new Set<string>();
             if (child.parent.includes("TBP")) {
                 let component = child;
                 if (this.getExistingComponent(child.id)) {
-                    component = this.getExistingComponent(child.id) as BaseComponent;
+                    component = this.getExistingComponent(child.id) as IBaseComponent;
                 }
                 let string = component.parent;
                 if (component["~additional"]) {
@@ -285,13 +285,13 @@ export default abstract class BaseContentStore {
      * Removes a component from it's parent's list of children. Also handles toolbarpanel helpers.
      * @param child - the component which is being removed
      */
-    removeAsChild(child: BaseComponent) {
+    removeAsChild(child: IBaseComponent) {
         if (child.parent) {
             const children:Set<string> = this.componentChildren.get(child.parent) || new Set<string>();
             if (child.parent.includes("TBP")) {
                 let component = child;
                 if (this.getExistingComponent(child.id)) {
-                    component = this.getExistingComponent(child.id) as BaseComponent;
+                    component = this.getExistingComponent(child.id) as IBaseComponent;
                 }
                 let string = component.parent;
                 if (component["~additional"]) {
@@ -334,7 +334,7 @@ export default abstract class BaseContentStore {
      * @param existingComp - the existing component already in contentstore
      * @param newComp - the new component of changedcomponents
      */
-    abstract updateExistingComponent(existingComp:BaseComponent|undefined, newComp:BaseComponent): void
+    abstract updateExistingComponent(existingComp:IBaseComponent|undefined, newComp:IBaseComponent): void
 
     /**
      * Returns the constraint of the toolbar-main sub-panel.
@@ -406,7 +406,7 @@ export default abstract class BaseContentStore {
             }
         }
         else {
-            const popup:BaseComponent = {
+            const popup:IBaseComponent = {
                 id: newComp.id + "-popup",
                 name: newComp.name + "-popup",
                 className: "PopupWrapper",
@@ -498,7 +498,7 @@ export default abstract class BaseContentStore {
      * @param comp - the component which is currently being changed (not the parent!)
      * @param notifyList - the list of components which need to be notified (parents)
      */
-     addToNotifyList(comp:BaseComponent, notifyList:string[]) {
+     addToNotifyList(comp:IBaseComponent, notifyList:string[]) {
         if (comp.parent) {
             // If the new component's parent is a toolbar-panel, check which of the artificial parents should be notified (based on ~additional)
             if (this.getParent(comp.parent)?.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
@@ -525,7 +525,7 @@ export default abstract class BaseContentStore {
      * that either a popup should be displayed, properties changed, or their parent changed, based on server sent components
      * @param componentsToUpdate - an array of components sent by the server
      */
-    abstract updateContent(componentsToUpdate: Array<BaseComponent>, desktop:boolean): void;
+    abstract updateContent(componentsToUpdate: Array<IBaseComponent>, desktop:boolean): void;
 
     /**
      * Sets the currently active screens or clears the array
@@ -628,7 +628,7 @@ export default abstract class BaseContentStore {
      * @returns the built window
      */
      getWindow(window: ActiveScreen) {
-         let windowData: BaseComponent | undefined;
+         let windowData: IBaseComponent | undefined;
         if (window.popup) {
             windowData = this.getComponentById(window.id);
 
@@ -653,7 +653,7 @@ export default abstract class BaseContentStore {
      * Validates a component and it's children. 
      * @param component - the component which gets validated
      */
-    validateComponent(component:BaseComponent) {
+    validateComponent(component:IBaseComponent) {
         let parent = component.parent;
         let invalid = false;
         while (parent && !parent.includes("IF")) {
@@ -695,13 +695,13 @@ export default abstract class BaseContentStore {
      * Returns all visible children of a parent, if tabsetpanel also return invisible
      * @param id - the id of the component
      */
-    abstract getChildren(id: string, className?: string): Map<string, BaseComponent>;
+    abstract getChildren(id: string, className?: string): Map<string, IBaseComponent>;
 
     /**
      * Returns all visible children of a parent also invisible ones
      * @param id - the id of the component
      */
-    abstract getAllChildren(id:string, className?: string): Map<string, BaseComponent>;
+    abstract getAllChildren(id:string, className?: string): Map<string, IBaseComponent>;
 
     /**
      * Returns the component id of a screen for a component
@@ -713,7 +713,7 @@ export default abstract class BaseContentStore {
             return dataProvider.split("/")[1]
         }
         else {
-            let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
+            let comp: IBaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
             if (comp) {
                 while (comp?.parent) {
                     if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {

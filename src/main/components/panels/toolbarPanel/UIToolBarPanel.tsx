@@ -16,7 +16,6 @@
 import React, { FC, useCallback, useRef } from "react";
 import { Tooltip } from "primereact/tooltip";
 import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
@@ -24,9 +23,10 @@ import Dimension from "../../../util/types/Dimension";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for ToolbarPanels */
-export interface IToolBarPanel extends IPanel {
+export interface IToolBarPanel extends IPanel, IComponentConstants {
     toolBarArea:0|1|2|3;
     toolBarVisible?:boolean
 }
@@ -35,15 +35,12 @@ export interface IToolBarPanel extends IPanel {
  * Renders a ToolbarPanel which contains two helpers, main is the toolbar which has the toolbar components and center is the content/layout of the toolbarpanel
  * @param baseProps - the baseprops sent by the server
  */
-const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
-    /** Component constants */
-    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IToolBarPanel>(baseProps, {visibility: 'hidden'});
-
+const UIToolBarPanel: FC<IToolBarPanel> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [, components, componentSizes] = useComponents(props.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
@@ -64,7 +61,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             "P", 
             prefSize,
             props.className,
-            styleClassNames,
+            props.styleClassNames,
             minSize, 
             props.preferredSize, 
             props.minimumSize, 
@@ -78,16 +75,16 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
             <Tooltip target={"#" + props.name} />
             <div
                 ref={panelRef}
-                className={concatClassnames(styleClassNames)}
+                className={concatClassnames(props.styleClassNames)}
                 id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     height: prefSize?.height,
                     width: prefSize?.width,
-                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
                 } : {
-                    ...layoutStyle,
+                    ...props.layoutStyle,
                     backgroundColor: props.background,
-                    ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
+                    ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
                 }}
                 data-pr-tooltip={props.toolTipText}
                 data-pr-position="left"
@@ -107,11 +104,11 @@ const UIToolBarPanel: FC<IToolBarPanel> = (baseProps) => {
                     components={components.filter(comp => comp.props.id.includes(id + '-'))}
                     style={panelGetStyle(
                         false,
-                        layoutStyle,
+                        props.layoutStyle,
                         prefSize,
                         props.screen_modal_ || props.content_modal_,
                         props.screen_size_,
-                        context.transferType
+                        props.context.transferType
                     )}
                     parent={props.parent}
                 />

@@ -14,11 +14,11 @@
  */
 
 import ComponentResponse from "../ComponentResponse";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 
 /** Interface for GenericResponse */
 interface GenericResponse extends ComponentResponse {
-    changedComponents: Array<BaseComponent>,
+    changedComponents: Array<IBaseComponent>,
     update: boolean,
     home: boolean
 }

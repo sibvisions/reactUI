@@ -14,9 +14,9 @@
  */
 
 import BaseResponse from "../BaseResponse"
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 
 interface UIResponse extends BaseResponse {
-    changedComponents: Array<BaseComponent>
+    changedComponents: Array<IBaseComponent>
 }
 export default UIResponse;

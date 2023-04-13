@@ -14,7 +14,6 @@
  */
 
 import React, { createContext, CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
-import BaseComponent from "../../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import TabsetPanelImpl from "../tabsetpanel/TabsetPanelImpl";
 import { createCloseFrameRequest } from "../../../factories/RequestFactory";
@@ -23,14 +22,12 @@ import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 import useComponents, { ComponentSizes } from "../../../hooks/components-hooks/useComponents";
 import useConstants from "../../../hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import Dimension from "../../../util/types/Dimension";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Layout from "../../layouts/Layout";
 import { IDesktopPanel } from "./UIDesktopPanel";
-import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
 
 // Interface for the opened-frame-context
 interface IOpenedFrameContext {
@@ -104,15 +101,12 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
  * "below" the tab-mode
  * @param baseProps - the base propertie sent by the server
  */
-const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
-    /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
-
+const UIDesktopPanelFull: FC<IDesktopPanel> = (props) => {
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [children, components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [children, components, componentSizes] = useComponents(props.id, props.className);
 
     /** State of the currently opened frames */
     const [openFrames, setOpenedFrames] = useState<string[]>(() => {
@@ -144,7 +138,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
             "P",
             prefSize,
             props.className,
-            styleClassNames,
+            props.styleClassNames,
             minSize,
             props.preferredSize,
             props.minimumSize,
@@ -168,22 +162,20 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
         setOpenedFrames(arrCopy);
     }, [openFrames]);
 
-    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
-
     return (
         <OpenFrameContext.Provider value={{ openFrames: openFrames, openFramesCallback: openFramesCallback, tabMode: props.tabMode === true }}>
             <div
-                className={concatClassnames("rc-desktop-panel", styleClassNames)}
+                className={concatClassnames("rc-desktop-panel", props.styleClassNames)}
                 ref={panelRef}
                 id={props.name}
-                style={{ ...layoutStyle, backgroundColor: props.background }} >
+                style={{ ...props.layoutStyle, backgroundColor: props.background }} >
                 {displayTabMode ? 
                         <DesktopTabPanel 
                             {...props} 
                             components={components.filter(comp => comp.props.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)}
-                            compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) : undefined}
-                            compStyle={compStyle}
-                            layoutStyle={layoutStyle} /> 
+                            compSizes={componentSizes ? new Map([...componentSizes].filter(comp => props.context.contentStore.getComponentById(comp[0])?.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) : undefined}
+                            compStyle={props.compStyle}
+                            layoutStyle={props.layoutStyle} /> 
                     : 
                         <Layout
                             id={props.id}
@@ -196,7 +188,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
                             maximumSize={parseMaxSize(props.maximumSize)}
                             compSizes={componentSizes}
                             components={components}
-                            style={panelGetStyle(false, layoutStyle)}
+                            style={panelGetStyle(false, props.layoutStyle)}
                             reportSize={reportSize}
                             panelType="DesktopPanel"
                             parent={props.parent} />}

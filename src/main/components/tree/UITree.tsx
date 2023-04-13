@@ -16,16 +16,14 @@
 /** React imports */
 import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Tree, TreeExpandedKeysType, TreeSelectionParams } from 'primereact/tree';
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import TreePath from "../../model/TreePath";
 import { showTopBar } from "../topbar/TopBar";
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
 import TreeNode from "primereact/treenode";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useAllDataProviderData from "../../hooks/data-hooks/useAllDataProviderData";
 import useAllRowSelect from "../../hooks/data-hooks/useAllRowSelect";
-import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { getMetaData } from "../../util/data-util/GetMetaData";
 import { getSelfJoinedRootReference } from "../../util/data-util/GetSelfJoinedRootReference";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
@@ -33,13 +31,13 @@ import { SelectFilter } from "../../request/data/SelectRowRequest";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
-
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
 import MetaDataResponse, { MetaDataReference } from "../../response/data/MetaDataResponse";
+import { IComponentConstants } from "../BaseComponent";
 
 /** Interface for Tree */
-export interface ITree extends BaseComponent {
+export interface ITree extends IBaseComponent {
     dataBooks: string[],
     detectEndNode: boolean
 }
@@ -68,15 +66,9 @@ function getNode(nodes: CustomTreeNode[], path: TreePath) {
  * This component displays a Tree based on server sent databooks
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
-    /** Reference for the span that is wrapping the tree containing layout information */
-    const treeWrapperRef = useRef<HTMLSpanElement>(null);
-
-    /** Component constants */
-    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<ITree & IExtendableTree>(baseProps);
-
+const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
     /** Name of the screen */
-    const screenName = context.contentStore.getScreenName(props.id, props.dataBooks && props.dataBooks.length ? props.dataBooks[0] : undefined) as string;
+    const screenName = props.context.contentStore.getScreenName(props.id, props.dataBooks && props.dataBooks.length ? props.dataBooks[0] : undefined) as string;
 
     /** The data provided by the databooks */
     const providedData = useAllDataProviderData(screenName, props.dataBooks);
@@ -106,12 +98,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     const [isInitialized, setInitialized] = useState(false);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const { onLoadCallback, id } = baseProps;
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, treeWrapperRef.current ? treeWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
-    const { detectEndNode } = props;
+    const { onLoadCallback, id, detectEndNode } = props;
 
     /** Helper Methods */
 
@@ -121,14 +108,14 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
      * @returns true if the given databook is self-joined false if it isn't
      */
      const isSelfJoined = useCallback((dataBook:string) => {
-        const metaData = getMetaData(screenName, dataBook, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, dataBook, props.context.contentStore, undefined);
         if (metaData?.masterReference) {
             return metaData.masterReference.referencedDataBook === dataBook;
         } else {
             return false;
         }
     }, [
-        context.contentStore, 
+        props.context.contentStore, 
         screenName
     ]);
 
@@ -159,7 +146,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
      */
      const getDataRow = useCallback((path:TreePath, referencedRow:any) => {
         const dataBookName = getDataBookName(path.length() - 1);
-        const metaData = getMetaData(screenName, dataBookName, context.contentStore, undefined)
+        const metaData = getMetaData(screenName, dataBookName, props.context.contentStore, undefined)
         const dataPage = providedData.get(dataBookName);
         const reference = getReference(dataBookName, metaData as MetaDataResponse, path);
         if (dataPage) {
@@ -237,7 +224,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     : [nodeReference.key]
         );
         const fetchDataPage = getDataBookName(parentPath.length());
-        const metaData = getMetaData(screenName, fetchDataPage, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, fetchDataPage, props.context.contentStore, undefined);
         const reference = getReference(fetchDataPage, metaData as MetaDataResponse, parentPath);
         
         const filter = getFilterObj(metaData as MetaDataResponse, reference as MetaDataReference, fetchObj);
@@ -258,7 +245,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 const childPkObj:any = {}
                 if (getDataBookName(path.length())) {
                     const childDataPage = getDataBookName(path.length());
-                    const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
+                    const childMetaData = getMetaData(screenName, childDataPage, props.context.contentStore, undefined);
                     const childReference = getReference(childDataPage, childMetaData as MetaDataResponse, path);
                     const childFilter = getFilterObj(childMetaData as MetaDataResponse, childReference as MetaDataReference, data);
                     childFilter.columnNames.forEach((key, i) => childPkObj[key] = childFilter.values[i]);
@@ -284,11 +271,11 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     const fetchReq = createFetchRequest();
                     fetchReq.dataProvider = fetchDataPage;
                     fetchReq.filter = filter;
-                    await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
+                    await showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
                         .then(() => {
                             const builtData = providedData.get(fetchDataPage).get(pkObjStringified);
                             addNodesToParent(builtData);
-                        }), topbar)
+                        }), props.topbar)
                 } else {
                     //the data is already fetched so don't send a fetch and get the data by pkObjStringified
                     const builtData = providedData.get(fetchDataPage).get(pkObjStringified);
@@ -300,8 +287,8 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             }
         })
     }, [
-        context.contentStore, 
-        context.server, 
+        props.context.contentStore, 
+        props.context.server, 
         screenName, 
         getDataBookName, 
         props.dataBooks, 
@@ -327,7 +314,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             while (path.length()) {
                 const dataBook = getDataBookName(path.length() -1)
                 const dataRow = getDataRow(path, treeData.current.get(path.getParentPath().toString()));
-                const primaryKeys = getMetaData(screenName, dataBook, context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
+                const primaryKeys = getMetaData(screenName, dataBook, props.context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
                 selectedFilters.push({
                     columnNames: primaryKeys,
                     values: primaryKeys.map((pk: string) => dataRow[pk])
@@ -349,13 +336,13 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             selectReq.componentId = props.name;
             selectReq.dataProvider = props.dataBooks
             selectReq.filter = selectedFilters;
-            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_TREE), topbar);
+            showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_TREE), props.topbar);
         }
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = treeWrapperRef.current;
+        const wrapperRef = props.forwardedRef.current;
         if (wrapperRef) {
             sendOnLoadCallback(
                 id, 
@@ -386,19 +373,19 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             setExpandedKeys(prevKeys => ({...prevKeys}));
         }
         if (props.dataBooks && props.dataBooks.length) {
-            context.subscriptions.subscribeToTreeChange(props.dataBooks[0], updateRebuildTree);
+            props.context.subscriptions.subscribeToTreeChange(props.dataBooks[0], updateRebuildTree);
         }
 
-        context.subscriptions.subscribeToTreeDataChange(props.dataBooks.join("_"), (dataBook:string, data: any[], pageKeyHelper:string) => setTreeDataChanged({ dataBook: dataBook, data: data, pageKey: pageKeyHelper}))
+        props.context.subscriptions.subscribeToTreeDataChange(props.dataBooks.join("_"), (dataBook:string, data: any[], pageKeyHelper:string) => setTreeDataChanged({ dataBook: dataBook, data: data, pageKey: pageKeyHelper}))
         
         return () => {
             if (props.dataBooks && props.dataBooks.length) {
-                context.subscriptions.unsubscribeFromTreeChange(props.dataBooks[0], updateRebuildTree);
+                props.context.subscriptions.unsubscribeFromTreeChange(props.dataBooks[0], updateRebuildTree);
             }
-            context.subscriptions.unsubscribeFromTreeDataChange(props.dataBooks.join("_"));
+            props.context.subscriptions.unsubscribeFromTreeDataChange(props.dataBooks.join("_"));
         }
     }, [
-        context.subscriptions, 
+        props.context.subscriptions, 
         props.dataBooks
     ]);
 
@@ -409,7 +396,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     useEffect(() => {
         if (props.dataBooks && props.dataBooks.length) {
             const firstLvlDataBook = props.dataBooks[0];
-            const metaData = getMetaData(screenName, firstLvlDataBook, context.contentStore, undefined);
+            const metaData = getMetaData(screenName, firstLvlDataBook, props.context.contentStore, undefined);
             let tempTreeMap = treeData.current;
 
             /**
@@ -425,9 +412,9 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     values: []
                 }
                 fetchReq.rootKey = true;
-                const fetchResponse = await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar);
+                const fetchResponse = await showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar);
                 if (fetchResponse && fetchResponse.length) {
-                    const rootKey = context.contentStore.getDataBook(screenName, firstLvlDataBook)?.rootKey;
+                    const rootKey = props.context.contentStore.getDataBook(screenName, firstLvlDataBook)?.rootKey;
                     if (rootKey) {
                         return providedData.get(firstLvlDataBook).get(rootKey)
                     }
@@ -441,7 +428,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     const path = new TreePath(i);
                     const isPotentialParent = getDataBookName(path.length()) !== "";
                     const childDataPage = getDataBookName(1);
-                    const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
+                    const childMetaData = getMetaData(screenName, childDataPage, props.context.contentStore, undefined);
                     const reference = getReference(childDataPage, childMetaData as MetaDataResponse, new TreePath())
                     const filter = getFilterObj(childMetaData as MetaDataResponse, reference as MetaDataReference, dataRow);
                     const pkObj:any = {}
@@ -593,8 +580,8 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             }
 
             const nodesCopy = [...nodes];
-            const baseNodeData = getDataBookName(0) === treeDataChanged.dataBook && context.contentStore.getDataBook(screenName, getDataBookName(0))!.rootKey === treeDataChanged.pageKey;
-            const metaData = getMetaData(screenName, treeDataChanged.dataBook, context.contentStore) as MetaDataResponse;
+            const baseNodeData = getDataBookName(0) === treeDataChanged.dataBook && props.context.contentStore.getDataBook(screenName, getDataBookName(0))!.rootKey === treeDataChanged.pageKey;
+            const metaData = getMetaData(screenName, treeDataChanged.dataBook, props.context.contentStore) as MetaDataResponse;
             let parentNodes:CustomTreeNode[] = [];
             if (!baseNodeData) {
                 if (metaData) {
@@ -624,7 +611,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     const childPkObj:any = {}
                     if (getDataBookName(path.length())) {
                         const childDataPage = getDataBookName(path.length());
-                        const childMetaData = getMetaData(screenName, childDataPage, context.contentStore, undefined);
+                        const childMetaData = getMetaData(screenName, childDataPage, props.context.contentStore, undefined);
                         const childReference = getReference(childDataPage, childMetaData as MetaDataResponse, path);
                         const childFilter = getFilterObj(childMetaData as MetaDataResponse, childReference as MetaDataReference, dataRow);
                         childFilter.columnNames.forEach((key, i) => childPkObj[key] = childFilter.values[i]);
@@ -677,22 +664,22 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
     return (
         <span 
-            ref={treeWrapperRef}
+            ref={props.forwardedRef}
             id={props.name + "-_wrapper"} 
-            style={layoutStyle}
+            style={props.layoutStyle}
             tabIndex={props.tabIndex ? props.tabIndex : 0}
             onFocus={() => {
                 if (!focused.current) {
                     if (props.eventFocusGained) {
-                        onFocusGained(props.name, context.server);
+                        onFocusGained(props.name, props.context.server);
                     }
                     focused.current = true;
                 }
             }}
             onBlur={event => {
-                if (treeWrapperRef.current && !treeWrapperRef.current.contains(event.relatedTarget as Node)) {
+                if (props.forwardedRef.current && !props.forwardedRef.current.contains(event.relatedTarget as Node)) {
                     if (props.eventFocusLost) {
-                        onFocusLost(props.name, context.server);
+                        onFocusLost(props.name, props.context.server);
                     }
                     focused.current = false;
                 }
@@ -701,7 +688,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         >  
             <Tree
                 id={props.name}
-                className={concatClassnames("rc-tree", styleClassNames)}
+                className={concatClassnames("rc-tree", props.styleClassNames)}
                 value={nodes}
                 selectionMode="single"
                 selectionKeys={selectedKey}

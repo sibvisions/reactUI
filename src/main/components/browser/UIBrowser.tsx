@@ -13,21 +13,19 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useRef } from "react";
+import React, { FC, useLayoutEffect } from "react";
 import { Tooltip } from 'primereact/tooltip';
 import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
-import BaseComponent from "../../util/types/BaseComponent";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
-import useMouseListener from "../../hooks/event-hooks/useMouseListener";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import { IComponentConstants } from "../BaseComponent";
 
 // Interface for the browser component
-export interface IBrowser extends BaseComponent {
+export interface IBrowser extends IBaseComponent, IComponentConstants {
     url: string;
 }
 
@@ -35,40 +33,29 @@ export interface IBrowser extends BaseComponent {
  * This component displays an iframe which displays an url
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIBrowser: FC<IBrowser> = (baseProps) => {
-    /** Reference for the browser element */
-    const browserRef = useRef<any>(null);
-
-    /** Component constants for contexts, properties and style */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IBrowser>(baseProps);
+const UIBrowser: FC<IBrowser> = (props) => {
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, browserRef.current ? browserRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    const {onLoadCallback, id} = props;
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = browserRef.current;
+        const wrapperRef = props.forwardedRef.current;
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
-    /** Adds the layoutstyle to given element */
-    useAddLayoutStyle(browserRef.current, layoutStyle, onLoadCallback);
-
     return (
-        <span ref={browserRef} style={layoutStyle}>
+        <span ref={props.forwardedRef} style={props.layoutStyle}>
             <Tooltip target={"#" + props.name} />
             <iframe
                 id={props.name} 
-                className={concatClassnames("rc-mobile-browser", styleClassNames)}
-                style={{...compStyle}}
+                className={concatClassnames("rc-mobile-browser", props.styleClassNames)}
+                style={{...props.compStyle}}
                 src={props.url}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
-                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
                 data-pr-tooltip={props.toolTipText}
                 data-pr-position="left"
                 {...usePopupMenu(props)}

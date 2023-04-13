@@ -32,8 +32,6 @@ import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import { IExtendableButton } from "../../../extend-components/buttons/ExtendButton";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
 
 export const RenderButtonHTML: FC<{ text:string }> = (props) => {
@@ -46,62 +44,33 @@ export const RenderButtonHTML: FC<{ text:string }> = (props) => {
  * This component displays a basic button
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
+const UIButton: FC<IButton & IExtendableButton> = (props) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    /** Reference for the span that is wrapping the button containing layout information */
-    const buttonWrapperRef = useRef<HTMLSpanElement>(null);
-
-    /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButton & IExtendableButton>(baseProps);
-
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)
+    const btnStyle = useButtonStyling(props, props.layoutStyle, props.compStyle, buttonRef.current)
 
     /** Extracting onLoadCallback and id from baseProps */
-    const { onLoadCallback, id } = baseProps;
+    const { onLoadCallback, id } = props;
 
     /** Hook to display mouseOverImages and mousePressedImage */
     useButtonMouseImages(btnStyle.iconProps, btnStyle.pressedIconProps, btnStyle.mouseOverIconProps, buttonRef.current ? buttonRef.current : undefined);
 
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, buttonRef.current, context);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useRequestFocus(id, props.requestFocus, buttonRef.current, props.context);
 
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
-    /** Subscribes to designer-changes so the components are updated live */
-    const designerUpdate = useDesignerUpdates(props.text ? "default-button" : "icon-only-button");
-
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (buttonRef.current && buttonWrapperRef.current) {
+        if (buttonRef.current && props.forwardedRef.current) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), buttonRef.current, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, designerUpdate]);
-
-    /** Retriggers the size-measuring and sets the layoutstyle to the component */
-    useHandleDesignerUpdate(
-        designerUpdate,
-        buttonWrapperRef.current,
-        layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, props.designerUpdate]);
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = (event:any) => {
@@ -117,12 +86,12 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             const req = createDispatchActionRequest();
             req.componentId = props.name;
             req.isUploadButton = props.classNameEventSourceRef === "UploadButton" ? true : undefined
-            showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+            showTopBar(props.context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), props.topbar);
         }
     }
 
     return (
-        <span id={props.name + "-_wrapper"} ref={buttonWrapperRef} style={layoutStyle}>
+        <span id={props.name + "-_wrapper"} ref={props.forwardedRef} style={props.layoutStyle}>
             <Button
                 id={props.name}
                 ref={buttonRef}
@@ -137,7 +106,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                     btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
                     props.focusable === false ? "no-focus-rect" : "",
-                    styleClassNames
+                    props.styleClassNames
                 )}
                 style={{
                     ...btnStyle.style,
@@ -152,7 +121,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                         '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
                         '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
                         '--iconColor': btnStyle.iconProps.color,
-                        '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
+                        '--iconImage': `url(${props.context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
                         '--iconTextGap': `${props.imageTextGap || 4}px`,
                         '--iconCenterGap': `${btnStyle.iconCenterGap}px`
                     } : {})
@@ -165,7 +134,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                 onClick={(event) => onButtonPress(event)}
                 onFocus={(event) => {
                     if (props.eventFocusGained) {
-                        onFocusGained(props.name, context.server);
+                        onFocusGained(props.name, props.context.server);
                     }
                     else {
                         if (props.focusable === false) {
@@ -173,7 +142,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                         }
                     }
                 }}
-                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
                 disabled={isCompDisabled(props)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
@@ -194,7 +163,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                             formData.set("fileId", inputRef.current.getAttribute("upload-file-id") as string)
                             // @ts-ignore
                             formData.set("data", e.target.files[0])
-                            context.server.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
+                            props.context.server.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
                         }
                     }}
                     upload-file-id="" />

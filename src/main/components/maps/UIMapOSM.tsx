@@ -19,17 +19,14 @@ import 'leaflet/dist/leaflet.css';
 import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
 import { appContext } from "../../contexts/AppProvider";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import MapLocation from "../../util/types/MapLocation";
-import useLayoutValue from "../../hooks/style-hooks/useLayoutValue";
-import useProperties from "../../hooks/data-hooks/useProperties";
 import { parseMapLocation, parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
-
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
 import { sortGroupDataOSM } from "../../util/component-util/SortGroupData";
 import { sendMapFetchRequests } from "../../util/server-util/SendMapFetchRequests";
@@ -38,12 +35,11 @@ import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
 import IconProps from "../comp-props/IconProps";
 import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
 import { IExtendableMap } from "../../extend-components/maps/ExtendMapGoogle";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { IComponentConstants } from "../BaseComponent";
 
 /** Interface for Map components */
-export interface IMap extends BaseComponent {
+export interface IMap extends IBaseComponent {
     apiKey?: string
     center?: string
     fillColor?: string
@@ -68,13 +64,7 @@ export interface IMap extends BaseComponent {
  * This part of the map will cover positioning and size reporting and wraps the actual map
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIMapOSM: FC<IMap & IExtendableMap> = (baseProps) => {
-    /** Reference for the map element */
-    const mapRef = useRef<any>(null);
-
-    /** Component constants */
-    const [,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IMap & IExtendableMap>(baseProps);
-
+const UIMapOSM: FC<IMap & IExtendableMap & IComponentConstants> = (props) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
 
@@ -85,36 +75,34 @@ const UIMapOSM: FC<IMap & IExtendableMap> = (baseProps) => {
     const startZoom = useMemo(() => props.zoomLevel ? props.zoomLevel : 9, [props.zoomLevel]);
 
     /** Hook for MouseListener */
-    useMouseListener(props.name, mapRef.current ? mapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(props.name, props.forwardedRef.current ? props.forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The popup-menu of the map */
     const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (onLoadCallback && mapRef.current) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), mapRef.current, onLoadCallback);
+        if (onLoadCallback && props.forwardedRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
             
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    useAddLayoutStyle(mapRef.current, layoutStyle, onLoadCallback);
 
     /** 
      * Map can't measure itself, because it needs a set height initially --> before the componentsizes are set by the layout,
      * set a default preferredSize (100x100) the layout can use to calculate. 
      */
-    if (layoutStyle) {
+    if (props.layoutStyle) {
         return (
-            <div ref={mapRef} id={props.name + "-_wrapper"} className="rc-map-wrapper" {...popupMenu} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
+            <div ref={props.forwardedRef} id={props.name + "-_wrapper"} className="rc-map-wrapper" {...popupMenu} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
                 <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
-                    <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={layoutStyle} centerPosition={centerPosition} style={concatClassnames(styleClassNames)} />
+                    <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={props.layoutStyle} centerPosition={centerPosition} style={concatClassnames(props.styleClassNames)} />
                 </MapContainer>
             </div>
         )
     }
     else {
-        return <div ref={mapRef} style={{width: '100px', height: '100px'}}/>
+        return <div ref={props.forwardedRef} style={{width: '100px', height: '100px'}}/>
     }
     
 

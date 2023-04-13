@@ -24,7 +24,7 @@ import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { SpeedDial } from "primereact/speeddial";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
-import { VisionX } from "@sibvisions/visionx/dist/moduleIndex";
+import { VisionX, getDesigner } from "@sibvisions/visionx/dist/moduleIndex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
@@ -78,6 +78,14 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         const docStyle = window.getComputedStyle(document.documentElement)
         const mainHeight = docStyle.getPropertyValue('--main-height');
         const mainWidth = docStyle.getPropertyValue('--main-width');
+
+        if (vxContextState.showVisionX) {
+            context.designer = getDesigner();
+        }
+        else if (context.designer !== null) {
+            context.designer = null;
+        }
+
         if (showDesignerView || vxContextState.showVisionX) {
             if (showDesignerView && !sessionStorage.getItem("reactui-designer-on")) {
                 sessionStorage.setItem("reactui-designer-on", "true");

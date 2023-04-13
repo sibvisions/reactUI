@@ -17,7 +17,7 @@ import React, {FC, ReactElement, useCallback, useContext, useLayoutEffect, useMe
 import { appContext } from "../../../main/contexts/AppProvider";
 import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
 import ResizeHandler from "../ResizeHandler";
-import BaseComponent from "../../../main/util/types/BaseComponent";
+import IBaseComponent from "../../../main/util/types/IBaseComponent";
 import { componentHandler } from "../../../main/factories/UIFactory";
 
 /** This component defines where the workscreen should be displayed */
@@ -67,7 +67,7 @@ const WorkScreen: FC = () => {
     return (
         <ResizeHandler>
             {renderedScreens.length ? 
-            renderedScreens : context.appSettings.desktopPanel && !context.server.linkOpen && !context.appSettings.welcomeScreen.name ? componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore) : <></>}
+            renderedScreens : context.appSettings.desktopPanel && !context.server.linkOpen && !context.appSettings.welcomeScreen.name ? componentHandler(context.appSettings.desktopPanel as IBaseComponent, context.contentStore) : <></>}
         </ResizeHandler>
 
     )

@@ -21,7 +21,6 @@ import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getAlignments } from "../../comp-props/GetAlignments";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import Dimension from "../../../util/types/Dimension";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
@@ -35,7 +34,7 @@ import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import { parseIconData } from "../../comp-props/ComponentProperties";
 import IconProps from "../../comp-props/IconProps";
 import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
-import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for cellEditor property of ChoiceCellEditor */
 export interface ICellEditorChoice extends ICellEditor {
@@ -54,12 +53,9 @@ export interface IEditorChoice extends IRCCellEditor {
  * being clicked different images then will be displayed and the value in the databook will be changed
  * @param props - Initial properties sent by the server for this component
  */
-const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
+const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentConstants> = (props) => {
     /** Reference for the image */
     const imgRef = useRef<HTMLImageElement>(null);
-
-    /** Reference for the wrapper element */
-    const wrapRef = useRef<HTMLSpanElement>(null);
 
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
@@ -67,11 +63,8 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     /** Extracting onLoadCallback and id from props */
     const { onLoadCallback, id } = props;
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, wrapRef.current ? wrapRef.current as HTMLElement : undefined, props.context);
+    useRequestFocus(id, props.requestFocus, props.forwardedRef.current ? props.forwardedRef.current as HTMLElement : undefined, props.context);
 
     /** Returns the given value as string */
     const getValAsString = useCallback((val) => val !== undefined ? (val === null ? "null" : val.toString()) : "undefined", [])
@@ -84,10 +77,10 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
 
     // Sets the background-color if cellFormatting is set in a cell-editor
     useLayoutEffect(() => {
-        if (props.isCellEditor && wrapRef.current) {
+        if (props.isCellEditor && props.forwardedRef.current) {
             if (props.cellFormatting && props.colIndex !== undefined && props.cellFormatting[props.colIndex]) {
                 if (props.cellFormatting[props.colIndex].background) {
-                    (wrapRef.current.parentElement as HTMLElement).style.background = props.cellFormatting[props.colIndex].background as string
+                    (props.forwardedRef.current.parentElement as HTMLElement).style.background = props.cellFormatting[props.colIndex].background as string
                 }
             }
         }
@@ -170,9 +163,6 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
         }
     }
 
-    /** Adds the layoutstyle to given element */
-    useAddLayoutStyle(wrapRef.current, props.layoutStyle, onLoadCallback);
-
     /**
      * Send a sendValues request with the next value to the server
      */
@@ -229,7 +219,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor> = (props) => {
     return (
         <span
             id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
-            ref={wrapRef}
+            ref={props.forwardedRef}
             className={concatClassnames(
                 "rc-editor-choice",
                 props.columnMetaData?.nullable === false ? "required-field" : "",

@@ -34,6 +34,8 @@ const MFAWait:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
     const [context, topbar] = useConstants();
 
+    const gaugeRef = useRef<any>();
+
     /** State of the code field */
     const [code, setCode] = useState<string>("");
 
@@ -103,6 +105,13 @@ const MFAWait:FC<ILoginForm> = (props) => {
                 </div>
                 <div className="p-field wait-code-container" >
                     <UIGauge
+                        context={context}
+                        topbar={topbar}
+                        translation={new Map<string, string>()}
+                        compStyle={{}}
+                        forwardedRef={gaugeRef}
+                        styleClassNames={[]}
+                        designerUpdate={undefined}
                         id="login-gauge"
                         name="login-gauge-wait"
                         className="ui-gauge"

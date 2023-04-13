@@ -17,7 +17,7 @@ import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
 import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import { IToolBarPanel } from "../components/panels/toolbarPanel/UIToolBarPanel";
 import { SubscriptionManager } from "../SubscriptionManager";
-import BaseComponent from "../util/types/BaseComponent";
+import IBaseComponent from "../util/types/IBaseComponent";
 import { IPanel } from "../components/panels/panel/UIPanel";
 import { isWorkScreen } from "../util/component-util/IsWorkScreen";
 import AppSettings from "../AppSettings";
@@ -57,7 +57,7 @@ export default class ContentStoreFull extends BaseContentStore {
      * @param existingComp - the existing component already in contentstore
      * @param newComp - the new component of changedcomponents
      */
-     updateExistingComponent(existingComp:BaseComponent|undefined, newComp:BaseComponent) {
+     updateExistingComponent(existingComp:IBaseComponent|undefined, newComp:IBaseComponent) {
         if (existingComp) {
             for (let newPropName in newComp) {
                 // @ts-ignore  
@@ -94,14 +94,14 @@ export default class ContentStoreFull extends BaseContentStore {
      * that either a popup should be displayed, properties changed, or their parent changed, based on server sent components
      * @param componentsToUpdate - an array of components sent by the server
      */
-     updateContent(componentsToUpdate: Array<BaseComponent>) {
+     updateContent(componentsToUpdate: Array<IBaseComponent>) {
         /** An array of all parents which need to be notified */
         const notifyList = new Array<string>();
         /** 
          * Is the existing component if a component in the server sent components already exists in flatContent, replacedContent or
          * removedContent. Undefined if it is a new component
          */
-        let existingComponent: BaseComponent | undefined;
+        let existingComponent: IBaseComponent | undefined;
 
         componentsToUpdate.forEach(newComponent => {
             /** Checks if the component is a custom component */
@@ -200,7 +200,7 @@ export default class ContentStoreFull extends BaseContentStore {
                 }
                 else {
                     // Add the basic properties to the custom component
-                    const newComp:BaseComponent = {
+                    const newComp:IBaseComponent = {
                         id: newComponent.id, 
                         parent: newComponent.parent, 
                         constraints: newComponent.constraints, 
@@ -303,8 +303,8 @@ export default class ContentStoreFull extends BaseContentStore {
      * Returns all visible children of a parent, if tabsetpanel also return invisible
      * @param id - the id of the component
      */
-     getChildren(id: string, className?: string): Map<string, BaseComponent> {
-        let children = new Map<string, BaseComponent>();
+     getChildren(id: string, className?: string): Map<string, IBaseComponent> {
+        let children = new Map<string, IBaseComponent>();
         let parentId = id;
 
         const childrenSet = this.componentChildren.get(parentId);
@@ -346,8 +346,8 @@ export default class ContentStoreFull extends BaseContentStore {
      * @param id - the id of the component
      * @param className  the classname of the component
      */
-    getAllChildren(id: string, className?: string): Map<string, BaseComponent> {
-        let children = new Map<string, BaseComponent>();
+    getAllChildren(id: string, className?: string): Map<string, IBaseComponent> {
+        let children = new Map<string, IBaseComponent>();
         let parentId = id;
 
         const childrenSet = this.componentChildren.get(parentId);

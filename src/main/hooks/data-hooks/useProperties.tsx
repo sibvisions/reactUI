@@ -14,7 +14,7 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { appContext } from "../../contexts/AppProvider";
 
 /**
@@ -22,7 +22,7 @@ import { appContext } from "../../contexts/AppProvider";
  * @param id - the id of the component
  * @param init - the initial properties sent by the server
  */
-const useProperties = <T extends BaseComponent>(id: string, init: T) : [T] => {
+const useProperties = <T extends IBaseComponent>(id: string, init: T) : [T] => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of the properties */

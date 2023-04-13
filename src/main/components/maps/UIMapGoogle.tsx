@@ -20,10 +20,8 @@ import tinycolor from 'tinycolor2';
 import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
 import { IMap } from "./UIMapOSM";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import { parseMapLocation, parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
-import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
@@ -32,25 +30,18 @@ import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
 import { sortGroupDataGoogle } from "../../util/component-util/SortGroupData";
 import { sendSetValues } from "../../util/server-util/SendSetValues";
 import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
-
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableMapGoogle } from "../../extend-components/maps/ExtendMapGoogle";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import { IComponentConstants } from "../BaseComponent";
 
 /**
  * This component displays a map view with Google Maps
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
-    /** Reference for the div that is wrapping the map containing layout information */
-    const mapWrapperRef = useRef<any>(null);
-
+const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (props) => {
     /** Reference for the map element */
     const mapInnerRef = useRef(null);
-
-    /** Component constants */
-    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<IMap & IExtendableMapGoogle>(baseProps);
 
     /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
@@ -65,16 +56,13 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
     const centerPosition = useMemo(() => parseMapLocation(props.center), [props.center]);
 
     /** ComponentId of the screen */
-    const screenName = context.contentStore.getScreenName(props.id, props.pointsDataBook || props.groupDataBook) as string;
+    const screenName = props.context.contentStore.getScreenName(props.id, props.pointsDataBook || props.groupDataBook) as string;
 
     /** The provided data for groups */
     const [providedGroupData] = useDataProviderData(screenName, props.groupDataBook);
 
     /** The provided data for points/markers */
     const [providedPointData] = useDataProviderData(screenName, props.pointsDataBook);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, mapWrapperRef.current ? mapWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** Options for map controls/display */
     const options = {
@@ -101,12 +89,10 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (onLoadCallback && mapWrapperRef.current) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), mapWrapperRef.current, onLoadCallback);
+        if (onLoadCallback && props.forwardedRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
-
-    useAddLayoutStyle(mapWrapperRef.current, layoutStyle, onLoadCallback);
 
     /** Call the loadGoogleMaps function pass function to set Map ready and API key sent by server */
     useEffect(() => {
@@ -124,11 +110,11 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
         fetchG.dataProvider = props.groupDataBook;
         fetchG.fromRow = 0;
         if (props.pointsDataBook) {
-            context.server.sendRequest(fetchP, REQUEST_KEYWORDS.FETCH);
+            props.context.server.sendRequest(fetchP, REQUEST_KEYWORDS.FETCH);
         }
 
         if (props.groupDataBook) {
-            context.server.sendRequest(fetchG, REQUEST_KEYWORDS.FETCH);
+            props.context.server.sendRequest(fetchG, REQUEST_KEYWORDS.FETCH);
         }
     }, []);
 
@@ -142,7 +128,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
             const lngColname = props.longitudeColumnName;
             providedPointData.forEach((point: any, i: number) => {
                 let iconData: string | IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
-                const marker = new google.maps.Marker({ position: { lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE }, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon) });
+                const marker = new google.maps.Marker({ position: { lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE }, icon: props.context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon) });
                 marker.setMap(map);
                 if (i === providedPointData.length - 1) {
                     setSelectedMarker(marker);
@@ -221,8 +207,8 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
 
                 if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: e.latLng.lat(), lng: e.latLng.lng()})
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "" || "LATITUDE", [e.latLng.lat(), e.latLng.lng()], context.server, topbar);
-                    showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar)
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "" || "LATITUDE", [e.latLng.lat(), e.latLng.lng()], props.context.server, props.topbar);
+                    showTopBar(sendSaveRequest(props.pointsDataBook, true, props.context.server), props.topbar)
                 }
             }
 
@@ -245,8 +231,8 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
                 }
 
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, topbar);
-                    setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], props.context.server, props.topbar);
+                    setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, props.context.server), props.topbar), 200);
                 }
             }
 
@@ -259,8 +245,8 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
 
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, topbar);
-                    setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], props.context.server, props.topbar);
+                    setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, props.context.server), props.topbar), 200);
                 }
             }
 
@@ -273,17 +259,17 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
                 google.maps.event.clearInstanceListeners(map);
             }
         }
-    },[selectedMarker, context.server, props.latitudeColumnName, props.longitudeColumnName,
+    },[selectedMarker, props.context.server, props.latitudeColumnName, props.longitudeColumnName,
        props.name, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter,
        props.pointsDataBook, props.onClick, props.onDrag, props.onDragEnd, props.onZoomChanged]
     );
 
     /** If the map is not ready, return just a div width set size so it can report its size and initialize */
     if (mapReady === false)
-        return <div ref={mapWrapperRef} id={props.name} style={{width: '100px', height: '100px'}}/>
+        return <div ref={props.forwardedRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
-        <div ref={mapWrapperRef} className="rc-map-wrapper" {...popupMenu} id={props.name} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
-            <GMap ref={mapInnerRef} className={concatClassnames(styleClassNames)} options={options} style={{height: layoutStyle?.height, width: layoutStyle?.width}} />
+        <div ref={props.forwardedRef} className="rc-map-wrapper" {...popupMenu} id={props.name} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+            <GMap ref={mapInnerRef} className={concatClassnames(props.styleClassNames)} options={options} style={{height: props.layoutStyle?.height, width: props.layoutStyle?.width}} />
         </div>
     )
 }

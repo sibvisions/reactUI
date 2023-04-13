@@ -13,13 +13,11 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, ReactElement, useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, ReactElement, useCallback, useLayoutEffect, useState } from "react";
 import SplitPanel, { ORIENTATIONSPLIT } from "./SplitPanel";
 import {LayoutContext} from "../../../LayoutContext";
-import BaseComponent from "../../../util/types/BaseComponent";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import IBaseComponent from "../../../util/types/IBaseComponent";
 import useComponents from "../../../hooks/components-hooks/useComponents";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Dimension from "../../../util/types/Dimension";
@@ -27,9 +25,10 @@ import ChildWithProps from "../../../util/types/ChildWithProps";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { IExtendableSplitPanel } from "../../../extend-components/panels/ExtendSplitPanel";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
+import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for UISplitPanel */
-export interface ISplit extends BaseComponent {
+export interface ISplit extends IBaseComponent {
     dividerAlignment: number,
     dividerPosition: number,
     orientation: 0|1
@@ -39,10 +38,7 @@ export interface ISplit extends BaseComponent {
  * This component wraps the SplitPanel and provides it with properties
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
-    /** Component constants */
-    const [,, [props], layoutStyle,, styleClassNames] = useComponentConstants<ISplit & IExtendableSplitPanel>(baseProps, {visibility: 'hidden'});
-
+const UISplitPanel: FC<ISplit & IExtendableSplitPanel & IComponentConstants> = (props) => {
     /** Current state of all Childcomponents as react children */
     const [children, components, compSizes] = useComponents(props.id, props.className);
 
@@ -70,17 +66,11 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
     /** The "second" Childcomponent in the SplitPanel */
     const secondChild = getChildByConstraint("SECOND_COMPONENT");
 
-    /** Reference for the SplitPanel which gets forwarded to inner component */
-    const splitRef = useRef<any>(null);
-
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, splitRef.current ? splitRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    const {onLoadCallback, id} = props
 
     const getSplitPrefSize = useCallback(() => {
-        let size:Dimension = { height: splitRef.current.offsetHeight, width: splitRef.current.offsetWidth }
+        let size:Dimension = { height: props.forwardedRef.current.offsetHeight, width: props.forwardedRef.current.offsetWidth }
         if (compSizes && compSizes.size) {
             let calcWidth = 0;
             let calcHeight = 0;
@@ -102,14 +92,14 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (splitRef.current) {
+        if (props.forwardedRef.current) {
             const splitPrefSize = getSplitPrefSize();
             if (onLoadCallback) {
                 if (props.preferredSize) {
-                    sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                    sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
                 }
                 else {
-                    sendOnLoadCallback(id, props.className, splitPrefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                    sendOnLoadCallback(id, props.className, splitPrefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
                 }
             }
         }
@@ -120,10 +110,10 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
         const splitPrefSize = getSplitPrefSize();
         if (onLoadCallback) {
             if (props.preferredSize) {
-                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
             }
             else {
-                sendOnLoadCallback(id, props.className, splitPrefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), splitRef.current, onLoadCallback);
+                sendOnLoadCallback(id, props.className, splitPrefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
             }
         }
     }
@@ -150,9 +140,9 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
         <LayoutContext.Provider value={componentSizes}>
             <SplitPanel
                 id={props.name}
-                style={layoutStyle}
-                forwardedRef={splitRef}
-                trigger={layoutStyle}
+                style={props.layoutStyle}
+                forwardedRef={props.forwardedRef}
+                trigger={props.layoutStyle}
                 onTrigger={handleResize}
                 onResize={handleResize}
                 onResizeExtend={props.onResize}
@@ -164,7 +154,7 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
                 onInitial={sendLoadCallback}
                 toolTipText={props.toolTipText}
                 popupMenu={{...usePopupMenu(props)}}
-                styleClassName={concatClassnames(styleClassNames)}
+                styleClassName={concatClassnames(props.styleClassNames)}
             />
         </LayoutContext.Provider>
     )

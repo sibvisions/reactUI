@@ -16,35 +16,27 @@
 import React, { CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
 import { Tooltip } from "primereact/tooltip";
 import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Dimension from "../../../util/types/Dimension";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import Layout from "../../layouts/Layout";
-import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
+import { IComponentConstants } from "../../BaseComponent";
 
 /**
  * This component displays a panel in which you will be able to scroll
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIScrollPanel: FC<IPanel> = (baseProps) => {
-    /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
-
+const UIScrollPanel: FC<IPanel & IComponentConstants> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, componentSizes] = useComponents(baseProps.id, props.className);
+    const [, components, componentSizes] = useComponents(props.id, props.className);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
-
-    /** Refernce for the panel element */
-    const panelRef = useRef<any>(null);
 
     /** Reference if a fixed amount of px (width) should be substracted if scrollbar appears */
     const minusWidth = useRef<boolean>(false);
@@ -55,12 +47,9 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** State of layoutsize */
     const [layoutSize, setLayoutSize] = useState<Dimension>();
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
     /** Removes 17px from width and/or height of the panel for the layout-calculation to make room for the scrollbar if a scrollbar is needed */
     const scrollStyle = useMemo(() => {
-        let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, context.transferType);
+        let s:React.CSSProperties = panelGetStyle(false, props.layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, props.context.transferType);
         let foundHigher = false;
         let foundWider = false
         componentSizes?.forEach((size) => {
@@ -97,7 +86,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
 
         return s;
 
-    }, [componentSizes, layoutStyle?.width, layoutStyle?.height, props.screen_modal_, layoutSize, props.content_modal_])
+    }, [componentSizes, props.layoutStyle?.width, props.layoutStyle?.height, props.screen_modal_, layoutSize, props.content_modal_])
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -109,7 +98,7 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
             "P", 
             prefSize,
             props.className,
-            styleClassNames,
+            props.styleClassNames,
             { height: 17, width: 17 },
             props.preferredSize, 
             props.minimumSize, 
@@ -122,30 +111,28 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         )
     }, [onLoadCallback]);
 
-    useAddLayoutStyle(panelRef.current, layoutStyle, onLoadCallback);
-
     return (
         <>
             <Tooltip target={"#" + props.name} />
             <div
-                ref={panelRef}
+                ref={props.forwardedRef}
                 id={props.name}
                 className={concatClassnames(
                     "rc-scrollpanel",
-                    styleClassNames
+                    props.styleClassNames
                 )}
                 style={props.screen_modal_ || props.content_modal_
                     ? {
                         height: (prefSize?.height as number),
                         width: prefSize?.width,
                         overflow: 'auto',
-                        ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
+                        ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
                     }
                     : {
-                        ...layoutStyle,
-                        ...compStyle,
+                        ...props.layoutStyle,
+                        ...props.compStyle,
                         overflow: 'auto',
-                        ...(props.backgroundImage ? { '--backgroundImage': `url(${context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
+                        ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
                     }
                 }
                 data-pr-tooltip={props.toolTipText}

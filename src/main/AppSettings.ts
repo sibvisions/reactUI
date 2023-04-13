@@ -13,7 +13,7 @@
  * the License.
  */
 
-import BaseComponent from "./util/types/BaseComponent";
+import IBaseComponent from "./util/types/IBaseComponent";
 import { addCSSDynamically } from "./util/html-util/AddCSSDynamically";
 import ContentStore from "./contentstore/ContentStore";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
@@ -161,7 +161,7 @@ export default class AppSettings {
     welcomeScreen:{name: string, initOpened: boolean} = { name: "", initOpened: false};
 
     /** The desktop-panel of the app, undefined if there is no desktop-screen */
-    desktopPanel:BaseComponent|undefined;
+    desktopPanel:IBaseComponent|undefined;
 
     /** An object which contains properties that indicate if the app is ready or not */
     appReadyParams:AppReadyType = { 
@@ -367,7 +367,7 @@ export default class AppSettings {
     }
 
     /** Sets the desktop-panel */
-    setDesktopPanel(desktopPanel:BaseComponent) {
+    setDesktopPanel(desktopPanel:IBaseComponent) {
         if (this.desktopPanel !== undefined) {
             for (let newProp in desktopPanel) {
                 //@ts-ignore

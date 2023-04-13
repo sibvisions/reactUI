@@ -13,18 +13,17 @@
  * the License.
  */
 
-import React, { FC, useRef } from "react";
-import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
+import React, { FC } from "react";
 import useComponents from "../../../hooks/components-hooks/useComponents";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
-import BaseComponent from "../../../util/types/BaseComponent";
+import IBaseComponent from "../../../util/types/IBaseComponent";
 import Layout from "../../layouts/Layout";
 import { panelGetStyle } from "../panel/UIPanel";
+import { IComponentConstants } from "../../BaseComponent";
 
 // Interface for DesktopPanels
-export interface IDesktopPanel extends BaseComponent {
+export interface IDesktopPanel extends IBaseComponent, IComponentConstants {
     navigationKeysEnabled?: boolean,
     tabMode?: boolean,
     layout: string,
@@ -35,25 +34,16 @@ export interface IDesktopPanel extends BaseComponent {
  * This component generally is displayed when no other screen is opened, it is also rendered on login if available.
  * @param baseProps - the base propertie sent by the server
  */
-const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
-    /** Component constants */
-    const [,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
-
+const UIDesktopPanel: FC<IDesktopPanel> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, componentSizes] = useComponents(baseProps.id, props.className);
-
-    /** Reference for the DesktopPanel element */
-    const panelRef = useRef<any>(null);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    const [, components, componentSizes] = useComponents(props.id, props.className);
 
     return (
         <div
-            className={concatClassnames("rc-desktop-panel", styleClassNames)}
-            ref={panelRef}
+            className={concatClassnames("rc-desktop-panel", props.styleClassNames)}
+            ref={props.forwardedRef}
             id={props.name}
-            style={{...layoutStyle, backgroundColor: props.background}} >
+            style={{...props.layoutStyle, backgroundColor: props.background}} >
             <Layout
                 id={props.id}
                 name={props.name}
@@ -65,7 +55,7 @@ const UIDesktopPanel: FC<IDesktopPanel> = (baseProps) => {
                 maximumSize={parseMaxSize(props.maximumSize)}
                 compSizes={componentSizes}
                 components={components}
-                style={panelGetStyle(false, layoutStyle)}
+                style={panelGetStyle(false, props.layoutStyle)}
                 reportSize={() => {}}
                 panelType="DesktopPanel"
                 parent={props.parent} />

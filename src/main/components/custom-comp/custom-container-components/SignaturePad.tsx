@@ -23,12 +23,12 @@ import useComponentConstants from "../../../hooks/components-hooks/useComponentC
 import useButtonBackground from "../../../hooks/style-hooks/useButtonBackground"
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates"
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames"
-import BaseComponent from "../../../util/types/BaseComponent"
+import IBaseComponent from "../../../util/types/IBaseComponent"
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS"
 import { showTopBar } from "../../topbar/TopBar"
 import useDeviceStatus from "../../../hooks/event-hooks/useDeviceStatus"
 
-export interface ISignaturPad extends BaseComponent {
+export interface ISignaturPad extends IBaseComponent {
     dataRow:string,
     columnName:string,
     editLock?:boolean

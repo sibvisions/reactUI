@@ -18,7 +18,7 @@ import { useEffect, useState, useContext } from "react";
 import { MenuItemCustom } from "../../../application-frame/menu/Menu";
 import { appContext } from "../../contexts/AppProvider";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
-import BaseComponent from "../../util/types/BaseComponent";
+import IBaseComponent from "../../util/types/IBaseComponent";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
 import { isFAIcon } from "../event-hooks/useButtonMouseImages";
 import ContentStoreFull from "../../contentstore/ContentStoreFull";
@@ -59,10 +59,10 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
      */
     useEffect(() => {
         // Returns a menu-item which can be used by the PrimeReact MenuModel-API
-        const getMenuItem = (item: ServerMenuButtons|BaseComponent, isSingleGroup:boolean):MenuItemCustom|MenuItem => {
+        const getMenuItem = (item: ServerMenuButtons|IBaseComponent, isSingleGroup:boolean):MenuItemCustom|MenuItem => {
             // Checks if the given item has been sent by the server transfertype full
-            const isBaseComp = (item:ServerMenuButtons|BaseComponent): item is BaseComponent => {
-                return (item as BaseComponent).id !== undefined
+            const isBaseComp = (item:ServerMenuButtons|IBaseComponent): item is IBaseComponent => {
+                return (item as IBaseComponent).id !== undefined
             }
 
             const iconData = parseIconData(undefined, item.image)
@@ -71,7 +71,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
              * If a quickBarText or sideBarText is set use them before the normal item text
              * @param item - the menuitem
              */
-            const getItemLabel = (item:ServerMenuButtons|BaseComponent) => {
+            const getItemLabel = (item:ServerMenuButtons|IBaseComponent) => {
                 if (!isBaseComp(item)) {
                     if (item.quickBarText) {
                         return item.quickBarText;
@@ -193,7 +193,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
             let primeMenu:MenuItem = {};
 
             // Returns an array of menu-items for the Prime-React menu
-            const getSubItems = (arr: BaseComponent[]) => {
+            const getSubItems = (arr: IBaseComponent[]) => {
                 return arr.map(menuItem => getMenuItem(menuItem, false))
             }
 

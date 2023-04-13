@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { useContext, useRef } from "react";
+import { useContext, useMemo, useRef } from "react";
 import useEventHandler from "../event-hooks/useEventHandler";
 import { appContext } from "../../contexts/AppProvider";
 import { createMouseClickedRequest, createMouseRequest } from "../../factories/RequestFactory";
@@ -54,6 +54,7 @@ const useMouseListener = (
 ) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** topbar context to show progress */
     const topbar = useContext(TopBarContext);
 
@@ -62,6 +63,13 @@ const useMouseListener = (
     const pressedX = useRef<number>();
     
     const pressedY = useRef<number>();
+
+    const componentClassName = useMemo(() => {
+        if (context.contentStore.getComponentByName(compName)) {
+            return context.contentStore.getComponentByName(compName)!.className
+        }
+        return undefined
+    }, [compName])
 
     const handleMousePressed = (event:MouseEvent) => {
         if ((event.target as HTMLElement).closest(".p-autocomplete-dropdown")) {
@@ -121,7 +129,7 @@ const useMouseListener = (
         pressedElement.current = false;
     }
 
-    useEventHandler(element, "mousedown", (event) => handleMousePressed(event as MouseEvent));
-    useEventHandler(document.body, "mouseup", (event) => handleMouseUp(event as MouseEvent));
+    useEventHandler(element, "mousedown", (event) => handleMousePressed(event as MouseEvent), isTable, componentClassName);
+    useEventHandler(document.body, "mouseup", (event) => handleMouseUp(event as MouseEvent), isTable, componentClassName);
 }
 export default useMouseListener;

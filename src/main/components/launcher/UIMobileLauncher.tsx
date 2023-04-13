@@ -14,15 +14,15 @@
  */
 
 import React, { FC, useRef } from "react";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useComponents from "../../hooks/components-hooks/useComponents";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import UIFrame from "../frame/UIFrame";
 import { IPanel } from "../panels/panel/UIPanel";
+import { IComponentConstants } from "../BaseComponent";
 
 // Interface for Windows
-export interface IWindow extends IPanel {
+export interface IWindow extends IPanel, IComponentConstants {
     title:string
     layout:string,
     layoutData:string,
@@ -31,10 +31,7 @@ export interface IWindow extends IPanel {
     modal: boolean
 }
 
-const UIMobileLauncher: FC<IWindow> = (baseProps) => {
-    /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IWindow>(baseProps, {visibility: 'hidden'});
-
+const UIMobileLauncher: FC<IWindow> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
 
@@ -45,14 +42,14 @@ const UIMobileLauncher: FC<IWindow> = (baseProps) => {
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     return (
-        <div id={props.name} ref={panelRef} className={concatClassnames(styleClassNames, "rc-mobile-launcher")} style={{...layoutStyle, ...compStyle}}>
+        <div id={props.name} ref={panelRef} className={concatClassnames(props.styleClassNames, "rc-mobile-launcher")} style={{...props.layoutStyle, ...props.compStyle}}>
             <UIFrame 
                 {...props} 
-                frameStyle={layoutStyle} 
+                frameStyle={props.layoutStyle} 
                 children={children} 
                 components={components.filter(comp => comp.props["~additional"] !== true)} 
-                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined}
-                sizeCallback={() => context.transferType === "full" ? context.launcherReady = true : undefined} />
+                compSizes={componentSizes ? new Map([...componentSizes].filter(comp => props.context.contentStore.getComponentById(comp[0])?.["~additional"] !== true)) : undefined}
+                sizeCallback={() => props.context.transferType === "full" ? props.context.launcherReady = true : undefined} />
         </div>
 
     )

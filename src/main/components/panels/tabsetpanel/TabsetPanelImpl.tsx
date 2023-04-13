@@ -28,9 +28,7 @@ import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback
 import IconProps from "../../comp-props/IconProps";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
+import { IComponentConstants } from "../../BaseComponent";
 
 interface ITabsetImpl extends ITabsetPanel {
     components: React.ReactElement<any, string | React.JSXElementConstructor<any>>[]
@@ -62,14 +60,12 @@ interface ITabsetImpl extends ITabsetPanel {
  * This component renders its children as a TabsetPanel
  * @param props - the properties provided by the parent
  */
-const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
+const TabsetPanelImpl: FC<ITabsetImpl & IComponentConstants> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** Reference for TabsetPanel element */
     const panelRef = useRef<any>();
-
-    const wrapperRef = useRef<any>();
 
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
@@ -79,11 +75,6 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
 
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
-
-    /** Hook for MouseListener */
-    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
-
-    const designerUpdate = useDesignerUpdates("tabset");
 
     /** 
      * Builds the sizeMap for the Panels of TabsetPanel, sets their size to the height of the TabsetPanel
@@ -104,7 +95,7 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
                 sizeMap.set(component.props.id, { width, height })
             });
             setComponentSizes(sizeMap);
-    }, [props.components, props.layoutStyle?.width, props.layoutStyle?.height, id, designerUpdate]);
+    }, [props.components, props.layoutStyle?.width, props.layoutStyle?.height, id, props.designerUpdate]);
 
     /**
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -125,22 +116,6 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
             }
         }
     }, [id, props.compSizes, onLoadCallback, props.components, props.selectedIndex, props.maximumSize, props.minimumSize]);
-
-    useHandleDesignerUpdate(
-        designerUpdate,
-        wrapperRef.current,
-        props.layoutStyle,
-        (clone: HTMLElement) => sendOnLoadCallback(
-            id,
-            props.className,
-            parsePrefSize(props.preferredSize),
-            parseMaxSize(props.maximumSize),
-            parseMinSize(props.minimumSize),
-            clone,
-            onLoadCallback
-        ),
-        onLoadCallback
-    );
 
     /**
      * Returns the built Tab elements for the TabsetPanel
@@ -204,7 +179,7 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
     return (
         <LayoutContext.Provider value={componentSizes}>
             <div
-                ref={wrapperRef}
+                ref={props.forwardedRef}
                 id={props.name + "-_wrapper"}
                 className={concatClassnames("rc-tabset", props.style)}
                 style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...props.layoutStyle, ...props.compStyle }}>

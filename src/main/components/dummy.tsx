@@ -17,13 +17,13 @@ import React, { FC, useLayoutEffect, useRef } from "react";
 import useLayoutValue from "../hooks/style-hooks/useLayoutValue";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../util/component-util/SizeUtil";
 import { sendOnLoadCallback } from "../util/server-util/SendOnLoadCallback";
-import BaseComponent from "../util/types/BaseComponent";
+import IBaseComponent from "../util/types/IBaseComponent";
 
 /**
  * This component gets rendered when there is a component sent by the server which is not yet implemented on the client
  * @param props - Initial properties sent by the server for this component
  */
-const Dummy: FC<BaseComponent> = (props) => {
+const Dummy: FC<IBaseComponent> = (props) => {
     const { id, onLoadCallback } = props;
 
     /** get the layout style value */

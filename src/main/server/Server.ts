@@ -48,7 +48,7 @@ import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
-import BaseComponent from "../util/types/BaseComponent";
+import IBaseComponent from "../util/types/IBaseComponent";
 import DispatchActionRequest from "../request/events/DispatchActionRequest";
 
 /** Enum for server request endpoints */
@@ -701,7 +701,7 @@ class Server extends BaseServer {
         if (closeContentData.componentId) {
             const comp = this.contentStore.getComponentByName(closeContentData.componentId)
             if (comp) {
-                this.contentStore.updateContent([{ id: comp.id, "~remove": true } as BaseComponent], false)
+                this.contentStore.updateContent([{ id: comp.id, "~remove": true } as IBaseComponent], false)
             }
             
             //this.contentStore.closeScreen(closeContentData.componentId, true);

@@ -15,6 +15,7 @@
 
 import { CSSProperties, useEffect } from "react";
 import LoadCallBack from "../../util/types/LoadCallBack";
+import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 
 /**
  * Sets the layoutStyle properties to an element, when the layoutStyle, loadBackFunc or an optional additionalDependency changes.
@@ -23,14 +24,18 @@ import LoadCallBack from "../../util/types/LoadCallBack";
  * @param loadBackFunction - the loadBackFunction received by 'usecomponents'
  * @param additionalDependency - an optional additional dependency to trigger the useEffect
  */
-const useAddLayoutStyle = (ref: any, layoutStyle: CSSProperties|undefined, loadBackFunction:LoadCallBack|undefined, additionalDependency?:any) => {
+const useAddLayoutStyle = (className: string, ref: any, layoutStyle: CSSProperties|undefined, loadBackFunction:LoadCallBack|undefined, addDep1?:any, addDep2?:any) => {
     useEffect(() => {
-        if (ref && loadBackFunction) {
-            ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
-            ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
-            ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
-            ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
-        }
-    }, [layoutStyle, loadBackFunction, additionalDependency])
+        if ([COMPONENT_CLASSNAMES.INTERNAL_FRAME, COMPONENT_CLASSNAMES.MOBILELAUNCHER, COMPONENT_CLASSNAMES.DESKTOPPANEL,
+             COMPONENT_CLASSNAMES.SPLITPANEL, COMPONENT_CLASSNAMES.TOOLBARPANEL, COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER,
+             COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, COMPONENT_CLASSNAMES.TREE].indexOf(className as COMPONENT_CLASSNAMES) === -1) {
+                if (ref && loadBackFunction) {
+                    ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
+                    ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
+                    ref.style.setProperty("width", layoutStyle?.width !== undefined ? `${layoutStyle.width}px`: null);
+                    ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
+                }
+            }
+    }, [layoutStyle, loadBackFunction, addDep1, addDep2, className])
 }
 export default useAddLayoutStyle
