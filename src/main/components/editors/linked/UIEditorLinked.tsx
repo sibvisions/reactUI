@@ -416,6 +416,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         setText(getDisplayValue(extractedObject))
                         startedEditing.current = false;
                     }
+                    else {
+                        setText(getDisplayValue(props.selectedRow.data));
+                        startedEditing.current = false;
+                    }
                 }
             }
             else {
