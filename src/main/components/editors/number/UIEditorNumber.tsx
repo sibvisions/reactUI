@@ -280,7 +280,22 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
             }
 
             // Checks if the decimal length limit is hit and when it is don't allow more inputs
-            if (decimalLength && (parseInt(event.target.value + event.key).toString().length - selectedLength) > decimalLength && isSelectedBeforeComma(event.target.value) && !window.getSelection()?.toString()) {
+            let eValue = event.target.value;
+
+            const getDecimalValue = () => {
+                if (event.key !== "Backspace") {
+                    eValue = eValue.replaceAll(numberSeperators.group, "");
+                    if (eValue.indexOf(numberSeperators.decimal) !== -1) {
+                        return BigInt(eValue.slice(0, eValue.indexOf(numberSeperators.decimal)) + event.key);
+                    }
+                    else {
+                        return BigInt(eValue + event.key);
+                    }
+                }
+                return parseInt(eValue + event.key);
+            }
+            
+            if (decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength  && !window.getSelection()?.toString()) {
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
