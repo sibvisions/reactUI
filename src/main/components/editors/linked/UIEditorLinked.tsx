@@ -695,8 +695,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             sendSelectRequest(-1, null)
             sendSetValues(props.dataRow, props.name, colNames, props.columnName, null, props.context.server, props.topbar, -1);
         }
-
-        if (props.cellEditor.validationEnabled === false) {
+        else if (props.cellEditor.validationEnabled === false) {
             let tempArray = [];
             for (let i = 0; i < colNames.length; i++) {
                 if (colNames[i] !== props.columnName) {
