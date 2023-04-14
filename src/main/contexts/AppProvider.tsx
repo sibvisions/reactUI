@@ -42,6 +42,7 @@ import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import { initialURL } from "../..";
 import BaseResponse from "../response/BaseResponse";
+import { translation } from "../util/other-util/Translation";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
@@ -267,9 +268,16 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             // setTimeout(() => connectWs(), 3000);
                         }
                         else {
-                            if (index > 5 && reconnectActive) {
+                            if (event.code === 1008) {
                                 reconnectInterval.stop();
                                 reconnectActive = false;
+                                contextState.subscriptions.emitErrorBarProperties(true, false, false, 11, translation.get("Session expired!"));
+                            }
+                            else {
+                                if (index > 5 && reconnectActive) {
+                                    reconnectInterval.stop();
+                                    reconnectActive = false;
+                                }
                             }
                             console.log("WebSocket has been closed.");
                             resolve();
