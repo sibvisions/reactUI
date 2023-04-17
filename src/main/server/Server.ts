@@ -129,6 +129,8 @@ class Server extends BaseServer {
 
     noWelcomeRoute = false;
 
+    onAskBeforeAndHomePressed = false;
+
     // Sets the onMenu Function
     setOnMenuFunction(fn:Function) {
         this.onMenuFunction = fn;
@@ -424,30 +426,47 @@ class Server extends BaseServer {
         }
     }
 
+    //Either opens the basic "home" or a welcome screen if there is one.
+    openWelcomeOrHome() {
+        if (this.appSettings.welcomeScreen.name) {
+            this.contentStore.setActiveScreen();
+            return this.api.sendOpenScreenRequest(this.appSettings.welcomeScreen.name);
+        }
+        else {
+            this.contentStore.setActiveScreen();
+            this.history?.push('/home');
+            return Promise.resolve(true);
+        }
+    }
+
     /**
      * Close Screen handling
      * @param closeScreenData - the close screen response 
      */
     closeScreen(closeScreenData: CloseScreenResponse) {
-        for (let entry of this.contentStore.flatContent.entries()) {
-            if (entry[1].name === closeScreenData.componentId) {
-                if ((entry[1] as IPanel).screen_modal_) {
-                    this.lastClosedWasPopUp = true;
-                }
-                else {
-                    this.lastClosedWasPopUp = false;
-                }
-                break
-            }
+        if (this.onAskBeforeAndHomePressed) {
+            this.onAskBeforeAndHomePressed = false;
+            this.openWelcomeOrHome()
         }
+        // for (let entry of this.contentStore.flatContent.entries()) {
+        //     if (entry[1].name === closeScreenData.componentId) {
+        //         if ((entry[1] as IPanel).screen_modal_) {
+        //             this.lastClosedWasPopUp = true;
+        //         }
+        //         else {
+        //             this.lastClosedWasPopUp = false;
+        //         }
+        //         break
+        //     }
+        // }
 
-        for (let entry of this.contentStore.removedContent.entries()) {
-            if (entry[1].contentParentName === closeScreenData.componentId) {
-                this.contentStore.cleanUp(entry[1].id, entry[1].name, entry[1].className, true);
-                this.contentStore.flatContent.delete(entry[1].id + "-popup");
-            }
-        }
-        this.contentStore.closeScreen(closeScreenData.componentId);
+        // for (let entry of this.contentStore.removedContent.entries()) {
+        //     if (entry[1].contentParentName === closeScreenData.componentId) {
+        //         this.contentStore.cleanUp(entry[1].id, entry[1].name, entry[1].className, true);
+        //         this.contentStore.flatContent.delete(entry[1].id + "-popup");
+        //     }
+        // }
+        //this.contentStore.closeScreen(closeScreenData.componentId);
     }
 
     /**
