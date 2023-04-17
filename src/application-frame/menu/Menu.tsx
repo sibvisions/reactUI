@@ -38,6 +38,7 @@ import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { ActiveScreen } from "../../main/contentstore/BaseContentStore";
 import { translation } from "../../main/util/other-util/Translation";
 import { WSDesignerContext } from "../../AppWrapper";
+import RESPONSE_NAMES from "../../main/response/RESPONSE_NAMES";
 
 
 /** Extends the PrimeReact MenuItem with componentId */
@@ -101,18 +102,6 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 icon="fas fa-home"
                 className="menu-topbar-buttons"
                 onClick={() => {
-                    //Either opens the basic "home" or a welcome screen if there is one.
-                    const openWelcomeOrHome = () => {
-                        if (context.appSettings.welcomeScreen.name) {
-                            return context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen.name);
-                        }
-                        else {
-                            context.contentStore.setActiveScreen();
-                            history.push('/home');
-                            return Promise.resolve(true);
-                        }
-                    }
-
                     // If a screen is opened, close it, and redirect to home or welcome-screen
                     if (context.contentStore.activeScreens.length) {
                         //context.subscriptions.emitSelectedMenuItem("");
@@ -121,15 +110,20 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             const closeReq = createCloseScreenRequest();
                             closeReq.componentId = screenName;
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
-                                if (res[0] === undefined || res[0].name !== "message.error") {
+                                // If response is empty or there is no error close the current screen and open the welcome screen or home
+                                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                                     (context.server as Server).lastClosedWasPopUp = false;
                                     context.contentStore.closeScreen(screenName, undefined, context.appSettings.welcomeScreen.name ? true : false);
-                                    showTopBar(openWelcomeOrHome(), topbar);
+                                    showTopBar((context.server as Server).openWelcomeOrHome(), topbar);
+                                }
+                                // onAskBefore check
+                                else if (res[0].name === RESPONSE_NAMES.ERROR && res[1].name === RESPONSE_NAMES.DIALOG) {
+                                    (context.server as Server).onAskBeforeAndHomePressed = true;
                                 }
                             });
                         }
                         else {
-                            showTopBar(openWelcomeOrHome(), topbar);
+                            showTopBar((context.server as Server).openWelcomeOrHome(), topbar);
                         }
                     }
                 }}
