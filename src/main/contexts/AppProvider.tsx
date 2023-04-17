@@ -430,7 +430,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showDesigner = true;
                     }
 
-                    if (data.useWSDesigner === true) {
+                    if (data.useVisionX === true) {
                         contextState.appSettings.showWSDesigner = true
                     }
 
@@ -509,7 +509,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showDesigner = true;
                     }
 
-                    if (data.useWSDesigner === true) {
+                    if (data.useVisionX === true) {
                         contextState.appSettings.showWSDesigner = true
                     }
 

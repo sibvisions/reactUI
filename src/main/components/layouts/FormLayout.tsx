@@ -26,7 +26,7 @@ import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { FormLayoutInformation, useVisionXDesigner, Anchor, fillFormLayoutInfo } from "@sibvisions/visionx/dist/moduleIndex";
+import { FormLayoutInformation, Anchor, FormLayoutAssistant } from "@sibvisions/visionx/dist/moduleIndex";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -58,13 +58,13 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         className
     } = baseProps;
 
-    const layoutInfo = useMemo(() => {
+    const formLayoutAssistant = useMemo(() => {
         if (context.designer) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
             components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
             if (!context.designer.formLayouts.has(name)) {
                 const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
-                context.designer.formLayouts.set(name, {
+                context.designer.formLayouts.set(name, new FormLayoutAssistant({
                     name: name,
                     horizontalGap: gaps.horizontalGap,
                     verticalGap: gaps.verticalGap,
@@ -75,18 +75,30 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>(),
                     componentConstraints: compConstraintMap,
                     originalConstraints: new Map(compConstraintMap)
-                })
+                }))
             }
             else {
-                context.designer.formLayouts.get(name)!.originalConstraints = new Map(compConstraintMap);
+                context.designer.formLayouts.get(name)!.layoutInfo.originalConstraints = new Map(compConstraintMap);
             }
-            return context.designer.formLayouts.get(name) as FormLayoutInformation;
+            return context.designer.formLayouts.get(name) as FormLayoutAssistant;
         }
         else {
             return null;
         }
+    }, [context.designer])
 
-    }, [context.designer]);
+    const layoutInfo = useMemo(() => {
+        if (context.designer && formLayoutAssistant) {
+            return formLayoutAssistant.layoutInfo;
+        }
+        else {
+            return null;
+        }
+    }, [formLayoutAssistant]);
+
+    const isDesignerActive = useCallback(() => {
+        return formLayoutAssistant !== null && layoutInfo !== null;
+    }, [formLayoutAssistant, layoutInfo])
 
     /** 
      * Function which lays out the container
@@ -154,7 +166,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 }
 
                 anchors.clear(); componentConstraints.clear();
-                if (layoutInfo !== null) {
+                if (isDesignerActive()) {
                     clearLayoutInfo();
                 }
                 /** Parse layout info and fill Anchors-Map */
@@ -169,10 +181,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     anchor.relatedAnchor = anchors.get(anchor.relatedAnchorName);
                 });
 
-                if (layoutInfo !== null) {
+                if (isDesignerActive()) {
                     anchors.forEach(pAnchor => {
                         let anchor:Anchor|undefined = pAnchor;
-                        let anchorList = (["l", "r"].indexOf(anchor.name.substring(0, 1)) !== -1 ? layoutInfo.horizontalAnchors : layoutInfo.verticalAnchors);
+                        let anchorList = (["l", "r"].indexOf(anchor.name.substring(0, 1)) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
                         const pos = anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) !== -1 ? anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) + 1 : anchorList.length;
     
                         const containsAnchor = (anchor:Anchor) => {
@@ -190,7 +202,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                     })
 
-                    fillFormLayoutInfo(layoutInfo, anchors);
+                    formLayoutAssistant!.fillFormLayoutInfo(anchors);
                 }
 
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
@@ -205,8 +217,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
                         componentConstraints.set(component.id, constraint);
 
-                        if (layoutInfo !== null) {
-                            layoutInfo.componentConstraints.set(component.name, component.constraints);
+                        if (isDesignerActive()) {
+                            layoutInfo!.componentConstraints.set(component.name, component.constraints);
                         }
                     }
                 });
@@ -803,7 +815,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             calculateAnchors();
             calculateTargetDependentAnchors();
             buildComponents();
-        }, [baseProps.preferredSize, layoutInfo]
+        }, [baseProps.preferredSize, isDesignerActive]
     );
 
     //XXX: maybe refactor so that this memo returns the actual style instead of setting a ref
