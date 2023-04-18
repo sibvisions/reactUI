@@ -30,7 +30,7 @@
         caret-color: transparent;
     }
 
-    &:not(.rc-label-html) {
+    &:not(.rc-label-html) > span {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
