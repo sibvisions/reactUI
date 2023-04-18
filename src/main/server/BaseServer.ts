@@ -577,6 +577,9 @@ export default abstract class BaseServer {
                 if (cellEditor.displayReferencedColumnName) {
                     const extractDisplayRef = getExtractedObject(data, [...cellEditor.linkReference.referencedColumnNames, cellEditor.displayReferencedColumnName]);
                     dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
+                    if (!notifyDataMap) {
+                        notifyDataMap = true;
+                    }
                 }
                 else if (cellEditor.displayConcatMask) {
                     let displayString = "";

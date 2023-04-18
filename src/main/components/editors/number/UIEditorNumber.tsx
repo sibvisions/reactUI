@@ -284,16 +284,26 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
             const getDecimalValue = () => {
                 if (event.key !== "Backspace") {
-                    eValue = eValue.replaceAll(numberSeperators.group, "");
-                    if (eValue.indexOf(numberSeperators.decimal) !== -1) {
-                        return BigInt(eValue.slice(0, eValue.indexOf(numberSeperators.decimal)) + event.key);
+                    eValue = eValue.replaceAll(numberSeperators.group, "").replaceAll(prefix, "").replaceAll(suffix, "");
+                    if (event.key === "-") {
+                        if (eValue.indexOf(numberSeperators.decimal) !== -1) {
+                            return BigInt(event.key + eValue.slice(0, eValue.indexOf(numberSeperators.decimal)));
+                        }
+                        else {
+                            return BigInt(event.key + eValue);
+                        }
                     }
                     else {
-                        return BigInt(eValue + event.key);
+                        if (eValue.indexOf(numberSeperators.decimal) !== -1) {
+                            return BigInt(eValue.slice(0, eValue.indexOf(numberSeperators.decimal)) + event.key);
+                        }
+                        else {
+                            return BigInt(eValue + event.key);
+                        }
                     }
                 }
                 return parseInt(eValue + event.key);
-            }
+            }   
             
             if (decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength  && !window.getSelection()?.toString()) {
                 event.preventDefault();
@@ -302,7 +312,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
             }
             else if (numberInput.current && typeof value === "string" && numberInput.current.value.indexOf(value) === numberInput.current.selectionStart && event.key === "-") {
                 startedEditing.current = true;
-                setValue(parseInt("-" + value));
+                setValue(parseFloat("-" + value.replace(numberSeperators.decimal, ".")));
             }
         }
         else {

@@ -42,7 +42,7 @@ const DirectCellRenderer: FC<ICellRender> = (props) => {
                         autoFocus: true,
                         rowIndex: () => props.rowNumber,
                         filter: props.filter,
-                        readonly: props.columnMetaData?.readonly,
+                        readonly: props.columnMetaData?.readonly || props.dataProviderReadOnly,
                         isCellEditor: true,
                         cellScreenName: props.dataProvider.split("/")[1],
                         rowNumber: props.rowNumber,
