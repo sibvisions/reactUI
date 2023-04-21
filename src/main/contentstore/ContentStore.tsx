@@ -120,6 +120,12 @@ export default class ContentStore extends BaseContentStore {
                         this.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
                     }
                 }
+                
+
+                if (newPropName === "screen_title_") {
+                    this.subManager.notifyScreenTitleChanged(newProp);
+                }
+
                 // @ts-ignore
                 existingComp[newPropName] = newComp[newPropName];
 
