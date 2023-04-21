@@ -19,8 +19,12 @@ const useRepaintResizer = (name: string, layoutStyle: CSSProperties|undefined) =
     const context = useContext(appContext)
 
     useEffect(() => {
-        if (context.designer && context.designer.selectedComponent && context.designer.selectedComponent.component.name === name) {
-            context.designer.paintResizer(context.designer.selectedComponent.element)
+        if (context.designer && context.designer.selectedComponent) {
+            setTimeout(() => {
+                if (context.designer && context.designer.selectedComponent && context.designer.selectedComponent.component.name === name) {
+                    context.designer.paintResizer(context.designer.selectedComponent.element.getBoundingClientRect())
+                }
+            }, 0)
         }
     }, [layoutStyle]);
 }
