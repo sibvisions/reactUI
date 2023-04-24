@@ -203,4 +203,6 @@ export const translation = new Map()
     .set("format-day-period-wide-afternoon", "in the afternoon")
     .set("format-day-period-wide-evening", "in the evening")
     .set("format-day-period-wide-night", "at night")
+    .set("Compatibility issue", "Compatibility issue")
+    .set("The client and server version are incompatible.", "The client and server version are incompatible.")
 
