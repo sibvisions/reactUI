@@ -66,6 +66,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
                 context.designer.formLayouts.set(name, new FormLayoutAssistant({
                     name: name,
+                    layoutData: layoutData,
                     horizontalGap: gaps.horizontalGap,
                     verticalGap: gaps.verticalGap,
                     horizontalAnchors: [],
