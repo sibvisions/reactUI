@@ -92,6 +92,10 @@ export const getColMetaData = (colName:string, metaData?:MetaDataResponse) => {
     return metaData?.columns.find(column => column.name === colName);
 }
 
+function convertRemToPixels(rem:number) {    
+    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
+
 /**
  * Returns the next sort mode
  * @param mode - the current sort mode
@@ -538,8 +542,17 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                             theader[i].setAttribute('column-width-set', "true");
                         }
                         else {
-                            const title = theader[i].querySelector('.p-column-title');
-                            newCellWidth.width = title ? (title.getBoundingClientRect().width + 34) : 0;
+                            const title = theader[i].querySelector('.p-column-title > span');
+                            const splitPadding = window.getComputedStyle(document.documentElement).getPropertyValue('--table-header-padding').split(" ");
+                            let padding = 16;
+                            if (splitPadding[splitPadding.length > 1 ? 1 : 0].includes("rem")) {
+                                const rem = splitPadding[1].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("r"));
+                                padding = convertRemToPixels(parseFloat(rem)) * 2;
+                            }
+                            else {
+                                padding = parseFloat(splitPadding[splitPadding.length > 1 ? 1 : 0].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("p"))) * 2;
+                            }
+                            newCellWidth.width = title ? (Math.max((title as HTMLElement).offsetWidth, Math.ceil(title.getBoundingClientRect().width)) + padding) : 0;
                         }
                         cellDataWidthList.push(newCellWidth);
                     }

@@ -791,7 +791,11 @@ export default abstract class BaseServer {
     }
 
     badClient(badClientData:BadClientResponse) {
-        this.subManager.emitErrorBarProperties(false, false, true, 10, "Invalid Server version", "This Client requires a newer Server. An update is required!");
+        const versionSubstring = badClientData.info.substring(badClientData.info.indexOf("[") + 1, badClientData.info.indexOf("]"));
+        const versionSplit = versionSubstring.split("!");
+        const clientVersion = versionSplit[0].trim();
+        const serverVersion = versionSplit[1].trim();
+        this.subManager.emitErrorBarProperties(false, false, true, 12, translation.get("Compatibility issue"), translation.get("The client and server version are incompatible.") + "\n Client: " + clientVersion + " <-> Server: " + serverVersion);
         this.subManager.emitErrorBarVisible(true);
     }
 }
