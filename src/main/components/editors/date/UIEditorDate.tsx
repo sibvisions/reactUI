@@ -125,7 +125,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     const timeZone = useMemo(() => props.cellEditor.timeZone ? props.cellEditor.timeZone : props.context.appSettings.timeZone, [props.cellEditor.timeZone]);
 
     /** True, if for some reason the editor would throw an error, disables the editor */
-    const [hasError, setHasError] = useState<boolean>(false)
+    const [hasError, setHasError] = useState<boolean>(false);
 
     /** Converts the selectedValue to the correct Timezone */
     const convertToTimeZone = useCallback((viewDate:boolean) => {
@@ -136,9 +136,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             return toDate(formatInTimeZone(new Date(props.selectedRow.data[props.columnName]), timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }));
         }
         else if (viewDate) {
-            if (hasError) {
-                setHasError(false)
-            }
+            // if (hasError) {
+            //     setHasError(false)
+            // }
             return new Date();
         }
         else if (props.selectedRow && props.selectedRow.data[props.columnName] && !isValidDate(new Date(props.selectedRow.data[props.columnName])) && !hasError) {
@@ -240,7 +240,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 btnElem.disabled = false;
             }
         }
-    }, [props.isReadOnly, hasError])
+    }, [props.isReadOnly])
 
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {

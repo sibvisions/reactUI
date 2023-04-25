@@ -256,7 +256,7 @@ export default abstract class BaseContentStore {
      */
     addAsChild(child: IBaseComponent) {
         if (child.parent) {
-            const children:Set<string> = this.componentChildren.get(child.parent) || new Set<string>();
+            const children:Array<string> = this.componentChildren.has(child.parent) ? Array.from(this.componentChildren.get(child.parent) as Set<string>) : new Array<string>();
             if (child.parent.includes("TBP")) {
                 let component = child;
                 if (this.getExistingComponent(child.id)) {
@@ -272,12 +272,30 @@ export default abstract class BaseContentStore {
                 const tbpChildren = this.componentChildren.get(string) || new Set<string>();
                 tbpChildren.add(component.id);
                 this.componentChildren.set(string, tbpChildren);
-                children.add(string);
+                children.push(string);
             }
             else {
-                children.add(child.id);
+                children.push(child.id);
             }
-            this.componentChildren.set(child.parent, children);
+
+            children.sort((childA, childB) => {
+                const componentA = this.getComponentById(childA);
+                const componentB = this.getComponentById(childB);
+                if (componentA && componentA.indexOf !== undefined && componentB && componentB.indexOf !== undefined) {
+                    if (componentA.indexOf < componentB.indexOf) {
+                        return -1;
+                    }
+                    else if (componentA.indexOf > componentB.indexOf) {
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                }
+                return 0;
+            })
+            
+            this.componentChildren.set(child.parent, new Set(children));
         }
     }
 
