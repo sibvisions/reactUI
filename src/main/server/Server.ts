@@ -443,10 +443,10 @@ class Server extends BaseServer {
      * Close Screen handling
      * @param closeScreenData - the close screen response 
      */
-    closeScreen(closeScreenData: CloseScreenResponse) {
+    closeScreen(closeScreenData: CloseScreenResponse, request?:any, opensAnother?:boolean) {
         if (this.onAskBeforeAndHomePressed) {
             this.onAskBeforeAndHomePressed = false;
-            this.openWelcomeOrHome()
+            //this.openWelcomeOrHome()
         }
         // for (let entry of this.contentStore.flatContent.entries()) {
         //     if (entry[1].name === closeScreenData.componentId) {
@@ -467,6 +467,10 @@ class Server extends BaseServer {
         //     }
         // }
         this.contentStore.closeScreen(closeScreenData.componentId, this.appSettings.welcomeScreen.name ? true : false);
+
+        if (this.appSettings.welcomeScreen.name && !opensAnother) {
+            this.openWelcomeOrHome()
+        }
     }
 
     /**

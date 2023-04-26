@@ -41,6 +41,7 @@ import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { setDateLocale } from "../util/other-util/GetDateLocale";
 import BaseRequest from "../request/BaseRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
+import GenericResponse from "../response/ui/GenericResponse";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -389,7 +390,7 @@ export default abstract class BaseServer {
     /** ----------HANDLING-RESPONSES---------- */
 
     /** Handles a closeScreen response sent by the server */
-    abstract closeScreen(closeScreenData: CloseScreenResponse):void
+    abstract closeScreen(closeScreenData: CloseScreenResponse, request?: any, opensAnother?:boolean):void
 
     /** A Map which checks which function needs to be called when a data response is received (before regular response map) */
     abstract dataResponseMap: Map<string, Function>;
@@ -421,7 +422,20 @@ export default abstract class BaseServer {
             });
 
             if (responses.length && responses[0].name === RESPONSE_NAMES.CLOSE_SCREEN) {
-                this.closeScreen(responses[0] as CloseScreenResponse)
+                const opensNewScreen = responses.some(response => {
+                    if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
+                        if (!(response as GenericResponse).update) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                if (opensNewScreen) {
+                    this.closeScreen(responses[0] as CloseScreenResponse, request, true);
+                }
+                else {
+                    this.closeScreen(responses[0] as CloseScreenResponse, request, false);
+                }
             }
 
             for (const [, response] of responses.entries()) {
