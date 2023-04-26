@@ -13,7 +13,7 @@
  * the License.
  */
 
-import Anchor from "./Anchor";
+import { Anchor } from "@sibvisions/visionx/dist/moduleIndex";
 
 /** The Constraint stores the top, left, bottom and right Anchor for layouting a component */
 class Constraints{
