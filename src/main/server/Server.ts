@@ -466,7 +466,7 @@ class Server extends BaseServer {
         //         this.contentStore.flatContent.delete(entry[1].id + "-popup");
         //     }
         // }
-        //this.contentStore.closeScreen(closeScreenData.componentId);
+        this.contentStore.closeScreen(closeScreenData.componentId, this.appSettings.welcomeScreen.name ? true : false);
     }
 
     /**
