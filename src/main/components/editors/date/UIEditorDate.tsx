@@ -245,7 +245,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
         },0);
 
         return () => {
-            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor) {
+            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor && startedEditing.current) {
                 handleDateInput();
             }
         }
