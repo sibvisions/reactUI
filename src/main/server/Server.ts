@@ -427,26 +427,19 @@ class Server extends BaseServer {
     }
 
     //Either opens the basic "home" or a welcome screen if there is one.
-    openWelcomeOrHome() {
-        if (this.appSettings.welcomeScreen.name) {
-            this.contentStore.setActiveScreen();
-            return this.api.sendOpenScreenRequest(this.appSettings.welcomeScreen.name);
-        }
-        else {
-            this.contentStore.setActiveScreen();
-            this.history?.push('/home');
-            return Promise.resolve(true);
-        }
+    openHome() {
+        this.contentStore.setActiveScreen();
+        this.history?.push('/home');
+        return Promise.resolve(true);
     }
 
     /**
      * Close Screen handling
      * @param closeScreenData - the close screen response 
      */
-    closeScreen(closeScreenData: CloseScreenResponse, request?:any, opensAnother?:boolean) {
+    closeScreen(closeScreenData: CloseScreenResponse) {
         if (this.onAskBeforeAndHomePressed) {
             this.onAskBeforeAndHomePressed = false;
-            //this.openWelcomeOrHome()
         }
         // for (let entry of this.contentStore.flatContent.entries()) {
         //     if (entry[1].name === closeScreenData.componentId) {
@@ -467,13 +460,7 @@ class Server extends BaseServer {
         //     }
         // }
 
-        const isPopup = this.contentStore.getComponentByName(closeScreenData.componentId) ? (this.contentStore.getComponentByName(closeScreenData.componentId) as IPanel).screen_modal_ : false;
-
-        this.contentStore.closeScreen(closeScreenData.componentId, this.appSettings.welcomeScreen.name ? true : false);
-
-        if (this.appSettings.welcomeScreen.name && !opensAnother && !isPopup) {
-            this.openWelcomeOrHome()
-        }
+        this.contentStore.closeScreen(closeScreenData.componentId);
     }
 
     /**

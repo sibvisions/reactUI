@@ -132,7 +132,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         });
 
                         if (callCloseScreen && comp) {
-                            context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true, context.appSettings.welcomeScreen.name ? true : false);
+                            context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true);
                         }
                     }
 

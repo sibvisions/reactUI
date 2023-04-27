@@ -113,8 +113,8 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                                 // If response is empty or there is no error close the current screen and open the welcome screen or home
                                 if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                                     (context.server as Server).lastClosedWasPopUp = false;
-                                    context.contentStore.closeScreen(screenName, undefined, context.appSettings.welcomeScreen.name ? true : false);
-                                    showTopBar((context.server as Server).openWelcomeOrHome(), topbar);
+                                    context.contentStore.closeScreen(screenName);
+                                    showTopBar((context.server as Server).openHome(), topbar);
                                 }
                                 // onAskBefore check
                                 else if (res[0].name === RESPONSE_NAMES.ERROR && res[1].name === RESPONSE_NAMES.DIALOG) {
@@ -123,7 +123,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             });
                         }
                         else {
-                            showTopBar((context.server as Server).openWelcomeOrHome(), topbar);
+                            showTopBar((context.server as Server).openHome(), topbar);
                         }
                     }
                 }}
