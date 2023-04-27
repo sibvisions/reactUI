@@ -466,9 +466,12 @@ class Server extends BaseServer {
         //         this.contentStore.flatContent.delete(entry[1].id + "-popup");
         //     }
         // }
+
+        const isPopup = this.contentStore.getComponentByName(closeScreenData.componentId) ? (this.contentStore.getComponentByName(closeScreenData.componentId) as IPanel).screen_modal_ : false;
+
         this.contentStore.closeScreen(closeScreenData.componentId, this.appSettings.welcomeScreen.name ? true : false);
 
-        if (this.appSettings.welcomeScreen.name && !opensAnother) {
+        if (this.appSettings.welcomeScreen.name && !opensAnother && !isPopup) {
             this.openWelcomeOrHome()
         }
     }
