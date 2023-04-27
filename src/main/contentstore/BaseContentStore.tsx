@@ -556,16 +556,16 @@ export default abstract class BaseContentStore {
      * When a screen closes cleanUp the data for the window if it isn't a content and update the active-screens
      * @param windowName - the name of the window to close
      */
-     closeScreen(windowName: string, closeContent?:boolean, opensWelcome?:boolean) {
+     closeScreen(windowName: string, closeContent?:boolean) {
         let window = this.getComponentByName(windowName, closeContent);
         if (window) {
             this.cleanUp(window.id, window.name, window.className, closeContent);
         }
 
-        if (!opensWelcome) {
-            this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
-            this.subManager.emitActiveScreens();
-        }
+        // if (!opensWelcome) {
+        //     this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+        //     this.subManager.emitActiveScreens();
+        // }
     }
 
     /**
