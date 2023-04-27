@@ -559,10 +559,8 @@ export default abstract class BaseContentStore {
             this.cleanUp(window.id, window.name, window.className, closeContent);
         }
 
-        // if (!opensWelcome) {
-        //     this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
-        //     this.subManager.emitActiveScreens();
-        // }
+        this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+        this.subManager.emitActiveScreens();
     }
 
     /**
