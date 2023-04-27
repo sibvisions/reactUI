@@ -150,12 +150,12 @@ const baseComponentMap = new Map<string, React.ComponentType<any>>()
 .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />)
 
 const componentsMap = new Map<string, React.ComponentType<any>>([...baseComponentMap])
-.set(COMPONENT_CLASSNAMES.PANEL, props => maybePopup(<UIPanel {...props} />))
-.set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => maybePopup(<UIDesktopPanel {...props} />))
-.set(COMPONENT_CLASSNAMES.GROUPPANEL, props => maybePopup(<UIGroupPanel {...props} />))
-.set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => maybePopup(<UIScrollPanel {...props} />))
-.set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => maybePopup(<UIToolBarPanel {...props} />))
-.set(COMPONENT_CLASSNAMES.TABSETPANEL, props => maybePopup(<UITabsetPanel {...props} />))
+.set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.GROUPPANEL, props => <UIGroupPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.SCROLLPANEL, props => <UIScrollPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.TOOLBARPANEL, props => <UIToolBarPanel {...props} />)
+.set(COMPONENT_CLASSNAMES.TABSETPANEL, props => <UITabsetPanel {...props} />)
 
 
 const componentsMapV2 = new Map<string, React.ComponentType<any>>([...baseComponentMap])
@@ -199,7 +199,10 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
         Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
 
         if (Comp) {
-            return <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent> ;
+            if (contentStore.appSettings.transferType !== "full") {
+                return maybePopup(<BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>);
+            }
+            return <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>;
         }
         else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
             return <Dummy {...baseComponent} key={baseComponent.id} />
