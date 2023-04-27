@@ -309,10 +309,8 @@ class Server extends BaseServer {
         }
 
         if (appParams.Application_title_name) {
-            this.contentStore.topbarTitleSetByServer = appParams.Application_title_name;
-            this.contentStore.isTopbarTitleSetByServer = true;
-            this.subManager.notifyScreenTitleChanged(appParams.Application_title_name);
-            
+            this.contentStore.topbarTitle = appParams.Application_title_name;
+            this.subManager.notifyScreenTitleChanged(appParams.Application_title_name); 
         }
     }
 
@@ -394,6 +392,11 @@ class Server extends BaseServer {
                             else {
                                 this.contentStore.setNavigationName(workScreen.screen_navigationName_ + getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames), workScreen.screen_className_ as string, workScreen.name)
                             }
+                        }
+
+                        if (workScreen.screen_title_) {
+                            this.contentStore.topbarTitle = workScreen.screen_title_;
+                            this.subManager.notifyScreenTitleChanged(workScreen.screen_title_);
                         }
                         
                         this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);

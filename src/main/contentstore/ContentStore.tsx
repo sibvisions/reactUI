@@ -123,6 +123,7 @@ export default class ContentStore extends BaseContentStore {
                 
 
                 if (newPropName === "screen_title_") {
+                    this.topbarTitle = newProp;
                     this.subManager.notifyScreenTitleChanged(newProp);
                 }
 

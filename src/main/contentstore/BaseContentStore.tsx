@@ -142,10 +142,7 @@ export default abstract class BaseContentStore {
     tabTitle: string = "";
 
     /** The title in the menu topbar sent by the server */
-    topbarTitleSetByServer: string = "";
-
-    /** True, if the menu topbar title is sent by the server */
-    isTopbarTitleSetByServer: boolean = false;
+    topbarTitle: string = "";
 
     constructor(history?:History<any>) {
         this.history = history;
