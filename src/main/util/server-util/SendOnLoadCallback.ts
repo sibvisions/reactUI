@@ -61,6 +61,10 @@ function measurePrefWidth(ref:any, className:string) {
         return Math.max(ref.offsetWidth, Math.ceil(ref.getBoundingClientRect().width))
     }
     else {
+        if (className === COMPONENT_CLASSNAMES.LABEL) {
+            // +1 for labels because getBoundingClientRect has a wrong width for some reason and offsetWidth and scrollWidth cut of the decimals...
+            return Math.max(ref.offsetWidth + 1, ref.scrollWidth + 1, Math.ceil(ref.getBoundingClientRect().width + 1))
+        }
         return Math.max(ref.offsetWidth, ref.scrollWidth, Math.ceil(ref.getBoundingClientRect().width))
     }
 }

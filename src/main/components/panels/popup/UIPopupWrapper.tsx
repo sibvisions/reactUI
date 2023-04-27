@@ -26,6 +26,7 @@ import _ from "underscore";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import Dimension from "../../../util/types/Dimension";
 import Server from "../../../server/Server";
+import { parsePrefSize } from "../../../util/component-util/SizeUtil";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -104,9 +105,16 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** Sets the initial size for the popup */
     const handleInitialSize = () => {
         if (popupRef.current && popupRef.current.contentEl) {
+            const prefSize = parsePrefSize(baseProps.preferredSize);
             const sizeMap = new Map<string, CSSProperties>();
-            let popupSize:Dimension = { height: 400, width: 600 }
-            sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+            if (prefSize) {
+                sizeMap.set(baseProps.id, { height: prefSize.height, width: prefSize.width });
+            }
+            else {
+                let popupSize:Dimension = { height: 400, width: 600 };
+                sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+            }
+            
             setComponentSize(sizeMap);
             setInitializePopup(true)
         }
@@ -117,13 +125,19 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
      * If the popup frame (eg. header) is bigger than the panel, set the size of the panel-frame instead.
      */
     const handleAfterInitial = () => {
+        const prefSize = parsePrefSize(baseProps.preferredSize);
         const sizeMap = new Map<string, CSSProperties>();
         if (componentSizes && componentSizes.has(baseProps.id)) {
-            let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
-            const compSize = componentSizes.get(baseProps.id);
-            popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
-            popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
-            sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+            if (prefSize) {
+                sizeMap.set(baseProps.id, { height: prefSize.height, width: prefSize.width });
+            }
+            else {
+                let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
+                const compSize = componentSizes.get(baseProps.id);
+                popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
+                popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
+                sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+            }
             setComponentSize(sizeMap);
         }
         setInitializeCompSizes(true);

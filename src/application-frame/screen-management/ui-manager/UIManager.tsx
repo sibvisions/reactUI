@@ -80,7 +80,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const embeddedContext = useContext(EmbeddedContext);
 
     /** Current state of screen title, displays the screen title */
-    const screenTitle = useScreenTitle(context.contentStore.topbarTitleSetByServer);
+    const screenTitle = useScreenTitle(context.contentStore.topbarTitle);
 
     /**
      * Helper function for responsiveBreakpoints hook for menu-size breakpoint values

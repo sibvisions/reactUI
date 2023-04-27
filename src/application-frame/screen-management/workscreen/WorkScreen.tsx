@@ -41,17 +41,15 @@ const WorkScreen: FC = () => {
 
     /** The screens which need to be rendered */
     const renderedScreens = useMemo(() => {
-        if (!context.contentStore.isTopbarTitleSetByServer) {
-            if (activeScreens.length && activeScreens[0] && activeScreens[0].title) {
-                context.subscriptions.notifyScreenTitleChanged(activeScreens[0].title)
-            }
-            else {
-                context.subscriptions.notifyScreenTitleChanged(context.contentStore.topbarTitleSetByServer || context.appSettings.applicationMetaData.applicationName)
-            }
+        if (activeScreens.length && activeScreens[0] && activeScreens[0].title) {
+            context.contentStore.topbarTitle = activeScreens[0].title;
+            context.subscriptions.notifyScreenTitleChanged(activeScreens[0].title)
         }
         else {
-            context.contentStore.isTopbarTitleSetByServer = false
+            context.contentStore.topbarTitle = context.appSettings.applicationMetaData.applicationName;
+            context.subscriptions.notifyScreenTitleChanged(context.appSettings.applicationMetaData.applicationName);
         }
+
         return buildWindow(activeScreens)
     }, [activeScreens]);
 

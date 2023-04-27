@@ -142,10 +142,7 @@ export default abstract class BaseContentStore {
     tabTitle: string = "";
 
     /** The title in the menu topbar sent by the server */
-    topbarTitleSetByServer: string = "";
-
-    /** True, if the menu topbar title is sent by the server */
-    isTopbarTitleSetByServer: boolean = false;
+    topbarTitle: string = "";
 
     constructor(history?:History<any>) {
         this.history = history;
@@ -562,10 +559,8 @@ export default abstract class BaseContentStore {
             this.cleanUp(window.id, window.name, window.className, closeContent);
         }
 
-        // if (!opensWelcome) {
-        //     this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
-        //     this.subManager.emitActiveScreens();
-        // }
+        this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+        this.subManager.emitActiveScreens();
     }
 
     /**
