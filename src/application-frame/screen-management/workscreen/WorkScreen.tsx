@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, {FC, ReactElement, useCallback, useContext, useLayoutEffect, useMemo, useState} from "react";
+import React, {FC, ReactElement, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState} from "react";
 import { appContext } from "../../../main/contexts/AppProvider";
 import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
 import ResizeHandler from "../ResizeHandler";
@@ -41,15 +41,6 @@ const WorkScreen: FC = () => {
 
     /** The screens which need to be rendered */
     const renderedScreens = useMemo(() => {
-        if (activeScreens.length && activeScreens[0] && activeScreens[0].title) {
-            context.contentStore.topbarTitle = activeScreens[0].title;
-            context.subscriptions.notifyScreenTitleChanged(activeScreens[0].title)
-        }
-        else {
-            context.contentStore.topbarTitle = context.appSettings.applicationMetaData.applicationName;
-            context.subscriptions.notifyScreenTitleChanged(context.appSettings.applicationMetaData.applicationName);
-        }
-
         return buildWindow(activeScreens)
     }, [activeScreens]);
 
@@ -61,6 +52,17 @@ const WorkScreen: FC = () => {
             context.subscriptions.unsubscribeFromActiveScreens("workscreen");
         }
     },[context.subscriptions]);
+
+    useEffect(() => {
+        if (activeScreens.length && activeScreens[0] && activeScreens[0].title) {
+            context.contentStore.topbarTitle = activeScreens[0].title;
+            context.subscriptions.notifyScreenTitleChanged(activeScreens[0].title)
+        }
+        else {
+            context.contentStore.topbarTitle = context.appSettings.applicationMetaData.applicationName;
+            context.subscriptions.notifyScreenTitleChanged(context.appSettings.applicationMetaData.applicationName);
+        }
+    }, [renderedScreens])
 
     return (
         <ResizeHandler>

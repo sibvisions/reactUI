@@ -418,7 +418,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 lastSelectedRowIndex.current = selectedRow.index;
                 return newCell
             }
-            else {
+            else if (selectedRow.index > -1) {
                 sendSelectRequest(columnOrder[0], undefined, 0);
             }
         }
@@ -1066,8 +1066,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     // When a row is selected send a selectRow request to the server
     // If the lib user extends the Table with onRowSelect, call it when a new row is selected.
-    const handleRowSelection = async (event: DataTableSelectionChangeParams) => {
-        if(event.value && event.originalEvent.type === 'click') {
+    const handleRowSelection = (event: DataTableSelectionChangeParams) => {
+        if (event.value && event.originalEvent.type === 'click') {
             let filter:SelectFilter|undefined = undefined
             filter = {
                 columnNames: primaryKeys,
