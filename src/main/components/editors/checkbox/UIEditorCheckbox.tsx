@@ -34,6 +34,10 @@ import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { RenderButtonHTML } from "../../buttons/button/UIButton";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+import { createSetValuesRequest } from "../../../factories/RequestFactory";
+import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import { showTopBar } from "../../topbar/TopBar";
+import useMetaData from "../../../hooks/data-hooks/useMetaData";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -153,7 +157,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
                 props.topbar,
                 props.rowIndex ? props.rowIndex() : undefined,
                 props.selectedRow.index,
-                props.filter ? props.filter() : undefined
+                props.filter ? props.filter : undefined
             );
         }
         

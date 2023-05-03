@@ -299,7 +299,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataBook);
 
-    const [isSelecting, setIsSelecting] = useState<boolean>(false);
+    const [tableIsSelecting, setTableIsSelecting] = useState<boolean>(false);
 
     const clickedResizer = useRef<boolean>(false);
 
@@ -327,10 +327,9 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     props.onRowSelect({ originalEvent: rowSelectionHelper.current.event, selectedRow: rowSelectionHelper.current.data })
                 }
                 if (selectedRow.index !== rowSelectionHelper.current.index) {
-                    setIsSelecting(true);
                 }
                 sendSelectRequest(rowSelectionHelper.current.selectedColumn, rowSelectionHelper.current.filter, rowSelectionHelper.current.index).then(() => {
-                    setIsSelecting(false);
+                    setTableIsSelecting(false);
                     rowSelectionHelper.current = undefined;
                 });
             }
@@ -968,6 +967,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
                     linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
             }
+
             return <Column
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
@@ -981,6 +981,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     '--columnName': colName
                 }}
                 body={(rowData: any, tableInfo: any) => {
+                    const currDataRow = providerData[tableInfo.rowIndex]
+                    const values = primaryKeys.map(pk => currDataRow[pk]);
+                    const filter:SelectFilter = {
+                        columnNames: primaryKeys,
+                        values: values
+                    }
                     if (!rowData) { return <div></div> }
                     return <CellEditor
                         rowData={rowData}
@@ -1020,13 +1026,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         }}
                         rowNumber={tableInfo.rowIndex}
                         colIndex={colIndex}
-                        filter={() => {
-                            const currDataRow = providerData[tableInfo.rowIndex]
-                            return {
-                                columnNames: primaryKeys,
-                                values: primaryKeys.map(pk => currDataRow[pk])
-                            }
-                        }}
+                        filter={filter}
                         removeTableLinkRef={
                             (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
                             && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
@@ -1043,7 +1043,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             :
                                 undefined
                         }
-                        isSelecting={isSelecting} />
+                        tableIsSelecting={tableIsSelecting} />
                 }}
                 style={{ whiteSpace: 'nowrap', '--colName': colName }}
                 bodyClassName={concatClassnames(
@@ -1061,7 +1061,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
         context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
         enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
-        props.startEditing, isSelecting
+        props.startEditing, tableIsSelecting
     ])
 
     // When a row is selected send a selectRow request to the server

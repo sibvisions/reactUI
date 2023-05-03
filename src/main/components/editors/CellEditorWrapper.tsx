@@ -24,6 +24,7 @@ import { CellFormatting, IInTableEditor } from "../table/CellEditor";
 import { TopBarContextType } from "../topbar/TopBar";
 import { IEditor } from "./IEditor";
 import { isCellEditorReadOnly } from "./text/UIEditorText";
+import { SelectFilter } from "../../request/data/SelectRowRequest";
 
 /** Interface which contains values the CellEditorWrapper passes down to the CellEditor it renders */
 export interface ICellEditorWrapperProps {
@@ -36,7 +37,7 @@ export interface ICellEditorWrapperProps {
     selectedRow: any,
     cellStyle: CSSProperties,
     rowIndex?: Function,
-    filter?: Function
+    filter?: SelectFilter
     isReadOnly: boolean
     rowNumber: number
     cellFormatting?: CellFormatting[]
@@ -76,7 +77,8 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
             isReadOnly: isReadOnly,
             cellFormatting: baseProps.cellFormatting,
             colIndex: baseProps.colIndex,
-            styleClassNames: styleClassNames
+            styleClassNames: styleClassNames,
+            filter: baseProps.filter
         }
     );
 }
