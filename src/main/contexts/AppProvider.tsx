@@ -663,7 +663,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("wsPingInterval");
             }
 
-            if (convertedOptions.has("debug") && convertedOptions.get("debug") === true) {
+            if (convertedOptions.has("debug") && convertedOptions.get("debug") === "true") {
                 contextState.appSettings.showDebug = true;
                 convertedOptions.delete("debug");
             }
