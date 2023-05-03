@@ -327,6 +327,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     props.onRowSelect({ originalEvent: rowSelectionHelper.current.event, selectedRow: rowSelectionHelper.current.data })
                 }
                 if (selectedRow.index !== rowSelectionHelper.current.index) {
+                    setTableIsSelecting(true);
                 }
                 sendSelectRequest(rowSelectionHelper.current.selectedColumn, rowSelectionHelper.current.filter, rowSelectionHelper.current.index).then(() => {
                     setTableIsSelecting(false);
