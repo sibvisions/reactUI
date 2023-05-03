@@ -16,7 +16,7 @@
 // API docs for ChartJS Version used in Prime React - https://www.chartjs.org/docs/2.7.3/
 // https://github.com/chartjs/Chart.js/issues/5224
 
-import React, { FC, useContext, useLayoutEffect, useMemo, useRef } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Chart } from 'primereact/chart';
 import tinycolor from "tinycolor2";
 import BaseComponent from "../../util/types/BaseComponent";
@@ -39,6 +39,7 @@ import { showTopBar, TopBarContext } from "../topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
+import Dimension from "../../util/types/Dimension";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -186,6 +187,8 @@ function getLabels(values:any[], translation?: Map<string,string>, onlyIfNaN: bo
 const UIChart: FC<IChart> = (baseProps) => {
     /** Reference for the span that is wrapping the chart containing layout information */
     const chartRef = useRef<HTMLSpanElement>(null);
+
+    const testRef = useRef<any>(null)
 
     /** Component constants */
     const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IChart>(baseProps);
@@ -484,8 +487,8 @@ const UIChart: FC<IChart> = (baseProps) => {
             text: chartTitle,
         }
 
-        const preferredSize = parsePrefSize(props.preferredSize) || parsePrefSize(props.maximumSize) || {width: 1.3, height: 1};
-        const aspectRatio = preferredSize.width / preferredSize.height;
+        const preferredSize = layoutStyle?.height && layoutStyle.width ? ({ width: layoutStyle.width, height: layoutStyle.height } as Dimension) : parsePrefSize(props.preferredSize) || parsePrefSize(props.maximumSize) || {width: 1.3, height: 1};
+        const aspectRatio = Math.round(preferredSize.width / preferredSize.height);
 
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
@@ -605,7 +608,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 indexAxis: horizontal ? 'y' : 'x',
             }
         }
-    }, [props.chartStyle, providerData]);
+    }, [props.chartStyle, providerData, layoutStyle?.width, layoutStyle?.height]);
 
     /** Fetches the data from the databook if the data isn't available */
     useFetchMissingData(screenName, props.dataBook);
@@ -626,7 +629,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     /** Adds the layoutStyle to the ref */
-    useAddLayoutStyle(chartRef.current, layoutStyle, onLoadCallback)
+    useAddLayoutStyle(chartRef.current, layoutStyle, onLoadCallback);
 
     return (
         <span ref={chartRef} className={concatClassnames("rc-chart", styleClassNames)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
