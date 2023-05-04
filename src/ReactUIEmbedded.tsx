@@ -101,7 +101,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
     return (
         <>
             <Helmet>
-                <title>{tabTitle ? tabTitle : "<App-Name>"}</title>
+                <title>{tabTitle ? tabTitle : "..."}</title>
             </Helmet>
             <ErrorDialog />
             <UIToast />

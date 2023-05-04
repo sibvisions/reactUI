@@ -621,7 +621,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
      * if the corresponding row is found in its databook. if it isn't, the state is set back to its previous value
      */
      const handleInput = (value?:string) => {
-        const linkReference = props.cellEditor.linkReference;
+        const linkReference = getCorrectLinkReference();
 
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;

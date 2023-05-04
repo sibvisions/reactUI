@@ -37,6 +37,7 @@ import { showTopBar } from "../topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IComponentConstants } from "../BaseComponent";
+import Dimension from "../../util/types/Dimension";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends IBaseComponent, IComponentConstants {
@@ -470,8 +471,8 @@ const UIChart: FC<IChart> = (props) => {
             text: chartTitle,
         }
 
-        const preferredSize = parsePrefSize(props.preferredSize) || parsePrefSize(props.maximumSize) || {width: 1.3, height: 1};
-        const aspectRatio = preferredSize.width / preferredSize.height;
+        const preferredSize = props.layoutStyle?.height && props.layoutStyle.width ? ({ width: props.layoutStyle.width, height: props.layoutStyle.height } as Dimension) : parsePrefSize(props.preferredSize) || parsePrefSize(props.maximumSize) || {width: 1.3, height: 1};
+        const aspectRatio = Math.round(preferredSize.width / preferredSize.height);
 
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
@@ -591,7 +592,7 @@ const UIChart: FC<IChart> = (props) => {
                 indexAxis: horizontal ? 'y' : 'x',
             }
         }
-    }, [props.chartStyle, providerData]);
+    }, [props.chartStyle, providerData, props.layoutStyle?.width, props.layoutStyle?.height]);
 
     /** Fetches the data from the databook if the data isn't available */
     useFetchMissingData(screenName, props.dataBook);

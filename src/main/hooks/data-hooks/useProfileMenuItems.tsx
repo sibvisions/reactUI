@@ -18,12 +18,12 @@ import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../contexts/AppProvider";
 import { createAboutRequest, createLogoutRequest } from "../../factories/RequestFactory";
 import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
-import { LIB_VERSION } from "../../../version";
 import ContentStore from "../../contentstore/ContentStore";
 import { MenuOptions, VisibleButtons } from "../../AppSettings";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { translation } from "../../util/other-util/Translation";
 import UserData from "../../model/UserData";
+import { BUILD_DATE } from "../../../buildDate";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -98,11 +98,21 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         profileMenuItems.push({
             label: translation.get("About"),
             icon: "pi pi-info-circle",
-            command(e: MenuItemCommandParams) {
+            command() {
                 showTopBar(context.server.sendRequest(createAboutRequest(), REQUEST_KEYWORDS.ABOUT), topbar)
                 //context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
             }
         })
+
+        if (context.appSettings.showDebug) {
+            profileMenuItems.push({
+                label: "Build Date",
+                icon: "pi pi-calendar",
+                command() {
+                    context.subscriptions.emitToast({name: "", message: BUILD_DATE.toString()}, "info")
+                }
+            })
+        }
 
         if (logoutVisible !== false) {
             profileMenuItems.push({
@@ -112,7 +122,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             profileMenuItems.push({
                 label: translation.get("Logout"),
                 icon: "pi pi-power-off",
-                command(e: MenuItemCommandParams) {
+                command() {
                     sendLogout()
                 }
             })

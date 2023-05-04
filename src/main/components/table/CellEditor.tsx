@@ -32,8 +32,8 @@ import LinkedCellRenderer from "./CellRenderer/LinkedCellRenderer";
 import NumberCellRenderer from "./CellRenderer/NumberCellRenderer";
 import TextCellRenderer from "./CellRenderer/TextCellRenderer";
 import { SelectedCellContext } from "./UITable";
-import BaseComponent from "../BaseComponent";
 import useConstants from "../../hooks/components-hooks/useConstants";
+import { SelectFilter } from "../../request/data/SelectRowRequest";
 
 // Interface for in-table-editors
 export interface IInTableEditor {
@@ -41,7 +41,7 @@ export interface IInTableEditor {
     passedKey?: string,
     isCellEditor: boolean,
     cellScreenName: string,
-    editorStyle?: CSSProperties
+    editorStyle?: CSSProperties,
 }
 
 // Interface for cell-style-formatting
@@ -89,11 +89,11 @@ export interface ICellEditor {
     dataProviderReadOnly?: boolean
     rowNumber: number
     colIndex: number
-    filter?: Function
+    filter?: SelectFilter
     rowData: any,
     setIsEditing: Function,
     removeTableLinkRef?: Function,
-    isSelecting: boolean
+    tableIsSelecting: boolean
 }
 
 /** 
@@ -364,11 +364,11 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     }, [edit])
     
     useEffect(() => {
-        if (!props.isSelecting && storedClickEvent) {
+        if (!props.tableIsSelecting && storedClickEvent) {
             storedClickEvent();
             setStoredClickEvent(undefined);
         }
-    }, [props.isSelecting, storedClickEvent])
+    }, [props.tableIsSelecting, storedClickEvent]);
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (

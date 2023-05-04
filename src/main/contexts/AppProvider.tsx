@@ -160,10 +160,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
     const aliveInterval = useRef<any>();
 
-    useLayoutEffect(() => {
-        addCSSDynamically('color-schemes/default.css', "schemeCSS", () => {});
-        addCSSDynamically('themes/basti.css', "themeCSS", () => {});
-    }, [])
+    // useLayoutEffect(() => {
+    //     addCSSDynamically('color-schemes/default.css', "schemeCSS", () => {});
+    //     addCSSDynamically('themes/basti.css', "themeCSS", () => {});
+    // }, [])
 
     /**
      * Subscribes to session-expired notification and app-ready
@@ -667,7 +667,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 convertedOptions.delete("wsPingInterval");
             }
 
-            if (convertedOptions.has("debug") && convertedOptions.get("debug") === true) {
+            if (convertedOptions.has("debug") && convertedOptions.get("debug") === "true") {
                 contextState.appSettings.showDebug = true;
                 convertedOptions.delete("debug");
             }

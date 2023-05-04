@@ -125,7 +125,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                 props.topbar,
                 props.rowIndex ? props.rowIndex() : undefined,
                 props.selectedRow.index,
-                props.filter ? props.filter() : undefined
+                props.filter ? props.filter : undefined
             );
         }
         

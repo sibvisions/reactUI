@@ -444,17 +444,17 @@ class Server extends BaseServer {
         if (this.onAskBeforeAndHomePressed) {
             this.onAskBeforeAndHomePressed = false;
         }
-        // for (let entry of this.contentStore.flatContent.entries()) {
-        //     if (entry[1].name === closeScreenData.componentId) {
-        //         if ((entry[1] as IPanel).screen_modal_) {
-        //             this.lastClosedWasPopUp = true;
-        //         }
-        //         else {
-        //             this.lastClosedWasPopUp = false;
-        //         }
-        //         break
-        //     }
-        // }
+        for (let entry of this.contentStore.flatContent.entries()) {
+            if (entry[1].name === closeScreenData.componentId) {
+                if ((entry[1] as IPanel).screen_modal_) {
+                    this.lastClosedWasPopUp = true;
+                }
+                else {
+                    this.lastClosedWasPopUp = false;
+                }
+                break
+            }
+        }
 
         // for (let entry of this.contentStore.removedContent.entries()) {
         //     if (entry[1].contentParentName === closeScreenData.componentId) {

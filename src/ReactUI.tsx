@@ -145,7 +145,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
         return (
             <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => context.subscriptions.emitRestart()}>
                 <Helmet>
-                    <title>{tabTitle ? tabTitle : "<App-Name>"}</title>
+                    <title>{tabTitle ? tabTitle : "..."}</title>
                 </Helmet>
                 <ErrorDialog />
                 <UIToast />
@@ -170,7 +170,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
         return (
             <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => context.subscriptions.emitRestart()}>
                 <Helmet>
-                    <title>{tabTitle ? tabTitle : "<App-Name>"}</title>
+                    <title>{tabTitle ? tabTitle : "..."}</title>
                 </Helmet>
                 <ErrorDialog />
                 <UIToast />

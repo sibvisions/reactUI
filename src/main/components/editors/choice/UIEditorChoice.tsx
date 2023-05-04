@@ -189,7 +189,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
     
                 if (props.rowIndex !== undefined) {
                     if (props.filter && props.selectedRow.index !== undefined && props.rowIndex() !== props.selectedRow.index) {
-                        setValReq.filter = props.filter()
+                        setValReq.filter = props.filter
                     }
                     setValReq.rowNumber = props.rowIndex()
                 }

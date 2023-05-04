@@ -288,7 +288,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataBook);
 
-    const [isSelecting, setIsSelecting] = useState<boolean>(false);
+    const [tableIsSelecting, setTableIsSelecting] = useState<boolean>(false);
 
     const clickedResizer = useRef<boolean>(false);
 
@@ -310,16 +310,16 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
         },
         true,
-        () => {
-            if (rowSelectionHelper.current) {
+        (e:MouseEvent) => {
+            if (rowSelectionHelper.current && e.detail !== 2) {
                 if (props.onRowSelect) {
                     props.onRowSelect({ originalEvent: rowSelectionHelper.current.event, selectedRow: rowSelectionHelper.current.data })
                 }
                 if (selectedRow.index !== rowSelectionHelper.current.index) {
-                    setIsSelecting(true);
+                    setTableIsSelecting(true);
                 }
                 sendSelectRequest(rowSelectionHelper.current.selectedColumn, rowSelectionHelper.current.filter, rowSelectionHelper.current.index).then(() => {
-                    setIsSelecting(false);
+                    setTableIsSelecting(false);
                     rowSelectionHelper.current = undefined;
                 });
             }
@@ -407,7 +407,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 lastSelectedRowIndex.current = selectedRow.index;
                 return newCell
             }
-            else {
+            else if (selectedRow.index > -1) {
                 sendSelectRequest(columnOrder[0], undefined, 0);
             }
         }
@@ -941,6 +941,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
                     linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
             }
+
             return <Column
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
@@ -954,6 +955,12 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     '--columnName': colName
                 }}
                 body={(rowData: any, tableInfo: any) => {
+                    const currDataRow = providerData[tableInfo.rowIndex]
+                    const values = primaryKeys.map(pk => currDataRow[pk]);
+                    const filter:SelectFilter = {
+                        columnNames: primaryKeys,
+                        values: values
+                    }
                     if (!rowData) { return <div></div> }
                     return <CellEditor
                         rowData={rowData}
@@ -993,13 +1000,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         }}
                         rowNumber={tableInfo.rowIndex}
                         colIndex={colIndex}
-                        filter={() => {
-                            const currDataRow = providerData[tableInfo.rowIndex]
-                            return {
-                                columnNames: primaryKeys,
-                                values: primaryKeys.map(pk => currDataRow[pk])
-                            }
-                        }}
+                        filter={filter}
                         removeTableLinkRef={
                             (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
                             && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
@@ -1016,7 +1017,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                             :
                                 undefined
                         }
-                        isSelecting={isSelecting} />
+                        tableIsSelecting={tableIsSelecting} />
                 }}
                 style={{ whiteSpace: 'nowrap', '--colName': colName }}
                 bodyClassName={concatClassnames(
@@ -1034,13 +1035,13 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         props.columnNames, props.columnLabels, props.dataBook, props.context.contentStore, props.id,
         props.context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
         enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
-        props.startEditing, isSelecting
+        props.startEditing, tableIsSelecting
     ])
 
     // When a row is selected send a selectRow request to the server
     // If the lib user extends the Table with onRowSelect, call it when a new row is selected.
-    const handleRowSelection = async (event: DataTableSelectionChangeParams) => {
-        if(event.value && event.originalEvent.type === 'click') {
+    const handleRowSelection = (event: DataTableSelectionChangeParams) => {
+        if (event.value && event.originalEvent.type === 'click') {
             let filter:SelectFilter|undefined = undefined
             filter = {
                 columnNames: primaryKeys,
