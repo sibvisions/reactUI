@@ -78,8 +78,6 @@ const CellEditorWrapper:FC<any> = (props) => {
             isReadOnly: isReadOnly,
             cellFormatting: props.cellFormatting,
             colIndex: props.colIndex,
-            cellFormatting: props.cellFormatting,
-            colIndex: props.colIndex,
             filter: props.filter
         }
     );
