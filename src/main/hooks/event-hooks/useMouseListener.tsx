@@ -73,7 +73,7 @@ const useMouseListener = (
         pressedElement.current = true;
 
         if (isTable && rowSelectionFunc) {
-            const release = () => rowSelectionFunc();
+            const release = () => rowSelectionFunc(event);
             hold ? hold("row_select", release) : release();
         }
 

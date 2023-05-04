@@ -321,8 +321,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
         },
         true,
-        () => {
-            if (rowSelectionHelper.current) {
+        (e:MouseEvent) => {
+            if (rowSelectionHelper.current && e.detail !== 2) {
                 if (props.onRowSelect) {
                     props.onRowSelect({ originalEvent: rowSelectionHelper.current.event, selectedRow: rowSelectionHelper.current.data })
                 }

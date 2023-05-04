@@ -357,7 +357,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
             storedClickEvent();
             setStoredClickEvent(undefined);
         }
-    }, [props.tableIsSelecting, storedClickEvent])
+    }, [props.tableIsSelecting, storedClickEvent]);
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (

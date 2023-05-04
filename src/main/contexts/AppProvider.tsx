@@ -156,10 +156,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
     const aliveInterval = useRef<any>();
 
-    useLayoutEffect(() => {
-        addCSSDynamically('color-schemes/default.css', "schemeCSS", () => {});
-        addCSSDynamically('themes/basti.css', "themeCSS", () => {});
-    }, [])
+    // useLayoutEffect(() => {
+    //     addCSSDynamically('color-schemes/default.css', "schemeCSS", () => {});
+    //     addCSSDynamically('themes/basti.css', "themeCSS", () => {});
+    // }, [])
 
     /**
      * Subscribes to session-expired notification and app-ready
