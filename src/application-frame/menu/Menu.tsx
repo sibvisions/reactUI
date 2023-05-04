@@ -37,7 +37,6 @@ import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { ActiveScreen } from "../../main/contentstore/BaseContentStore";
 import { translation } from "../../main/util/other-util/Translation";
-import { VisionXContext } from "../../AppWrapper";
 import RESPONSE_NAMES from "../../main/response/RESPONSE_NAMES";
 
 
