@@ -1325,4 +1325,15 @@ export default abstract class BaseContentStore {
             this.subManager.notifySortDefinitionChange(dataProvider.split('/')[1], dataProvider);
         }
     }
+
+    isChildOf(id: string, parent: string) {
+        console.log(id, parent, this.componentChildren)
+        if (this.componentChildren.has(parent)) {
+            const children = this.componentChildren.get(parent);
+            if (children && children.has(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
