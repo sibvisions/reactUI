@@ -1327,7 +1327,6 @@ export default abstract class BaseContentStore {
     }
 
     isChildOf(id: string, parent: string) {
-        console.log(id, parent, this.componentChildren)
         if (this.componentChildren.has(parent)) {
             const children = this.componentChildren.get(parent);
             if (children && children.has(id)) {
