@@ -280,13 +280,18 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
      */
     const handlePaste = (e:any) => {
         if (e.clipboardData && decimalLength) {
-            const pastedValue = parseInt(e.clipboardData.getData('text'));
+            const pastedText = e.clipboardData.getData('text')
+            const pastedValue = parseInt(pastedText);
             if (!isNaN(pastedValue)) {
                 if (isSelectedBeforeComma(e.target.value) && e.target.value.split('.')[0].length + pastedValue.toString().length > decimalLength) {
                     e.stopPropagation();
                     e.preventDefault();
                 }
-            } 
+            }
+            else if (pastedText.includes("-") && (props.columnMetaData as NumericColumnDescription).signed === false) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
         }
     }
 
