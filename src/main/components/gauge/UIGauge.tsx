@@ -93,6 +93,7 @@ const UIGauge: FC<IGauge & IComponentConstants> = (props) => {
                         label: columnLabel, 
                         max: maxValue,
                         size: 300,
+                        hideValue: props.id !== "login-gauge",
                         steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
                     });
                     break;
@@ -104,6 +105,7 @@ const UIGauge: FC<IGauge & IComponentConstants> = (props) => {
                         label: columnLabel, 
                         max: maxValue,
                         size: 300,
+                        hideValue: props.id !== "login-gauge",
                         steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
                     });
                     break;
@@ -115,6 +117,7 @@ const UIGauge: FC<IGauge & IComponentConstants> = (props) => {
                         label: columnLabel, 
                         max: maxValue,
                         size: 300,
+                        hideValue: props.id !== "login-gauge",
                         steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue],
                         formatValue: props.id === "login-gauge" ? (x) => new Date(x).toISOString().substring(14, 19) : undefined 
                     });
@@ -127,6 +130,7 @@ const UIGauge: FC<IGauge & IComponentConstants> = (props) => {
                         label: columnLabel, 
                         max: maxValue,
                         size: 300,
+                        hideValue: props.id !== "login-gauge",
                         steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue]
                     });
                     break;
@@ -138,6 +142,7 @@ const UIGauge: FC<IGauge & IComponentConstants> = (props) => {
                 title,
                 label: columnLabel, 
                 max: maxValue,
+                hideValue: props.id !== "login-gauge",
                 steps: [minErrorValue, minWarningValue, maxWarningValue, maxErrorValue],
             })
         }

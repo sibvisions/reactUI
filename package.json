@@ -31,6 +31,7 @@
     "@types/xml2js": "^0.4.8",
     "buffer": "^6.0.3",
     "chart.js": "3.3.2",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "circular-dependency-plugin": "^5.2.2",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^4.0.0",

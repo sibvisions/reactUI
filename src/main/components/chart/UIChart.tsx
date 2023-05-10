@@ -18,6 +18,7 @@
 
 import React, { FC, useLayoutEffect, useMemo } from "react";
 import { Chart } from 'primereact/chart';
+import 'chartjs-adapter-date-fns';
 import tinycolor from "tinycolor2";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
@@ -38,6 +39,8 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IComponentConstants } from "../BaseComponent";
 import Dimension from "../../util/types/Dimension";
+import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
+import { getGlobalLocale } from "../../util/other-util/GetDateLocale";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends IBaseComponent, IComponentConstants {
@@ -237,26 +240,50 @@ const UIChart: FC<IChart> = (props) => {
         let xmin = Number.MAX_SAFE_INTEGER;
         let xmax = Number.MIN_SAFE_INTEGER;
 
-        let data:number[][] = yColumnNames.map(name => {
+        let data:{x: number, y:number}[][] = yColumnNames.map(name => {
             //if this is a pie chart and there are multiple y-values 
             //only use the selected row as data or the first one 
             // -> y-values are compared in pie chart
             return (pie && yColumnNames.length > 1 ? selectedRow ? [selectedRow] : providerData.slice(0, 1) : providerData)
-            .reduce<number[]>((agg, dataRow) => {
+            .reduce<{x: number, y: number}[]>((agg, dataRow, idx) => {
                 //get the index of the x-value in the labels
-                const lidx = labels ? labels.indexOf(dataRow[xColumnName]) : dataRow[xColumnName];
+
+                const getLIDX = () => {
+                    if (labels) {
+                        return labels.indexOf(dataRow[xColumnName])
+                    }
+                    else {
+                        const foundColumnDefinition = metaData.columns.find(column => column.name === xColumnName);
+                        if (foundColumnDefinition) {
+                            if (foundColumnDefinition.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE) {
+                                return new Date(dataRow[xColumnName]);
+                            }
+                        }
+                        return dataRow[xColumnName];
+                    }
+                }
+
+                const lidx = getLIDX();
                 //use that label index to assign the summed value over all rows at the correct index
                 //so that label & value match up in the rendered chart
-                agg[lidx] = (agg[lidx] || 0) + dataRow[name];
+                //agg[lidx] = (agg[lidx] || 0) + dataRow[name];
+
+                const foundIndex = agg.findIndex(xy => xy ? xy.x === lidx : false);
+                if (foundIndex !== -1) {
+                    agg[foundIndex] = { x: lidx, y: (agg[foundIndex] ? agg[foundIndex].y || 0 : 0) + dataRow[name] };
+                }
+                else {
+                    agg[idx] = { x: lidx, y: (agg[idx] ? agg[idx].y || 0 : 0) + dataRow[name] };
+                }
                 xmin = Math.min(xmin, lidx); 
-                xmax = Math.max(xmax, lidx); 
+                xmax = Math.max(xmax, lidx);
                 return agg; 
             }, [])
         })
 
         //generate the sum of all y-values
         const sum = data.reduce((agg, d) => {
-            d.forEach((v, idx) => agg[idx] = (agg[idx] || 0) + v)
+            d.forEach((v, idx) => agg[idx] = {x: v.x, y: (agg[idx] ? agg[idx].y || 0 : 0) + v.y})
             return agg;
         }, []);
 
@@ -266,36 +293,47 @@ const UIChart: FC<IChart> = (props) => {
 
         if(pie) {
             //in a pie or ring chart we only need the total sum 
-            const pieSum = sum.reduce((agg, v) => agg + v, 0);
+            const pieSum = sum.reduce((agg, v) => agg + v.y, 0);
             if(data.length > 1) {
                 //if there are multiple y-axes sum the values
-                data = [data.map(d => d.reduce((agg, v) => agg + v, 0))]
+                data = [data.map(d => d.reduce((agg, v) => {
+                    return { x: v.x, y: agg.y + v.y }
+                }, { x: 0, y: 0 }))]
             }
-            data = data.map(d => d.map(v => 100 * v / pieSum))
+            data = data.map(d => d.map(v => {
+                return { x: v.x, y: 100 * v.y / pieSum } 
+            }))
         } else if (percentage) {
             //convert values to percentages
-            data = data.map(d => d.map((v, idx) => 100 * v / sum[idx]))
+            data = data.map(d => d.map((v, idx) => {
+                return { x: v.x, y: 100 * v.y / sum[idx].y }
+            }))
         } else {
             //find the actual minimum and maximum values
-            min = Math.min(0, ...data.reduce((agg, d) => {
+            const minReducedArray = data.reduce((agg, d) => {
                 d.forEach((v, idx) => stacked ? 
                     agg[idx] = sum[idx] : 
-                    agg[idx] = Math.min(agg[idx] || 0, v || 0)
+                    agg[idx] = { x: v.x, y: Math.min(agg[idx] ? agg[idx].y || 0 : 0, v.y || 0) }
                 ); 
                 return agg;
-            }, []).filter(Boolean));
-            max = Math.max(1, ...data.reduce((agg, d) => {
+            }, []).filter(Boolean);
+            const minArray = minReducedArray.map(xy => xy.y);
+            min = Math.min(0, ...minArray);
+
+            const maxReducedArray = data.reduce((agg, d) => {
                 d.forEach((v, idx) => stacked ? 
                     agg[idx] = sum[idx] : 
-                    agg[idx] = Math.max(agg[idx] || 0, v || 0)
+                    agg[idx] = { x: v.x, y: Math.max(agg[idx] ? agg[idx].y || 0 : 0, v.y || 0) }
                 ); 
                 return agg;
-            }, []).filter(Boolean)) + 1;    
+            }, []).filter(Boolean)
+            const maxArray = maxReducedArray.map(xy => xy.y);
+            max = Math.max(1, ...maxArray) + 1;    
         }
 
         if (!pie) {
             data = data.map(d => d.reduce<any[]>((agg, v, idx) => {
-                agg.push({ x: idx, y: v });
+                agg.push({ x: v.x, y: v.y });
                 return agg;
             }, []));
         }
@@ -306,7 +344,7 @@ const UIChart: FC<IChart> = (props) => {
                 d.reverse();
             });
         }
-
+        
         return [data, min, max, xmin, xmax];
     }, [providerData, props.yColumnNames, props.xColumnName, props.chartStyle])
 
@@ -478,6 +516,10 @@ const UIChart: FC<IChart> = (props) => {
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
+        const isDateXColumn = () => {
+            return metaData.columns.find(column => column.name === xColumnName)?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE;
+        }
+
         const tooltip = {
             callbacks: {
                 label: (context: any) => {
@@ -504,16 +546,26 @@ const UIChart: FC<IChart> = (props) => {
                 },
             }
         } else {
+            const getAxisType = () => {
+                if (isDateXColumn()) {
+                    return "time";
+                }
+                else if (hasStringLabels) {
+                    return "category";
+                }
+                return "linear";
+            }
             let axes:any[] = (overlapped ? yColumnNames : ["x"]).map((v, idx) => ({
                 id: `axis-${idx}`,
                 axis: horizontal ? 'y' : 'x',
                 display: !idx,
-                type: hasStringLabels ? "category" : "linear",
+                type: getAxisType(),
                 title: {
                     display: true,
                     text: xAxisTitle,
                 },
                 stacked,
+                bounds: "ticks",
                 ticks: {
                     callback: (value:any) => {
                         //truncate
@@ -529,6 +581,15 @@ const UIChart: FC<IChart> = (props) => {
                     suggestedMin: xmin,
                     suggestedMax: xmax,
                 }),
+                ...(isDateXColumn() ? {
+                    min: new Date(xmin),
+                    max: new Date(xmax),
+                    adapters: {
+                        date: {
+                            locale: getGlobalLocale()
+                        }
+                    }
+                } : {})
             }));
 
             axes.push({
@@ -544,8 +605,8 @@ const UIChart: FC<IChart> = (props) => {
                 ...(percentage ? { max } : { suggestedMax: max }),
                 ticks: {
                     ...(percentage ? {callback: (value:any) => `${value}%`} : {})
-                }
-            })
+                },
+            });
 
             return {
                 plugins: {
@@ -555,6 +616,7 @@ const UIChart: FC<IChart> = (props) => {
                         position: 'bottom'
                     },
                 },
+                locale: getGlobalLocale(),
                 aspectRatio,
                 labels: {
                     usePointStyle: true,
