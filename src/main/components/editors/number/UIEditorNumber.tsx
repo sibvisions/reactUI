@@ -261,10 +261,18 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     }, [])
 
     useEffect(() => {
-        if (value === "-" && numberInput.current?.value === "") {
-            numberInput.current.value = "-"
+        if ((props.columnMetaData as NumericColumnDescription).signed !== false) {
+            if (value === "-" && numberInput.current?.value === "") {
+                numberInput.current.value = "-"
+            }
         }
-    }, [value])
+        else {
+            if (value === "-" && numberInput.current?.value === "-") {
+                setValue("");
+                numberInput.current.value = "";
+            }
+        }
+    }, [value, props.columnMetaData])
 
     /**
      * When a value is pasted check if the value isn't too big for the max length
@@ -313,7 +321,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             let eValue = event.target.value;
 
             const getDecimalValue = () => {
-                if (event.key !== "Backspace") {
+                if (event.key !== "Backspace" && event.key !== "-") {
                     eValue = eValue.replaceAll(numberSeperators.group, "").replaceAll(prefix, "").replaceAll(suffix, "");
                     if (event.key === "-") {
                         if (eValue.indexOf(numberSeperators.decimal) !== -1) {
@@ -333,14 +341,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     }
                 }
                 return parseInt(eValue + event.key);
-            }   
+            }
             
-            if (decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength  && !window.getSelection()?.toString()) {
+            if (decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString() || (event.key === "-" && (props.columnMetaData as NumericColumnDescription).signed === false)) {
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
             }
-            else if (numberInput.current && typeof value === "string" && numberInput.current.value.indexOf(value) === numberInput.current.selectionStart && event.key === "-") {
+            else if (numberInput.current && typeof value === "string" && numberInput.current.value.indexOf(value) === numberInput.current.selectionStart && event.key === "-" && (props.columnMetaData as NumericColumnDescription).signed !== false) {
                 startedEditing.current = true;
                 setValue(parseFloat("-" + value.replace(numberSeperators.decimal, ".")));
             }
@@ -382,7 +390,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
 
                         //@ts-ignore
                         if (event.value === "-") {
-                            setValue(event.value)
+                            if ((props.columnMetaData as NumericColumnDescription).signed !== false) {
+                                setValue(event.value);
+                            }
                         }
                         else if (event.value !== null) {
                             setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
@@ -442,7 +452,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     startedEditing.current = true;
                     //@ts-ignore
                     if (event.value === "-") {
-                        setValue(event.value)
+                        if ((props.columnMetaData as NumericColumnDescription).signed !== false) {
+                            setValue(event.value);
+                        }
                     }
                     else {
                         setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
