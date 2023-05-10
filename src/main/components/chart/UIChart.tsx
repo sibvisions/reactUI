@@ -42,6 +42,7 @@ import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import Dimension from "../../util/types/Dimension";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
+import { getGlobalLocale } from "../../util/other-util/GetDateLocale";
 
 /** Interface for Chartproperties sent by server */
 export interface IChart extends BaseComponent {
@@ -189,8 +190,6 @@ function getLabels(values:any[], translation?: Map<string,string>, onlyIfNaN: bo
 const UIChart: FC<IChart> = (baseProps) => {
     /** Reference for the span that is wrapping the chart containing layout information */
     const chartRef = useRef<HTMLSpanElement>(null);
-
-    const testRef = useRef<any>(null)
 
     /** Component constants */
     const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IChart>(baseProps);
@@ -580,6 +579,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                     text: xAxisTitle,
                 },
                 stacked,
+                bounds: "ticks",
                 ticks: {
                     callback: (value:any) => {
                         //truncate
@@ -597,9 +597,13 @@ const UIChart: FC<IChart> = (baseProps) => {
                 }),
                 ...(isDateXColumn() ? {
                     min: new Date(xmin),
-                    max: new Date(xmax)
+                    max: new Date(xmax),
+                    adapters: {
+                        date: {
+                            locale: getGlobalLocale()
+                        }
+                    }
                 } : {})
-
             }));
 
             axes.push({
@@ -626,6 +630,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                         position: 'bottom'
                     },
                 },
+                locale: getGlobalLocale(),
                 aspectRatio,
                 labels: {
                     usePointStyle: true,
