@@ -144,6 +144,8 @@ export default abstract class BaseContentStore {
     /** The title in the menu topbar sent by the server */
     topbarTitle: string = "";
 
+    screenHistory:Array<string> = [];
+
     constructor(history?:History<any>) {
         this.history = history;
     }
@@ -616,6 +618,7 @@ export default abstract class BaseContentStore {
         this.navigationNames.clear();
         this.screenWrappers.clear();
         this.dataBooks.clear();
+        this.screenHistory = [];
         this.activeScreens = [];
     }
 

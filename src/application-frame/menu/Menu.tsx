@@ -111,19 +111,17 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             closeReq.componentId = screenName;
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
                                 // If response is empty or there is no error close the current screen and open the welcome screen or home
-                                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
+                                if (res[0] === undefined) {
                                     (context.server as Server).lastClosedWasPopUp = false;
-                                    context.contentStore.closeScreen(screenName);
-                                    showTopBar((context.server as Server).openHome(), topbar);
-                                }
-                                // onAskBefore check
-                                else if (res[0].name === RESPONSE_NAMES.ERROR && res[1].name === RESPONSE_NAMES.DIALOG) {
-                                    (context.server as Server).onAskBeforeAndHomePressed = true;
+                                    if (context.appSettings.homeScreen !== screenName) {
+                                        context.contentStore.closeScreen(screenName);
+                                    }
+                                    showTopBar((context.server as Server).routeToHome(), topbar);
                                 }
                             });
                         }
                         else {
-                            showTopBar((context.server as Server).openHome(), topbar);
+                            showTopBar((context.server as Server).routeToHome(), topbar);
                         }
                     }
                 }}

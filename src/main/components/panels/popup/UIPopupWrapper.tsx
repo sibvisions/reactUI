@@ -78,7 +78,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
             const csRequest = createCloseScreenRequest();
             csRequest.componentId = baseProps.name;
             context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
-                if (res[0] === undefined || res[0].name !== "message.error") {
+                if (res[0] === undefined) {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
                     }
@@ -90,7 +90,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
             const ccRequest = createCloseContentRequest();
             ccRequest.componentId = baseProps.name;
             context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
-                if (res[0] === undefined || res[0].name !== "message.error") {
+                if (res[0] === undefined) {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
                         (context.server as Server).closeContent({ name: "closeContent", componentId: baseProps.name })

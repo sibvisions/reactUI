@@ -129,8 +129,6 @@ class Server extends BaseServer {
 
     noWelcomeRoute = false;
 
-    onAskBeforeAndHomePressed = false;
-
     // Sets the onMenu Function
     setOnMenuFunction(fn:Function) {
         this.onMenuFunction = fn;
@@ -264,7 +262,7 @@ class Server extends BaseServer {
      */
     async responseHandler(responses: Array<BaseResponse>, request: any) {
         if (Array.isArray(responses)) {
-            await super.responseHandler(responses, request)
+            await super.responseHandler(responses, request);
             this.routingDecider(responses);
         }
         return responses
@@ -410,13 +408,17 @@ class Server extends BaseServer {
             }
         }
 
+        if (this.appSettings.homeScreen === undefined && genericData.home && !genericData.welcome) {
+            this.appSettings.homeScreen = genericData.componentId;
+        }
+
         // If there is a welcome screen and it hasnt been opened yet
         if (this.appSettings.welcomeScreen.name && !this.appSettings.welcomeScreen.initOpened) {
             const pathName = (this.history as History).location.pathname as string;
             // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
             const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
             // Check if the url screen to open is the welcome screen or the response is a home screen and there is no screen to open via url or the screen cant be found in the navigationnames
-            if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || (genericData.home && (!this.linkOpen || !screenToOpen))) {
+            if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || ((genericData.home || genericData.welcome) && (!this.linkOpen || !screenToOpen))) {
                 openScreen()
             }
             else {
@@ -430,7 +432,7 @@ class Server extends BaseServer {
     }
 
     //Either opens the basic "home" or a welcome screen if there is one.
-    openHome() {
+    routeToHome() {
         this.contentStore.setActiveScreen();
         this.history?.push('/home');
         return Promise.resolve(true);
@@ -441,9 +443,7 @@ class Server extends BaseServer {
      * @param closeScreenData - the close screen response 
      */
     closeScreen(closeScreenData: CloseScreenResponse) {
-        if (this.onAskBeforeAndHomePressed) {
-            this.onAskBeforeAndHomePressed = false;
-        }
+
         for (let entry of this.contentStore.flatContent.entries()) {
             if (entry[1].name === closeScreenData.componentId) {
                 if ((entry[1] as IPanel).screen_modal_) {
@@ -462,6 +462,9 @@ class Server extends BaseServer {
         //         this.contentStore.flatContent.delete(entry[1].id + "-popup");
         //     }
         // }
+        if (this.contentStore.screenHistory.length > 1) {
+            this.maybeOpenScreen = this.contentStore.screenHistory[this.contentStore.screenHistory.length - 2];
+        }
 
         this.contentStore.closeScreen(closeScreenData.componentId);
     }

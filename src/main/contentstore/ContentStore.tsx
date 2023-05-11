@@ -82,6 +82,10 @@ export default class ContentStore extends BaseContentStore {
                 this.activeScreens.push(popupScreen);
             }
             else {
+                if (screenInfo.className) {
+                    this.screenHistory.push(screenInfo.className);
+                }
+                
                 if (this.activeScreens[0] && this.activeScreens[0].popup) {
                     this.activeScreens.unshift(screenInfo);
                 }

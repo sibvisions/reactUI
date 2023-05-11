@@ -160,7 +160,7 @@ class API implements IAPI {
             }
             //TODO topbar
             this.#server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
-                if (res[0] === undefined || res[0].name !== "message.error") {
+                if (res[0] === undefined) {
                     if (popup) {
                         (this.#server as Server).lastClosedWasPopUp = true;
                     }

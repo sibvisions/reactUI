@@ -20,6 +20,7 @@ import BaseComponent from "../../util/types/BaseComponent";
 interface GenericResponse extends ComponentResponse {
     changedComponents: Array<BaseComponent>,
     update: boolean,
-    home: boolean
+    home: boolean,
+    welcome: boolean
 }
 export default GenericResponse

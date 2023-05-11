@@ -160,6 +160,8 @@ export default class AppSettings {
     /** The welcome screen of the app */
     welcomeScreen:{name: string, initOpened: boolean} = { name: "", initOpened: false};
 
+    homeScreen: string | undefined;
+
     /** The desktop-panel of the app, undefined if there is no desktop-screen */
     desktopPanel:BaseComponent|undefined;
 
