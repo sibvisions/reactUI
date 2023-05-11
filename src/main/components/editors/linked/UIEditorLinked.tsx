@@ -92,14 +92,14 @@ export function fetchLinkedRefDatabook(screenName: string, databook: string, sel
         && (!refDataBookInfo?.data)
         && !server.missingDataFetches.includes(databook)) {
         server.missingDataFetches.push(databook);
-        const filterReq = createFilterRequest();
-        filterReq.dataProvider = databook;
-        filterReq.editorComponentId = name;
-        filterReq.value = "";
+        const fetchReq = createFetchRequest();
+        fetchReq.dataProvider = databook;
+        fetchReq.fromRow = 0;
+        fetchReq.rowCount = -1;
         if (!refDataBookInfo?.metaData) {
-            filterReq.includeMetaData = true;
+            fetchReq.includeMetaData = true;
         }
-        server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => decreaseCallback ? decreaseCallback(databook) : undefined)
+        server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => decreaseCallback ? decreaseCallback(databook) : undefined)
     }
 }
 
