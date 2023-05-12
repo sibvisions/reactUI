@@ -36,6 +36,7 @@ import CustomStartupProps from "./util/types/custom-types/CustomStartupProps";
 import UserData from "./model/UserData";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 import { ICustomDefaultLogin, ICustomMFAText, ICustomMFAUrl, ICustomMFAWait, ICustomResetLogin } from "../application-frame/login/Login";
+import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 
 export interface IAPI {
     sendRequest: (req: any, keyword: string) => void,
@@ -160,7 +161,7 @@ class API implements IAPI {
             }
             //TODO topbar
             this.#server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
-                if (res[0] === undefined) {
+                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                     if (popup) {
                         (this.#server as Server).lastClosedWasPopUp = true;
                     }

@@ -37,6 +37,7 @@ import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 import { ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import FetchRequest from "../request/data/FetchRequest";
 import * as _ from "underscore"
+import Server from "../server/Server";
 
 // Type for ActiveScreens
 export type ActiveScreen = {
@@ -144,7 +145,7 @@ export default abstract class BaseContentStore {
     /** The title in the menu topbar sent by the server */
     topbarTitle: string = "";
 
-    screenHistory:Array<string> = [];
+    screenHistory:Array<{ componentId: string, className: string }> = [];
 
     constructor(history?:History<any>) {
         this.history = history;
@@ -555,14 +556,22 @@ export default abstract class BaseContentStore {
      * When a screen closes cleanUp the data for the window if it isn't a content and update the active-screens
      * @param windowName - the name of the window to close
      */
-     closeScreen(windowName: string, closeContent?:boolean) {
-        let window = this.getComponentByName(windowName, closeContent);
-        if (window) {
-            this.cleanUp(window.id, window.name, window.className, closeContent);
+     closeScreen(windowName: string, closeModal?:boolean, homeButtonPressed?:boolean) {
+        // If a popup is closed or the homebutton was pressed, clean up the screen and update activescreens
+        if (closeModal || homeButtonPressed) {
+            let window = this.getComponentByName(windowName, closeModal);
+            if (window) {
+                this.cleanUp(window.id, window.name, window.className, closeModal);
+            }
+            this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+            this.subManager.emitActiveScreens();
         }
-
-        this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
-        this.subManager.emitActiveScreens();
+        else {
+            // filter activescreens and save the screen to close for later to prevent flickering and opening the last opened screen
+            this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+            // this.subManager.emitActiveScreens();
+            this.server.screenToClose = { windowName: windowName, closeModal: closeModal };
+        }                
     }
 
     /**
@@ -582,13 +591,13 @@ export default abstract class BaseContentStore {
      * @param id - the component id
      * @param name - the component name
      */
-     cleanUp(id:string, name:string|undefined, className: string, closeContent?:boolean) {
+     cleanUp(id:string, name:string|undefined, className: string, closeModal?:boolean) {
         if (name) {
             const parentId = this.getComponentById(id)?.parent;
             this.deleteChildren(id, className);
             this.flatContent.delete(id);
 
-            if (closeContent) {
+            if (closeModal) {
                 this.removedContent.delete(id)
             }
 
@@ -598,10 +607,8 @@ export default abstract class BaseContentStore {
 
             //only do a total cleanup if there are no more components of that name
             if(!this.getComponentByName(name)) {
-                if (!closeContent) {
-                    this.dataBooks.delete(name);
-                    this.subManager.rowSelectionSubscriber.delete(name);
-                }
+                this.dataBooks.delete(name);
+                this.subManager.rowSelectionSubscriber.delete(name);
             }
         }
     }

@@ -263,7 +263,40 @@ class Server extends BaseServer {
     async responseHandler(responses: Array<BaseResponse>, request: any) {
         if (Array.isArray(responses)) {
             await super.responseHandler(responses, request);
-            this.routingDecider(responses);
+            // if there is a screen to close don't route to prevent flickering
+            if (!this.screenToClose) {
+                this.routingDecider(responses);
+            }
+            
+            // Cleans up the flatcontent and dataproviders after closing a screen
+            const cleanUpScreen = () => {
+                if (this.screenToClose !== undefined) {
+                    let window = this.contentStore.getComponentByName(this.screenToClose.windowName, this.screenToClose.closeModal);
+                    if (window) {
+                        this.contentStore.cleanUp(window.id, window.name, window.className, this.screenToClose.closeModal);
+                    }
+                    this.screenToClose = undefined
+                }
+            }
+
+            // If there is a screen to close check if a previous screen needs to be opened then open the screen and after that clean up the closed screen to prevent flickering
+            if (this.screenToClose !== undefined) {
+                if (this.maybeOpenScreen && !this.contentStore.activeScreens.length) {
+                    if (this.maybeOpenScreen.componentId !== this.screenToClose.windowName) {
+                        this.api.sendOpenScreenRequest(this.maybeOpenScreen.className).then(() => cleanUpScreen());
+                    }
+                    // else {
+                    //     this.dontIgnoreHome = true;
+                    // }
+                    this.maybeOpenScreen = undefined;
+                }
+                else {
+                    // if there is no screen to open clean up, update active screens and route
+                    cleanUpScreen();
+                    this.subManager.emitActiveScreens();
+                    this.routingDecider(responses);
+                }
+            }
         }
         return responses
     }
@@ -362,72 +395,78 @@ class Server extends BaseServer {
      * @param genericData - the genericResponse
      */
     generic(genericData: GenericResponse) {
-
-        const openScreen = () => {
-            if (genericData.changedComponents && genericData.changedComponents.length) {
-                this.contentStore.updateContent(genericData.changedComponents, false);
-            }
-            if (!genericData.update) {
-                let workScreen:IPanel|undefined
-                if(genericData.changedComponents && genericData.changedComponents.length) {
-                    if (genericData.changedComponents[0].className === COMPONENT_CLASSNAMES.PANEL) {
-                        workScreen = genericData.changedComponents[0] as IPanel;
-    
-                        /** 
-                         * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
-                         * to the navigation-name, if not, don't add anything, and call setNavigationName
-                         */
-                        if (workScreen.screen_navigationName_) {
-                            const increment = getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames)
-                            if (this.contentStore.navigationNames.has(workScreen.screen_navigationName_ + increment)) {
-                                const foundNavName = this.contentStore.navigationNames.get(workScreen.screen_navigationName_ + increment) as { screenId: string, componentId: string };
-                                foundNavName.screenId = workScreen.name;
-    
-                                if (workScreen.screen_navigationName_ + increment === this.linkOpen) {
-                                    this.linkOpen = "";
-                                }
-                            }
-                            else {
-                                this.contentStore.setNavigationName(workScreen.screen_navigationName_ + getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames), workScreen.screen_className_ as string, workScreen.name)
-                            }
-                        }
-
-                        if (workScreen.screen_title_) {
-                            this.contentStore.topbarTitle = workScreen.screen_title_;
-                            this.subManager.notifyScreenTitleChanged(workScreen.screen_title_);
-                        }
-                        
-                        this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);
-    
-                        // if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
-                        //     this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
-                        // }
-                    }
-                }
-                this.onOpenScreenFunction();
-            }
-        }
-
-        if (this.appSettings.homeScreen === undefined && genericData.home && !genericData.welcome) {
+        // Set the homescreen if home is true
+        if (this.appSettings.homeScreen === undefined && genericData.home) {
             this.appSettings.homeScreen = genericData.componentId;
         }
 
-        // If there is a welcome screen and it hasnt been opened yet
-        if (this.appSettings.welcomeScreen.name && !this.appSettings.welcomeScreen.initOpened) {
-            const pathName = (this.history as History).location.pathname as string;
-            // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
-            const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
-            // Check if the url screen to open is the welcome screen or the response is a home screen and there is no screen to open via url or the screen cant be found in the navigationnames
-            if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || ((genericData.home || genericData.welcome) && (!this.linkOpen || !screenToOpen))) {
-                openScreen()
+        // If there is another screen to open after a close() ignore the generic command if the homescreen would be opened.
+        if (!(this.screenToClose !== undefined && this.maybeOpenScreen && !this.contentStore.activeScreens.length && genericData.componentId === this.appSettings.homeScreen && !this.dontIgnoreHome)) {
+            const openScreen = () => {
+                if (genericData.changedComponents && genericData.changedComponents.length) {
+                    this.contentStore.updateContent(genericData.changedComponents, false);
+                }
+                if (!genericData.update) {
+                    let workScreen:IPanel|undefined
+                    if(genericData.changedComponents && genericData.changedComponents.length) {
+                        if (genericData.changedComponents[0].className === COMPONENT_CLASSNAMES.PANEL) {
+                            workScreen = genericData.changedComponents[0] as IPanel;
+        
+                            /** 
+                             * If the component has a navigation-name check, if the navigation-name already exists if it does, add a number
+                             * to the navigation-name, if not, don't add anything, and call setNavigationName
+                             */
+                            if (workScreen.screen_navigationName_) {
+                                const increment = getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames)
+                                if (this.contentStore.navigationNames.has(workScreen.screen_navigationName_ + increment)) {
+                                    const foundNavName = this.contentStore.navigationNames.get(workScreen.screen_navigationName_ + increment) as { screenId: string, componentId: string };
+                                    foundNavName.screenId = workScreen.name;
+        
+                                    if (workScreen.screen_navigationName_ + increment === this.linkOpen) {
+                                        this.linkOpen = "";
+                                    }
+                                }
+                                else {
+                                    this.contentStore.setNavigationName(workScreen.screen_navigationName_ + getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames), workScreen.screen_className_ as string, workScreen.name)
+                                }
+                            }
+    
+                            if (workScreen.screen_title_) {
+                                this.contentStore.topbarTitle = workScreen.screen_title_;
+                                this.subManager.notifyScreenTitleChanged(workScreen.screen_title_);
+                            }
+                            this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);
+        
+                            // if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
+                            //     this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
+                            // }
+                        }
+                    }
+                    this.onOpenScreenFunction();
+                }
+            }
+
+            if (this.dontIgnoreHome) {
+                this.dontIgnoreHome = false;
+            }
+    
+            // If there is a welcome screen and it hasnt been opened yet
+            if (this.appSettings.welcomeScreen.name && !this.appSettings.welcomeScreen.initOpened) {
+                const pathName = (this.history as History).location.pathname as string;
+                // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
+                const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
+                // Check if the url screen to open is the welcome screen or the response is a home screen and there is no screen to open via url or the screen cant be found in the navigationnames
+                if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || ((genericData.home || genericData.welcome) && (!this.linkOpen || !screenToOpen))) {
+                    openScreen()
+                }
+                else {
+                    this.noWelcomeRoute = true;
+                }
+                this.appSettings.welcomeScreen.initOpened = true;
             }
             else {
-                this.noWelcomeRoute = true;
+                openScreen();
             }
-            this.appSettings.welcomeScreen.initOpened = true;
-        }
-        else {
-            openScreen();
         }
     }
 
@@ -462,8 +501,10 @@ class Server extends BaseServer {
         //         this.contentStore.flatContent.delete(entry[1].id + "-popup");
         //     }
         // }
+        // If there have been more than two screens opened in the application, remember the last closed screen
         if (this.contentStore.screenHistory.length > 1) {
-            this.maybeOpenScreen = this.contentStore.screenHistory[this.contentStore.screenHistory.length - 2];
+            const screen = this.contentStore.screenHistory[this.contentStore.screenHistory.length - 2]
+            this.maybeOpenScreen = { className: screen.className, componentId: screen.componentId};
         }
 
         this.contentStore.closeScreen(closeScreenData.componentId);
@@ -478,6 +519,8 @@ class Server extends BaseServer {
             (this.contentStore as ContentStore).menuItems = new Map<string, ServerMenuButtons[]>()
             menuData.entries.forEach(entry => {
                 entry.action = () => {
+                    // When navigating with the menu dont ignore the homescreen
+                    this.dontIgnoreHome = true;
                     return this.api.sendOpenScreenIntern(entry.componentId)
                 }
                 (this.contentStore as ContentStore).addMenuItem(entry);

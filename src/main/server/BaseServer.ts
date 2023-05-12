@@ -120,9 +120,11 @@ export default abstract class BaseServer {
 
     hideTopbar:Function = () => {};
 
-    maybeOpenScreen:string|undefined = undefined;
+    maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
 
-    screenToClose:{windowName: string, closeContent: boolean|undefined}|undefined = undefined;
+    screenToClose:{windowName: string, closeModal: boolean|undefined}|undefined = undefined;
+
+    dontIgnoreHome = false;
 
     /**
      * @constructor constructs server instance
