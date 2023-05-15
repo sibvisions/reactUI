@@ -76,7 +76,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     horizontalColumnToAnchorMap: new Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>(),
                     verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>(),
                     componentConstraints: compConstraintMap,
-                    originalConstraints: new Map(compConstraintMap)
+                    originalConstraints: new Map(compConstraintMap),
+                    componentSizes: compSizes
                 }))
             }
             else {
@@ -841,7 +842,13 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         }
 
         return calculatedStyle.current;
-    }, [layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore, components])
+    }, [layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore, components]);
+
+    useEffect(() => {
+        if (context.designer && context.designer.formLayouts.has(name)) {
+            context.designer.formLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
+        }
+    }, [compSizes, context.designer])
 
     return(
         /** Provide the allowed sizes of the children as a context */
