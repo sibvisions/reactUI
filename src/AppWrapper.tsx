@@ -132,7 +132,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         });
 
                         if (callCloseScreen && comp) {
-                            context.contentStore.closeScreen(comp.name, comp.screen_modal_ === true);
+                            context.contentStore.closeScreen(comp.id, comp.name, comp.screen_modal_ === true);
                         }
                     }
 
@@ -146,8 +146,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             let prevPathCopy = prevLocation.current
                             const openReq = createOpenScreenRequest();
                             openReq.componentId = navValue.componentId;
-                            // When opening screens via browser navigation don't ignore the homescreen response
-                            context.server.dontIgnoreHome = true;
                             showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar)
                                 .then((responses: BaseResponse[]) => {
                                     checkAskBefore(prevPathCopy, responses)

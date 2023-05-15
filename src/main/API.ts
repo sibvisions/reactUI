@@ -156,6 +156,7 @@ class API implements IAPI {
         if (this.#appSettings.transferType !== "full") {
             const csRequest = createCloseScreenRequest();
             csRequest.componentId = screenName;
+            const screenId = this.#contentStore.getComponentByName(screenName)?.id as string
             if (parameter) {
                 csRequest.parameter = parameter;
             }
@@ -168,7 +169,7 @@ class API implements IAPI {
                     else {
                         (this.#server as Server).lastClosedWasPopUp = false;
                     }
-                    this.#contentStore.closeScreen(screenName, false);
+                    this.#contentStore.closeScreen(screenId, screenName, false);
                     this.history?.push("/home")
                 }
             });

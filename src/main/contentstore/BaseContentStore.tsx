@@ -556,21 +556,29 @@ export default abstract class BaseContentStore {
      * When a screen closes cleanUp the data for the window if it isn't a content and update the active-screens
      * @param windowName - the name of the window to close
      */
-     closeScreen(windowName: string, closeModal?:boolean, homeButtonPressed?:boolean) {
-        // If a popup is closed or the homebutton was pressed, clean up the screen and update activescreens
-        if (closeModal || homeButtonPressed) {
-            let window = this.getComponentByName(windowName, closeModal);
+     closeScreen(windowId: string, windowName: string, closeModal?:boolean, changeActive?:boolean) {
+        // If a popup is closed or the homebutton was pressed, clean up the screen and update activescreens. 
+        if (closeModal || this.server.homeButtonPressed) {
+            let window = this.getComponentById(windowId);
             if (window) {
                 this.cleanUp(window.id, window.name, window.className, closeModal);
             }
-            this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+            this.activeScreens = this.activeScreens.filter(screen => screen.id !== windowId);
             this.subManager.emitActiveScreens();
+            this.server.homeButtonPressed = false;
         }
         else {
             // filter activescreens and save the screen to close for later to prevent flickering and opening the last opened screen
             this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
             // this.subManager.emitActiveScreens();
-            this.server.screenToClose = { windowName: windowName, closeModal: closeModal };
+            // Rather use id than name because the name could appear more than once when the homescreen gets opened by the server AND by client via maybeopenscreen.
+            if (windowId) {
+                this.server.screenToClose = { windowId: windowId, windowName: windowName, closeModal: closeModal };
+            }
+            
+            if (this.server.screenToClose !== undefined && this.server.maybeOpenScreen && !this.activeScreens.length && this.server.maybeOpenScreen.componentId !== this.server.screenToClose.windowId) {
+                this.server.ignoreHome = true;
+            }
         }                
     }
 

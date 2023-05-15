@@ -122,9 +122,11 @@ export default abstract class BaseServer {
 
     maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
 
-    screenToClose:{windowName: string, closeModal: boolean|undefined}|undefined = undefined;
+    screenToClose:{windowId: string, windowName: string, closeModal: boolean|undefined}|undefined = undefined;
 
-    dontIgnoreHome = false;
+    ignoreHome = false;
+
+    homeButtonPressed = false;
 
     /**
      * @constructor constructs server instance

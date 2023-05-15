@@ -83,7 +83,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
                     }
-                    context.contentStore.closeScreen(baseProps.name, true);
+                    context.contentStore.closeScreen(baseProps.id, baseProps.name, true);
                 }
             });
         }

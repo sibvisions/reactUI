@@ -271,7 +271,7 @@ class Server extends BaseServer {
             // Cleans up the flatcontent and dataproviders after closing a screen
             const cleanUpScreen = () => {
                 if (this.screenToClose !== undefined) {
-                    let window = this.contentStore.getComponentByName(this.screenToClose.windowName, this.screenToClose.closeModal);
+                    let window = this.contentStore.getComponentById(this.screenToClose.windowId);
                     if (window) {
                         this.contentStore.cleanUp(window.id, window.name, window.className, this.screenToClose.closeModal);
                     }
@@ -285,9 +285,6 @@ class Server extends BaseServer {
                     if (this.maybeOpenScreen.componentId !== this.screenToClose.windowName) {
                         this.api.sendOpenScreenRequest(this.maybeOpenScreen.className).then(() => cleanUpScreen());
                     }
-                    // else {
-                    //     this.dontIgnoreHome = true;
-                    // }
                     this.maybeOpenScreen = undefined;
                 }
                 else {
@@ -401,7 +398,7 @@ class Server extends BaseServer {
         }
 
         // If there is another screen to open after a close() ignore the generic command if the homescreen would be opened.
-        if (!(this.screenToClose !== undefined && this.maybeOpenScreen && !this.contentStore.activeScreens.length && genericData.componentId === this.appSettings.homeScreen && !this.dontIgnoreHome)) {
+        if (!(genericData.home && this.ignoreHome) || this.homeButtonPressed) {
             const openScreen = () => {
                 if (genericData.changedComponents && genericData.changedComponents.length) {
                     this.contentStore.updateContent(genericData.changedComponents, false);
@@ -445,10 +442,6 @@ class Server extends BaseServer {
                     this.onOpenScreenFunction();
                 }
             }
-
-            if (this.dontIgnoreHome) {
-                this.dontIgnoreHome = false;
-            }
     
             // If there is a welcome screen and it hasnt been opened yet
             if (this.appSettings.welcomeScreen.name && !this.appSettings.welcomeScreen.initOpened) {
@@ -468,6 +461,9 @@ class Server extends BaseServer {
                 openScreen();
             }
         }
+        else {
+            this.ignoreHome = false;
+        }
     }
 
     //Either opens the basic "home" or a welcome screen if there is one.
@@ -482,9 +478,10 @@ class Server extends BaseServer {
      * @param closeScreenData - the close screen response 
      */
     closeScreen(closeScreenData: CloseScreenResponse) {
-
+        let id = "";
         for (let entry of this.contentStore.flatContent.entries()) {
             if (entry[1].name === closeScreenData.componentId) {
+                id = entry[1].id;
                 if ((entry[1] as IPanel).screen_modal_) {
                     this.lastClosedWasPopUp = true;
                 }
@@ -507,7 +504,7 @@ class Server extends BaseServer {
             this.maybeOpenScreen = { className: screen.className, componentId: screen.componentId};
         }
 
-        this.contentStore.closeScreen(closeScreenData.componentId);
+        this.contentStore.closeScreen(id, closeScreenData.componentId);
     }
 
     /**
@@ -520,7 +517,7 @@ class Server extends BaseServer {
             menuData.entries.forEach(entry => {
                 entry.action = () => {
                     // When navigating with the menu dont ignore the homescreen
-                    this.dontIgnoreHome = true;
+                    //this.dontIgnoreHome = true;
                     return this.api.sendOpenScreenIntern(entry.componentId)
                 }
                 (this.contentStore as ContentStore).addMenuItem(entry);
