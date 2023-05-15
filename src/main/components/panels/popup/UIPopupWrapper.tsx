@@ -27,6 +27,7 @@ import useComponents from "../../../hooks/components-hooks/useComponents";
 import Dimension from "../../../util/types/Dimension";
 import Server from "../../../server/Server";
 import { parsePrefSize } from "../../../util/component-util/SizeUtil";
+import RESPONSE_NAMES from "../../../response/RESPONSE_NAMES";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -78,11 +79,11 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
             const csRequest = createCloseScreenRequest();
             csRequest.componentId = baseProps.name;
             context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
-                if (res[0] === undefined || res[0].name !== "message.error") {
+                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
                     }
-                    context.contentStore.closeScreen(baseProps.name);
+                    context.contentStore.closeScreen(baseProps.id, baseProps.name, true);
                 }
             });
         }
@@ -90,7 +91,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
             const ccRequest = createCloseContentRequest();
             ccRequest.componentId = baseProps.name;
             context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
-                if (res[0] === undefined || res[0].name !== "message.error") {
+                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
                         (context.server as Server).closeContent({ name: "closeContent", componentId: baseProps.name })

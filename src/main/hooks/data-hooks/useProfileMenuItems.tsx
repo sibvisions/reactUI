@@ -23,7 +23,6 @@ import { MenuOptions, VisibleButtons } from "../../AppSettings";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { translation } from "../../util/other-util/Translation";
 import UserData from "../../model/UserData";
-import { BUILD_DATE } from "../../../buildDate";
 
 /**
  * Returns the profile-menu-options and handles the actions of each option.
@@ -103,16 +102,6 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
                 //context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
             }
         })
-
-        if (context.appSettings.showDebug) {
-            profileMenuItems.push({
-                label: "Build Date",
-                icon: "pi pi-calendar",
-                command() {
-                    context.subscriptions.emitToast({name: "", message: BUILD_DATE.toString()}, "info")
-                }
-            })
-        }
 
         if (logoutVisible !== false) {
             profileMenuItems.push({

@@ -37,6 +37,7 @@ import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 import { ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import FetchRequest from "../request/data/FetchRequest";
 import * as _ from "underscore"
+import Server from "../server/Server";
 
 // Type for ActiveScreens
 export type ActiveScreen = {
@@ -143,6 +144,8 @@ export default abstract class BaseContentStore {
 
     /** The title in the menu topbar sent by the server */
     topbarTitle: string = "";
+
+    screenHistory:Array<{ componentId: string, className: string }> = [];
 
     constructor(history?:History<any>) {
         this.history = history;
@@ -553,14 +556,30 @@ export default abstract class BaseContentStore {
      * When a screen closes cleanUp the data for the window if it isn't a content and update the active-screens
      * @param windowName - the name of the window to close
      */
-     closeScreen(windowName: string, closeContent?:boolean) {
-        let window = this.getComponentByName(windowName, closeContent);
-        if (window) {
-            this.cleanUp(window.id, window.name, window.className, closeContent);
+     closeScreen(windowId: string, windowName: string, closeModal?:boolean, changeActive?:boolean) {
+        // If a popup is closed or the homebutton was pressed, clean up the screen and update activescreens. 
+        if (closeModal || this.server.homeButtonPressed) {
+            let window = this.getComponentById(windowId);
+            if (window) {
+                this.cleanUp(window.id, window.name, window.className, closeModal);
+            }
+            this.activeScreens = this.activeScreens.filter(screen => screen.id !== windowId);
+            this.subManager.emitActiveScreens();
+            this.server.homeButtonPressed = false;
         }
-
-        this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
-        this.subManager.emitActiveScreens();
+        else {
+            // filter activescreens and save the screen to close for later to prevent flickering and opening the last opened screen
+            this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
+            // this.subManager.emitActiveScreens();
+            // Rather use id than name because the name could appear more than once when the homescreen gets opened by the server AND by client via maybeopenscreen.
+            if (windowId) {
+                this.server.screenToClose = { windowId: windowId, windowName: windowName, closeModal: closeModal };
+            }
+            
+            if (this.server.screenToClose !== undefined && this.server.maybeOpenScreen && !this.activeScreens.length && this.server.maybeOpenScreen.componentId !== this.server.screenToClose.windowId) {
+                this.server.ignoreHome = true;
+            }
+        }                
     }
 
     /**
@@ -580,13 +599,13 @@ export default abstract class BaseContentStore {
      * @param id - the component id
      * @param name - the component name
      */
-     cleanUp(id:string, name:string|undefined, className: string, closeContent?:boolean) {
+     cleanUp(id:string, name:string|undefined, className: string, closeModal?:boolean) {
         if (name) {
             const parentId = this.getComponentById(id)?.parent;
             this.deleteChildren(id, className);
             this.flatContent.delete(id);
 
-            if (closeContent) {
+            if (closeModal) {
                 this.removedContent.delete(id)
             }
 
@@ -596,10 +615,8 @@ export default abstract class BaseContentStore {
 
             //only do a total cleanup if there are no more components of that name
             if(!this.getComponentByName(name)) {
-                if (!closeContent) {
-                    this.dataBooks.delete(name);
-                    this.subManager.rowSelectionSubscriber.delete(name);
-                }
+                this.dataBooks.delete(name);
+                this.subManager.rowSelectionSubscriber.delete(name);
             }
         }
     }
@@ -616,6 +633,7 @@ export default abstract class BaseContentStore {
         this.navigationNames.clear();
         this.screenWrappers.clear();
         this.dataBooks.clear();
+        this.screenHistory = [];
         this.activeScreens = [];
     }
 

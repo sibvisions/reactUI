@@ -101,28 +101,29 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 icon="fas fa-home"
                 className="menu-topbar-buttons"
                 onClick={() => {
-                    // If a screen is opened, close it, and redirect to home or welcome-screen
+                    // If a screen is opened, close it, and redirect to home
                     if (context.contentStore.activeScreens.length) {
+                        context.server.homeButtonPressed = true;
                         //context.subscriptions.emitSelectedMenuItem("");
                         if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0].name)) {
                             const screenName = context.contentStore.activeScreens[0].name;
+                            const screenId = context.contentStore.getComponentByName(screenName)?.id as string
                             const closeReq = createCloseScreenRequest();
                             closeReq.componentId = screenName;
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
-                                // If response is empty or there is no error close the current screen and open the welcome screen or home
+                                // If response is empty or there is no error close the current screen and open home
                                 if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                                     (context.server as Server).lastClosedWasPopUp = false;
-                                    context.contentStore.closeScreen(screenName);
-                                    showTopBar((context.server as Server).openHome(), topbar);
-                                }
-                                // onAskBefore check
-                                else if (res[0].name === RESPONSE_NAMES.ERROR && res[1].name === RESPONSE_NAMES.DIALOG) {
-                                    (context.server as Server).onAskBeforeAndHomePressed = true;
+                                    context.contentStore.closeScreen(screenId, screenName, false);
+                                    // If there is a homeScreen don't route to home
+                                    if (!context.appSettings.homeScreen) {
+                                        showTopBar((context.server as Server).routeToHome(), topbar);
+                                    }
                                 }
                             });
                         }
                         else {
-                            showTopBar((context.server as Server).openHome(), topbar);
+                            showTopBar((context.server as Server).routeToHome(), topbar);
                         }
                     }
                 }}

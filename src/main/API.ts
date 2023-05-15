@@ -36,6 +36,7 @@ import CustomStartupProps from "./util/types/custom-types/CustomStartupProps";
 import UserData from "./model/UserData";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 import { ICustomDefaultLogin, ICustomMFAText, ICustomMFAUrl, ICustomMFAWait, ICustomResetLogin } from "../application-frame/login/Login";
+import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 
 export interface IAPI {
     sendRequest: (req: any, keyword: string) => void,
@@ -155,19 +156,20 @@ class API implements IAPI {
         if (this.#appSettings.transferType !== "full") {
             const csRequest = createCloseScreenRequest();
             csRequest.componentId = screenName;
+            const screenId = this.#contentStore.getComponentByName(screenName)?.id as string
             if (parameter) {
                 csRequest.parameter = parameter;
             }
             //TODO topbar
             this.#server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
-                if (res[0] === undefined || res[0].name !== "message.error") {
+                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                     if (popup) {
                         (this.#server as Server).lastClosedWasPopUp = true;
                     }
                     else {
                         (this.#server as Server).lastClosedWasPopUp = false;
                     }
-                    this.#contentStore.closeScreen(screenName, false);
+                    this.#contentStore.closeScreen(screenId, screenName, false);
                     this.history?.push("/home")
                 }
             });

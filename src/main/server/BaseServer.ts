@@ -120,6 +120,14 @@ export default abstract class BaseServer {
 
     hideTopbar:Function = () => {};
 
+    maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
+
+    screenToClose:{windowId: string, windowName: string, closeModal: boolean|undefined}|undefined = undefined;
+
+    ignoreHome = false;
+
+    homeButtonPressed = false;
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance

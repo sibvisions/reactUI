@@ -80,9 +80,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "set-build-date": "node -p \"'export const BUILD_DATE = ' + JSON.stringify(new Date().getDay().toString() + '_') + '+' + JSON.stringify((new Date().getMonth() + 1).toString() + '_') + '+' + JSON.stringify(new Date().getFullYear().toString()) + ';'\" > src/buildDate.ts",
-    "build": "npm run set-build-date && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && sass --no-source-map src/application-frame/styling/color-schemes:build/color-schemes && sass --no-source-map src/application-frame/styling/themes:build/themes",
-    "build-ci": "CI=false && npm run set-build-date && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && sass --no-source-map src/application-frame/styling/color-schemes:build/color-schemes && sass --no-source-map src/application-frame/styling/themes:build/themes && zip -r reactBuild build",
+    "create-build-date": "node -p \"new Date()\" > build/builddate.txt",
+    "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && npm run create-build-date && sass --no-source-map src/application-frame/styling/color-schemes:build/color-schemes && sass --no-source-map src/application-frame/styling/themes:build/themes",
+    "build-ci": "CI=false && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && npm run create-build-date && sass --no-source-map src/application-frame/styling/color-schemes:build/color-schemes && sass --no-source-map src/application-frame/styling/themes:build/themes && zip -r reactBuild build",
     "clean": "if exist dist rmdir /S /Q dist",
     "clean-ci": "rm -rf dist",
     "pre-package": "npm run build && npm run clean && npm run bundle && node dist/SetupPackage.js",

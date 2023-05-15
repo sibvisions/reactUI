@@ -218,7 +218,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
     // When the server sends a dispose, call closeScreen
     useEffect(() => {
         if (props.dispose) {
-            props.context.contentStore.closeScreen(props.name, props.content_className_ ? true : false)
+            props.context.contentStore.closeScreen(props.id, props.name, props.content_className_ ? true : false);
         }   
     }, [props.dispose])
 
