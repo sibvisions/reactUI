@@ -42,7 +42,7 @@ enum COMPONENT_CLASSNAMES {
     TOOLBAR = "ToolBar",
     TOOLBARHELPERMAIN = "ToolBarHelperMain",
     TOOLBARHELPERCENTER = "ToolBarHelperCenter",
-    MOBILELAUNCHER = "MobileLauncher",
+    MOBILELAUNCHER = "Launcher",
     MENUBAR = "MenuBar",
     MENU = "Menu",
     INTERNAL_FRAME = "InternalFrame",
