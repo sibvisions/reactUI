@@ -231,7 +231,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     }, [])
 
     useEffect(() => {
-        if ((props.columnMetaData as NumericColumnDescription).signed !== false) {
+        if (props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
             if (value === "-" && numberInput.current?.value === "") {
                 numberInput.current.value = "-"
             }
@@ -258,7 +258,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                     e.preventDefault();
                 }
             }
-            else if (pastedText.includes("-") && (props.columnMetaData as NumericColumnDescription).signed === false) {
+            else if (pastedText.includes("-") && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed === false) {
                 e.stopPropagation();
                 e.preventDefault();
             }
@@ -318,12 +318,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                 return parseInt(eValue + event.key);
             }
             
-            if (decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString() || (event.key === "-" && (props.columnMetaData as NumericColumnDescription).signed === false)) {
+            if (decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString() || (event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed === false)) {
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
             }
-            else if (numberInput.current && typeof value === "string" && numberInput.current.value.indexOf(value) === numberInput.current.selectionStart && event.key === "-" && (props.columnMetaData as NumericColumnDescription).signed !== false) {
+            else if (numberInput.current && typeof value === "string" && numberInput.current.value.indexOf(value) === numberInput.current.selectionStart && event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
                 startedEditing.current = true;
                 setValue(parseFloat("-" + value.replace(numberSeperators.decimal, ".")));
             }
@@ -365,7 +365,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
                         //@ts-ignore
                         if (event.value === "-") {
-                            if ((props.columnMetaData as NumericColumnDescription).signed !== false) {
+                            if (props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
                                 setValue(event.value);
                             }
                         }
@@ -428,7 +428,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                     startedEditing.current = true;
                     //@ts-ignore
                     if (event.value === "-") {
-                        if ((props.columnMetaData as NumericColumnDescription).signed !== false) {
+                        if (props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
                             setValue(event.value);
                         }
                     }
