@@ -195,6 +195,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let baseUrlToSet = "";
         let designerUrlToSet = "";
         let timeoutToSet = 10000;
+        let searchPathToSet = "/services/mobile";
         let aliveIntervalToSet:number|undefined = undefined;
         let wsPingIntervalToSet:number|undefined = undefined;
         let autoRestartSession:boolean = false;
@@ -235,7 +236,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             const connectWs = () => {
                 return new Promise<void>((resolve) => {
                     console.log('connecting WebSocket')
-                    const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
+                    const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf(searchPathToSet));
     
                     ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + encodeURIComponent(getClientId())
                     + (isReconnect.current ? "&reconnect" : ""));
@@ -399,6 +400,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         timeoutToSet = parseInt(data.requestTimeout);
                     }
 
+                    if (data.searchPath){
+                        searchPathToSet = data.searchPath;
+                    }
+
                     if (data.aliveInterval) {
                         aliveIntervalToSet = parseInt(data.aliveInterval);
                     }
@@ -452,6 +457,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         }
                     });
                     baseUrlToSet = data.baseUrl;
+
+                    if (data.searchPath) {
+                        searchPathToSet = data.searchPath;
+                    }
 
                     if (data.userName || data.username) {
                         startUpRequest.userName = data.userName || data.username;
@@ -535,6 +544,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 startUpRequest.applicationName = appName;
                 convertedOptions.delete("appName");
             }
+
+            if (convertedOptions.has("searchPath")) {
+                searchPathToSet = convertedOptions.get("searchPath") as string;
+            }
             
             if (convertedOptions.has("baseUrl")) {
                 baseUrl = convertedOptions.get("baseUrl") as string;
@@ -548,10 +561,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 const splitURLPath = window.location.pathname.split("/");
 
                 if (splitURLPath.length === 4) {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + searchPathToSet;
                 }
                 else {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + searchPathToSet;
                 }
             }
 
