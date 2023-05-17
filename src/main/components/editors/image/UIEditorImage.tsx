@@ -29,6 +29,7 @@ import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableImageEditor } from "../../../extend-components/editors/ExtendImageEditor";
 import { removeLayoutStyle } from "../../../util/component-util/RemoveLayoutStyle";
 import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
+import { LengthBasedColumnDescription, NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor {
@@ -114,7 +115,23 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
         if (props.onChange) {
             props.onChange();
         }
-    }, [props.selectedRow, props.onChange])
+    }, [props.selectedRow, props.onChange]);
+    
+    const getImageSource = () => {
+        console.log()
+        if (props.selectedRow && props.selectedRow.data[props.columnName]) {
+            if (props.columnMetaData) {
+                console.log(props.columnMetaData)
+                if (props.columnMetaData.dataTypeIdentifier === -2) {
+                    return "data:image/jpeg;base64," + props.selectedRow.data[props.columnName];
+                }
+                else {
+                    return props.context.server.RESOURCE_URL + props.selectedRow.data[props.columnName];
+                }
+            } 
+        }
+        return props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName;
+    }
 
     return (
         <span
@@ -138,7 +155,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
                     //style={imageStyle.img}
-                    src={props.selectedRow && props.selectedRow.data[props.columnName] ? "data:image/jpeg;base64," + props.selectedRow.data[props.columnName] : props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
+                    src={getImageSource()}
                     alt="could not be loaded"
                     onLoad={imageLoaded}
                     onError={e => (e.target as HTMLImageElement).style.display = 'none'}

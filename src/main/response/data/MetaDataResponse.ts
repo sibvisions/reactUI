@@ -38,7 +38,7 @@ export interface ColumnDescription {
                 ICellEditorImage|
                 ICellEditorLinked|
                 ICellEditorNumber,
-    dataTypeIdentifyer: number,
+    dataTypeIdentifier: number,
     width: number,
     readonly: boolean,
     nullable: boolean,
