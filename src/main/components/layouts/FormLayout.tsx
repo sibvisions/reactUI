@@ -27,6 +27,7 @@ import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
+import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -53,7 +54,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         reportSize,
         maximumSize,
         minimumSize,
-        className
+        className,
+        panelType
     } = baseProps;
 
     /** 
@@ -125,14 +127,16 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 });
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
                 children.forEach(component => {
-                    const anchorNames = component.constraints.split(";");
-                    /** Get Anchors */
-                    const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
-                    const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
-                    /** Fill Constraints-Map */
-                    if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
-                        const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
-                        componentConstraints.set(component.id, constraint);
+                    if (!(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) {
+                        const anchorNames = component.constraints.split(";");
+                        /** Get Anchors */
+                        const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
+                        const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
+                        /** Fill Constraints-Map */
+                        if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
+                            const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
+                            componentConstraints.set(component.id, constraint);
+                        }
                     }
                 });
             }
@@ -694,6 +698,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             left: left,
                             top: top
                         });
+                    }
+                    else if (panelType === "DesktopPanel" && context.transferType === "full") {
+                        sizeMap.set(component.id, { height: (style?.height as number) * 0.75, width: (style?.width as number) * 0.75 })
                     }
                 });
                 if(borderConstraint && marginConstraint){
