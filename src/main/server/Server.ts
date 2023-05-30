@@ -430,7 +430,7 @@ class Server extends BaseServer {
     
                             if (workScreen.screen_title_) {
                                 this.contentStore.topbarTitle = workScreen.screen_title_;
-                                this.subManager.notifyScreenTitleChanged(workScreen.screen_title_);
+                                //this.subManager.notifyScreenTitleChanged(workScreen.screen_title_);
                             }
                             this.contentStore.setActiveScreen({ name: genericData.componentId, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.screen_className_ : "", title: workScreen.screen_title_ }, workScreen ? workScreen.screen_modal_ : false);
         

@@ -129,7 +129,11 @@ export default class ContentStore extends BaseContentStore {
 
                 if (newPropName === "screen_title_") {
                     this.topbarTitle = newProp;
-                    this.subManager.notifyScreenTitleChanged(newProp);
+                    const foundActiveScreen = this.activeScreens.find(as => as.id === existingComp.id);
+                    if (foundActiveScreen) {
+                        foundActiveScreen.title = newProp;
+                    }
+                    this.subManager.emitActiveScreens();
                 }
 
                 // @ts-ignore
