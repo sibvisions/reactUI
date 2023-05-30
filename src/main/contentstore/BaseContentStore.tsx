@@ -576,7 +576,11 @@ export default abstract class BaseContentStore {
                 this.server.screenToClose = { windowId: windowId, windowName: windowName, closeModal: closeModal };
             }
             
-            if (this.server.screenToClose !== undefined && this.server.maybeOpenScreen && !this.activeScreens.length && this.server.maybeOpenScreen.componentId !== this.server.screenToClose.windowId) {
+            if (this.server.screenToClose !== undefined 
+                && this.server.maybeOpenScreen 
+                && !this.activeScreens.length 
+                && this.server.maybeOpenScreen.componentId !== this.server.screenToClose.windowId
+                && this.server.screenToClose.windowName !== this.appSettings.homeScreen) {
                 this.server.ignoreHome = true;
             }
         }                

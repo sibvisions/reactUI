@@ -516,8 +516,6 @@ class Server extends BaseServer {
             (this.contentStore as ContentStore).menuItems = new Map<string, ServerMenuButtons[]>()
             menuData.entries.forEach(entry => {
                 entry.action = () => {
-                    // When navigating with the menu dont ignore the homescreen
-                    //this.dontIgnoreHome = true;
                     return this.api.sendOpenScreenIntern(entry.componentId)
                 }
                 (this.contentStore as ContentStore).addMenuItem(entry);
