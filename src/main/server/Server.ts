@@ -278,8 +278,7 @@ class Server extends BaseServer {
                     this.screenToClose = undefined
                 }
             }
-
-            console.log(this.screenToClose)
+            
             // If there is a screen to close check if a previous screen needs to be opened then open the screen and after that clean up the closed screen to prevent flickering
             if (this.screenToClose !== undefined) {
                 if (this.maybeOpenScreen && !this.contentStore.activeScreens.length) {
