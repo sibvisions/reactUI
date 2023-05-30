@@ -215,11 +215,13 @@ export default abstract class BaseServer {
                 reject("Component doesn't exist: " + request.componentId);
                 return;
             }
+
             if (request.dataProvider) {
                 if (Array.isArray(request.dataProvider)) {
                     let exist = true;
                     request.dataProvider.forEach((dataProvider:string) => {
-                        if (!this.contentStore.dataBooks.get(this.getScreenName(dataProvider))?.has(dataProvider) && !this.missingDataFetches.includes(dataProvider)) {
+                        const screenName = this.getScreenName(dataProvider);
+                        if (!this.contentStore.dataBooks.get(screenName)?.has(dataProvider) && !this.missingDataFetches.includes(dataProvider)) {
                             exist = false;
                         }
                     });
@@ -229,9 +231,21 @@ export default abstract class BaseServer {
                         return
                     }
                 }
-                else if (!this.contentStore.dataBooks.get(this.getScreenName(request.dataProvider))?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
-                    reject("Dataprovider doesn't exist: " + request.dataProvider);
-                    return
+                else {
+                    const screenName = this.getScreenName(request.dataProvider);
+                    const screenIsOpen = this.contentStore.activeScreens.some(as => as.name === screenName);
+                    
+                    // Not sending dataprovider request if the screen isnt opened
+                    if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
+                        this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
+                        resolve(undefined)
+                        return
+                    }
+
+                    if (!this.contentStore.dataBooks.get(screenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                        reject("Dataprovider doesn't exist: " + request.dataProvider);
+                        return
+                    }
                 }
             }
 
