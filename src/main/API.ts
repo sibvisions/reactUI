@@ -238,7 +238,7 @@ class API implements IAPI {
             const menuGroup = (this.#contentStore as ContentStore).menuItems.get(menuItem.menuGroup);
             const itemAction = () => {
                 this.#contentStore.setActiveScreen({ name: menuItem.id, id: "", className: undefined });
-                this.history?.push("/home/" + menuItem.id);
+                this.history?.push("/screens/" + menuItem.id);
                 return Promise.resolve(true);
             };
             const newItem: ServerMenuButtons = {
@@ -315,7 +315,7 @@ class API implements IAPI {
         const itemAction = () => {
             if (this.#contentStore.customScreens.has(toolbarItem.id)) {
                 this.#contentStore.setActiveScreen({name: toolbarItem.id, id: "", className: undefined });
-                this.history?.push("/home/" + toolbarItem.id);
+                this.history?.push("/screens/" + toolbarItem.id);
                 return Promise.resolve(true);
             }
             else {

@@ -721,8 +721,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
                 contextState.server.autoRestartOnSessionExpired = autoRestartSession;
                 
-                if (history.location.pathname.includes("/home/")) {
-                    contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "home") - 1);
+                if (history.location.pathname.includes("/screens/")) {
+                    contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "screens") - 1);
                 }
                 if (localStorage.getItem("restartScreen")) {
                     contextState.server.linkOpen = localStorage.getItem("restartScreen") as string;

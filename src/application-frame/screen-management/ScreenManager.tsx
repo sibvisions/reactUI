@@ -34,10 +34,10 @@ const ScreenManager:FC = () => {
     const { contentStore, contentStore: { screenWrappers } } = context;
 
     /** ComponentId of Screen extracted by useParams hook */
-    const {componentId} = useParams<any>();
+    const { screenName } = useParams<any>();
 
     /** The ID of the screen based on the navigation-name */
-    const screenId = getScreenIdFromNavigation(componentId, contentStore)
+    const screenId = getScreenIdFromNavigation(screenName, contentStore)
 
     /** Workscreen */
     const screen = <WorkScreen />;

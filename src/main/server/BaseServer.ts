@@ -122,7 +122,7 @@ export default abstract class BaseServer {
 
     maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
 
-    screenToClose:{windowId: string, windowName: string, closeModal: boolean|undefined}|undefined = undefined;
+    screenToClose:{windowId: string, windowName: string, closeDirectly: boolean|undefined}|undefined = undefined;
 
     ignoreHome = false;
 
@@ -810,8 +810,8 @@ export default abstract class BaseServer {
             this.subManager.emitErrorBarVisible(true);
             this.subManager.emitSessionExpiredChanged(true)
         }
-        if (this.history?.location.pathname.includes("/home/")) {
-            localStorage.setItem("restartScreen", this.history.location.pathname.replaceAll("/", "").substring(indexOfEnd(this.history.location.pathname, "home") - 1));
+        if (this.history?.location.pathname.includes("/screens/")) {
+            localStorage.setItem("restartScreen", this.history.location.pathname.replaceAll("/", "").substring(indexOfEnd(this.history.location.pathname, "screens") - 1));
         }
         console.error(expData.title);
     }

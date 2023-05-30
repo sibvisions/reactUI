@@ -117,7 +117,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
                         <div className={props.embedOptions?.showMenu ? "embed-frame-no-border" : "embed-frame"}>
                             <Switch>
                                 <Route exact path={"/login"} render={() => <Login />} />
-                                <Route exact path={"/home/:componentId"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
+                                <Route exact path={"/screens/:screenName"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
                                 <Route path={"/home"} render={() => <UIManager customAppWrapper={props.customAppWrapper} />} />
                             </Switch>
                         </div>

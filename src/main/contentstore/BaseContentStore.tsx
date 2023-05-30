@@ -556,12 +556,12 @@ export default abstract class BaseContentStore {
      * When a screen closes cleanUp the data for the window if it isn't a content and update the active-screens
      * @param windowName - the name of the window to close
      */
-     closeScreen(windowId: string, windowName: string, closeModal?:boolean, changeActive?:boolean) {
+     closeScreen(windowId: string, windowName: string, closeDirectly?:boolean) {
         // If a popup is closed or the homebutton was pressed, clean up the screen and update activescreens. 
-        if (closeModal || this.server.homeButtonPressed) {
+        if (closeDirectly || this.server.homeButtonPressed) {
             let window = this.getComponentById(windowId);
             if (window) {
-                this.cleanUp(window.id, window.name, window.className, closeModal);
+                this.cleanUp(window.id, window.name, window.className, closeDirectly);
             }
             this.activeScreens = this.activeScreens.filter(screen => screen.id !== windowId);
             this.subManager.emitActiveScreens();
@@ -573,7 +573,7 @@ export default abstract class BaseContentStore {
             // this.subManager.emitActiveScreens();
             // Rather use id than name because the name could appear more than once when the homescreen gets opened by the server AND by client via maybeopenscreen.
             if (windowId) {
-                this.server.screenToClose = { windowId: windowId, windowName: windowName, closeModal: closeModal };
+                this.server.screenToClose = { windowId: windowId, windowName: windowName, closeDirectly: closeDirectly };
             }
             
             if (this.server.screenToClose !== undefined 
@@ -603,13 +603,13 @@ export default abstract class BaseContentStore {
      * @param id - the component id
      * @param name - the component name
      */
-     cleanUp(id:string, name:string|undefined, className: string, closeModal?:boolean) {
+     cleanUp(id:string, name:string|undefined, className: string, closeDirectly?:boolean) {
         if (name) {
             const parentId = this.getComponentById(id)?.parent;
             this.deleteChildren(id, className);
             this.flatContent.delete(id);
 
-            if (closeModal) {
+            if (closeDirectly) {
                 this.removedContent.delete(id)
             }
 

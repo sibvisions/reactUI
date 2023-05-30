@@ -273,12 +273,13 @@ class Server extends BaseServer {
                 if (this.screenToClose !== undefined) {
                     let window = this.contentStore.getComponentById(this.screenToClose.windowId);
                     if (window) {
-                        this.contentStore.cleanUp(window.id, window.name, window.className, this.screenToClose.closeModal);
+                        this.contentStore.cleanUp(window.id, window.name, window.className, this.screenToClose.closeDirectly);
                     }
                     this.screenToClose = undefined
                 }
             }
 
+            console.log(this.screenToClose)
             // If there is a screen to close check if a previous screen needs to be opened then open the screen and after that clean up the closed screen to prevent flickering
             if (this.screenToClose !== undefined) {
                 if (this.maybeOpenScreen && !this.contentStore.activeScreens.length) {
@@ -447,7 +448,7 @@ class Server extends BaseServer {
             if (this.appSettings.welcomeScreen.name && !this.appSettings.welcomeScreen.initOpened) {
                 const pathName = (this.history as History).location.pathname as string;
                 // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
-                const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
+                const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "screens") - 1))?.componentId;
                 // Check if the url screen to open is the welcome screen or the response is a home screen and there is no screen to open via url or the screen cant be found in the navigationnames
                 if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || ((genericData.home || genericData.welcome) && (!this.linkOpen || !screenToOpen))) {
                     openScreen()
@@ -785,10 +786,10 @@ class Server extends BaseServer {
                 if (highestPriority < 1) {
                     highestPriority = 1;
                     // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
-                    const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "home") - 1))?.componentId;
+                    const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "screens") - 1))?.componentId;
                     const alreadyOpened = this.contentStore.activeScreens.some(screen => screen.className === screenToOpen?.split(":")[0]);
                     if (!alreadyOpened) {
-                        if (pathName.includes("home") && screenToOpen) {
+                        if (pathName.includes("screens") && screenToOpen) {
                             const req = createOpenScreenRequest();
                             req.componentId = screenToOpen;
                             this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
@@ -819,7 +820,7 @@ class Server extends BaseServer {
                         && (!this.linkOpen || this.linkOpen === firstComp.screen_navigationName_ + increment)
                         && !this.noWelcomeRoute) {
                         highestPriority = 2;
-                        routeTo = "home/" + firstComp.screen_navigationName_ + increment;
+                        routeTo = "screens/" + firstComp.screen_navigationName_ + increment;
                     }
                     else if (this.noWelcomeRoute) {
                         this.noWelcomeRoute = false;

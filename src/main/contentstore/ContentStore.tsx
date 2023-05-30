@@ -475,7 +475,7 @@ export default class ContentStore extends BaseContentStore {
             image: icon ? icon.substring(0,2) + " " + icon : "",
             text: title,
             action: () => {
-                this.history?.push("/home/"+title);
+                this.history?.push("/screens/" + title);
                 return Promise.resolve(true);
             },
             flat: false

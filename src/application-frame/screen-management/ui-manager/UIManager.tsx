@@ -68,7 +68,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
     /** ComponentId of Screen extracted by useParams hook */
-    const { componentId } = useParams<any>();
+    const { screenName } = useParams<any>();
 
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
@@ -164,7 +164,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     menuMini ? "" : "screen-no-mini",
                     menuOptions.toolBar ? "toolbar-visible" : "",
                     (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
-                    !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
+                    !getScreenIdFromNavigation(screenName, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
                     <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active: boolean) => setMobileStandard(active)}>
                         <ScreenManager />
