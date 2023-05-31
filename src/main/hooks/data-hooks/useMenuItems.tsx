@@ -115,9 +115,14 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
             else {
                 const castedMenuItem = menuItem as MenuItemCustom
                 castedMenuItem.command = () => showTopBar(item.action(), topbar);
-                castedMenuItem.className = concatClassnames(item.componentId.split(':')[0], !isFAIcon(iconData.icon) ? "custom-menu-icon" : "", isSingleGroup && !isCorporation(isCorp ? "corporation" : "standard", appTheme) ? "single-group-item" : "");
+                castedMenuItem.className = concatClassnames(
+                    item.className ? item.className : item.componentId.split(':')[0],
+                    item.className && item.navigationName  ? item.className + "_" + item.navigationName : "",
+                    !isFAIcon(iconData.icon) ? "custom-menu-icon" : "", 
+                    isSingleGroup && !isCorporation(isCorp ? "corporation" : "standard", appTheme) ? "single-group-item" : ""
+                );
                 castedMenuItem.componentId = item.componentId;
-                castedMenuItem.screenClassName = item.componentId.split(':')[0];
+                castedMenuItem.screenClassName = item.className ? item.className : item.componentId.split(':')[0]
                 return castedMenuItem;
             }
         }

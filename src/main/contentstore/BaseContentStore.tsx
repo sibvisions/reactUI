@@ -44,6 +44,7 @@ export type ActiveScreen = {
     name: string,
     id: string,
     className?: string
+    navigationName?: string
     popup?: boolean,
     title?: string
 }
