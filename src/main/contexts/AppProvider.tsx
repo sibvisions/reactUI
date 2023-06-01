@@ -764,6 +764,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             startUpRequest.serverVersion = "3.1.0";
             startUpRequest.timeZoneCode = contextState.appSettings.timeZone;
             startUpRequest.readAheadLimit = 100;
+            startUpRequest.option_bigdecimal_as_string = true;
             if (contextState.contentStore.customStartUpProperties.length) {
                 contextState.contentStore.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }
