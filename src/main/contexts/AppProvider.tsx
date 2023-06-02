@@ -40,9 +40,9 @@ import useEventHandler from "../hooks/event-hooks/useEventHandler";
 import Timer from "../util/other-util/Timer";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
-import { initialURL } from "../..";
 import BaseResponse from "../response/BaseResponse";
 import { translation } from "../util/other-util/Translation";
+import { initialURL } from "../util/InitialURL";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
