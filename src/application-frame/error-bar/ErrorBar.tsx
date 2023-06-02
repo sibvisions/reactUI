@@ -18,7 +18,8 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import useConstants from "../../main/hooks/components-hooks/useConstants";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
-import { createAliveRequest, REQUEST_KEYWORDS } from "../../moduleIndex";
+import { createAliveRequest } from "../../main/factories/RequestFactory";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 
 /**
  * Interface for server-error messages
