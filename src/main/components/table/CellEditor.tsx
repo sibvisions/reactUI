@@ -33,6 +33,7 @@ import NumberCellRenderer from "./CellRenderer/NumberCellRenderer";
 import TextCellRenderer from "./CellRenderer/TextCellRenderer";
 import { SelectedCellContext } from "./UITable";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
+import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
 
 // Interface for in-table-editors
 export interface IInTableEditor {
@@ -310,7 +311,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     // Returns the cell-icon or null
     const icon = useMemo(() => {
         if (cellIcon?.icon) {
-            if(cellIcon.icon.includes('fas fa-') || cellIcon.icon.includes('far fa-') || cellIcon.icon.includes('fab fa-'))
+            if(isFAIcon(cellIcon.icon))
                 return <i className={cellIcon.icon} style={{ fontSize: cellIcon.size?.height, color: cellIcon.color}}/>
             else {
                 return <img

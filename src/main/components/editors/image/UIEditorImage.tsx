@@ -118,10 +118,8 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
     }, [props.selectedRow, props.onChange]);
     
     const getImageSource = () => {
-        console.log()
-        if (props.selectedRow && props.selectedRow.data[props.columnName]) {
+        if (props.selectedRow && props.selectedRow.data[props.columnName] && !props.selectedRow.data[props.columnName].includes("FontAwesome")) {
             if (props.columnMetaData) {
-                console.log(props.columnMetaData)
                 if (props.columnMetaData.dataTypeIdentifier === -2) {
                     return "data:image/jpeg;base64," + props.selectedRow.data[props.columnName];
                 }
@@ -130,7 +128,10 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
                 }
             } 
         }
-        return props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName;
+        else if (props.cellEditor.defaultImageName) {
+            return props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName;
+        }
+        return undefined
     }
 
     return (
