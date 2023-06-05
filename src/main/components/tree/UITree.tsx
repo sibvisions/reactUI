@@ -37,6 +37,7 @@ import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
 import MetaDataResponse, { MetaDataReference } from "../../response/data/MetaDataResponse";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for Tree */
 export interface ITree extends BaseComponent {
@@ -96,6 +97,8 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
 
     /** Current state of the node objects which are handled by PrimeReact to display in the Tree */
     const [nodes, setNodes] = useState<CustomTreeNode[]>([]);
+
+    const oldNodesLength = useRef<number>(nodes.length)
 
     /** State of the keys of the nodes which are expanded */
     const [expandedKeys, setExpandedKeys] = useState<TreeExpandedKeysType>({});
@@ -356,7 +359,8 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = treeWrapperRef.current;
-        if (wrapperRef) {
+        if (wrapperRef && nodes.length !== oldNodesLength.current) {
+            oldNodesLength.current = nodes.length;
             sendOnLoadCallback(
                 id, 
                 props.className, 
@@ -373,8 +377,11 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
         props.preferredSize, 
         props.maximumSize, 
         props.minimumSize,
-        props.className
+        props.className,
+        nodes
     ]);
+
+    useAddLayoutStyle(treeWrapperRef.current, layoutStyle, onLoadCallback)
 
     /**
      * Subscribes to TreeChange, when triggered, states are reset so the Tree can rebuild itself
@@ -674,7 +681,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     }, [treeDataChanged])
 
     const focused = useRef<boolean>(false);
-
+    
     return (
         <span 
             ref={treeWrapperRef} 

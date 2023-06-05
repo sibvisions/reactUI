@@ -918,7 +918,7 @@ export default abstract class BaseContentStore {
                     else {
                         let pageKeyObj:any = {};
                         for (let i = 0; i < metaData.masterReference.columnNames.length; i++) {
-                            pageKeyObj[metaData.masterReference.columnNames[i]] = masterRow[i];
+                            pageKeyObj[metaData.masterReference.columnNames[i]] = masterRow[i].toString();
                         }
                         pageKey = JSON.stringify(pageKeyObj);
                         
