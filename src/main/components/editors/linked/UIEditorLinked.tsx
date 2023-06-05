@@ -46,6 +46,7 @@ import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { SelectFilter } from "../../../request/data/SelectRowRequest";
+import { CellFormatting } from "../../table/CellEditor";
 
 // Type for linkreferences
 type LinkReference = {
@@ -786,9 +787,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             return Object.values(suggestionObj).map((d:any, i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
-
-                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name] && providedData[index].__recordFormats[props.name].length && providedData[index].__recordFormats[props.name][i]) {
-                    const format = providedData[index].__recordFormats[props.name][i]
+ 
+                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name] && providedData[index].__recordFormats[props.name].size && providedData[index].__recordFormats[props.name].has(Object.keys(suggestionObj)[i])) {
+                    const format = providedData[index].__recordFormats[props.name].get(Object.keys(suggestionObj)[i]) as CellFormatting;
 
                     if (format.background) {
                         cellStyle.background = format.background;

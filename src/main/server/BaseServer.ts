@@ -42,6 +42,7 @@ import { setDateLocale } from "../util/other-util/GetDateLocale";
 import BaseRequest from "../request/BaseRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
 import GenericResponse from "../response/ui/GenericResponse";
+import { CellFormatting } from "../components/table/CellEditor";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -568,16 +569,17 @@ export default abstract class BaseServer {
                         return;
                     }
                     formattedRecords[index] = formattedRecords[index] || {};
-                    formattedRecords[index][componentId] = r.reduce<any[]>((agg, c, index) => {
-                        agg[index] = format[Math.max(0, Math.min(c, format.length - 1))];
+                    formattedRecords[index][componentId] = new Map<String, CellFormatting>();
 
-                        if (index === r.length - 1 && fetchData.columnNames.length > r.length) {
-                            for (let i =  index; i < fetchData.columnNames.length; i++) {
-                                agg[i] = format[Math.max(0, Math.min(c, format.length - 1))];
+                    for (let i = 0; i < r.length; i++) {
+                        formattedRecords[index][componentId].set(fetchData.columnNames[i], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+
+                        if (i === r.length - 1 && fetchData.columnNames.length > r.length) {
+                            for (let j = index; j < fetchData.columnNames.length; j++) {
+                                formattedRecords[index][componentId].set(fetchData.columnNames[j], format[Math.max(0, Math.min(r[i], format.length - 1))]);
                             }
                         }
-                        return agg;
-                    }, [])
+                    }
                 });
             }
         }
