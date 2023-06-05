@@ -677,8 +677,10 @@ class Server extends BaseServer {
                 .then((response:any) => response.text())
                 .then(value => parseString(value, (err, result) => { 
                     if (result) {
-                        // After fetching the translation, fill the translation map, overwrite and set the locals and set translation appready param true
-                        result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._))
+                        if (result.properties) {
+                            // After fetching the translation, fill the translation map, overwrite and set the locals and set translation appready param true
+                            result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._))
+                        }
                         overwriteLocaleValues(langData.langCode ? langData.langCode : "en");
                         setPrimeReactLocale();
                         this.appSettings.setAppReadyParam("translation");
