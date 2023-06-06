@@ -19,6 +19,7 @@ import { NumericColumnDescription } from "../../../response/data/MetaDataRespons
 import { formatNumber, getGrouping } from "../../../util/component-util/NumberProperties";
 import { getPrefix, getSuffix, ICellEditorNumber } from "../../editors/number/UIEditorNumber";
 import { ICellRender } from "../CellEditor";
+import bigDecimal from "js-big-decimal";
 
 /**
  * Renders the number-cell when the column is a number-cell
@@ -40,7 +41,7 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
     // Formats the number value to the correct format
     const displayNumberValue = useMemo(() => {
         if (props.cellData !== null) {
-            return getPrefix(castedCellEditor.numberFormat, props.cellData, true, context.appSettings.locale, useGrouping) + formatNumber(castedCellEditor.numberFormat, context.appSettings.locale, props.cellData) + getSuffix(castedCellEditor.numberFormat, context.appSettings.locale)
+            return getPrefix(castedCellEditor.numberFormat, props.cellData, true, context.appSettings.locale, useGrouping) + formatNumber(castedCellEditor.numberFormat, context.appSettings.locale, new bigDecimal(props.cellData).getValue(), castedMetaData.scale) + getSuffix(castedCellEditor.numberFormat, context.appSettings.locale, castedMetaData.scale)
         }
         else {
             return ""

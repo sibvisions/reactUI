@@ -4,6 +4,7 @@ import {InputText} from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { tip } from 'primereact/tooltip';
 import { Ripple } from 'primereact/ripple';
+import { getNumberSeparators } from './UIEditorNumber';
 
 export class InputNumber extends Component {
 
@@ -229,8 +230,14 @@ export class InputNumber extends Component {
             }
 
             if (this.props.format) {
+                const numberSeperators = getNumberSeparators(this.props.locale);
                 let formatter = new Intl.NumberFormat(this.props.locale, this.getOptions());
                 let formattedValue = formatter.format(value);
+
+                if (value.endsWith(".")) {
+                    formattedValue = formattedValue + numberSeperators.decimal;
+                }
+
                 if (this.props.prefix) {
                     formattedValue = this.props.prefix + formattedValue;
                 }

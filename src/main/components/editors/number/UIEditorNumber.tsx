@@ -20,7 +20,7 @@ import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
-import { formatNumber, getDecimalLength, getGrouping, getPrimePrefix, getWriteScaleDigits } from "../../../util/component-util/NumberProperties";
+import { formatNumber, getDecimalLength, getDisplayScaleDigits, getGrouping, getPrimePrefix, getWriteScaleDigits } from "../../../util/component-util/NumberProperties";
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
@@ -84,11 +84,14 @@ export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boole
     return ""
 }
 
-export function getSuffix(numberFormat:string, locale: string) {
+export function getSuffix(numberFormat:string, locale: string, scale?:number) {
     const numberSeperators = getNumberSeparators(locale)
     if (!numberFormat.endsWith('0') && !numberFormat.endsWith('#')) {
         if (numberFormat.endsWith(".")) {
             return numberSeperators.decimal;
+        }
+        else if (numberFormat.includes(".") && scale === 0) {
+            return numberSeperators.decimal + numberFormat.split(".")[1];
         }
         const indexHash = numberFormat.lastIndexOf('#');
         const index0 = numberFormat.lastIndexOf('0');
@@ -99,18 +102,19 @@ export function getSuffix(numberFormat:string, locale: string) {
             return numberFormat.replaceAll("'", '').substring(index0 + 1)
         }
     }
+    else if (numberFormat.endsWith('0') && numberFormat.includes(".") && scale === 0) {
+        const displayScaleDigits = getDisplayScaleDigits(numberFormat);
+        let suffix = numberSeperators.decimal;
+        for (let i = 0; i < displayScaleDigits.maxScale; i++) {
+            suffix += "0"
+        }
+        return suffix;
+    }
     return ""
 }
 
 function replaceGroupAndDecimal(value: string, numberSeperators: { decimal: string, group: string }) {
     return value.replaceAll(numberSeperators.group, '').replaceAll(numberSeperators.decimal, '.')
-}
-
-function isNumberPressed(key: string) {
-    if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]) {
-        return true;
-    }
-    return false;
 }
 
 /**
@@ -183,7 +187,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
     * @returns the minimum and maximum scaledigits for the NumberCellEditor
     */
-    const writeScaleDigits:ScaleType = useMemo(() => props.columnMetaData 
+    const writeScaleDigits:ScaleType = useMemo(() => props.columnMetaData && (props.columnMetaData as NumericColumnDescription).scale !== 0
         ? getWriteScaleDigits(props.cellEditor.numberFormat, (props.columnMetaData as NumericColumnDescription).scale) 
         : {minScale: 0, maxScale: 0}, 
     [props.columnMetaData, props.cellEditor.numberFormat]);
@@ -199,7 +203,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? props.selectedRow.data[props.columnName] : undefined, false, props.context.appSettings.locale, useGrouping), [props.cellEditor.numberFormat, props.selectedRow, useGrouping]);
 
     /** Returns a string which will be added behind the number, based on the numberFormat */
-    const suffix = useMemo(() => getSuffix(props.cellEditor.numberFormat, props.context.appSettings.locale), [props.cellEditor.numberFormat]);
+    const suffix = useMemo(() => getSuffix(props.cellEditor.numberFormat, props.context.appSettings.locale, props.columnMetaData ? (props.columnMetaData as NumericColumnDescription).scale : undefined), [props.cellEditor.numberFormat]);
 
     /**
      * Returns the maximal length before the decimal separator
@@ -362,8 +366,20 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 }
                 return parseInt(eValue + event.key);
             }
+
+            const isExceedingDecimalLength = () => {
+                return decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString()
+            }
+
+            const isEnteringMinusWhenSigned = () => {
+                return event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed === false
+            }
+
+            // const noFractionInputAllowed = () => {
+            //     return !isSelectedBeforeComma(event.target.value) && writeScaleDigits.maxScale !== 0 && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).scale === 0;
+            // }
             
-            if (decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString() || (event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed === false)) {
+            if (isExceedingDecimalLength() || isEnteringMinusWhenSigned()) {
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
@@ -416,7 +432,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                         }
                         else if (event.value !== null) {
                             if (numberInput.current) {
-                                setValue(new bigDecimal(replaceGroupAndDecimal(numberInput.current.value, numberSeperators)).getValue())
+                                let stringCopy = numberInput.current.value.slice();
+                                stringCopy = stringCopy.replace(prefix, "").replace(suffix, "");
+                                setValue(new bigDecimal(replaceGroupAndDecimal(stringCopy, numberSeperators)).getValue())
                             }
                             //setValue(event.value.toString());
                         }
@@ -490,7 +508,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     }
                     else if (event.value !== null) {
                         if (numberInput.current) {
-                            setValue(new bigDecimal(replaceGroupAndDecimal(numberInput.current.value, numberSeperators)).getValue())
+                            let stringCopy = numberInput.current.value.slice();
+                            stringCopy = stringCopy.replace(prefix, "").replace(suffix, "");
+                            setValue(new bigDecimal(replaceGroupAndDecimal(stringCopy, numberSeperators)).getValue())
                         }
                         //setValue(event.value.toString());
                     }
