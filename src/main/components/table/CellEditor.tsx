@@ -33,6 +33,7 @@ import NumberCellRenderer from "./CellRenderer/NumberCellRenderer";
 import TextCellRenderer from "./CellRenderer/TextCellRenderer";
 import { SelectedCellContext } from "./UITable";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
+import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
 
 // Interface for in-table-editors
 export interface IInTableEditor {
@@ -78,7 +79,7 @@ export interface ICellEditor {
     className?: string,
     colReadonly?: boolean,
     tableEnabled?: boolean
-    cellFormatting?: CellFormatting[],
+    cellFormatting?: Map<string, CellFormatting>,
     startEditing?:boolean,
     stopEditing:Function,
     editable?: boolean,
@@ -280,33 +281,37 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     let cellIcon: IconProps | null = null;
 
     // Fills cell-classnames and cell-style based on the server-sent properties
-    if (props.cellFormatting && props.cellFormatting[props.colIndex]) {
-        if(props.cellFormatting[props.colIndex].background) {
-            cellStyle.backgroundColor = props.cellFormatting[props.colIndex].background;
-            cellClassNames.push('cancel-padding');
-        }
-        if(props.cellFormatting[props.colIndex].foreground) {
-            cellStyle.color = props.cellFormatting[props.colIndex].foreground;
-        }
-        if(props.cellFormatting[props.colIndex].font) {
-            const font = getFont(props.cellFormatting[props.colIndex].font);
-            cellStyle = {
-                ...cellStyle,
-                fontFamily: font ? font.fontFamily : undefined,
-                fontWeight: font ? font.fontWeight : undefined,
-                fontStyle: font ? font.fontStyle : undefined,
-                fontSize: font ? font.fontSize : undefined
+    if (props.cellFormatting && props.cellFormatting.has(props.colName)) {
+        const cellFormat = props.cellFormatting.get(props.colName) as CellFormatting
+        if (cellFormat !== null) {
+            if(cellFormat.background) {
+                cellStyle.backgroundColor = cellFormat.background;
+                cellClassNames.push('cancel-padding');
+            }
+            if(cellFormat.foreground) {
+                cellStyle.color = cellFormat.foreground;
+            }
+            if(cellFormat.font) {
+                const font = getFont(cellFormat.font);
+                cellStyle = {
+                    ...cellStyle,
+                    fontFamily: font ? font.fontFamily : undefined,
+                    fontWeight: font ? font.fontWeight : undefined,
+                    fontStyle: font ? font.fontStyle : undefined,
+                    fontSize: font ? font.fontSize : undefined
+                }
+            }
+            if(cellFormat.image) {
+                cellIcon = parseIconData(cellFormat.foreground, cellFormat.image);
             }
         }
-        if(props.cellFormatting[props.colIndex].image) {
-            cellIcon = parseIconData(props.cellFormatting[props.colIndex].foreground, props.cellFormatting[props.colIndex].image);
-        }
+
     }
 
     // Returns the cell-icon or null
     const icon = useMemo(() => {
         if (cellIcon?.icon) {
-            if(cellIcon.icon.includes('fas fa-') || cellIcon.icon.includes('far fa-') || cellIcon.icon.includes('fab fa-'))
+            if(isFAIcon(cellIcon.icon))
                 return <i className={cellIcon.icon} style={{ fontSize: cellIcon.size?.height, color: cellIcon.color}}/>
             else {
                 return <img

@@ -20,8 +20,6 @@ import './index.scss';
 import * as serviceWorker from './serviceWorker';
 import MiddleMan from './MiddleMan';
 
-export const initialURL = window.location.href;
-
 /** Rendering the application */
 export default ReactDOM.render(
   // <React.StrictMode>
