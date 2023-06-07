@@ -415,17 +415,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         const index = linkReference.columnNames.findIndex(colName => colName === props.columnName);
                         const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName), [linkReference.referencedColumnNames[index]]);
                         setText(getDisplayValue(extractedObject))
-                        startedEditing.current = false;
                     }
                     else {
                         setText(getDisplayValue(props.selectedRow.data));
-                        startedEditing.current = false;
                     }
                 }
             }
             else {
                 setText(getDisplayValue(props.selectedRow.data));
-                startedEditing.current = false;
             }
         }
     }, [props.selectedRow, cellEditorMetaData, displayMapChanged]);
@@ -643,6 +640,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[index]], props.context.server, props.topbar, -1);
             }
         }
+        startedEditing.current = false;
     }
 
     /**
@@ -706,7 +704,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                     tempArray.push(checkText);
                 }
             }
-            sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempArray, props.context.server, props.topbar, -1)
+            sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempArray, props.context.server, props.topbar, -1);
         }
         /** If there is a match found send the value to the server */
         else if (foundData.length === 1) {
@@ -739,8 +737,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             const linkReference = getCorrectLinkReference();
             const index = linkReference.columnNames.findIndex(colName => colName === props.columnName);
             const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName), [linkReference.referencedColumnNames[index]]);
-            setText(getDisplayValue(extractedObject))
+            setText(getDisplayValue(extractedObject));
         }
+        startedEditing.current = false;
     }
 
     /**
