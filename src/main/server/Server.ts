@@ -615,8 +615,15 @@ class Server extends BaseServer {
     showDocument(showData: ShowDocumentResponse) {
         const a = document.createElement('a');
         a.style.display = 'none';
-        let splitURL = showData.url.split(';')
-        a.href = splitURL[0];
+        let splitURL:string[] = [];
+        if (showData.url.startsWith('"')) {
+            a.href = showData.url.substring(1, showData.url.lastIndexOf('"'));
+            splitURL = showData.url.substring(showData.url.lastIndexOf('"')).split(';');
+        }
+        else {
+            let splitURL = showData.url.split(';')
+            a.href = splitURL[0];
+        }
         a.setAttribute('target', splitURL[2]);
         document.body.appendChild(a);
         a.click();
