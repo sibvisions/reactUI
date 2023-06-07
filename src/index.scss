@@ -86,6 +86,10 @@
     }
 }
 
+.p-component, .p-inputtext {
+    font-family: 'Roboto';
+}
+
 /// setting standard values for body
 body {
     background: var(--background);

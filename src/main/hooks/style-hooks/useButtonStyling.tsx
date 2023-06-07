@@ -53,6 +53,9 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
+        if (props.url) {
+            return {}
+        }
         let btnBackground = compStyle?.background ? compStyle.background as string : undefined;
         let btnJustify = props.horizontalTextPosition !== 1 ? getAlignments(props).ha : getAlignments(props).va;
         let btnAlign = props.horizontalTextPosition !== 1 ? getAlignments(props).va : getAlignments(props).ha;
@@ -108,6 +111,9 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
 
     /** Centering the contents of a button (icon, text) */
     const iconCenterGap = useMemo(() => {
+        if (props.url) {
+            return 0;
+        }
         if (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON) {
             if (ref && ref2) {
                 return ref.offsetWidth / 2 - ref2.offsetWidth / 2

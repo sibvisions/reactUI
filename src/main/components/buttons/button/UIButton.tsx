@@ -79,6 +79,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates(props.text ? "default-button" : "icon-only-button");
 
+    const popupMenu = usePopupMenu(props);
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (buttonRef.current && buttonWrapperRef.current) {
@@ -121,84 +123,156 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
         }
     }
 
+    const getElementToRender = () => {
+        if (props.url) {
+            return (
+                <span className="hyperlink-wrapper">
+                    <a
+                        id={props.name}
+                        ref={buttonRef}
+                        className={concatClassnames(
+                            "rc-button",
+                            "p-component",
+                            "p-button",
+                            !btnStyle.borderPainted ? "border-notpainted" : "",
+                            props.style?.includes("hyperlink") ? "p-button-link" : "",
+                            props.borderOnMouseEntered ? "mouse-border" : "",
+                            `gap-${btnStyle.iconGapPos}`,
+                            btnStyle.iconDirection,
+                            btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
+                            props.focusable === false ? "no-focus-rect" : "",
+                            isCompDisabled(props) ? "hyperlink-disabled" : "",
+                            styleClassNames
+                        )}
+                        style={{
+                            ...btnStyle.style,
+                            background: undefined,
+                            borderColor: undefined,
+                            '--btnJustify': btnStyle.style.justifyContent,
+                            '--btnAlign': btnStyle.style.alignItems,
+                            '--btnPadding': btnStyle.style.padding ? btnStyle.style.padding : undefined,
+                            '--background': btnStyle.style.background,
+                            '--hoverBackground': tinycolor(btnStyle.style.background?.toString()).darken(5).toString(),
+                            ...(btnStyle.iconProps?.icon ? {
+                                '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
+                                '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
+                                '--iconColor': btnStyle.iconProps.color,
+                                '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
+                                '--iconTextGap': `${props.imageTextGap || 4}px`,
+                                '--iconCenterGap': `${btnStyle.iconCenterGap}px`
+                            } : {})
+                        } as any}
+                        href={props.url}
+                        target={props.target}
+                        layoutstyle-wrapper={props.name + "-wrapper"}
+                        tabIndex={btnStyle.tabIndex}
+                        onClick={(event) => onButtonPress(event)}
+                        onFocus={(event) => {
+                            if (props.eventFocusGained) {
+                                onFocusGained(props.name, context.server);
+                            }
+                            else {
+                                if (props.focusable === false) {
+                                    event.preventDefault();
+                                }
+                            }
+                        }}
+                        onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+                        aria-label={props.ariaLabel}
+                        {...popupMenu}>
+                        {props.text}
+                    </a>
+                </span>
+
+            )
+        }
+        else {
+            return (
+                <>
+                    <Button
+                        id={props.name}
+                        ref={buttonRef}
+                        className={concatClassnames(
+                            "rc-button",
+                            !btnStyle.borderPainted ? "border-notpainted" : "",
+                            props.style?.includes("hyperlink") ? "p-button-link" : "",
+                            btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
+                            props.borderOnMouseEntered ? "mouse-border" : "",
+                            `gap-${btnStyle.iconGapPos}`,
+                            btnStyle.iconDirection,
+                            props.parent?.includes("TB") ? "rc-toolbar-button" : "",
+                            btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
+                            props.focusable === false ? "no-focus-rect" : "",
+                            styleClassNames
+                        )}
+                        style={{
+                            ...btnStyle.style,
+                            background: undefined,
+                            borderColor: undefined,
+                            '--btnJustify': btnStyle.style.justifyContent,
+                            '--btnAlign': btnStyle.style.alignItems,
+                            '--btnPadding': btnStyle.style.padding ? btnStyle.style.padding : undefined,
+                            '--background': btnStyle.style.background,
+                            '--hoverBackground': tinycolor(btnStyle.style.background?.toString()).darken(5).toString(),
+                            ...(btnStyle.iconProps?.icon ? {
+                                '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
+                                '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
+                                '--iconColor': btnStyle.iconProps.color,
+                                '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
+                                '--iconTextGap': `${props.imageTextGap || 4}px`,
+                                '--iconCenterGap': `${btnStyle.iconCenterGap}px`
+                            } : {})
+                        } as any}
+                        label={!isHTML ? props.text : undefined}
+                        aria-label={props.ariaLabel}
+                        icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
+                        iconPos={btnStyle.iconPos}
+                        tabIndex={btnStyle.tabIndex}
+                        onClick={(event) => onButtonPress(event)}
+                        onFocus={(event) => {
+                            if (props.eventFocusGained) {
+                                onFocusGained(props.name, context.server);
+                            }
+                            else {
+                                if (props.focusable === false) {
+                                    event.preventDefault();
+                                }
+                            }
+                        }}
+                        onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+                        disabled={isCompDisabled(props)}
+                        tooltip={props.toolTipText}
+                        tooltipOptions={{ position: "left" }}
+                        layoutstyle-wrapper={props.name + "-wrapper"}
+                        {...popupMenu}>
+                        {isHTML && props.text && <RenderButtonHTML text={props.text} />}
+                    </Button>
+                    {props.classNameEventSourceRef === "UploadButton" &&
+                        <input
+                            id={props.name + "-upload"}
+                            type="file"
+                            ref={inputRef}
+                            style={{ visibility: "hidden", height: "0px", width: "0px" }}
+                            onChange={(e) => {
+                                if (inputRef.current) {
+                                    const formData = new FormData();
+                                    formData.set("clientId", sessionStorage.getItem("clientId") || "")
+                                    formData.set("fileId", inputRef.current.getAttribute("upload-file-id") as string)
+                                    // @ts-ignore
+                                    formData.set("data", e.target.files[0])
+                                    context.server.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
+                                }
+                            }}
+                            upload-file-id="" />
+                    }
+                </>
+            )
+        }
+    }
+
     return (
         <span id={props.name + "-wrapper"} ref={buttonWrapperRef} style={layoutStyle}>
-            <Button
-                id={props.name}
-                ref={buttonRef}
-                className={concatClassnames(
-                    "rc-button",
-                    !btnStyle.borderPainted ? "border-notpainted" : "",
-                    props.style?.includes("hyperlink") ? "p-button-link" : "",
-                    btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
-                    props.borderOnMouseEntered ? "mouse-border" : "",
-                    `gap-${btnStyle.iconGapPos}`,
-                    btnStyle.iconDirection,
-                    props.parent?.includes("TB") ? "rc-toolbar-button" : "",
-                    btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
-                    props.focusable === false ? "no-focus-rect" : "",
-                    styleClassNames
-                )}
-                style={{
-                    ...btnStyle.style,
-                    background: undefined,
-                    borderColor: undefined,
-                    '--btnJustify': btnStyle.style.justifyContent,
-                    '--btnAlign': btnStyle.style.alignItems,
-                    '--btnPadding': btnStyle.style.padding ? btnStyle.style.padding : undefined,
-                    '--background': btnStyle.style.background,
-                    '--hoverBackground': tinycolor(btnStyle.style.background?.toString()).darken(5).toString(),
-                    ...(btnStyle.iconProps?.icon ? {
-                        '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
-                        '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
-                        '--iconColor': btnStyle.iconProps.color,
-                        '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
-                        '--iconTextGap': `${props.imageTextGap || 4}px`,
-                        '--iconCenterGap': `${btnStyle.iconCenterGap}px`
-                    } : {})
-                } as any}
-                label={!isHTML ? props.text : undefined}
-                aria-label={props.ariaLabel}
-                icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
-                iconPos={btnStyle.iconPos}
-                tabIndex={btnStyle.tabIndex}
-                onClick={(event) => onButtonPress(event)}
-                onFocus={(event) => {
-                    if (props.eventFocusGained) {
-                        onFocusGained(props.name, context.server);
-                    }
-                    else {
-                        if (props.focusable === false) {
-                            event.preventDefault();
-                        }
-                    }
-                }}
-                onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
-                disabled={isCompDisabled(props)}
-                tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}
-                layoutstyle-wrapper={props.name + "-wrapper"}
-                {...usePopupMenu(props)}>
-                {isHTML && props.text && <RenderButtonHTML text={props.text} />}
-            </Button>
-            {props.classNameEventSourceRef === "UploadButton" &&
-                <input
-                    id={props.name + "-upload"}
-                    type="file"
-                    ref={inputRef}
-                    style={{ visibility: "hidden", height: "0px", width: "0px" }}
-                    onChange={(e) => {
-                        if (inputRef.current) {
-                            const formData = new FormData();
-                            formData.set("clientId", sessionStorage.getItem("clientId") || "")
-                            formData.set("fileId", inputRef.current.getAttribute("upload-file-id") as string)
-                            // @ts-ignore
-                            formData.set("data", e.target.files[0])
-                            context.server.sendRequest({ upload: true, formData: formData }, REQUEST_KEYWORDS.UPLOAD)
-                        }
-                    }}
-                    upload-file-id="" />
-            }
+            {getElementToRender()}
         </span>
     )
 }
