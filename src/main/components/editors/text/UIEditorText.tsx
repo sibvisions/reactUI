@@ -309,7 +309,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
         setText(props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data[props.columnName] : undefined);
-        startedEditing.current = false;
+        
     },[props.selectedRow]);
 
     // If the lib user extends the TextCellEditor with onChange, call it when selectedRow changes.
@@ -366,6 +366,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
         if (props.isCellEditor && stopCellEditing) {
             if ((event.key === "Enter" || event.key === "Tab") && startedEditing.current) {
                 sendSetValues(dataRow, name, columnName, columnName, text, props.context.server, props.topbar, props.rowNumber);
+                startedEditing.current = false;
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -498,7 +499,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                     }
 
                     if (!escapePressed.current && startedEditing.current) {
-                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber)
+                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber);
+                        startedEditing.current = false;
                     }
                     if (props.eventFocusLost) {
                         showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
@@ -532,7 +534,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                 onBlur={() => {
                     if (!props.isReadOnly) {
                         if (!escapePressed.current && startedEditing.current) {
-                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber)
+                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber);
+                            startedEditing.current = false;
                         }
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server)

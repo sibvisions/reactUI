@@ -251,7 +251,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
         setValue(checkSelectedRow() ? props.selectedRow.data[props.columnName] : undefined);
-        startedEditing.current = false;
+        
     },[props.selectedRow]);
 
     // If the lib user extends the NumberCellEditor with onChange, call it when selectedRow changes.
@@ -468,6 +468,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                                     props.topbar,
                                     props.rowNumber
                                 );
+                                startedEditing.current = false;
                             }
                         }
                     }}
@@ -534,7 +535,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             props.context.server, 
                             props.topbar, 
                             props.rowNumber
-                        )
+                        );
+                        startedEditing.current = false;
                     }
                 }}
                 disabled={props.isReadOnly}

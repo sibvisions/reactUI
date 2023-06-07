@@ -271,7 +271,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
     useEffect(() => {
         setDateValue(convertToTimeZone(false));
         setViewDate(convertToTimeZone(true));
-        startedEditing.current = false;
+        
     },[props.selectedRow]);
 
     // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
@@ -337,7 +337,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
             isValidDate(dateToSend) ? (dateToSend as Date).getTime() : null,
             props.context.server, 
             props.topbar,
-            props.rowNumber)
+            props.rowNumber);
+        startedEditing.current = false;
     }
 
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
