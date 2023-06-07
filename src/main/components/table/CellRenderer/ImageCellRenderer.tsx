@@ -39,7 +39,6 @@ const ImageCellRenderer: FC<ICellRender> = (props) => {
                     return "data:image/jpeg;base64," + props.cellData;
                 }
                 else {
-                    console.log(props.cellData)
                     return context.server.RESOURCE_URL + props.cellData;
                 }
             } 
