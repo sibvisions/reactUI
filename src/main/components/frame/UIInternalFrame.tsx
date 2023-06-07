@@ -174,7 +174,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
             const rndStyle:CSSStyleDeclaration = rndFrame.style;
 
             if (props.modal) {
-                rndStyle.setProperty("z-index", (1020 + frameContext.openFrames.length - frameContext.openFrames.indexOf(props.name)).toString())
+                rndStyle.setProperty("z-index", (1031 + frameContext.openFrames.length - frameContext.openFrames.indexOf(props.name)).toString())
             }
             else {
                 rndStyle.setProperty("z-index", (frameContext.openFrames.length - frameContext.openFrames.indexOf(props.name)).toString());
