@@ -61,19 +61,25 @@ const NullLayout: FC<ILayout> = (baseProps) => {
              * and build the sizeMap with each component based on the constraints with their component id as key and css style as value
              */
             children.forEach(component => {
-                const compBounds = new Bounds((component.bounds as string).split(','));
-                if (compBounds.top + compBounds.height > deepest)
-                    deepest = compBounds.top + compBounds.height;
-                if (compBounds.left + compBounds.width > furthest)
-                    furthest = compBounds.left + compBounds.width
+                if (component.bounds) {
+                    const compBounds = new Bounds((component.bounds as string).split(','));
+                    if (compBounds.top + compBounds.height > deepest)
+                        deepest = compBounds.top + compBounds.height;
+                    if (compBounds.left + compBounds.width > furthest)
+                        furthest = compBounds.left + compBounds.width
 
-                sizeMap.set(component.id, {
-                    height: compBounds.height,
-                    width: compBounds.width,
-                    left: compBounds.left,
-                    top: compBounds.top,
-                    position: 'absolute'
-                });
+                    sizeMap.set(component.id, {
+                        height: compBounds.height,
+                        width: compBounds.width,
+                        left: compBounds.left,
+                        top: compBounds.top,
+                        position: 'absolute'
+                    });
+                }
+                else {
+                    sizeMap.set(component.id, {height: 0, width: 0, left: 0, top: 0, position: 'absolute'});
+                }
+
             });
 
             /** If there is a size set by the parent layout, use it */
