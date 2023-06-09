@@ -187,6 +187,11 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Base
     }
     else if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
         Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef as string);
+
+        if (!Comp) {
+            Comp = componentsMap.get(baseComponent.classNameEventSourceRef as string);
+        }
+        
         if (Comp) {
             return createCustomComponentWrapper({...baseComponent, component: <Comp {...baseComponent} />, isGlobal: false})
         }
