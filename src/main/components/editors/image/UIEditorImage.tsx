@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useEffect, useRef } from "react";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
@@ -29,7 +29,6 @@ import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableImageEditor } from "../../../extend-components/editors/ExtendImageEditor";
 import { removeLayoutStyle } from "../../../util/component-util/RemoveLayoutStyle";
 import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
-import { LengthBasedColumnDescription, NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 
 /** Interface for cellEditor property of ImageViewer */
 export interface ICellEditorImage extends ICellEditor {
@@ -137,6 +136,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
     return (
         <span
             ref={wrapRef}
+            id={!props.isCellEditor ? props.name + "-wrapper" : undefined}
             className={concatClassnames(
                 "rc-editor-image",
                 props.columnMetaData?.nullable === false ? "required-field" : "",
@@ -144,7 +144,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
             )}
             style={{ ...props.layoutStyle, ...props.cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
-            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+            onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name + "-wrapper", props.context, props.isCellEditor)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
         >

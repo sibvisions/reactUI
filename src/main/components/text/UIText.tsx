@@ -16,7 +16,7 @@
 import React, { FC, useLayoutEffect, useRef, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import BaseComponent from "../../util/types/BaseComponent";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
@@ -110,7 +110,7 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
 
                 setText(event.currentTarget.value)
             }}
-            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+            onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, context)}
             onBlur={(event) => {
                 if (!isCompDisabled(props)) {
                     if (props.onBlur) {

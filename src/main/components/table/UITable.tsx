@@ -20,7 +20,7 @@ import _ from "underscore";
 import BaseComponent from "../../util/types/BaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest, createWidthRequest } from "../../factories/RequestFactory";
 import { showTopBar } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
@@ -1411,9 +1411,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     const relatedTarget = event.relatedTarget;
                     setTimeout(() => {
                         if (!focused.current) {
-                            if (props.eventFocusGained) {
-                                onFocusGained(props.name, context.server);
-                            }
+                            handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, context)
                             focused.current = true;
                             if (columnOrder && !focusIsClicked.current) {
                                 if (relatedTarget === getFocusComponent(props.name + "-wrapper", false)) {

@@ -521,7 +521,33 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                     }
                     else if (rightBottomAnchor.relative) {
-                        console.warn("not yet implemented")
+                        const leftTop = leftTopAnchor.getRelativeAnchor();
+                        if (leftTop && leftTop !== rightBottomAnchor) {
+                            let pref = leftTopAnchor.getAbsolutePosition() - leftTop.getAbsolutePosition() + preferredSize;
+                            let size = 0;
+                            if (rightBottomAnchor.relatedAnchor && leftTop.relatedAnchor) {
+                                size = rightBottomAnchor.relatedAnchor.getAbsolutePosition() - leftTop.relatedAnchor.getAbsolutePosition();
+                            }
+
+                            let pos = pref - size;
+
+                            if (pos < 0) {
+                                pos -= pos / 2;
+                            }
+                            else {
+                                pos /= 2;
+                            }
+                            if (leftTop.firstCalculation || pos < leftTop.position) {
+                                leftTop.firstCalculation = false;
+                                leftTop.position = pos;
+                            }
+                            pos = pref - size - pos;
+                            if (rightBottomAnchor.firstCalculation || pos > -rightBottomAnchor.position)
+                            {
+                                rightBottomAnchor.firstCalculation = false;
+                                rightBottomAnchor.position = -pos;
+                            }
+                        }
                     }
                 }
 

@@ -50,6 +50,7 @@ enum REQUEST_ENDPOINTS {
     FILTER = "/v2/api/dal/filter",
     DAL_SAVE = "/v2/api/dal/save",
     SORT = "/v2/api/dal/sort",
+    WIDTH = "v2/api/dal/width",
 
     //comp
     SET_VALUE = "/v2/api/comp/setValue",
@@ -60,23 +61,6 @@ enum REQUEST_ENDPOINTS {
 
     //other
     ALIVE = "/v2/api/alive",
-
-    //remaining v1
-    LOGIN = "/api/v2/login",
-    LOGOUT = "/api/logout",
-    CLOSE_SCREEN = "/api/closeScreen",
-    OPEN_SCREEN = "/api/v3/openScreen",
-    UPLOAD = "/upload",
-    CHANGE_PASSWORD = "/api/changePassword",
-    RESET_PASSWORD = "/api/resetPassword",
-    SET_SCREEN_PARAMETER = "/api/setScreenParameter",
-    RELOAD = "/api/reload",
-    ROLLBACK = "/api/rollback",
-    CHANGES = "/api/changes",
-    CLOSE_CONTENT = "/api/closeContent",
-    REOPEN_SCREEN = "/api/v3/reopenScreen",
-    SAVE = "/api/save",
-    WIDTH = "/api/dal/width"
 }
 
 export default class ServerFull extends BaseServer {
@@ -102,22 +86,8 @@ export default class ServerFull extends BaseServer {
 
     // A Map which contains the request-keyword as key and the server endpoint as value
     endpointMap: Map<string, string> = new Map<string, string>()
-    .set(REQUEST_KEYWORDS.OPEN_SCREEN, REQUEST_ENDPOINTS.OPEN_SCREEN)
-    .set(REQUEST_KEYWORDS.CLOSE_SCREEN, REQUEST_ENDPOINTS.CLOSE_SCREEN)
-    .set(REQUEST_KEYWORDS.CLOSE_CONTENT, REQUEST_ENDPOINTS.CLOSE_CONTENT)
-    .set(REQUEST_KEYWORDS.REOPEN_SCREEN, REQUEST_ENDPOINTS.REOPEN_SCREEN)
     .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS.EXIT)
-    .set(REQUEST_KEYWORDS.LOGIN, REQUEST_ENDPOINTS.LOGIN)
-    .set(REQUEST_KEYWORDS.LOGOUT, REQUEST_ENDPOINTS.LOGOUT)
-    .set(REQUEST_KEYWORDS.CHANGE_PASSWORD, REQUEST_ENDPOINTS.CHANGE_PASSWORD)
-    .set(REQUEST_KEYWORDS.RESET_PASSWORD, REQUEST_ENDPOINTS.RESET_PASSWORD)
-    .set(REQUEST_KEYWORDS.UPLOAD, REQUEST_ENDPOINTS.UPLOAD)
     .set(REQUEST_KEYWORDS.BOUNDS, REQUEST_ENDPOINTS.BOUNDS)
-    .set(REQUEST_KEYWORDS.SAVE, REQUEST_ENDPOINTS.SAVE)
-    .set(REQUEST_KEYWORDS.SET_SCREEN_PARAMETER, REQUEST_ENDPOINTS.SET_SCREEN_PARAMETER)
-    .set(REQUEST_KEYWORDS.RELOAD, REQUEST_ENDPOINTS.RELOAD)
-    .set(REQUEST_KEYWORDS.ROLLBACK, REQUEST_ENDPOINTS.ROLLBACK)
-    .set(REQUEST_KEYWORDS.CHANGES, REQUEST_ENDPOINTS.CHANGES)
     .set(REQUEST_KEYWORDS.STARTUP, REQUEST_ENDPOINTS.STARTUP)
     .set(REQUEST_KEYWORDS.UI_REFRESH, REQUEST_ENDPOINTS.UI_REFRESH)
     .set(REQUEST_KEYWORDS.DEVICE_STATUS, REQUEST_ENDPOINTS.DEVICE_STATUS)

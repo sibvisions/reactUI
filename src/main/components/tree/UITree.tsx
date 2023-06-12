@@ -20,7 +20,7 @@ import BaseComponent from "../../util/types/BaseComponent";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import TreePath from "../../model/TreePath";
 import { showTopBar } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import TreeNode from "primereact/treenode";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useAllDataProviderData from "../../hooks/data-hooks/useAllDataProviderData";
@@ -687,11 +687,9 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             ref={treeWrapperRef} 
             style={layoutStyle}
             tabIndex={props.tabIndex ? props.tabIndex : 0}
-            onFocus={() => {
+            onFocus={(event) => {
                 if (!focused.current) {
-                    if (props.eventFocusGained) {
-                        onFocusGained(props.name, context.server);
-                    }
+                    handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, context)
                     focused.current = true;
                 }
             }}

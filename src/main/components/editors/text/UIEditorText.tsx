@@ -20,7 +20,7 @@ import { Password } from "primereact/password";
 import { Editor } from "primereact/editor";
 import Quill from "quill";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
@@ -40,7 +40,7 @@ import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesigne
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {
-    cellEditor?: ICellEditor
+    cellEditor: ICellEditor
     length:number
 }
 
@@ -491,7 +491,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                     sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.currentTarget.value, props.context.server, props.topbar, props.rowNumber)
                 }
             },
-            onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
+            onFocus: (event: React.FocusEvent) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor),
             onBlur: (event:React.FocusEvent) => {
                 if (!props.isReadOnly) {
                     if (props.onBlur) {
@@ -530,7 +530,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                     props.isReadOnly ? 'rc-editor-html--disabled' : null
                 ].filter(Boolean).join(' ')}
                 tabIndex={getTabIndex(props.focusable, props.tabIndex)}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+                onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
                 onBlur={() => {
                     if (!props.isReadOnly) {
                         if (!escapePressed.current && startedEditing.current) {

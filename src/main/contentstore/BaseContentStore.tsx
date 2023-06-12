@@ -148,6 +148,8 @@ export default abstract class BaseContentStore {
 
     screenHistory:Array<{ componentId: string, className: string }> = [];
 
+    lastFocusedComponent:{id: string, className: string}|undefined = undefined;
+
     constructor(history?:History<any>) {
         this.history = history;
     }

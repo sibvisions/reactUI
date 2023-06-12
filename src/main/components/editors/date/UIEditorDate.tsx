@@ -16,7 +16,7 @@ import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useM
 import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 import tinycolor from "tinycolor2";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
@@ -446,11 +446,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                         calendarInput.current.focus();
                     }
                 }}
-                onFocus={() => {
+                onFocus={(event) => {
                     if (!focused.current) {
-                        if (props.eventFocusGained) {
-                            onFocusGained(props.name, props.context.server);
-                        }
+                        handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
                         focused.current = true;
                     }
                 }}
@@ -485,9 +483,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {
-                        if (props.eventFocusGained) {
-                            onFocusGained(props.name, props.context.server);
-                        }
+                        handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
                         focused.current = true;
                     }
                     if (event.type === 'outside') {

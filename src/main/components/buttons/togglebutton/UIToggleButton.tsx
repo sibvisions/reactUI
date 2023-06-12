@@ -18,7 +18,7 @@ import { ToggleButton, ToggleButtonChangeParams, ToggleButtonIconPositionType } 
 import tinycolor from 'tinycolor2';
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IButtonSelectable } from "../IButton";
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
@@ -186,7 +186,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
                 tabIndex={btnStyle.tabIndex}
                 checked={checked}
                 onChange={handleOnChange}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, context)}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}>

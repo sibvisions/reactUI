@@ -18,7 +18,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
 import { createFetchRequest, createFilterRequest, createSelectRowRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import Server from "../../../server/Server";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
@@ -560,7 +560,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     useEffect(() => {
         if (focused.current && initialFilter && props.eventFocusGained) {
             //setTimeout 0ms so the transition is playing
-            setTimeout(() => onFocusGained(props.name, props.context.server), 0);
+            setTimeout(() => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, undefined, props.name, props.context, props.isCellEditor), 0);
         }
     }, [initialFilter])
 
@@ -913,10 +913,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                         setText(unpackValue(event.target.value));
                     }
                 }}
-                onFocus={() => {
+                onFocus={(event) => {
                     if (!focused.current) {
                         focused.current = true;
-                        setTimeout(() => onFocusGained(props.name, props.context.server), 0);
+                        setTimeout(() => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor), 0);
                     }
                 }}
                 onBlur={event => {

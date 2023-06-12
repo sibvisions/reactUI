@@ -13,6 +13,7 @@
  * the License.
  */
 
+import { AppContextType } from "../../contexts/AppProvider";
 import { createFocusGainedRequest, createFocusLostRequest } from "../../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import Server from "../../server/Server";
@@ -23,9 +24,9 @@ import ServerFull from "../../server/ServerFull";
  * @param componentId - the component id to focus
  * @param server - the server-class to send the request
  */
-export function onFocusGained(componentId: string, server: Server|ServerFull) {
+export function onFocusGained(name: string, server: Server|ServerFull) {
     const focusGainedReq = createFocusGainedRequest();
-    focusGainedReq.componentId = componentId;
+    focusGainedReq.componentId = name;
     return server.sendRequest(focusGainedReq, REQUEST_KEYWORDS.FOCUS_GAINED, undefined, undefined, true);
 }
 
@@ -38,4 +39,18 @@ export function onFocusLost(componentId: string, server: Server|ServerFull) {
     const focusLostReq = createFocusLostRequest();
     focusLostReq.componentId = componentId;
     return server.sendRequest(focusLostReq, REQUEST_KEYWORDS.FOCUS_LOST, undefined, undefined, true);
+}
+
+export function handleFocusGained(name: string, className: string, eventFocusGained: boolean|undefined, focusable: boolean|undefined, event:any, focusId:string, context: AppContextType, isCellEditor?: boolean) {
+    if (isCellEditor || focusable === false) {
+        if (event) {
+            event.preventDefault();
+        }
+        return
+    }
+    context.contentStore.lastFocusedComponent = {id: focusId, className: className};
+
+    if (eventFocusGained) {
+        onFocusGained(name, context.server);
+    }
 }

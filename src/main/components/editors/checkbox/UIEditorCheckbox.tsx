@@ -15,7 +15,7 @@
 
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Checkbox } from 'primereact/checkbox';
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getAlignments } from "../../comp-props/GetAlignments";
@@ -191,16 +191,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
                         justifyContent: alignments?.ha,
                         alignItems: alignments?.va
                     }}
-            onFocus={(event) => {
-                if (props.eventFocusGained) {
-                    onFocusGained(props.name, props.context.server);
-                }
-                else {
-                    if (props.isCellEditor) {
-                        event.preventDefault();
-                    }
-                }
-            }}
+            onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             onKeyDown={(event) => {
                 event.preventDefault();

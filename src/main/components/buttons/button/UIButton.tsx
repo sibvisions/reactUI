@@ -23,7 +23,7 @@ import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IButton } from "../IButton";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
@@ -124,12 +124,41 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     }
 
     const getElementToRender = () => {
+        const btnProps = {
+            id: props.name,
+            ref: buttonRef,
+            style: {
+                ...btnStyle.style,
+                background: undefined,
+                borderColor: undefined,
+                '--btnJustify': btnStyle.style.justifyContent,
+                '--btnAlign': btnStyle.style.alignItems,
+                '--btnPadding': btnStyle.style.padding ? btnStyle.style.padding : undefined,
+                '--background': btnStyle.style.background,
+                '--hoverBackground': tinycolor(btnStyle.style.background?.toString()).darken(5).toString(),
+                ...(btnStyle.iconProps?.icon ? {
+                    '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
+                    '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
+                    '--iconColor': btnStyle.iconProps.color,
+                    '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
+                    '--iconTextGap': `${props.imageTextGap || 4}px`,
+                    '--iconCenterGap': `${btnStyle.iconCenterGap}px`
+                } : {})
+            } as any,
+            tabIndex: btnStyle.tabIndex,
+            onClick: (event:any) => onButtonPress(event),
+            onFocus: (event:any) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.id, context),
+            onBlur: () => {
+                if (props.eventFocusLost) {
+                    onFocusLost(props.name, context.server)
+                }
+            }
+        }
         if (props.url) {
             return (
                 <span className="hyperlink-wrapper">
                     <a
-                        id={props.name}
-                        ref={buttonRef}
+                        {...btnProps}
                         className={concatClassnames(
                             "rc-button",
                             "p-component",
@@ -144,40 +173,9 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                             isCompDisabled(props) ? "hyperlink-disabled" : "",
                             styleClassNames
                         )}
-                        style={{
-                            ...btnStyle.style,
-                            background: undefined,
-                            borderColor: undefined,
-                            '--btnJustify': btnStyle.style.justifyContent,
-                            '--btnAlign': btnStyle.style.alignItems,
-                            '--btnPadding': btnStyle.style.padding ? btnStyle.style.padding : undefined,
-                            '--background': btnStyle.style.background,
-                            '--hoverBackground': tinycolor(btnStyle.style.background?.toString()).darken(5).toString(),
-                            ...(btnStyle.iconProps?.icon ? {
-                                '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
-                                '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
-                                '--iconColor': btnStyle.iconProps.color,
-                                '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
-                                '--iconTextGap': `${props.imageTextGap || 4}px`,
-                                '--iconCenterGap': `${btnStyle.iconCenterGap}px`
-                            } : {})
-                        } as any}
                         href={props.url}
                         target={props.target}
                         layoutstyle-wrapper={props.name + "-wrapper"}
-                        tabIndex={btnStyle.tabIndex}
-                        onClick={(event) => onButtonPress(event)}
-                        onFocus={(event) => {
-                            if (props.eventFocusGained) {
-                                onFocusGained(props.name, context.server);
-                            }
-                            else {
-                                if (props.focusable === false) {
-                                    event.preventDefault();
-                                }
-                            }
-                        }}
-                        onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                         aria-label={props.ariaLabel}
                         {...popupMenu}>
                         {props.text}
@@ -190,8 +188,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             return (
                 <>
                     <Button
-                        id={props.name}
-                        ref={buttonRef}
+                        {...btnProps}
                         className={concatClassnames(
                             "rc-button",
                             !btnStyle.borderPainted ? "border-notpainted" : "",
@@ -205,41 +202,11 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                             props.focusable === false ? "no-focus-rect" : "",
                             styleClassNames
                         )}
-                        style={{
-                            ...btnStyle.style,
-                            background: undefined,
-                            borderColor: undefined,
-                            '--btnJustify': btnStyle.style.justifyContent,
-                            '--btnAlign': btnStyle.style.alignItems,
-                            '--btnPadding': btnStyle.style.padding ? btnStyle.style.padding : undefined,
-                            '--background': btnStyle.style.background,
-                            '--hoverBackground': tinycolor(btnStyle.style.background?.toString()).darken(5).toString(),
-                            ...(btnStyle.iconProps?.icon ? {
-                                '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
-                                '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
-                                '--iconColor': btnStyle.iconProps.color,
-                                '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
-                                '--iconTextGap': `${props.imageTextGap || 4}px`,
-                                '--iconCenterGap': `${btnStyle.iconCenterGap}px`
-                            } : {})
-                        } as any}
                         label={!isHTML ? props.text : undefined}
                         aria-label={props.ariaLabel}
                         icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                         iconPos={btnStyle.iconPos}
-                        tabIndex={btnStyle.tabIndex}
-                        onClick={(event) => onButtonPress(event)}
-                        onFocus={(event) => {
-                            if (props.eventFocusGained) {
-                                onFocusGained(props.name, context.server);
-                            }
-                            else {
-                                if (props.focusable === false) {
-                                    event.preventDefault();
-                                }
-                            }
-                        }}
-                        onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
+
                         disabled={isCompDisabled(props)}
                         tooltip={props.toolTipText}
                         tooltipOptions={{ position: "left" }}

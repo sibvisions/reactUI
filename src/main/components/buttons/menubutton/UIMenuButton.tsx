@@ -19,7 +19,7 @@ import tinycolor from 'tinycolor2';
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import BaseComponent from "../../../util/types/BaseComponent";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { MenuItem } from "primereact/menuitem";
 import { IButton } from "../IButton";
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
@@ -209,11 +209,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
             ref={buttonWrapperRef}
             style={{ position: 'absolute', ...layoutStyle }}
             aria-label={props.ariaLabel}
-            onFocus={(e) => {
-                if (props.eventFocusGained) {
-                    onFocusGained(props.name, context.server)
-                }
-            }}
+            onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name + "-wrapper", context)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
             tabIndex={btnStyle.tabIndex}
         >

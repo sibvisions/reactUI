@@ -15,7 +15,7 @@
 
 import React, { FC, useLayoutEffect, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import BaseComponent from "../../util/types/BaseComponent";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
@@ -67,7 +67,7 @@ const UIBrowser: FC<IBrowser> = (baseProps) => {
                 className={concatClassnames("rc-mobile-browser", styleClassNames)}
                 style={{...compStyle}}
                 src={props.url}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, context.server) : undefined}
+                onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, context)}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, context.server) : undefined}
                 data-pr-tooltip={props.toolTipText}
                 data-pr-position="left"
