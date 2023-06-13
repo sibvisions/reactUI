@@ -145,7 +145,13 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             ((context.contentStore.activeScreens[0] && context.contentStore.activeScreens[0].name !== navValue.screenId) || !context.contentStore.activeScreens.length)) {
                             let prevPathCopy = prevLocation.current
                             const openReq = createOpenScreenRequest();
-                            openReq.componentId = navValue.componentId;
+                            if (navValue.componentId.includes(":")) {
+                                openReq.componentId = navValue.componentId;
+                            }
+                            else {
+                                openReq.className = navValue.componentId;
+                            }
+                            
                             showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar)
                                 .then((responses: BaseResponse[]) => {
                                     checkAskBefore(prevPathCopy, responses)

@@ -43,7 +43,7 @@ export function getPrimePrefix(numberFormat:string, value:any, locale: string, u
     const numberSeperators = getNumberSeparators(locale);
     const splitFormat = numberFormat.split('.')[0];
     let count = (splitFormat.match(/0/g) || []).length;
-    const valueLength = value ? value.includes(".") ? value.split(".")[0].length : value.length : 1
+    const valueLength = value ? value.toString().includes(".") ? value.split(".")[0].length : value.length : 1
     if (count - valueLength >= 1) {
         let string = "";
         let j = 2;
