@@ -187,12 +187,17 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Base
     // If the component className is a global component (globally changed via api) or is a custom container, create a customcomponentwrapper with that component
     // else just create the standard component
     if (contentStore.globalComponents.has(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className)) {
-        Comp = contentStore.globalComponents.get(baseComponent.className) as Function;
+        Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className) as Function;
         return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
     }
     else {
-        Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
-
+        if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
+            Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.classNameEventSourceRef as string) : componentsMap.get(baseComponent.classNameEventSourceRef as string);
+        }
+        else {
+            Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
+        }
+        
         if (Comp) {
             return <Comp {...baseComponent} key={baseComponent.id} />;
         }
