@@ -61,6 +61,7 @@ enum REQUEST_ENDPOINTS {
 
     //other
     ALIVE = "/v2/api/alive",
+    CHANGES = "/v2/api/changes",
 }
 
 export default class ServerFull extends BaseServer {
@@ -114,7 +115,8 @@ export default class ServerFull extends BaseServer {
     .set(REQUEST_KEYWORDS.CLOSE_TAB, REQUEST_ENDPOINTS.CLOSE_TAB)
     .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
     .set(REQUEST_KEYWORDS.CLOSE_POPUP_MENU, REQUEST_ENDPOINTS.CLOSE_POPUP_MENU)
-    .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE);
+    .set(REQUEST_KEYWORDS.ALIVE, REQUEST_ENDPOINTS.ALIVE)
+    .set(REQUEST_KEYWORDS.CHANGES, REQUEST_ENDPOINTS.CHANGES);
 
     /** A Map which checks which function needs to be called when a response is received, for data responses */
     dataResponseMap: Map<string, Function> = new Map()
