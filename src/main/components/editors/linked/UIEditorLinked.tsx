@@ -48,27 +48,31 @@ import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesigne
 import { SelectFilter } from "../../../request/data/SelectRowRequest";
 import { CellFormatting } from "../../table/CellEditor";
 
-// Type for linkreferences
-type LinkReference = {
-    referencedDataBook: string
+interface ReferencedColumnNames {
     columnNames: string[]
-    referencedColumnNames: string[],
+    referencedColumnNames: string[]
+}
+
+// Type for linkreferences
+interface LinkReference extends ReferencedColumnNames {
+    referencedDataBook: string
     dataToDisplayMap?: Map<string, string>
 }
 
 /** Interface for cellEditor property of LinkedCellEditor */
 export interface ICellEditorLinked extends ICellEditor {
+    additionalCondition?: any
     linkReference: LinkReference
     columnView: {
         columnCount: number
         columnNames: Array<string>
         rowDefinitions: Array<any>
-
     }
     clearColumns:Array<string>
     displayReferencedColumnName?:string
     tableHeaderVisible?:boolean
     displayConcatMask?: string,
+    searchColumnMapping?: ReferencedColumnNames
     validationEnabled?: boolean
 }
 
@@ -238,25 +242,62 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
      */
     const getDisplayValue = useCallback((value:any) => {
         if (value) {
-            if (isDisplayRefColNameOrConcat) {     
+            if (isDisplayRefColNameOrConcat) {
                 const linkReference = getCorrectLinkReference();
+                
+                if (cellEditorMetaData) {
+                    if (cellEditorMetaData.additionalCondition || cellEditorMetaData.searchColumnMapping) {
+                        console.log(JSON.stringify(value));
+                    }
+                }
                 const index = linkReference.columnNames.findIndex(colName => colName === props.columnName);
                 const extractedObject = getExtractedObject(value, [linkReference.referencedColumnNames[index]]);
                 if (linkReference.dataToDisplayMap?.has(JSON.stringify(extractedObject))) {
-                    return linkReference.dataToDisplayMap!.get(JSON.stringify(extractedObject))
+                    return linkReference.dataToDisplayMap!.get(JSON.stringify(extractedObject));
                 }
             }
     
             if (props.selectedRow && props.selectedRow.data[props.columnName]) {
-                return props.selectedRow.data[props.columnName]
+                return props.selectedRow.data[props.columnName];
             }
-            return value[props.columnName]
+            return value[props.columnName];
         }
         return ""
-    },[isDisplayRefColNameOrConcat, props.cellEditor, cellEditorMetaData?.linkReference?.dataToDisplayMap, props.selectedRow, props.columnName, displayMapChanged])
+    },[isDisplayRefColNameOrConcat, props.cellEditor, cellEditorMetaData, props.selectedRow, props.columnName, displayMapChanged]);
+
+    const getDisplayValueObject = () => {
+        if (isDisplayRefColNameOrConcat) {
+            const linkReference = getCorrectLinkReference();
+            if (linkReference) {
+                if (linkReference.dataToDisplayMap?.size || props.cellEditor.displayReferencedColumnName) {
+                    const columnConvertedData = convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName);
+                    if (cellEditorMetaData) {
+                        const searchColumnMapping = cellEditorMetaData.searchColumnMapping
+                        if (searchColumnMapping) {
+                            searchColumnMapping.columnNames.forEach((columnName, i) => {
+                                if (Object.keys(columnConvertedData).includes(columnName)) {
+                                    delete Object.assign(columnConvertedData, {[searchColumnMapping.referencedColumnNames[i]]: columnConvertedData[columnName] })[columnName];
+                                }
+                                else {
+                                    columnConvertedData[searchColumnMapping.referencedColumnNames[i]] = props.selectedRow.data[columnName].toString();
+                                }
+                            })
+                        }
+                    }
+                    return columnConvertedData;
+                }
+                else {
+                    return props.selectedRow.data;
+                }
+            }
+        }
+        else {
+            return props.selectedRow.data;
+        }
+    }
 
     /** Current state of text value of input element */
-    const [text, setText] = useState(getDisplayValue(props.selectedRow ? convertColNamesToReferenceColNames(props.selectedRow.data, getCorrectLinkReference(), props.columnName)  : undefined));
+    const [text, setText] = useState(getDisplayValue(props.selectedRow ? getDisplayValueObject()  : undefined));
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -408,22 +449,37 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow*/
     useEffect(() => {
         if (props.selectedRow) {
-            if (isDisplayRefColNameOrConcat) {
-                const linkReference = getCorrectLinkReference();
-                if (linkReference) {
-                    if (linkReference.dataToDisplayMap?.size || props.cellEditor.displayReferencedColumnName) {
-                        const index = linkReference.columnNames.findIndex(colName => colName === props.columnName);
-                        const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName), [linkReference.referencedColumnNames[index]]);
-                        setText(getDisplayValue(extractedObject))
-                    }
-                    else {
-                        setText(getDisplayValue(props.selectedRow.data));
-                    }
-                }
-            }
-            else {
-                setText(getDisplayValue(props.selectedRow.data));
-            }
+            setText(getDisplayValue(getDisplayValueObject()));
+            // if (isDisplayRefColNameOrConcat) {
+            //     const linkReference = getCorrectLinkReference();
+            //     if (linkReference) {
+            //         if (linkReference.dataToDisplayMap?.size || props.cellEditor.displayReferencedColumnName) {
+            //             const columnConvertedData = convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName);
+            //             if (cellEditorMetaData) {
+            //                 const searchColumnMapping = cellEditorMetaData.searchColumnMapping
+            //                 if (searchColumnMapping) {
+            //                     searchColumnMapping.columnNames.forEach((columnName, i) => {
+            //                         if (Object.keys(columnConvertedData).includes(columnName)) {
+            //                             delete Object.assign(columnConvertedData, {[searchColumnMapping.referencedColumnNames[i]]: columnConvertedData[columnName] })[columnName];
+            //                         }
+            //                         else {
+            //                             columnConvertedData[searchColumnMapping.referencedColumnNames[i]] = props.selectedRow.data[columnName].toString();
+            //                         }
+            //                     })
+            //                 }
+            //             }
+            //             console.log('getdis 1')
+            //             setText(getDisplayValue(columnConvertedData))
+            //         }
+            //         else {
+            //             console.log('getdis 2')
+            //             setText(getDisplayValue(props.selectedRow.data));
+            //         }
+            //     }
+            // }
+            // else {
+            //     setText(getDisplayValue(props.selectedRow.data));
+            // }
         }
     }, [props.selectedRow, cellEditorMetaData, displayMapChanged]);
 

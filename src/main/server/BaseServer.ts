@@ -609,6 +609,7 @@ export default abstract class BaseServer {
                     cellEditor.linkReference.columnNames.push(column.columnName)
                 }
                 const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
+                console.log(data, cellEditor)
                 const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);
                 const columnViewNames = cellEditor.columnView ? cellEditor.columnView.columnNames : dataBook.metaData!.columnView_table_;
                 const columnViewData = getExtractedObject(data, columnViewNames);
