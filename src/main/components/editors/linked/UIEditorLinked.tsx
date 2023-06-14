@@ -144,11 +144,11 @@ export function convertColNamesToReferenceColNames(value:any, linkReference: Lin
             && columnNames.length
             && linkReference.referencedColumnNames.length) {
             const newVal:any = {}
-            columnNames.forEach((colNames, i) => {
-                if (extractedObject[colNames] !== undefined) {
-                    newVal[linkReference.referencedColumnNames[i]] = extractedObject[colNames];
+            for (let i = 0; i < linkReference.referencedColumnNames.length; i++) {
+                if (extractedObject[linkReference.columnNames[i]] !== undefined) {
+                    newVal[linkReference.referencedColumnNames[i]] = extractedObject[linkReference.columnNames[i]];
                 }
-            });
+            }
             return newVal
         }
         return extractedObject
@@ -170,11 +170,11 @@ export function convertReferenceColNamesToColNames(value:any, linkReference: Lin
             && linkReference.columnNames.length 
             && linkReference.referencedColumnNames.length) {
             const newVal:any = {}
-            linkReference.referencedColumnNames.forEach((colNames, i) => {
-                if (extractedObject[colNames] !== undefined) {
-                    newVal[linkReference.columnNames[i]] = extractedObject[colNames];
+            for (let i = 0; i < linkReference.columnNames.length; i++) {
+                if (extractedObject[linkReference.referencedColumnNames[i]] !== undefined) {
+                    newVal[linkReference.columnNames[i]] = extractedObject[linkReference.referencedColumnNames[i]];
                 }
-            });
+            }
             return newVal
         }
         return extractedObject
@@ -183,6 +183,72 @@ export function convertReferenceColNamesToColNames(value:any, linkReference: Lin
         return value;
     }
 }
+
+export function getDisplayValueObject(value:any, convertToRefCols: boolean, linkReference: LinkReference, columnName: string, 
+                                isDisplayRefColNameOrConcat: string | undefined, cellEditorMetaData: ICellEditorLinked | undefined) {
+    if (isDisplayRefColNameOrConcat) {
+        if (linkReference) {
+            let data: any = {};
+            if (convertToRefCols) {
+                data = convertColNamesToReferenceColNames(value, linkReference, columnName);
+            }
+            console.log(data)
+            if (cellEditorMetaData) {
+                const searchColumnMapping = cellEditorMetaData.searchColumnMapping
+                if (searchColumnMapping) {
+                    searchColumnMapping.columnNames.forEach((columnName, i) => {
+                        if (Object.keys(data).includes(columnName)) {
+                            delete Object.assign(data, {[searchColumnMapping.referencedColumnNames[i]]: data[columnName] })[columnName];
+                        }
+                        else {
+                            data[searchColumnMapping.referencedColumnNames[i]] = value[columnName].toString();
+                        }
+                    })
+                }
+            }
+            return data;
+        }
+    }
+    return value;
+}
+
+/**
+ * Returns the value which should be displayed in the linkedcelleditor input.
+ * Usually take the bound column but when there is a displayReferencedColumnname or a concat-mask,
+ * check the dataToDisplayMap in the linkReference and pick the correct value by stringifying the selected object.
+ */
+export function getDisplayValue(value:any, convertToRefCols: boolean, linkReference: LinkReference, columnName: string, 
+                         isDisplayRefColNameOrConcat: string | undefined, cellEditorMetaData: ICellEditorLinked | undefined) {
+    if (value) {
+        const index = linkReference.columnNames.findIndex(colName => colName === columnName);
+        
+        if (isDisplayRefColNameOrConcat) {
+            const displayObject = getDisplayValueObject(value, convertToRefCols, linkReference, columnName, isDisplayRefColNameOrConcat, cellEditorMetaData);
+            if (cellEditorMetaData) {
+                if (cellEditorMetaData.additionalCondition || cellEditorMetaData.searchColumnMapping) {
+                    //console.log(displayObject);
+                }
+            }
+            
+            const extractedObject = getExtractedObject(displayObject, [linkReference.referencedColumnNames[index]]);
+            if (linkReference.dataToDisplayMap?.has(JSON.stringify(extractedObject))) {
+                return linkReference.dataToDisplayMap!.get(JSON.stringify(extractedObject));
+            }
+        }
+
+        // if (props.selectedRow && props.selectedRow.data[props.columnName]) {
+        //     return props.selectedRow.data[props.columnName];
+        // }
+
+        // If the columns don't have to be converted, then they are already the refcolumns then you can use the index of the columnName to get the correct values.
+        if (!convertToRefCols) {
+            return value[linkReference.referencedColumnNames[index]]
+        }
+
+        return value[columnName];
+    }
+    return ""
+};
 
 /**
  * This component displays an input field with a button which provides a dropdownlist with values of a databook
@@ -226,7 +292,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
     //const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
 
     // Return the linkReference of the celleditormetadata if there is one else use the linkReference of the celleditor properties
-    const getCorrectLinkReference = useCallback(() => {
+    const linkReference = useMemo(() => {
         if (cellEditorMetaData && cellEditorMetaData.linkReference) {
             return cellEditorMetaData.linkReference
         }
@@ -235,69 +301,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     const [displayMapChanged, setDisplayMapChanged] = useState<boolean>(false);
 
-    /**
-     * Returns the value which should be displayed in the linkedcelleditor input.
-     * Usually take the bound column but when there is a displayReferencedColumnname or a concat-mask,
-     * check the dataToDisplayMap in the linkReference and pick the correct value by stringifying the selected object.
-     */
-    const getDisplayValue = useCallback((value:any) => {
-        if (value) {
-            if (isDisplayRefColNameOrConcat) {
-                const linkReference = getCorrectLinkReference();
-                
-                if (cellEditorMetaData) {
-                    if (cellEditorMetaData.additionalCondition || cellEditorMetaData.searchColumnMapping) {
-                        console.log(JSON.stringify(value));
-                    }
-                }
-                const index = linkReference.columnNames.findIndex(colName => colName === props.columnName);
-                const extractedObject = getExtractedObject(value, [linkReference.referencedColumnNames[index]]);
-                if (linkReference.dataToDisplayMap?.has(JSON.stringify(extractedObject))) {
-                    return linkReference.dataToDisplayMap!.get(JSON.stringify(extractedObject));
-                }
-            }
-    
-            if (props.selectedRow && props.selectedRow.data[props.columnName]) {
-                return props.selectedRow.data[props.columnName];
-            }
-            return value[props.columnName];
-        }
-        return ""
-    },[isDisplayRefColNameOrConcat, props.cellEditor, cellEditorMetaData, props.selectedRow, props.columnName, displayMapChanged]);
-
-    const getDisplayValueObject = () => {
-        if (isDisplayRefColNameOrConcat) {
-            const linkReference = getCorrectLinkReference();
-            if (linkReference) {
-                if (linkReference.dataToDisplayMap?.size || props.cellEditor.displayReferencedColumnName) {
-                    const columnConvertedData = convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName);
-                    if (cellEditorMetaData) {
-                        const searchColumnMapping = cellEditorMetaData.searchColumnMapping
-                        if (searchColumnMapping) {
-                            searchColumnMapping.columnNames.forEach((columnName, i) => {
-                                if (Object.keys(columnConvertedData).includes(columnName)) {
-                                    delete Object.assign(columnConvertedData, {[searchColumnMapping.referencedColumnNames[i]]: columnConvertedData[columnName] })[columnName];
-                                }
-                                else {
-                                    columnConvertedData[searchColumnMapping.referencedColumnNames[i]] = props.selectedRow.data[columnName].toString();
-                                }
-                            })
-                        }
-                    }
-                    return columnConvertedData;
-                }
-                else {
-                    return props.selectedRow.data;
-                }
-            }
-        }
-        else {
-            return props.selectedRow.data;
-        }
-    }
-
     /** Current state of text value of input element */
-    const [text, setText] = useState(getDisplayValue(props.selectedRow ? getDisplayValueObject()  : undefined));
+    const [text, setText] = useState(getDisplayValue(props.selectedRow ? props.selectedRow.data  : undefined, true, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData));
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -341,14 +346,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     // Use the primaryKeyColumns from the referenced metadata or use the referencedColumnNames if empty.
     const primaryKeys:string[] = useMemo(() => {
-        const linkReference = getCorrectLinkReference();
         if (metaDataReferenced) {
             if (metaDataReferenced.primaryKeyColumns) {
                 return metaDataReferenced.primaryKeyColumns;
             }
         }
         return linkReference.referencedColumnNames;
-    }, [metaDataReferenced, getCorrectLinkReference]);
+    }, [metaDataReferenced]);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, linkedRef.current ? linkedRef.current.container : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -448,8 +452,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow*/
     useEffect(() => {
-        if (props.selectedRow) {
-            setText(getDisplayValue(getDisplayValueObject()));
+        if (props.selectedRow) {  
+            setText(getDisplayValue(props.selectedRow.data, true, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData));
             // if (isDisplayRefColNameOrConcat) {
             //     const linkReference = getCorrectLinkReference();
             //     if (linkReference) {
@@ -468,11 +472,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             //                     })
             //                 }
             //             }
-            //             console.log('getdis 1')
             //             setText(getDisplayValue(columnConvertedData))
             //         }
             //         else {
-            //             console.log('getdis 2')
             //             setText(getDisplayValue(props.selectedRow.data));
             //         }
             //     }
@@ -543,64 +545,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         });
     }, [props.context.contentStore, props.context.server, props.cellEditor, props.name, props.cellEditor.linkReference.referencedDataBook]);
 
-    // Build a suggestion-array by firstly adding the referencedColumnNames then the columnViewNames and primaryKeyColumns
-    const buildSuggestionArray = (value:any) => {
-        const arr:any[] = [];
-        props.cellEditor.linkReference.referencedColumnNames.forEach((d) => {
-            arr.push(value[d]);
-        });
-
-        columnViewNames.forEach((d) => {
-            arr.push(value[d]);
-        });
-
-        primaryKeys.forEach((d) => {
-            arr.push(value[d])
-        })
-
-        return arr;
-    }
-
-    /**
-     * Unpacks the suggestion-array and picks out the correct values based on the type.
-     * If reference use index 0 (begin from start)
-     * if display begin at the end of linkedreference columns to get the display values
-     * if primary use index linkedreference col length + columnView length until the end to get primary keys.
-     * @param value - the value of the suggestion-array
-     * @param type - the type which needs to be unpacked
-     * @returns 
-     */
-    const unpackSuggestionArray = (value: any[], type:"reference"|"display"|"primary") => {
-        if (value) {
-            if (type === "display") {
-                let displayObj: any = {}
-                let j = 0;
-                for (let i = props.cellEditor.linkReference.referencedColumnNames.length; i < value.length - primaryKeys.length; i++) {
-                    displayObj[columnViewNames[j]] = value[i];
-                    j++;
-                }
-                return displayObj;
-            }
-            else if (type === "primary") {
-                let primaryObj: any = {};
-                let j = 0;
-                for (let i = props.cellEditor.linkReference.referencedColumnNames.length + columnViewNames.length; i < value.length; i++) {
-                    primaryObj[primaryKeys[j]] = value[i];
-                    j++;
-                }
-                return primaryObj
-            }
-            else {
-                let sendObj: any = {}
-                for (let i = 0; i < props.cellEditor.linkReference.referencedColumnNames.length; i++) {
-                    sendObj[props.cellEditor.linkReference.referencedColumnNames[i]] = value[i];
-                }
-                return sendObj
-            }
-        }
-        return undefined
-    }
-
     // If autoOpenPopup is true and preferredEditorMode is 1 (singleclick) and it is a table-cell-editor, open the overlay directly and send an empty filter
     useEffect(() => {
         setTimeout(() => {
@@ -663,8 +607,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         const index = colNames.findIndex(col => col === props.columnName);
         const columnNames = (colNames.length === 0 && refColNames.length === 1) ? props.columnName : colNames;
         // value is the suggestion-array, now unpack the suggestion-array by referencedColumns and primarykeys
-        let inputObj:any|any[] = unpackSuggestionArray(value, "reference");
-        let primaryObj:any|any[] = unpackSuggestionArray(value, "primary");
+        let inputObj:any|any[] = getExtractedObject(value, refColNames);
+        let primaryObj:any|any[] = getExtractedObject(value, primaryKeys);
 
         let filter:SelectFilter = {
             columnNames: primaryKeys,
@@ -679,23 +623,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 }
                 inputObj = tempValues;
             }
-            setText(getDisplayValue(inputObj))
-            sendSelectRequest(-1, filter);
-            sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj, props.context.server, props.topbar, -1);
-            
         }
-        else {
-            if (props.cellEditor.displayReferencedColumnName) {
-                setText(getDisplayValue(inputObj));
-                sendSelectRequest(-1, filter);
-                sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[0]], props.context.server, props.topbar, -1);
-            }
-            else {
-                setText(getDisplayValue(inputObj));
-                sendSelectRequest(-1, filter);
-                sendSetValues(props.dataRow, props.name, columnNames, props.columnName, inputObj[refColNames[index]], props.context.server, props.topbar, -1);
-            }
-        }
+        const valueToSend = colNames.length > 1 ? inputObj : props.cellEditor.displayReferencedColumnName ? inputObj[refColNames[0]] : inputObj[refColNames[index]];
+        setText(getDisplayValue(inputObj, false, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData));
+        sendSelectRequest(-1, filter);
+        sendSetValues(props.dataRow, props.name, columnNames, props.columnName, valueToSend, props.context.server, props.topbar, -1);
         startedEditing.current = false;
     }
 
@@ -704,8 +636,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
      * if the corresponding row is found in its databook. if it isn't, the state is set back to its previous value
      */
      const handleInput = (value?:string) => {
-        const linkReference = getCorrectLinkReference();
-
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
@@ -722,8 +652,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             providedData.filter((data: any) => {
                 if (isDisplayRefColNameOrConcat) {
                     const extractedData = getExtractedObject(data, refColNames);
-                    if (getDisplayValue(extractedData)) {
-                        return getDisplayValue(extractedData).toString().includes(checkText);
+                    if (getDisplayValue(extractedData, false, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData)) {
+                        return getDisplayValue(extractedData, false, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData).toString().includes(checkText);
                     }
                     return !checkText;
                 }
@@ -771,29 +701,21 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 values: primaryKeys.map(pk => extractedPrimaryKeys[pk])
             };
 
+            let tempValues = Object.values(extractedData)
             if (colNames.length > 1) {
-                let tempValues = Object.values(extractedData)
                 if (colNames.length > tempValues.length) {
                     for (let i = tempValues.length; i < linkReference.referencedColumnNames.length; i++) {
                         tempValues[i] = (extractedData as any)[linkReference.referencedColumnNames[i]]
                     }
                 }
-                setText(getDisplayValue(convertReferenceColNamesToColNames(extractedData, props.cellEditor.linkReference)))
-                sendSelectRequest(-1, filter)
-                sendSetValues(props.dataRow, props.name, colNames, props.columnName, tempValues, props.context.server, props.topbar, -1);
             }
-            else {
-                setText(getDisplayValue(extractedData))
-                sendSelectRequest(-1, filter)
-                sendSetValues(props.dataRow, props.name, colNames, props.columnName, extractedData, props.context.server, props.topbar, -1);
-            }
+            setText(getDisplayValue(extractedData, false, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData))
+            sendSelectRequest(-1, filter)
+            sendSetValues(props.dataRow, props.name, colNames, props.columnName, colNames.length > 1 ? tempValues : extractedData, props.context.server, props.topbar, -1);
         }
         /** If there is no match found set the old value */
         else {
-            const linkReference = getCorrectLinkReference();
-            const index = linkReference.columnNames.findIndex(colName => colName === props.columnName);
-            const extractedObject = getExtractedObject(convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.columnName), [linkReference.referencedColumnNames[index]]);
-            setText(getDisplayValue(extractedObject));
+            setText(getDisplayValue(props.selectedRow.data, true, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData));
         }
         startedEditing.current = false;
     }
@@ -807,7 +729,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         let suggestions:any = [];
         if (values.length > 0) {
             values.forEach((value:any) => {
-                suggestions.push(buildSuggestionArray(value));
+                suggestions.push(value);
             });
         }
         return suggestions
@@ -835,10 +757,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             return providedData[index][props.cellEditor.displayReferencedColumnName];
         }
         else if (!tableOptions && isDisplayRefColNameOrConcat) {
-            return <div key={0}>{getDisplayValue(unpackSuggestionArray(d, "reference"))}</div>
+            return <div key={0}>{getDisplayValue(getExtractedObject(d, linkReference.referencedColumnNames), false, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData)}</div>
         }
         else {
-            const suggestionObj = unpackSuggestionArray(d, "display");
+            const suggestionObj = getExtractedObject(d, columnViewNames);;
             return Object.values(suggestionObj).map((d:any, i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
@@ -963,7 +885,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
                 onChange={event => {
                     startedEditing.current = true;
                     if (isDisplayRefColNameOrConcat && Array.isArray(event.target.value)) {
-                        setText(getDisplayValue(unpackValue(event.target.value)));
+                        setText(getDisplayValue(unpackValue(event.target.value), false, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData));
                     }
                     else {
                         setText(unpackValue(event.target.value));

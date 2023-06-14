@@ -16,7 +16,7 @@
 import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
-import { convertColNamesToReferenceColNames, convertReferenceColNamesToColNames, fetchLinkedRefDatabook, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
+import { convertColNamesToReferenceColNames, convertReferenceColNamesToColNames, fetchLinkedRefDatabook, getDisplayValue, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
 
 /**
@@ -64,60 +64,8 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
         }
     }, []);
 
-    /**
-     * Returns the displayValue to display
-     * @param value - the datarow which should be displayed
-     */
-    const getDisplayValue = useCallback((value:any) => {
-        const linkReference = cellEditorMetaData.linkReference;
-        if (isDisplayRefColNameOrConcat) {
-            if (cellEditorMetaData) {
-                if (cellEditorMetaData.additionalCondition || cellEditorMetaData.searchColumnMapping) {
-                    console.log(JSON.stringify(value))
-                }
-
-                const index = linkReference.columnNames.findIndex(colName => colName === props.colName);
-                const extractedObject = getExtractedObject(value, [linkReference.referencedColumnNames[index]]);
-                if (linkReference.dataToDisplayMap?.has(JSON.stringify(extractedObject))) {
-                    return linkReference.dataToDisplayMap.get(JSON.stringify(extractedObject))
-                }
-                else {
-                    return convertReferenceColNamesToColNames(value, cellEditorMetaData.linkReference)[props.colName]
-                }
-            }
-        }
-        if (value[props.colName] !== undefined) {
-            return value[props.colName]
-        }
-        return props.cellData;
-    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, cellEditorMetaData, props.colName, displayMapChanged])
-
     /** The displayValue to display */ 
-    const linkedDisplayValue = useMemo(() => {
-        const linkReference = cellEditorMetaData.linkReference;
-        if (cellEditorMetaData && linkReference.dataToDisplayMap?.size) {
-            const columnConvertedData = convertColNamesToReferenceColNames(props.selectedRow.data, linkReference, props.colName);
-            if (cellEditorMetaData) {
-                const searchColumnMapping = cellEditorMetaData.searchColumnMapping;
-                if (searchColumnMapping) {
-                    searchColumnMapping.columnNames.forEach((columnName, i) => {
-                        if (Object.keys(columnConvertedData).includes(columnName)) {
-                            delete Object.assign(columnConvertedData, {[searchColumnMapping.referencedColumnNames[i]]: columnConvertedData[columnName] })[columnName];
-                        }
-                        else {
-                            columnConvertedData[searchColumnMapping.referencedColumnNames[i]] = props.selectedRow.data[columnName].toString();
-                        }
-                    })
-                }
-            }
-            console.log(columnConvertedData)
-            return getDisplayValue(columnConvertedData)
-        }
-        else {
-            return getDisplayValue(props.rowData)
-        }
-        
-    }, [props.cellData, linkRefFetchFlag, cellEditorMetaData, props.rowData, props.colName, displayMapChanged]);
+    const linkedDisplayValue = useMemo(() => getDisplayValue(props.rowData, true, cellEditorMetaData.linkReference, props.colName, isDisplayRefColNameOrConcat, cellEditorMetaData), [props.cellData, linkRefFetchFlag, cellEditorMetaData, props.rowData, props.colName, displayMapChanged])
 
     return (
         <>

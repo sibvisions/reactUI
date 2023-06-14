@@ -35,7 +35,7 @@ import MetaDataResponse from "../response/data/MetaDataResponse";
 import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
 import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
 import { translation } from "../util/other-util/Translation";
-import { getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
+import { getDisplayValueObject, getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import BadClientResponse from "../response/error/BadClientResponse";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { setDateLocale } from "../util/other-util/GetDateLocale";
@@ -609,7 +609,6 @@ export default abstract class BaseServer {
                     cellEditor.linkReference.columnNames.push(column.columnName)
                 }
                 const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
-                console.log(data, cellEditor)
                 const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);
                 const columnViewNames = cellEditor.columnView ? cellEditor.columnView.columnNames : dataBook.metaData!.columnView_table_;
                 const columnViewData = getExtractedObject(data, columnViewNames);
