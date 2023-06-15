@@ -240,7 +240,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             if (outerHa === HORIZONTAL_ALIGNMENT.STRETCH) {
                 left = margins.marginLeft;
-                width = (style.width as number);
+                width = (style.width as number) - margins.marginLeft - margins.marginRight;
             }
             else {
                 if (style.width) {
@@ -257,7 +257,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             if (outerVa === VERTICAL_ALIGNMENT.STRETCH) {
                 top = margins.marginTop;
-                height = (style.height as number);
+                height = (style.height as number) - margins.marginTop - margins.marginBottom;
             }
             else {
                 if (style.height) {
