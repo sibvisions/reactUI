@@ -189,6 +189,10 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 if (parentComp.className === COMPONENT_CLASSNAMES.TABSETPANEL || parentComp.className === COMPONENT_CLASSNAMES.SPLITPANEL) {
                     return true;
                 }
+
+                if (props.layout.startsWith("FlowLayout") && props.layout.split(",")[11] === 'false') {
+                    return true;
+                }
                 // while (parentComp) {
                 //     if (parentComp.className === COMPONENT_CLASSNAMES.SCROLLPANEL) {
                 //         isHidden = false;

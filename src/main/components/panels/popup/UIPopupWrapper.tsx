@@ -106,9 +106,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
 
         const lastFocusedComponent = context.contentStore.lastFocusedComponent
         if (lastFocusedComponent) {
-            console.log(lastFocusedComponent.id)
             let componentToFocus = document.getElementById(lastFocusedComponent.id);
-            console.log(componentToFocus);
             if (componentToFocus) {
                 if ([COMPONENT_CLASSNAMES.CHECKBOX, COMPONENT_CLASSNAMES.RADIOBUTTON, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.LINKED].indexOf(lastFocusedComponent.className as COMPONENT_CLASSNAMES|CELLEDITOR_CLASSNAMES) !== -1) {
                     componentToFocus = componentToFocus.querySelector("input");
@@ -123,7 +121,6 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                     }
                 }
                 else {
-                    console.log(componentToFocus)
                     componentToFocus.focus();
                 }
             }
