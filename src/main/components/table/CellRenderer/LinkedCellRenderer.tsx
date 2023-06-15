@@ -13,10 +13,10 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
-import { convertColNamesToReferenceColNames, convertReferenceColNamesToColNames, fetchLinkedRefDatabook, getDisplayValue, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
+import { fetchLinkedRefDatabook, getDisplayValue, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
 
 /**
@@ -65,7 +65,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     }, []);
 
     /** The displayValue to display */ 
-    const linkedDisplayValue = useMemo(() => getDisplayValue(props.rowData, true, cellEditorMetaData.linkReference, props.colName, isDisplayRefColNameOrConcat, cellEditorMetaData), [props.cellData, linkRefFetchFlag, cellEditorMetaData, props.rowData, props.colName, displayMapChanged])
+    const linkedDisplayValue = useMemo(() => getDisplayValue(props.rowData, undefined, cellEditorMetaData.linkReference, props.colName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataProvider), [props.cellData, linkRefFetchFlag, cellEditorMetaData, props.rowData, props.colName, displayMapChanged])
 
     return (
         <>

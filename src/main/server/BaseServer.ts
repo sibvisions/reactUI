@@ -35,7 +35,7 @@ import MetaDataResponse from "../response/data/MetaDataResponse";
 import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
 import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
 import { translation } from "../util/other-util/Translation";
-import { getDisplayValueObject, getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
+import { generateDisplayMapKey, getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import BadClientResponse from "../response/error/BadClientResponse";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { setDateLocale } from "../util/other-util/GetDateLocale";
@@ -610,10 +610,20 @@ export default abstract class BaseServer {
                 }
                 const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
                 const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);
+                const keyObj = generateDisplayMapKey(
+                    data,
+                    referencedData,
+                    cellEditor.linkReference,
+                    column.columnName,
+                    cellEditor.displayConcatMask || cellEditor.displayReferencedColumnName,
+                    cellEditor,
+                    "build-map"
+                )
                 const columnViewNames = cellEditor.columnView ? cellEditor.columnView.columnNames : dataBook.metaData!.columnView_table_;
                 const columnViewData = getExtractedObject(data, columnViewNames);
                 if (cellEditor.displayReferencedColumnName) {
                     const extractDisplayRef = getExtractedObject(data, [...cellEditor.linkReference.referencedColumnNames, cellEditor.displayReferencedColumnName]);
+                    dataToDisplayMap.set(JSON.stringify(keyObj), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
                     dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
                     if (!notifyDataMap) {
                         notifyDataMap = true;
@@ -634,6 +644,13 @@ export default abstract class BaseServer {
                             displayString += columnViewData[column] + (i !== columnViewNames.length - 1 ? cellEditor.displayConcatMask : "");
                         });
                     }
+                    if (!dataToDisplayMap.has(JSON.stringify(keyObj)) || dataToDisplayMap.get(JSON.stringify(keyObj)) !== displayString) {
+                        if (!notifyDataMap) {
+                            notifyDataMap = true;
+                        }
+                        dataToDisplayMap.set(JSON.stringify(keyObj), displayString);
+                    }
+
                     if (!dataToDisplayMap.has(JSON.stringify(referencedData)) || dataToDisplayMap.get(JSON.stringify(referencedData)) !== displayString) {
                         if (!notifyDataMap) {
                             notifyDataMap = true;
