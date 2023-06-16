@@ -131,7 +131,7 @@ const ErrorDialog:FC = () => {
                             setSelectedError(errorItems.length ? errorItems[0].items[0] : null);
                             setShowDetails(prevState => !prevState)
                         }} />}
-                    <Button
+                        {context.appReady && <Button
                         type="button"
                         className="rc-button error-dialog-footer-button"
                         style={{
@@ -139,7 +139,7 @@ const ErrorDialog:FC = () => {
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
                         label={translation.get("OK")}
-                        onClick={() => handleOnHide()} />
+                        onClick={() => handleOnHide()} />}
                 </div>
                 {showDetails &&
                     <div className="error-dialog-footer-details">
@@ -180,7 +180,9 @@ const ErrorDialog:FC = () => {
             visible={visible} 
             onHide={handleOnHide} 
             baseZIndex={1020}
-            resizable >
+            resizable
+            closable={context.appReady}
+            draggable={context.appReady} >
             <i className="error-dialog-icon pi pi-times-circle" />
             <span style={{paddingTop: "4px"}}>{errorProps?.message}</span>
         </Dialog>

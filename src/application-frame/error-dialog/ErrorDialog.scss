@@ -18,8 +18,24 @@
     min-height: 230px;
     min-width: 205px;
 
-    .p-dialog-header .p-dialog-header-icon:focus {
-        box-shadow: none;
+    .p-dialog-header {
+        background: #CC0C39;
+        color: #ffffff;
+
+        .p-dialog-header-icon {
+            &:enabled {
+                color: #ffffff;
+
+                &:hover {
+                    background: #a92230;
+                    color: #ffffff;
+                }
+            }
+
+            &:focus {
+                box-shadow: none;
+            }
+        }
     }
 
     .p-dialog-content {
@@ -29,8 +45,17 @@
         padding: 2rem 1.5rem 2rem 1.5rem;
 
         .error-dialog-icon {
+            min-width: 2rem;
+            font-size: 2rem;
             margin-right: 0.75rem;
         }
+    }
+
+    .p-dialog-footer {
+        border-bottom-left-radius: 3px;
+        border-bottom-right-radius: 3px;
+        background: #ffffff;
+        color: #495057;
     }
 
     .error-dialog-footer-buttons {
