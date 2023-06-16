@@ -233,19 +233,21 @@ export default abstract class BaseServer {
                     }
                 }
                 else {
-                    const screenName = this.getScreenName(request.dataProvider);
-                    const screenIsOpen = this.contentStore.activeScreens.some(as => as.name === screenName);
-                    
-                    // Not sending dataprovider request if the screen isnt opened
-                    if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
-                        this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
-                        resolve(undefined)
-                        return
-                    }
-
-                    if (!this.contentStore.dataBooks.get(screenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
-                        reject("Dataprovider doesn't exist: " + request.dataProvider);
-                        return
+                    if (this.appSettings.transferType !== "full") {
+                        const screenName = this.getScreenName(request.dataProvider);
+                        const screenIsOpen = this.contentStore.activeScreens.some(as => as.name === screenName);
+                        
+                        // Not sending dataprovider request if the screen isnt opened
+                        if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
+                            this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
+                            resolve(undefined)
+                            return
+                        }
+    
+                        if (!this.contentStore.dataBooks.get(screenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                            reject("Dataprovider doesn't exist: " + request.dataProvider);
+                            return
+                        }
                     }
                 }
             }

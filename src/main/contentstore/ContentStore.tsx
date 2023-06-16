@@ -116,8 +116,8 @@ export default class ContentStore extends BaseContentStore {
                 // @ts-ignore  
                 let newProp = newComp[newPropName];
                 if (["dataBook", "dataRow"].indexOf(newPropName) !== -1 && existingProp === newProp) {
-                    if (existingProp && this.getDataBook((existingProp as string).split("/")[1], existingProp)) {
-                        this.dataBooks.get((existingProp as string).split("/")[1])?.delete(existingProp)
+                    if (existingProp && this.getDataBook(this.server.getScreenName(existingProp as string), existingProp)) {
+                        this.dataBooks.get(this.server.getScreenName(existingProp as string))?.delete(existingProp)
                         const fetchReq = createFetchRequest();
                         fetchReq.dataProvider = existingProp;
                         fetchReq.includeMetaData = true;

@@ -693,12 +693,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.contentStore = new ContentStoreFull(history);
                 contextState.contentStore.setSubscriptionManager(contextState.subscriptions);
                 contextState.contentStore.setAppSettings(contextState.appSettings);
-                contextState.contentStore.setServer(contextState.server);
                 contextState.subscriptions.setContentStore(contextState.contentStore);
                 contextState.api.setContentStore(contextState.contentStore);
                 contextState.appSettings.setContentStore(contextState.contentStore);
 
                 contextState.server = new ServerFull(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+                contextState.contentStore.setServer(contextState.server);
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);
                 contextState.launcherReady = false;

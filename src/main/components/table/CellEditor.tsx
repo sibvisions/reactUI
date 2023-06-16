@@ -40,7 +40,6 @@ export interface IInTableEditor {
     stopCellEditing?: Function
     passedKey?: string,
     isCellEditor: boolean,
-    cellScreenName: string,
     editorStyle?: CSSProperties,
 }
 
@@ -127,7 +126,6 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 stopCellEditing: stopCellEditing,
                 passedKey: passedValues,
                 isCellEditor: true,
-                cellScreenName: props.dataProvider.split("/")[1],
                 rowNumber: props.rowNumber,
                 isReadOnly: props.isReadOnly
             }} />

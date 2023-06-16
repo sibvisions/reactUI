@@ -150,7 +150,13 @@ export default class ServerFull extends BaseServer {
      * @returns 
      */
     getScreenName(dataProvider: string): string {
-        return dataProvider.split("/")[1];
+        if (dataProvider.startsWith("VisionX")) {
+            return dataProvider.split("/")[2];
+        }
+        else {
+            return dataProvider.split("/")[1];
+        }
+        
     }
 
     /** Handles the UI Response sent by the server and initialises the UI changes */

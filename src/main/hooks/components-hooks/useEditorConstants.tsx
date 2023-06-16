@@ -47,7 +47,7 @@ const useEditorConstants = <T extends IRCCellEditor>(baseProps: T, fb?: CSSPrope
     const cellStyle = useCellEditorStyle(props, compStyle);
 
     /** The component id of the screen */
-    const screenName = useMemo(() => baseProps.isCellEditor ? baseProps.cellScreenName as string : context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow, baseProps.isCellEditor, baseProps.cellScreenName])
+    const screenName = useMemo(() => baseProps.isCellEditor ? context.server.getScreenName(baseProps.dataRow) : context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow, baseProps.isCellEditor, baseProps.dataRow])
 
     /** The metadata for the specific column */
     const columnMetaData = useMetaData(screenName, props.dataRow, props.columnName, baseProps.cellEditor?.className === CELLEDITOR_CLASSNAMES.NUMBER ? "numeric" : undefined);

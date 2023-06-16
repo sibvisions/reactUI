@@ -1,5 +1,7 @@
 {
     "requestTimeout": 900000,
     "aliveInterval": 30000,
-    "wsPingInterval": 10000
+    "wsPingInterval": 10000,
+    "transferType": "full",
+    "searchPath": "/services/visionx"
 }
