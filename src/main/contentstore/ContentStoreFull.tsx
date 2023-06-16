@@ -386,7 +386,6 @@ export default class ContentStoreFull extends BaseContentStore {
     */
     getScreenName(id: string, dataProvider?:string) {
         if (dataProvider) {
-            console.log(this.server.getScreenName(dataProvider))
             return this.server.getScreenName(dataProvider);
         }
         else {
