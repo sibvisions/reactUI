@@ -389,7 +389,7 @@ export default class ContentStoreFull extends BaseContentStore {
             return this.server.getScreenName(dataProvider);
         }
         else {
-            let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
+            let comp: IBaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
             if (comp) {
                 while (comp?.parent) {
                     if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {
