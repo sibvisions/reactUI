@@ -518,6 +518,17 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showWSDesigner = true
                     }
 
+                    if (data.transferType) {
+                        if (data.transferType === "full") {
+                            contextState.transferType = "full"
+                            contextState.appSettings.transferType = "full"
+                        }
+                        else {
+                            contextState.transferType = "partial"
+                            contextState.appSettings.transferType = "partial"
+                        }
+                    }
+
                     resolve({})
                 })
                 .catch(() => reject("config.json not found"))
