@@ -179,7 +179,7 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
                     return true;
                 }
 
-                if (props.layout.startsWith("FlowLayout") && props.layout.split(",")[11] === 'false') {
+                if (props.layout && props.layout.startsWith("FlowLayout") && props.layout.split(",")[11] === 'false') {
                     return true;
                 }
                 // while (parentComp) {

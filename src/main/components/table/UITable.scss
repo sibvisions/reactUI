@@ -115,11 +115,11 @@
                     }
 
                     &.cell-required {
-                        opacity: 0.8;
+                        opacity: 0.6;
                     }
 
                     &.cell-readonly {
-                        opacity: 0.8;
+                        opacity: 0.6;
                     }
                 }
             }
@@ -235,11 +235,11 @@
                 &.p-highlight {
                     td {
                         &.cell-required {
-                            opacity: 0.8;
+                            opacity: 0.6;
                         }
 
                         &.cell-readonly {
-                            opacity: 0.8;
+                            opacity: 0.6;
                         }
                     }
                 }
@@ -279,7 +279,7 @@
             }
 
             &.cell-readonly:hover {
-                opacity: 0.8;
+                opacity: 0.6;
             }
         }
     }
@@ -290,7 +290,7 @@
         }
 
         &.cell-readonly:hover {
-            opacity: 0.8;
+            opacity: 0.6;
         }
     }
 }
