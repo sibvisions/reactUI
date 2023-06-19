@@ -332,21 +332,6 @@ export default class ContentStore extends BaseContentStore {
         notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
     }
 
-    /**
-     * When a screen closes cleanUp the data for the window 
-     * @param windowName - the name of the window to close
-     */
-    // closeScreen(windowName: string, opensAnother?:boolean, closeContent?:boolean) {
-    //     super.closeScreen(windowName, opensAnother, closeContent);
-
-    //     if (this.activeScreens.length) {
-    //         this.subManager.emitSelectedMenuItem(this.activeScreens.slice(-1).pop()!.className as string);
-    //     }
-    //     else if (!opensAnother) {
-    //         this.subManager.emitSelectedMenuItem("");
-    //     }
-    // }
-
     /** Resets the contentStore */
     reset(){
         super.reset()

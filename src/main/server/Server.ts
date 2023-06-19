@@ -236,7 +236,7 @@ class Server extends BaseServer {
         .set(RESPONSE_NAMES.APPLICATION_META_DATA, this.applicationMetaData.bind(this))
         .set(RESPONSE_NAMES.MENU, this.menu.bind(this))
         .set(RESPONSE_NAMES.SCREEN_GENERIC, this.generic.bind(this))
-        //.set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
+        .set(RESPONSE_NAMES.CLOSE_SCREEN, this.closeScreen.bind(this))
         .set(RESPONSE_NAMES.LOGIN, this.login.bind(this))        
         .set(RESPONSE_NAMES.UPLOAD, this.upload.bind(this))
         .set(RESPONSE_NAMES.DOWNLOAD, this.download.bind(this))
@@ -264,32 +264,32 @@ class Server extends BaseServer {
         if (Array.isArray(responses)) {
             await super.responseHandler(responses, request);
             // if there is a screen to close don't route to prevent flickering
-            if (!this.screenToClose) {
+            if (!this.screensToClose.length) {
                 this.routingDecider(responses);
             }
             
             // Cleans up the flatcontent and dataproviders after closing a screen
-            const cleanUpScreen = () => {
-                if (this.screenToClose !== undefined) {
-                    let window = this.contentStore.getComponentById(this.screenToClose.windowId);
+            const cleanUpScreen = (screenToClose: {windowId: string, windowName: string, closeDirectly: boolean|undefined}) => {
+                if (this.screensToClose.length) {
+                    let window = this.contentStore.getComponentById(screenToClose.windowId);
                     if (window) {
-                        this.contentStore.cleanUp(window.id, window.name, window.className, this.screenToClose.closeDirectly);
+                        this.contentStore.cleanUpUI(window.id, window.name, window.className, screenToClose.closeDirectly);
                     }
-                    this.screenToClose = undefined
+                    this.screensToClose.splice(this.screensToClose.findIndex(screen => screen.windowId === screenToClose.windowId), 1);
                 }
             }
             
             // If there is a screen to close check if a previous screen needs to be opened then open the screen and after that clean up the closed screen to prevent flickering
-            if (this.screenToClose !== undefined) {
+            if (this.screensToClose.length) {
                 if (this.maybeOpenScreen && !this.contentStore.activeScreens.length) {
-                    if (this.maybeOpenScreen.componentId !== this.screenToClose.windowName) {
-                        this.api.sendOpenScreenRequest(this.maybeOpenScreen.className).then(() => cleanUpScreen());
+                    if (!this.screensToClose.some(screenToClose => screenToClose.windowName === this.maybeOpenScreen!.componentId)) {
+                        this.api.sendOpenScreenRequest(this.maybeOpenScreen.className).then(() => this.screensToClose.forEach(screenToClose => cleanUpScreen(screenToClose)));
                     }
                     this.maybeOpenScreen = undefined;
                 }
                 else {
                     // if there is no screen to open clean up, update active screens and route
-                    cleanUpScreen();
+                    this.screensToClose.forEach(screenToClose => cleanUpScreen(screenToClose))
                     this.subManager.emitActiveScreens();
                     this.routingDecider(responses);
                 }

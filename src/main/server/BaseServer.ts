@@ -123,7 +123,7 @@ export default abstract class BaseServer {
 
     maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
 
-    screenToClose:{windowId: string, windowName: string, closeDirectly: boolean|undefined}|undefined = undefined;
+    screensToClose:{windowId: string, windowName: string, closeDirectly: boolean|undefined}[] = [];
 
     ignoreHome = false;
 
@@ -415,7 +415,7 @@ export default abstract class BaseServer {
     /** ----------HANDLING-RESPONSES---------- */
 
     /** Handles a closeScreen response sent by the server */
-    abstract closeScreen(closeScreenData: CloseScreenResponse, request?: any, opensAnother?:boolean):void
+    abstract closeScreen(closeScreenData: CloseScreenResponse, request?: any):void
 
     /** A Map which checks which function needs to be called when a data response is received (before regular response map) */
     abstract dataResponseMap: Map<string, Function>;
@@ -445,23 +445,6 @@ export default abstract class BaseServer {
                     return 0;
                 }
             });
-
-            if (responses.length && responses[0].name === RESPONSE_NAMES.CLOSE_SCREEN) {
-                const opensNewScreen = responses.some(response => {
-                    if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
-                        if (!(response as GenericResponse).update) {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-                if (opensNewScreen) {
-                    this.closeScreen(responses[0] as CloseScreenResponse, request, true);
-                }
-                else {
-                    this.closeScreen(responses[0] as CloseScreenResponse, request, false);
-                }
-            }
 
             for (const [, response] of responses.entries()) {
                 const mapper = this.dataResponseMap.get(response.name);
