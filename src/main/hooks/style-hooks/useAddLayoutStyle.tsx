@@ -28,7 +28,7 @@ const useAddLayoutStyle = (className: string, ref: any, layoutStyle: CSSProperti
     useEffect(() => {
         if ([COMPONENT_CLASSNAMES.INTERNAL_FRAME, COMPONENT_CLASSNAMES.MOBILELAUNCHER, COMPONENT_CLASSNAMES.DESKTOPPANEL,
              COMPONENT_CLASSNAMES.SPLITPANEL, COMPONENT_CLASSNAMES.TOOLBARPANEL, COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER,
-             COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, COMPONENT_CLASSNAMES.TREE].indexOf(className as COMPONENT_CLASSNAMES) === -1) {
+             COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN].indexOf(className as COMPONENT_CLASSNAMES) === -1) {
                 if (ref && loadBackFunction) {
                     ref.style.setProperty("top", layoutStyle?.top !== undefined ? `${layoutStyle.top}px`: null)
                     ref.style.setProperty("left", layoutStyle?.left !== undefined ? `${layoutStyle.left}px`: null);
