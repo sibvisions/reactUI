@@ -118,10 +118,15 @@ export function createEditor(props: IRCCellEditor) {
  * @param element - The JSX Element to wrap
  * @returns The original or wrapped JSX Element
  */
-const maybePopup = (element: JSX.Element) => 
-    element.props.screen_modal_ || element.props.content_modal_
-        ? <UIPopupWrapper {...element.props} render={element} key={'PopupWrapper-' + element.props.id}/> 
-        : element;
+const maybePopup = (element: JSX.Element) => {
+    if (element.props.screen_modal_ || element.props.content_modal_) {
+        return <UIPopupWrapper {...element.props} render={element} key={'PopupWrapper-' + element.props.id}/> 
+    }
+    else {
+        return element
+    }
+}
+
 
 const baseComponentMap = new Map<string, React.ComponentType<any>>()
 .set(COMPONENT_CLASSNAMES.SPLITPANEL, props => <UISplitPanel {...props} />)
@@ -182,22 +187,18 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
 
     // If the component className is a global component (globally changed via api) or is a custom container, create a customcomponentwrapper with that component
     // else just create the standard component
-    if (contentStore.globalComponents.has(baseComponent.className)) {
-        Comp = contentStore.globalComponents.get(baseComponent.className) as Function;
+    if (contentStore.globalComponents.has(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className)) {
+        Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className) as Function;
         return createCustomComponentWrapper({...baseComponent, component: <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>, isGlobal: true})
     }
-    else if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
-        Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef as string);
-        if (Comp) {
-            return createCustomComponentWrapper({...baseComponent, component: <Comp {...baseComponent} />, isGlobal: false})
+    else {
+        if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
+            Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.classNameEventSourceRef as string) : componentsMap.get(baseComponent.classNameEventSourceRef as string);
         }
         else {
-            return <Dummy {...baseComponent} key={baseComponent.id} />
+            Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
         }
-    }
-    else {
-        Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
-
+        
         if (Comp) {
             if (contentStore.appSettings.transferType !== "full") {
                 return maybePopup(<BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>);
@@ -211,4 +212,31 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
             return <></>;
         }
     }
+
+    // if (contentStore.globalComponents.has(baseComponent.className)) {
+    //     Comp = contentStore.globalComponents.get(baseComponent.className) as Function;
+    //     return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
+    // }
+    // else if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
+    //     Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef as string);
+    //     if (Comp) {
+    //         return createCustomComponentWrapper({...baseComponent, component: <Comp {...baseComponent} />, isGlobal: false})
+    //     }
+    //     else {
+    //         return <Dummy {...baseComponent} key={baseComponent.id} />
+    //     }
+    // }
+    // else {
+    //     Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
+
+    //     if (Comp) {
+    //         return <Comp {...baseComponent} key={baseComponent.id} />;
+    //     }
+    //     else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
+    //         return <Dummy {...baseComponent} key={baseComponent.id} />
+    //     }
+    //     else {
+    //         return <></>;
+    //     }
+    // }
 }

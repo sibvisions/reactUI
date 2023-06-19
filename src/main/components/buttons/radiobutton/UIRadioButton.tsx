@@ -16,7 +16,7 @@
 import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
 import { RadioButton, RadioButtonChangeParams } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IButtonSelectable } from "../IButton";
 import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
@@ -87,7 +87,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (props) => 
                     btnStyle.iconDirection,
                     props.styleClassNames
                     )}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+                onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
                 style={{
                     ...btnStyle.style,

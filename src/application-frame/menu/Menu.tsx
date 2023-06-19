@@ -221,11 +221,18 @@ const Menu: FC<IMenu> = (props) => {
                     else {
                         context.contentStore.menuItems.forEach(items => {
                             if (items.length) {
-                                items.forEach(item => {
-                                    if (item.componentId.split(":")[0] === activeScreens[i].className) {
-                                        foundMenuItem = activeScreens[i].className as string;
+                                const foundItems = items.filter(item => item.className === activeScreens[i].className);
+                                if (foundItems.length === 1) {
+                                    if (foundItems[0].className) {
+                                        foundMenuItem = foundItems[0].className
                                     }
-                                })
+                                }
+                                else {
+                                    const foundItem = foundItems.find(foundItem => foundItem.navigationName === activeScreens[i].navigationName);
+                                    if (foundItem && foundItem.className && foundItem.navigationName) {
+                                        foundMenuItem = foundItem.className + "_" + foundItem.navigationName
+                                    }
+                                }
                             }
                         })
                     }
@@ -316,7 +323,7 @@ const Menu: FC<IMenu> = (props) => {
             }
         }, 0)
 
-    },[selectedMenuItem])
+    }, [selectedMenuItem])
 
     /**
      * Adds eventlisteners for mouse hovering and mouse leaving. When the menu is collapsed and the mouse is hovered,

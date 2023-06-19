@@ -28,6 +28,8 @@ import Dimension from "../../../util/types/Dimension";
 import Server from "../../../server/Server";
 import { parsePrefSize } from "../../../util/component-util/SizeUtil";
 import RESPONSE_NAMES from "../../../response/RESPONSE_NAMES";
+import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
+import CELLEDITOR_CLASSNAMES from "../../editors/CELLEDITOR_CLASSNAMES";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
@@ -101,6 +103,29 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 }
             });
         }
+
+        const lastFocusedComponent = context.contentStore.lastFocusedComponent
+        if (lastFocusedComponent) {
+            let componentToFocus = document.getElementById(lastFocusedComponent.id);
+            if (componentToFocus) {
+                if ([COMPONENT_CLASSNAMES.CHECKBOX, COMPONENT_CLASSNAMES.RADIOBUTTON, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.LINKED].indexOf(lastFocusedComponent.className as COMPONENT_CLASSNAMES|CELLEDITOR_CLASSNAMES) !== -1) {
+                    componentToFocus = componentToFocus.querySelector("input");
+                    if (componentToFocus) {
+                        componentToFocus.focus();
+                    }
+                }
+                else if (lastFocusedComponent.className === COMPONENT_CLASSNAMES.POPUPMENUBUTTON) {
+                    componentToFocus = componentToFocus.querySelector(".p-splitbutton-menubutton");
+                    if (componentToFocus) {
+                        componentToFocus.focus();
+                    }
+                }
+                else {
+                    componentToFocus.focus();
+                }
+            }
+        }
+
     }
 
     /** Sets the initial size for the popup */

@@ -40,7 +40,7 @@ const useEditorConstants = <T extends IRCCellEditor & IComponentConstants>(props
     const cellStyle = useCellEditorStyle(props, props.compStyle);
 
     /** The component id of the screen */
-    const screenName = useMemo(() => props.isCellEditor ? props.cellScreenName as string : props.context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow, props.isCellEditor, props.cellScreenName])
+    const screenName = useMemo(() => props.isCellEditor ? props.context.server.getScreenName(props.dataRow) : props.context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow, props.isCellEditor, props.dataRow])
 
     /** The metadata for the specific column */
     const columnMetaData = useMetaData(screenName, props.dataRow, props.columnName, props.cellEditor?.className === CELLEDITOR_CLASSNAMES.NUMBER ? "numeric" : undefined);

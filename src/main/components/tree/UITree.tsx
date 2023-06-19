@@ -20,7 +20,7 @@ import IBaseComponent from "../../util/types/IBaseComponent";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import TreePath from "../../model/TreePath";
 import { showTopBar } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import TreeNode from "primereact/treenode";
 import useAllDataProviderData from "../../hooks/data-hooks/useAllDataProviderData";
 import useAllRowSelect from "../../hooks/data-hooks/useAllRowSelect";
@@ -35,6 +35,7 @@ import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
 import MetaDataResponse, { MetaDataReference } from "../../response/data/MetaDataResponse";
 import { IComponentConstants } from "../BaseComponent";
+import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for Tree */
 export interface ITree extends IBaseComponent {
@@ -88,6 +89,8 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
 
     /** Current state of the node objects which are handled by PrimeReact to display in the Tree */
     const [nodes, setNodes] = useState<CustomTreeNode[]>([]);
+
+    const oldNodesLength = useRef<number>(nodes.length)
 
     /** State of the keys of the nodes which are expanded */
     const [expandedKeys, setExpandedKeys] = useState<TreeExpandedKeysType>({});
@@ -343,7 +346,8 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         const wrapperRef = props.forwardedRef.current;
-        if (wrapperRef) {
+        if (wrapperRef && nodes.length !== oldNodesLength.current) {
+            oldNodesLength.current = nodes.length;
             sendOnLoadCallback(
                 id, 
                 props.className, 
@@ -360,7 +364,8 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
         props.preferredSize, 
         props.maximumSize, 
         props.minimumSize,
-        props.className
+        props.className,
+        nodes
     ]);
 
     /**
@@ -661,18 +666,16 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
     }, [treeDataChanged])
 
     const focused = useRef<boolean>(false);
-
+    
     return (
         <span 
             ref={props.forwardedRef}
             id={props.name + "-_wrapper"} 
             style={props.layoutStyle}
             tabIndex={props.tabIndex ? props.tabIndex : 0}
-            onFocus={() => {
+            onFocus={(event) => {
                 if (!focused.current) {
-                    if (props.eventFocusGained) {
-                        onFocusGained(props.name, props.context.server);
-                    }
+                    handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)
                     focused.current = true;
                 }
             }}

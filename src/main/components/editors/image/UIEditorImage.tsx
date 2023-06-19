@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useEffect, useRef } from "react";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
@@ -104,12 +104,29 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
         if (props.onChange) {
             props.onChange();
         }
-    }, [props.selectedRow, props.onChange])
+    }, [props.selectedRow, props.onChange]);
+    
+    const getImageSource = () => {
+        if (props.selectedRow && props.selectedRow.data[props.columnName] && !props.selectedRow.data[props.columnName].includes("FontAwesome")) {
+            if (props.columnMetaData) {
+                if (props.columnMetaData.dataTypeIdentifier === -2) {
+                    return "data:image/jpeg;base64," + props.selectedRow.data[props.columnName];
+                }
+                else {
+                    return props.context.server.RESOURCE_URL + props.selectedRow.data[props.columnName];
+                }
+            } 
+        }
+        else if (props.cellEditor.defaultImageName) {
+            return props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName;
+        }
+        return undefined
+    }
 
     return (
         <span
             ref={props.forwardedRef}
-            id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
+            id={!props.isCellEditor ? props.name + "-_wrapper" : undefined}
             className={concatClassnames(
                 "rc-editor-image",
                 props.columnMetaData?.nullable === false ? "required-field" : "",
@@ -117,7 +134,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
             )}
             style={{ ...props.layoutStyle, ...props.cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
-            onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+            onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name + "-_wrapper", props.context, props.isCellEditor)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
         >
@@ -129,7 +146,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
                     //style={imageStyle.img}
-                    src={props.selectedRow && props.selectedRow.data[props.columnName] ? "data:image/jpeg;base64," + props.selectedRow.data[props.columnName] : props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName}
+                    src={getImageSource()}
                     alt="could not be loaded"
                     onLoad={imageLoaded}
                     onError={e => (e.target as HTMLImageElement).style.display = 'none'}

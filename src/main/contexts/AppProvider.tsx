@@ -40,10 +40,10 @@ import useEventHandler from "../hooks/event-hooks/useEventHandler";
 import Timer from "../util/other-util/Timer";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
-import { initialURL } from "../..";
 import BaseResponse from "../response/BaseResponse";
 import { translation } from "../util/other-util/Translation";
 import { Designer } from "@sibvisions/visionx/dist/moduleIndex";
+import { initialURL } from "../util/InitialURL";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
@@ -199,6 +199,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let baseUrlToSet = "";
         let designerUrlToSet = "";
         let timeoutToSet = 10000;
+        let searchPathToSet = "/services/mobile";
         let aliveIntervalToSet:number|undefined = undefined;
         let wsPingIntervalToSet:number|undefined = undefined;
         let autoRestartSession:boolean = false;
@@ -239,7 +240,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             const connectWs = () => {
                 return new Promise<void>((resolve) => {
                     console.log('connecting WebSocket')
-                    const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf("/services/mobile"));
+                    const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf(searchPathToSet));
     
                     ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + encodeURIComponent(getClientId())
                     + (isReconnect.current ? "&reconnect" : ""));
@@ -403,6 +404,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         timeoutToSet = parseInt(data.requestTimeout);
                     }
 
+                    if (data.searchPath){
+                        searchPathToSet = data.searchPath;
+                    }
+
                     if (data.aliveInterval) {
                         aliveIntervalToSet = parseInt(data.aliveInterval);
                     }
@@ -456,6 +461,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         }
                     });
                     baseUrlToSet = data.baseUrl;
+
+                    if (data.searchPath) {
+                        searchPathToSet = data.searchPath;
+                    }
 
                     if (data.userName || data.username) {
                         startUpRequest.userName = data.userName || data.username;
@@ -513,6 +522,17 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showWSDesigner = true
                     }
 
+                    if (data.transferType) {
+                        if (data.transferType === "full") {
+                            contextState.transferType = "full"
+                            contextState.appSettings.transferType = "full"
+                        }
+                        else {
+                            contextState.transferType = "partial"
+                            contextState.appSettings.transferType = "partial"
+                        }
+                    }
+
                     resolve({})
                 })
                 .catch(() => reject("config.json not found"))
@@ -539,6 +559,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 startUpRequest.applicationName = appName;
                 convertedOptions.delete("appName");
             }
+
+            if (convertedOptions.has("searchPath")) {
+                searchPathToSet = convertedOptions.get("searchPath") as string;
+            }
             
             if (convertedOptions.has("baseUrl")) {
                 baseUrl = convertedOptions.get("baseUrl") as string;
@@ -552,10 +576,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 const splitURLPath = window.location.pathname.split("/");
 
                 if (splitURLPath.length === 4) {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + "/services/mobile";
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + searchPathToSet;
                 }
                 else {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/services/mobile"
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + searchPathToSet;
                 }
             }
 
@@ -684,13 +708,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.contentStore = new ContentStoreFull(history);
                 contextState.contentStore.setSubscriptionManager(contextState.subscriptions);
                 contextState.contentStore.setAppSettings(contextState.appSettings);
-                contextState.contentStore.setServer(contextState.server);
                 contextState.subscriptions.setContentStore(contextState.contentStore);
                 contextState.api.setContentStore(contextState.contentStore);
                 contextState.appSettings.setContentStore(contextState.contentStore);
                 contextState.designerSubscriptions.setContentStore(contextState.contentStore);
 
                 contextState.server = new ServerFull(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
+                contextState.contentStore.setServer(contextState.server);
                 contextState.api.setServer(contextState.server);
                 contextState.subscriptions.setServer(contextState.server);
                 contextState.launcherReady = false;
@@ -713,8 +737,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
                 contextState.server.autoRestartOnSessionExpired = autoRestartSession;
                 
-                if (history.location.pathname.includes("/home/")) {
-                    contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "home") - 1);
+                if (history.location.pathname.includes("/screens/")) {
+                    contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "screens") - 1);
                 }
                 if (localStorage.getItem("restartScreen")) {
                     contextState.server.linkOpen = localStorage.getItem("restartScreen") as string;
@@ -756,6 +780,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             startUpRequest.serverVersion = "3.1.0";
             startUpRequest.timeZoneCode = contextState.appSettings.timeZone;
             startUpRequest.readAheadLimit = 100;
+            startUpRequest.option_bigdecimal_as_string = true;
             if (contextState.contentStore.customStartUpProperties.length) {
                 contextState.contentStore.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }

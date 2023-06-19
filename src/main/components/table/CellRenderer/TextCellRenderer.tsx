@@ -38,7 +38,7 @@ const TextCellRenderer: FC<ICellRender> = (props) => {
     return (
         <>
             <span className="cell-data-content">
-                {props.icon ?? props.cellData?.includes("<html>") ? <span dangerouslySetInnerHTML={{ __html: props.cellData as string }}/> : displayTextValue}
+                {props.icon ? props.icon : props.cellData?.includes("<html>") ? <span dangerouslySetInnerHTML={{ __html: props.cellData as string }}/> : displayTextValue}
             </span>
         </>
     )

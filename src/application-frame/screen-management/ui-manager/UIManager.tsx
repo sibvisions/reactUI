@@ -33,6 +33,7 @@ import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
 import { VisionXContext } from "../../../AppWrapper";
 import { DeviceStatus } from "../../../main/response/event/DeviceStatusResponse";
+import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
 
 // Interface for UIManager
 export interface IUIManagerProps {
@@ -68,13 +69,16 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
     /** ComponentId of Screen extracted by useParams hook */
-    const { componentId } = useParams<any>();
+    const { screenName } = useParams<any>();
 
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
 
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
+
+    /** State of the active-screens */
+    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);
 
     /** context for embedded screens/app */
     const embeddedContext = useContext(EmbeddedContext);
@@ -114,10 +118,12 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions) => setMenuOptions(menuOptions));
         context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
+        context.subscriptions.subscribeToActiveScreens("uimanager", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 
         return () => {
             context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions) => setMenuOptions(menuOptions));
             context.subscriptions.unsubscribeFromTheme("uimanager");
+            context.subscriptions.unsubscribeFromActiveScreens("workscreen");
         }
     }, [context.subscriptions])
 
@@ -168,7 +174,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     menuMini ? "" : "screen-no-mini",
                     menuOptions.toolBar ? "toolbar-visible" : "",
                     (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) || vxContext.showVisionX ? "menu-not-visible" : "",
-                    !getScreenIdFromNavigation(componentId, context.contentStore) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
+                    !activeScreens.length && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
                     <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active: boolean) => setMobileStandard(active)}>
                         <ScreenManager />

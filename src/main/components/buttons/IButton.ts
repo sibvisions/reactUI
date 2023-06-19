@@ -25,6 +25,8 @@ export interface IButton extends IBaseComponent, IComponentConstants {
     borderOnMouseEntered?: boolean,
     mouseOverImage?: string,
     mousePressedImage?: string,
+    url?: string,
+    target?: string
 }
 
 /** Interface for Buttons which manage a selected state extends IButton */

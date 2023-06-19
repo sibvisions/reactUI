@@ -14,13 +14,13 @@
  */
 
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { InputNumber } from "primereact/inputnumber";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { InputNumber } from "./PrimeReactInputNumber";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
-import { formatNumber, getDecimalLength, getGrouping, getPrimePrefix, getWriteScaleDigits } from "../../../util/component-util/NumberProperties";
+import { getDecimalLength, getDisplayScaleDigits, getGrouping, getPrimePrefix, getWriteScaleDigits } from "../../../util/component-util/NumberProperties";
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
@@ -31,6 +31,7 @@ import { IExtendableNumberEditor } from "../../../extend-components/editors/Exte
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import { classNames } from "primereact/utils";
 import { IComponentConstants } from "../../BaseComponent";
+import bigDecimal from "js-big-decimal"
 
 /** Interface for cellEditor property of NumberCellEditor */
 export interface ICellEditorNumber extends ICellEditor {
@@ -81,11 +82,14 @@ export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boole
     return ""
 }
 
-export function getSuffix(numberFormat:string, locale: string) {
+export function getSuffix(numberFormat:string, locale: string, scale?:number) {
     const numberSeperators = getNumberSeparators(locale)
     if (!numberFormat.endsWith('0') && !numberFormat.endsWith('#')) {
         if (numberFormat.endsWith(".")) {
             return numberSeperators.decimal;
+        }
+        else if (numberFormat.includes(".") && scale === 0) {
+            return numberSeperators.decimal + numberFormat.split(".")[1];
         }
         const indexHash = numberFormat.lastIndexOf('#');
         const index0 = numberFormat.lastIndexOf('0');
@@ -96,7 +100,19 @@ export function getSuffix(numberFormat:string, locale: string) {
             return numberFormat.replaceAll("'", '').substring(index0 + 1)
         }
     }
+    else if (numberFormat.endsWith('0') && numberFormat.includes(".") && scale === 0) {
+        const displayScaleDigits = getDisplayScaleDigits(numberFormat);
+        let suffix = numberSeperators.decimal;
+        for (let i = 0; i < displayScaleDigits.maxScale; i++) {
+            suffix += "0"
+        }
+        return suffix;
+    }
     return ""
+}
+
+function replaceGroupAndDecimal(value: string, numberSeperators: { decimal: string, group: string }) {
+    return value.replaceAll(numberSeperators.group, '').replaceAll(numberSeperators.decimal, '.')
 }
 
 /**
@@ -108,8 +124,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
 
+    const checkSelectedRow = () => {
+        return props.selectedRow && (props.selectedRow.data[props.columnName] !== undefined && props.selectedRow.data[props.columnName] !== null);
+    }
+
     /** Current state value of input element */
-    const [value, setValue] = useState<number|string|null|undefined>(props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ?  formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined);
+    const [value, setValue] = useState<string|null|undefined>(checkSelectedRow() ? props.selectedRow.data[props.columnName] : undefined);
 
     /** True, if the user has changed the value */
     const startedEditing = useRef<boolean>(false);
@@ -131,7 +151,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
      * @param value - the number which needs to be parsed
      */
     const parseNumber = (value: string) => {
-        return parseFloat(value.replaceAll(numberSeperators.group, '').replaceAll(numberSeperators.decimal, '.'))
+        return parseFloat(replaceGroupAndDecimal(value, numberSeperators));
     }
 
     /** The popup-menu of the ImageViewer */
@@ -156,7 +176,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
     * @returns the minimum and maximum scaledigits for the NumberCellEditor
     */
-    const writeScaleDigits:ScaleType = useMemo(() => props.columnMetaData 
+    const writeScaleDigits:ScaleType = useMemo(() => props.columnMetaData && (props.columnMetaData as NumericColumnDescription).scale !== 0
         ? getWriteScaleDigits(props.cellEditor.numberFormat, (props.columnMetaData as NumericColumnDescription).scale) 
         : {minScale: 0, maxScale: 0}, 
     [props.columnMetaData, props.cellEditor.numberFormat]);
@@ -172,7 +192,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? props.selectedRow.data[props.columnName] : undefined, false, props.context.appSettings.locale, useGrouping), [props.cellEditor.numberFormat, props.selectedRow, useGrouping]);
 
     /** Returns a string which will be added behind the number, based on the numberFormat */
-    const suffix = useMemo(() => getSuffix(props.cellEditor.numberFormat, props.context.appSettings.locale), [props.cellEditor.numberFormat]);
+    const suffix = useMemo(() => getSuffix(props.cellEditor.numberFormat, props.context.appSettings.locale, props.columnMetaData ? (props.columnMetaData as NumericColumnDescription).scale : undefined), [props.cellEditor.numberFormat]);
 
     /**
      * Returns the maximal length before the decimal separator
@@ -201,8 +221,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
-        setValue(props.selectedRow && (props.selectedRow.data[props.columnName] !== undefined && props.selectedRow.data[props.columnName] !== null)  ? formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, props.selectedRow.data[props.columnName]) : undefined)
-        startedEditing.current = false;
+        setValue(checkSelectedRow() ? props.selectedRow.data[props.columnName] : undefined);
+        
     },[props.selectedRow]);
 
     // If the lib user extends the NumberCellEditor with onChange, call it when selectedRow changes.
@@ -317,15 +337,27 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                 }
                 return parseInt(eValue + event.key);
             }
+
+            const isExceedingDecimalLength = () => {
+                return decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString()
+            }
+
+            const isEnteringMinusWhenSigned = () => {
+                return event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed === false
+            }
+
+            // const noFractionInputAllowed = () => {
+            //     return !isSelectedBeforeComma(event.target.value) && writeScaleDigits.maxScale !== 0 && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).scale === 0;
+            // }
             
-            if (decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString() || (event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed === false)) {
+            if (isExceedingDecimalLength() || isEnteringMinusWhenSigned()) {
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
             }
             else if (numberInput.current && typeof value === "string" && numberInput.current.value.indexOf(value) === numberInput.current.selectionStart && event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
                 startedEditing.current = true;
-                setValue(parseFloat("-" + value.replace(numberSeperators.decimal, ".")));
+                setValue(parseFloat("-" + value.replace(numberSeperators.decimal, ".")).toString());
             }
         }
         else {
@@ -350,14 +382,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                     minFractionDigits={writeScaleDigits.minScale}
                     maxFractionDigits={writeScaleDigits.maxScale}
                     //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                    value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
-                    //value={value as number|null|undefined}
+                    //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                    value={value as unknown as number}
                     style={{ width: '100%', height: "100%" }}
                     inputStyle={{ 
                         ...textAlignment, 
                         ...props.cellStyle
                     }}
-                    onChange={event => {
+                    onChange={(event:any) => {
                         startedEditing.current = true;
                         if (props.onInput) {
                             props.onInput(event);
@@ -370,7 +402,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                             }
                         }
                         else if (event.value !== null) {
-                            setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
+                            if (numberInput.current) {
+                                let stringCopy = numberInput.current.value.slice();
+                                stringCopy = stringCopy.replace(prefix, "").replace(suffix, "");
+                                setValue(new bigDecimal(replaceGroupAndDecimal(stringCopy, numberSeperators)).getValue())
+                            }
+                            //setValue(event.value.toString());
                         }
                         else {
                             setValue(null)
@@ -381,8 +418,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                             sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, props.topbar, props.rowNumber);
                         }
                     }}
-                    onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
-                    onBlur={(event) => {
+                    onFocus={(event:any) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
+                    onBlur={(event:any) => {
                         if (!props.isReadOnly) {
                             if (props.eventFocusLost) {
                                 onFocusLost(props.name, props.context.server);
@@ -393,7 +430,17 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                             }
 
                             if (startedEditing.current) {
-                                sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, props.topbar, props.rowNumber);
+                                sendSetValues(
+                                    props.dataRow, 
+                                    props.name,
+                                    props.columnName, 
+                                    props.columnName, 
+                                    value !== null && value !== undefined ? value : null, 
+                                    props.context.server, 
+                                    props.topbar,
+                                    props.rowNumber
+                                );
+                                startedEditing.current = false;
                             }
                         }
                     }}
@@ -416,15 +463,15 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                 //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 minFractionDigits={writeScaleDigits.minScale}
                 maxFractionDigits={writeScaleDigits.maxScale}
-                value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
-                //value={value as number|null|undefined}
+                //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
+                value={value as unknown as number}
                 style={props.layoutStyle}
                 inputStyle={{ 
                     ...textAlignment, 
                     //background: !isSysColor(editorBackground) ? editorBackground.background : undefined
                 }}
                 //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
-                onChange={event => {
+                onChange={(event:any) => {
                     startedEditing.current = true;
                     //@ts-ignore
                     if (event.value === "-") {
@@ -432,9 +479,18 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                             setValue(event.value);
                         }
                     }
-                    else {
-                        setValue(formatNumber(props.cellEditor.numberFormat, props.context.appSettings.locale, event.value));
+                    else if (event.value !== null) {
+                        if (numberInput.current) {
+                            let stringCopy = numberInput.current.value.slice();
+                            stringCopy = stringCopy.replace(prefix, "").replace(suffix, "");
+                            setValue(new bigDecimal(replaceGroupAndDecimal(stringCopy, numberSeperators)).getValue())
+                        }
+                        //setValue(event.value.toString());
                     }
+                    else {
+                        setValue(null)
+                    }
+                    
 
                     if (props.savingImmediate) {
                         sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, props.topbar, props.rowNumber);
@@ -442,7 +498,17 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                 }}
                 onBlur={() => {
                     if (startedEditing.current) {
-                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, typeof value === "string" ? parseNumber(value) : value as string | number | boolean | null, props.context.server, props.topbar, props.rowNumber)
+                        sendSetValues(
+                            props.dataRow, 
+                            props.name, 
+                            props.columnName, 
+                            props.columnName, 
+                            value !== null && value !== undefined ? value : null,
+                            props.context.server, 
+                            props.topbar, 
+                            props.rowNumber
+                        );
+                        startedEditing.current = false;
                     }
                 }}
                 disabled={props.isReadOnly}

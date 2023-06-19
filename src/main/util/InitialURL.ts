@@ -1,0 +1,1 @@
+export const initialURL = window.location.href;

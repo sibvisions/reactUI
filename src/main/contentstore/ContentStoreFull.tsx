@@ -65,8 +65,8 @@ export default class ContentStoreFull extends BaseContentStore {
                 // @ts-ignore  
                 let newProp = newComp[newPropName];
                 if (["dataBook", "dataRow"].indexOf(newPropName) !== -1 && existingProp === newProp) {
-                    if (existingProp && this.getDataBook((existingProp as string).split("/")[1], existingProp)) {
-                        this.dataBooks.get((existingProp as string).split("/")[1])?.delete(existingProp)
+                    if (existingProp && this.getDataBook(this.server.getScreenName(existingProp as string), existingProp)) {
+                        this.dataBooks.get(this.server.getScreenName(existingProp as string))?.delete(existingProp)
                         const fetchReq = createFetchRequest();
                         fetchReq.dataProvider = existingProp;
                         fetchReq.includeMetaData = true;
@@ -377,5 +377,35 @@ export default class ContentStoreFull extends BaseContentStore {
             }
         }
         return children;
+    }
+
+    /**
+    * Returns the component id of a screen for a component
+    * @param id - the id of the component
+    * @returns the component id of a screen for a component
+    */
+    getScreenName(id: string, dataProvider?:string) {
+        if (dataProvider) {
+            return this.server.getScreenName(dataProvider);
+        }
+        else {
+            let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
+            if (comp) {
+                while (comp?.parent) {
+                    if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {
+                        break;
+                    }
+                    else if ((comp as IPanel).content_className_) {
+                        return dataProvider ? dataProvider.split("/")[1] : comp.name;
+                    }
+    
+                    comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
+                }
+            }
+            if (comp?.nameComponentRef) {
+                return comp.nameComponentRef;
+            }
+            return comp?.name;
+        }
     }
 }

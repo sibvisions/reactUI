@@ -116,8 +116,8 @@ export default class ContentStore extends BaseContentStore {
                 // @ts-ignore  
                 let newProp = newComp[newPropName];
                 if (["dataBook", "dataRow"].indexOf(newPropName) !== -1 && existingProp === newProp) {
-                    if (existingProp && this.getDataBook((existingProp as string).split("/")[1], existingProp)) {
-                        this.dataBooks.get((existingProp as string).split("/")[1])?.delete(existingProp)
+                    if (existingProp && this.getDataBook(this.server.getScreenName(existingProp as string), existingProp)) {
+                        this.dataBooks.get(this.server.getScreenName(existingProp as string))?.delete(existingProp)
                         const fetchReq = createFetchRequest();
                         fetchReq.dataProvider = existingProp;
                         fetchReq.includeMetaData = true;
@@ -129,7 +129,11 @@ export default class ContentStore extends BaseContentStore {
 
                 if (newPropName === "screen_title_") {
                     this.topbarTitle = newProp;
-                    this.subManager.notifyScreenTitleChanged(newProp);
+                    const foundActiveScreen = this.activeScreens.find(as => as.id === existingComp.id);
+                    if (foundActiveScreen) {
+                        foundActiveScreen.title = newProp;
+                    }
+                    this.subManager.emitActiveScreens();
                 }
 
                 // @ts-ignore
@@ -328,21 +332,6 @@ export default class ContentStore extends BaseContentStore {
         notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
     }
 
-    /**
-     * When a screen closes cleanUp the data for the window 
-     * @param windowName - the name of the window to close
-     */
-    // closeScreen(windowName: string, opensAnother?:boolean, closeContent?:boolean) {
-    //     super.closeScreen(windowName, opensAnother, closeContent);
-
-    //     if (this.activeScreens.length) {
-    //         this.subManager.emitSelectedMenuItem(this.activeScreens.slice(-1).pop()!.className as string);
-    //     }
-    //     else if (!opensAnother) {
-    //         this.subManager.emitSelectedMenuItem("");
-    //     }
-    // }
-
     /** Resets the contentStore */
     reset(){
         super.reset()
@@ -471,7 +460,7 @@ export default class ContentStore extends BaseContentStore {
             image: icon ? icon.substring(0,2) + " " + icon : "",
             text: title,
             action: () => {
-                this.history?.push("/home/"+title);
+                this.history?.push("/screens/" + title);
                 return Promise.resolve(true);
             },
             flat: false

@@ -16,7 +16,7 @@
 import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
 import { Checkbox, CheckboxChangeParams } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IButtonSelectable } from "../IButton";
 import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
@@ -88,7 +88,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
                     btnStyle.iconDirection,
                     props.styleClassNames
                 )}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+                onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name + "-cb", props.context)}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
                 style={{
                     ...btnStyle.style,

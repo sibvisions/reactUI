@@ -148,7 +148,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                     }
 
                     const pathName = history.location.pathname;
-                    const navName = pathName.substring(pathName.indexOf("/home/") + "/home/".length);
+                    const navName = pathName.substring(pathName.indexOf("/screens/") + "/screens/".length);
                     if (navName) {
                         const navValue = context.contentStore.navigationNames.get(navName);
                         // If the same screen isn't already open or there are no screens open at all and there is a screen to open through pathname, open it.
@@ -156,7 +156,13 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             ((context.contentStore.activeScreens[0] && context.contentStore.activeScreens[0].name !== navValue.screenId) || !context.contentStore.activeScreens.length)) {
                             let prevPathCopy = prevLocation.current
                             const openReq = createOpenScreenRequest();
-                            openReq.componentId = navValue.componentId;
+                            if (navValue.componentId.includes(":")) {
+                                openReq.componentId = navValue.componentId;
+                            }
+                            else {
+                                openReq.className = navValue.componentId;
+                            }
+                            
                             showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar)
                                 .then((responses: BaseResponse[]) => {
                                     checkAskBefore(prevPathCopy, responses)
@@ -181,7 +187,12 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                     csRequest.componentId = comp.name;
                                     showTopBar(context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar)
                                         .then((responses: BaseResponse[]) => {
-                                            checkAskBefore(prevPathCopy, responses, comp)
+                                            if (!responses.length) {
+                                                context.contentStore.closeScreen(comp.id, comp.name, true);
+                                            }
+                                            else {
+                                                checkAskBefore(prevPathCopy, responses, comp)
+                                            }
                                         });
                                 }
                             })

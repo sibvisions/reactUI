@@ -25,10 +25,10 @@ const ScreenWrapperManager:FC = () => {
     const context = useContext(appContext);
 
     /** ComponentId of Screen extracted by useParams hook */
-    const {componentId} = useParams<any>();
+    const { screenName } = useParams<any>();
     
     /** The ID of the screen based on the navigation-name */
-    const screenId = getScreenIdFromNavigation(componentId, context.contentStore);
+    const screenId = getScreenIdFromNavigation(screenName, context.contentStore);
 
     return context.contentStore.screenWrappers.has(screenId) ? 
         context.contentStore.screenWrappers.get(screenId || "")?.wrapper as ReactElement : 

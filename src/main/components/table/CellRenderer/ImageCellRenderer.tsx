@@ -17,6 +17,7 @@ import React, { FC, useContext } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import { ICellEditorImage } from "../../editors/image/UIEditorImage";
 import { ICellRender } from "../CellEditor";
+import { parseIconData } from "../../comp-props/ComponentProperties";
 
 /**
  * Renders the image-cell when the column is an image-cell
@@ -29,10 +30,55 @@ const ImageCellRenderer: FC<ICellRender> = (props) => {
     /** Casts the cell-editor property to ICellEditorImage because we can be sure it is a image-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorImage;
 
+    const iconData = props.cellData && props.cellData.includes("FontAwesome") ? parseIconData(undefined, props.cellData) : undefined;
+
+    const getImageSource = () => {
+        if (props.cellData) {
+            if (props.columnMetaData) {
+                if (props.columnMetaData.dataTypeIdentifier === -2) {
+                    return "data:image/jpeg;base64," + props.cellData;
+                }
+                else {
+                    return context.server.RESOURCE_URL + props.cellData;
+                }
+            } 
+        }
+        return context.server.RESOURCE_URL + castedCellEditor.defaultImageName;
+    }
+
+    const getImageElement = () => {
+        if (props.icon) {
+            return props.icon;
+        }
+        else if (props.cellData) {
+            if (iconData) {
+                return (
+                    <i
+                        className={iconData.icon}
+                        style={{
+                            color: iconData.color,
+                            fontSize: iconData.size?.height
+                        }} />
+                )
+            }
+            else {
+                return (
+                    <img
+                        className="rc-table-image"
+                        src={getImageSource()}
+                        alt="could not be loaded" />
+                )
+            }
+        }
+        else {
+            <></>
+        }
+    }
+
     return (
         <>
             <span className="cell-data-content">
-               {props.icon ?? <img className="rc-table-image" src={props.cellData ? "data:image/jpeg;base64," + props.cellData : context.server.RESOURCE_URL + castedCellEditor.defaultImageName} alt="could not be loaded"/>}
+                {getImageElement()}
             </span>
         </>
     )

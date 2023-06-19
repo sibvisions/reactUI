@@ -20,7 +20,7 @@ import _ from "underscore";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest, createWidthRequest } from "../../factories/RequestFactory";
 import { showTopBar } from "../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
@@ -927,7 +927,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
             return (
                 <>
-                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable ? "" : " *") }} /> 
+                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable === false ? " *" : "") }} /> 
                     <span onClick={() => handleSort(colName)} className="p-sortable-column-icon pi pi-fw"></span>
                     <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
@@ -1384,9 +1384,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     const relatedTarget = event.relatedTarget;
                     setTimeout(() => {
                         if (!focused.current) {
-                            if (props.eventFocusGained) {
-                                onFocusGained(props.name, props.context.server);
-                            }
+                            handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)
                             focused.current = true;
                             if (columnOrder && !focusIsClicked.current) {
                                 if (relatedTarget === getFocusComponent(props.name + "-_wrapper", false)) {

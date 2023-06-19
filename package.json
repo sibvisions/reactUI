@@ -1,7 +1,7 @@
 {
   "name": "@sibvisions/reactui",
   "homepage": ".",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "main": "moduleIndex.js",
   "types": "moduleIndex.d.ts",
   "license": "Apache-2.0 license",
@@ -41,6 +41,7 @@
     "date-fns-tz": "^1.3.7",
     "file-loader": "^6.1.1",
     "history": "5.0.0",
+    "js-big-decimal": "^1.4.1",
     "jsdoc": "^3.6.6",
     "leaflet": "^1.7.1",
     "mini-css-extract-plugin": "^2.6.0",

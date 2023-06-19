@@ -16,7 +16,7 @@ import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useM
 import { Calendar } from 'primereact/calendar';
 import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
 import tinycolor from "tinycolor2";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
@@ -246,7 +246,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     useEffect(() => {
         setDateValue(convertToTimeZone(false));
         setViewDate(convertToTimeZone(true));
-        startedEditing.current = false;
+        
     },[props.selectedRow]);
 
     // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
@@ -312,7 +312,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             isValidDate(dateToSend) ? (dateToSend as Date).getTime() : null,
             props.context.server, 
             props.topbar,
-            props.rowNumber)
+            props.rowNumber);
+        startedEditing.current = false;
     }
 
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
@@ -421,11 +422,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                         calendarInput.current.focus();
                     }
                 }}
-                onFocus={() => {
+                onFocus={(event) => {
                     if (!focused.current) {
-                        if (props.eventFocusGained) {
-                            onFocusGained(props.name, props.context.server);
-                        }
+                        handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
                         focused.current = true;
                     }
                 }}
@@ -460,9 +459,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {
-                        if (props.eventFocusGained) {
-                            onFocusGained(props.name, props.context.server);
-                        }
+                        handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
                         focused.current = true;
                     }
                     if (event.type === 'outside') {

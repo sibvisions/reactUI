@@ -13,10 +13,10 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
-import { convertColNamesToReferenceColNames, convertReferenceColNamesToColNames, fetchLinkedRefDatabook, getExtractedObject, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
+import { fetchLinkedRefDatabook, getDisplayValue, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
 
 /**
@@ -25,10 +25,10 @@ import { ICellRender } from "../CellEditor";
  */
 const LinkedCellRenderer: FC<ICellRender> = (props) => {
     /** Casts the cell-editor property to ICellEditorLinked because we can be sure it is a linked-cell-editor */
-    const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorLinked
+    const cellEditorMetaData = props.columnMetaData.cellEditor as ICellEditorLinked
 
     /** The data provided by the databook */
-    const [providedData] = useDataProviderData(props.screenName, castedCellEditor.linkReference.referencedDataBook||"");
+    const [providedData] = useDataProviderData(props.screenName, cellEditorMetaData.linkReference.referencedDataBook||"");
 
     const [displayMapChanged, setDisplayMapChanged] = useState<boolean>(false);
 
@@ -39,12 +39,12 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     const linkRefFetchFlag = useMemo(() => providedData.length > 0, [providedData]);
 
     /** True, if there is a displayReferencedColumnName or a displayConcatMask */
-    const isDisplayRefColNameOrConcat = useMemo(() => castedCellEditor.displayReferencedColumnName || castedCellEditor.displayConcatMask, [castedCellEditor.displayReferencedColumnName, castedCellEditor.displayConcatMask]);
+    const isDisplayRefColNameOrConcat = useMemo(() => cellEditorMetaData.displayReferencedColumnName || cellEditorMetaData.displayConcatMask, [cellEditorMetaData.displayReferencedColumnName, cellEditorMetaData.displayConcatMask]);
 
     useEffect(() => {
-        context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, castedCellEditor.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
+        context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
 
-        return () => context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, castedCellEditor.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
+        return () => context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
     },[context.subscriptions])
 
     // If there is a cell-data fetch the linkedReference Databook so the correct value can be displayed
@@ -52,10 +52,10 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
         if (props.cellData !== undefined) {
             fetchLinkedRefDatabook(
                 props.screenName, 
-                castedCellEditor.linkReference.referencedDataBook,
+                cellEditorMetaData.linkReference.referencedDataBook,
                 props.cellData, 
-                castedCellEditor.displayReferencedColumnName,
-                castedCellEditor.displayConcatMask,
+                cellEditorMetaData.displayReferencedColumnName,
+                cellEditorMetaData.displayConcatMask,
                 context.server,
                 context.contentStore,
                 undefined,
@@ -64,36 +64,8 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
         }
     }, []);
 
-    /**
-     * Returns the displayValue to display
-     * @param value - the datarow which should be displayed
-     */
-    const getDisplayValue = useCallback((value:any) => {
-        if (isDisplayRefColNameOrConcat) {
-            if (castedCellEditor && castedCellEditor.linkReference.dataToDisplayMap?.has(JSON.stringify(value))) {
-                return castedCellEditor.linkReference.dataToDisplayMap.get(JSON.stringify(value))
-            }
-            else {
-                return convertReferenceColNamesToColNames(value, castedCellEditor.linkReference)[props.colName]
-            }
-        }
-        if (value[props.colName] !== undefined) {
-            return value[props.colName]
-        }
-        return props.cellData;
-    },[isDisplayRefColNameOrConcat, linkRefFetchFlag, castedCellEditor, props.colName, displayMapChanged])
-
     /** The displayValue to display */ 
-    const linkedDisplayValue = useMemo(() => {
-        if (castedCellEditor && castedCellEditor.linkReference.dataToDisplayMap?.size) {
-            const index = castedCellEditor.linkReference.columnNames.findIndex(colName => colName === props.colName);
-            return getDisplayValue(getExtractedObject(convertColNamesToReferenceColNames(props.rowData, castedCellEditor.linkReference, props.colName), [castedCellEditor.linkReference.referencedColumnNames[index]]))
-        }
-        else {
-            return getDisplayValue(props.rowData)
-        }
-        
-    }, [props.cellData, linkRefFetchFlag, castedCellEditor, props.rowData, props.colName, displayMapChanged]);
+    const linkedDisplayValue = useMemo(() => getDisplayValue(props.rowData, undefined, cellEditorMetaData.linkReference, props.colName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataProvider), [props.cellData, linkRefFetchFlag, cellEditorMetaData, props.rowData, props.colName, displayMapChanged])
 
     return (
         <>

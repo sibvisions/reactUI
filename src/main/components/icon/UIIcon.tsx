@@ -147,7 +147,7 @@ const UIIcon: FC<IBaseComponent & IExtendableIcon & IComponentConstants> = (prop
                 props.focusable === false ? "no-focus-rect" : "",
                 props.styleClassNames
             )}
-            style={{...props.layoutStyle, ...props.compStyle, justifyContent: alignments.ha, alignItems: alignments.va}}
+            style={{...props.layoutStyle, ...props.compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}
         >
             <Tooltip target={"#" + props.name} />

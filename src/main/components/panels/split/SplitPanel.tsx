@@ -62,45 +62,49 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
         if (props.dividerPosition !== -1) {
             const minSize = parseMinSize(props.leftComponent?.props.minimumSize);
             const maxSize = parseMaxSize(props.leftComponent?.props.maximumSize);
-            if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
-                if (minSize) {
-                    if (props.dividerPosition < minSize.width) {
-                        pos = minSize.width;
-                    }
-                    else {
-                        pos = props.dividerPosition;
-                    }
-                }
-
-                if (maxSize) {
-                    if (props.dividerPosition > maxSize.width) {
-                        pos = maxSize.width;
-                    }
-                    else {
-                        pos = props.dividerPosition
-                    }
-                }
+            if (!minSize && !maxSize) {
+                pos = props.dividerPosition;
             }
             else {
-                if (minSize) {
-                    if (props.dividerPosition < minSize.height) {
-                        pos = minSize.height;
+                if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
+                    if (minSize) {
+                        if (props.dividerPosition < minSize.width) {
+                            pos = minSize.width;
+                        }
+                        else {
+                            pos = props.dividerPosition;
+                        }
                     }
-                    else {
-                        pos = props.dividerPosition;
+    
+                    if (maxSize) {
+                        if (props.dividerPosition > maxSize.width) {
+                            pos = maxSize.width;
+                        }
+                        else {
+                            pos = props.dividerPosition
+                        }
                     }
                 }
-
-                if (maxSize) {
-                    if (props.dividerPosition > maxSize.height) {
-                        pos = maxSize.height;
+                else {
+                    if (minSize) {
+                        if (props.dividerPosition < minSize.height) {
+                            pos = minSize.height;
+                        }
+                        else {
+                            pos = props.dividerPosition;
+                        }
                     }
-                    else {
-                        pos = props.dividerPosition
+    
+                    if (maxSize) {
+                        if (props.dividerPosition > maxSize.height) {
+                            pos = maxSize.height;
+                        }
+                        else {
+                            pos = props.dividerPosition
+                        }
                     }
                 }
             }
-
             return pos;
         }
     }, [props.dividerPosition, props.orientation, props.leftComponent, props.rightComponent])
@@ -256,8 +260,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
             }
         }
         
-    }, [props.trigger.width, props.trigger.height])
-
+    }, [props.trigger.width, props.trigger.height]);
 
     return (
         <>

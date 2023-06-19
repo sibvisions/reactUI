@@ -16,7 +16,7 @@
 import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { createSetValuesRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { Tooltip } from "primereact/tooltip";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
@@ -246,16 +246,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
                     setNextValue()
                 }
             }}
-            onFocus={(event) => {
-                if (props.eventFocusGained) {
-                    onFocusGained(props.name, props.context.server);
-                }
-                else {
-                    if (props.isCellEditor) {
-                        event.preventDefault();
-                    }
-                }
-            }}
+            onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name + "-wrapper", props.context, props.isCellEditor)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
             {...usePopupMenu(props)}

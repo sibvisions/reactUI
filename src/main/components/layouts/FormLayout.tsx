@@ -27,6 +27,7 @@ import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import { FormLayoutInformation, Anchor, FormLayoutAssistant } from "@sibvisions/visionx/dist/moduleIndex";
+import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -55,7 +56,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         reportSize,
         maximumSize,
         minimumSize,
-        className
+        className,
+        panelType
     } = baseProps;
 
     const formLayoutAssistant = useMemo(() => {
@@ -210,18 +212,20 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
                 children.forEach(component => {
-                    const anchorNames = component.constraints.split(";");
-                    /** Get Anchors */
-                    const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
-                    const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
-                    
-                    /** Fill Constraints-Map */
-                    if(topAnchor && leftAnchor && rightAnchor && bottomAnchor){
-                        const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
-                        componentConstraints.set(component.id, constraint);
+                    if (!(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) {
+                        const anchorNames = component.constraints.split(";");
+                        /** Get Anchors */
+                        const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
+                        const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
 
-                        if (isDesignerActive()) {
-                            layoutInfo!.componentConstraints.set(component.name, component.constraints);
+                        /** Fill Constraints-Map */
+                        if (topAnchor && leftAnchor && rightAnchor && bottomAnchor) {
+                            const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
+                            componentConstraints.set(component.id, constraint);
+
+                            if (isDesignerActive()) {
+                                layoutInfo!.componentConstraints.set(component.name, component.constraints);
+                            }
                         }
                     }
                 });
@@ -607,7 +611,33 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                     }
                     else if (rightBottomAnchor.relative) {
-                        console.warn("not yet implemented")
+                        const leftTop = leftTopAnchor.getRelativeAnchor();
+                        if (leftTop && leftTop !== rightBottomAnchor) {
+                            let pref = leftTopAnchor.getAbsolutePosition() - leftTop.getAbsolutePosition() + preferredSize;
+                            let size = 0;
+                            if (rightBottomAnchor.relatedAnchor && leftTop.relatedAnchor) {
+                                size = rightBottomAnchor.relatedAnchor.getAbsolutePosition() - leftTop.relatedAnchor.getAbsolutePosition();
+                            }
+
+                            let pos = pref - size;
+
+                            if (pos < 0) {
+                                pos -= pos / 2;
+                            }
+                            else {
+                                pos /= 2;
+                            }
+                            if (leftTop.firstCalculation || pos < leftTop.position) {
+                                leftTop.firstCalculation = false;
+                                leftTop.position = pos;
+                            }
+                            pos = pref - size - pos;
+                            if (rightBottomAnchor.firstCalculation || pos > -rightBottomAnchor.position)
+                            {
+                                rightBottomAnchor.firstCalculation = false;
+                                rightBottomAnchor.position = -pos;
+                            }
+                        }
                     }
                 }
 
@@ -784,6 +814,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             left: left,
                             top: top
                         });
+                    }
+                    else if (panelType === "DesktopPanel" && context.transferType === "full") {
+                        sizeMap.set(component.id, { height: (style?.height as number) * 0.75, width: (style?.width as number) * 0.75 })
                     }
                 });
                 if(borderConstraint && marginConstraint){

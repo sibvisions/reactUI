@@ -35,13 +35,14 @@ import MetaDataResponse from "../response/data/MetaDataResponse";
 import SessionExpiredResponse from "../response/error/SessionExpiredResponse";
 import DeviceStatusResponse from "../response/event/DeviceStatusResponse";
 import { translation } from "../util/other-util/Translation";
-import { getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
+import { generateDisplayMapKey, getExtractedObject, ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import BadClientResponse from "../response/error/BadClientResponse";
 import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { setDateLocale } from "../util/other-util/GetDateLocale";
 import BaseRequest from "../request/BaseRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
 import GenericResponse from "../response/ui/GenericResponse";
+import { CellFormatting } from "../components/table/CellEditor";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -122,7 +123,7 @@ export default abstract class BaseServer {
 
     maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
 
-    screenToClose:{windowId: string, windowName: string, closeModal: boolean|undefined}|undefined = undefined;
+    screensToClose:{windowId: string, windowName: string, closeDirectly: boolean|undefined}[] = [];
 
     ignoreHome = false;
 
@@ -215,11 +216,13 @@ export default abstract class BaseServer {
                 reject("Component doesn't exist: " + request.componentId);
                 return;
             }
+
             if (request.dataProvider) {
                 if (Array.isArray(request.dataProvider)) {
                     let exist = true;
                     request.dataProvider.forEach((dataProvider:string) => {
-                        if (!this.contentStore.dataBooks.get(this.getScreenName(dataProvider))?.has(dataProvider) && !this.missingDataFetches.includes(dataProvider)) {
+                        const screenName = this.getScreenName(dataProvider);
+                        if (!this.contentStore.dataBooks.get(screenName)?.has(dataProvider) && !this.missingDataFetches.includes(dataProvider)) {
                             exist = false;
                         }
                     });
@@ -229,9 +232,23 @@ export default abstract class BaseServer {
                         return
                     }
                 }
-                else if (!this.contentStore.dataBooks.get(this.getScreenName(request.dataProvider))?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
-                    reject("Dataprovider doesn't exist: " + request.dataProvider);
-                    return
+                else {
+                    if (this.appSettings.transferType !== "full") {
+                        const screenName = this.getScreenName(request.dataProvider);
+                        const screenIsOpen = this.contentStore.activeScreens.some(as => as.name === screenName);
+                        
+                        // Not sending dataprovider request if the screen isnt opened
+                        if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
+                            this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
+                            resolve(undefined)
+                            return
+                        }
+    
+                        if (!this.contentStore.dataBooks.get(screenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                            reject("Dataprovider doesn't exist: " + request.dataProvider);
+                            return
+                        }
+                    }
                 }
             }
 
@@ -398,7 +415,7 @@ export default abstract class BaseServer {
     /** ----------HANDLING-RESPONSES---------- */
 
     /** Handles a closeScreen response sent by the server */
-    abstract closeScreen(closeScreenData: CloseScreenResponse, request?: any, opensAnother?:boolean):void
+    abstract closeScreen(closeScreenData: CloseScreenResponse, request?: any):void
 
     /** A Map which checks which function needs to be called when a data response is received (before regular response map) */
     abstract dataResponseMap: Map<string, Function>;
@@ -428,23 +445,6 @@ export default abstract class BaseServer {
                     return 0;
                 }
             });
-
-            if (responses.length && responses[0].name === RESPONSE_NAMES.CLOSE_SCREEN) {
-                const opensNewScreen = responses.some(response => {
-                    if (response.name === RESPONSE_NAMES.SCREEN_GENERIC) {
-                        if (!(response as GenericResponse).update) {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-                if (opensNewScreen) {
-                    this.closeScreen(responses[0] as CloseScreenResponse, request, true);
-                }
-                else {
-                    this.closeScreen(responses[0] as CloseScreenResponse, request, false);
-                }
-            }
 
             for (const [, response] of responses.entries()) {
                 const mapper = this.dataResponseMap.get(response.name);
@@ -554,16 +554,17 @@ export default abstract class BaseServer {
                         return;
                     }
                     formattedRecords[index] = formattedRecords[index] || {};
-                    formattedRecords[index][componentId] = r.reduce<any[]>((agg, c, index) => {
-                        agg[index] = format[Math.max(0, Math.min(c, format.length - 1))];
+                    formattedRecords[index][componentId] = new Map<String, CellFormatting>();
 
-                        if (index === r.length - 1 && fetchData.columnNames.length > r.length) {
-                            for (let i =  index; i < fetchData.columnNames.length; i++) {
-                                agg[i] = format[Math.max(0, Math.min(c, format.length - 1))];
+                    for (let i = 0; i < r.length; i++) {
+                        formattedRecords[index][componentId].set(fetchData.columnNames[i], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+
+                        if (i === r.length - 1 && fetchData.columnNames.length > r.length) {
+                            for (let j = index; j < fetchData.columnNames.length; j++) {
+                                formattedRecords[index][componentId].set(fetchData.columnNames[j], format[Math.max(0, Math.min(r[i], format.length - 1))]);
                             }
                         }
-                        return agg;
-                    }, [])
+                    }
                 });
             }
         }
@@ -594,10 +595,20 @@ export default abstract class BaseServer {
                 }
                 const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
                 const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);
+                const keyObj = generateDisplayMapKey(
+                    data,
+                    referencedData,
+                    cellEditor.linkReference,
+                    column.columnName,
+                    cellEditor.displayConcatMask || cellEditor.displayReferencedColumnName,
+                    cellEditor,
+                    "build-map"
+                )
                 const columnViewNames = cellEditor.columnView ? cellEditor.columnView.columnNames : dataBook.metaData!.columnView_table_;
                 const columnViewData = getExtractedObject(data, columnViewNames);
                 if (cellEditor.displayReferencedColumnName) {
                     const extractDisplayRef = getExtractedObject(data, [...cellEditor.linkReference.referencedColumnNames, cellEditor.displayReferencedColumnName]);
+                    dataToDisplayMap.set(JSON.stringify(keyObj), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
                     dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
                     if (!notifyDataMap) {
                         notifyDataMap = true;
@@ -618,6 +629,13 @@ export default abstract class BaseServer {
                             displayString += columnViewData[column] + (i !== columnViewNames.length - 1 ? cellEditor.displayConcatMask : "");
                         });
                     }
+                    if (!dataToDisplayMap.has(JSON.stringify(keyObj)) || dataToDisplayMap.get(JSON.stringify(keyObj)) !== displayString) {
+                        if (!notifyDataMap) {
+                            notifyDataMap = true;
+                        }
+                        dataToDisplayMap.set(JSON.stringify(keyObj), displayString);
+                    }
+
                     if (!dataToDisplayMap.has(JSON.stringify(referencedData)) || dataToDisplayMap.get(JSON.stringify(referencedData)) !== displayString) {
                         if (!notifyDataMap) {
                             notifyDataMap = true;
@@ -796,8 +814,8 @@ export default abstract class BaseServer {
             this.subManager.emitErrorBarVisible(true);
             this.subManager.emitSessionExpiredChanged(true)
         }
-        if (this.history?.location.pathname.includes("/home/")) {
-            localStorage.setItem("restartScreen", this.history.location.pathname.replaceAll("/", "").substring(indexOfEnd(this.history.location.pathname, "home") - 1));
+        if (this.history?.location.pathname.includes("/screens/")) {
+            localStorage.setItem("restartScreen", this.history.location.pathname.replaceAll("/", "").substring(indexOfEnd(this.history.location.pathname, "screens") - 1));
         }
         console.error(expData.title);
     }

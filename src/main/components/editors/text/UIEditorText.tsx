@@ -20,7 +20,7 @@ import { Password } from "primereact/password";
 import { Editor } from "primereact/editor";
 import Quill from "quill";
 import { showTopBar } from "../../topbar/TopBar";
-import { onFocusGained, onFocusLost } from "../../../util/server-util/SendFocusRequests";
+import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
 import { ICellEditor } from "../IEditor";
 import { getTextAlignment } from "../../comp-props/GetAlignments";
@@ -38,7 +38,7 @@ import { IComponentConstants } from "../../BaseComponent";
 
 /** Interface for TextCellEditor */
 export interface IEditorText extends IRCCellEditor {
-    cellEditor?: ICellEditor
+    cellEditor: ICellEditor
     length:number
 }
 
@@ -281,7 +281,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
         setText(props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data[props.columnName] : undefined);
-        startedEditing.current = false;
+        
     },[props.selectedRow]);
 
     // If the lib user extends the TextCellEditor with onChange, call it when selectedRow changes.
@@ -338,6 +338,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
         if (props.isCellEditor && stopCellEditing) {
             if ((event.key === "Enter" || event.key === "Tab") && startedEditing.current) {
                 sendSetValues(dataRow, name, columnName, columnName, text, props.context.server, props.topbar, props.rowNumber);
+                startedEditing.current = false;
                 stopCellEditing(event);
             }
             else if (event.key === "Escape") {
@@ -462,7 +463,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                     sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.currentTarget.value, props.context.server, props.topbar, props.rowNumber)
                 }
             },
-            onFocus: props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined,
+            onFocus: (event: React.FocusEvent) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor),
             onBlur: (event:React.FocusEvent) => {
                 if (!props.isReadOnly) {
                     if (props.onBlur) {
@@ -470,7 +471,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                     }
 
                     if (!escapePressed.current && startedEditing.current) {
-                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber)
+                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber);
+                        startedEditing.current = false;
                     }
                     if (props.eventFocusLost) {
                         showTopBar(onFocusLost(props.name, props.context.server), props.topbar)
@@ -500,11 +502,12 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                     props.isReadOnly ? 'rc-editor-html--disabled' : null
                 ].filter(Boolean).join(' ')}
                 tabIndex={getTabIndex(props.focusable, props.tabIndex)}
-                onFocus={props.eventFocusGained ? () => onFocusGained(props.name, props.context.server) : undefined}
+                onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
                 onBlur={() => {
                     if (!props.isReadOnly) {
                         if (!escapePressed.current && startedEditing.current) {
-                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber)
+                            sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber);
+                            startedEditing.current = false;
                         }
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server)

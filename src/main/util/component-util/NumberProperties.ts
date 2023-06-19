@@ -43,10 +43,11 @@ export function getPrimePrefix(numberFormat:string, value:any, locale: string, u
     const numberSeperators = getNumberSeparators(locale);
     const splitFormat = numberFormat.split('.')[0];
     let count = (splitFormat.match(/0/g) || []).length;
-    if (count - (value ? value.toString().length : 1) >= 1) {
+    const valueLength = value ? value.toString().includes(".") ? value.split(".")[0].length : value.length : 1
+    if (count - valueLength >= 1) {
         let string = "";
         let j = 2;
-        for (let i = 0; i < count - (value ? value.toString().length : 1); i++) {
+        for (let i = 0; i < count - valueLength; i++) {
             string += "0";
             if (useGrouping) {
                 if (j === 2) {
@@ -83,16 +84,16 @@ export function getDisplayScaleDigits(numberFormat:string) {
  */
 export function getWriteScaleDigits(numberFormat:string, scale:number) {
     let count = numberFormat.includes('.') ? (numberFormat.split('.')[1].match(/0/g) || []).length : 0;
-    return scale === -1 ? {minScale: count, maxScale: 20} : {minScale: count, maxScale: scale < count ? count : scale}
+    return scale === 0 ? { minScale: 0, maxScale: 0 } : scale === -1 ? {minScale: count, maxScale: 20} : {minScale: count, maxScale: scale < count ? count : scale}
 }
 
-export function formatNumber(numberFormat: string, locale: string, value: any) {
+export function formatNumber(numberFormat: string, locale: string, value: any, scale:number) {
     return Intl.NumberFormat(locale,
         {
             useGrouping: getGrouping(numberFormat),
             minimumIntegerDigits: getMinimumIntDigits(numberFormat),
-            minimumFractionDigits: getDisplayScaleDigits(numberFormat).minScale,
-            maximumFractionDigits: getDisplayScaleDigits(numberFormat).maxScale
+            minimumFractionDigits: getWriteScaleDigits(numberFormat, scale).minScale,
+            maximumFractionDigits: getWriteScaleDigits(numberFormat, scale).maxScale
         }).format(value);
 }
 
