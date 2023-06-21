@@ -77,13 +77,13 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     anchorToColumnMap: new Map<string, number>(),
                     horizontalColumnToAnchorMap: new Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>(),
                     verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>(),
-                    componentConstraints: compConstraintMap,
-                    originalConstraints: new Map(compConstraintMap),
+                    componentConstraints: new Map<string, { constraints: string, isHorizontalConstraints: boolean, isVerticalConstraints: boolean }>(),
+                    originalConstraints: compConstraintMap,
                     componentSizes: compSizes
                 }))
             }
             else {
-                context.designer.formLayouts.get(name)!.layoutInfo.originalConstraints = new Map(compConstraintMap);
+                context.designer.formLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
             }
             return context.designer.formLayouts.get(name) as FormLayoutAssistant;
         }
@@ -189,7 +189,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 if (isDesignerActive()) {
                     anchors.forEach(pAnchor => {
                         let anchor:Anchor|undefined = pAnchor;
-                        let anchorList = (["l", "r"].indexOf(anchor.name.substring(0, 1)) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
+                        let anchorStartChar = anchor.name.substring(0, 1);
+                        let anchorList = (["l", "r"].indexOf(anchorStartChar) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
                         const pos = anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) !== -1 ? anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) + 1 : anchorList.length;
     
                         const containsAnchor = (anchor:Anchor) => {
@@ -202,7 +203,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
 
                         while (anchor && !containsAnchor(anchor)) {
-                            anchorList.splice(pos, 0, anchor);
+                            anchorStartChar = anchor.name.substring(0, 1);
+                            if (!(anchorStartChar.startsWith("v") || anchorStartChar.startsWith("h"))) {
+                                anchorList.splice(pos, 0, anchor);
+                            }
+                            
                             anchor = anchor.relatedAnchor;
                         }
                     })
@@ -223,8 +228,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
                             componentConstraints.set(component.id, constraint);
 
-                            if (isDesignerActive()) {
-                                layoutInfo!.componentConstraints.set(component.name, component.constraints);
+                            if (isDesignerActive() && formLayoutAssistant) {
+                                 
+                                const { newConstraints, isVerticalConstraint, isHorizontalConstraint } = formLayoutAssistant.getConvertedVerticalHorizontalConstraints(splitAnchors, component.constraints);
+                                layoutInfo!.componentConstraints.set(component.name, { constraints: newConstraints, isHorizontalConstraints: isHorizontalConstraint, isVerticalConstraints: isVerticalConstraint });
                             }
                         }
                     }
@@ -801,7 +808,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 /** Build the sizemap with each component based on the constraints with their component id as key and css style as value */
                 children.forEach(component => {
                     const constraint = componentConstraints.get(component.id);
-
                     if(constraint && marginConstraint && borderConstraint) {
                         const left = constraint.leftAnchor.getAbsolutePosition() - marginConstraint.leftAnchor.getAbsolutePosition() + margins.marginLeft;
                         const top = constraint.topAnchor.getAbsolutePosition() - marginConstraint.topAnchor.getAbsolutePosition() + margins.marginTop;
@@ -863,7 +869,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
          * If compSizes is set (every component in this layout reported its preferred size) 
          * and the compSize is the same as children size calculate the layout 
          */
-        if(compSizes && compSizes.size === children.size && context.contentStore.getComponentById(id)?.visible !== false){
+        if (compSizes && compSizes.size === children.size && context.contentStore.getComponentById(id)?.visible !== false) {
+            
             calculateLayout(
                 compSizes,
                 children,
