@@ -19,7 +19,7 @@ import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { appContext } from "./main/contexts/AppProvider";
-import { createCloseScreenRequest, createOpenScreenRequest } from "./main/factories/RequestFactory";
+import { createCloseScreenRequest, createOpenScreenRequest, getClientId } from "./main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { SpeedDial } from "primereact/speeddial";
@@ -33,6 +33,10 @@ import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
 import ErrorResponse from "./main/response/error/ErrorResponse";
 import ContentStoreFull from "./main/contentstore/ContentStoreFull";
+import ServerFull from "./main/server/ServerFull";
+import Server from "./main/server/Server";
+import { SubscriptionManager } from "./main/SubscriptionManager";
+import AppSettings from "./main/AppSettings";
 interface IAppWrapper {
     embedOptions?: { [key: string]: any }
     theme?: string
@@ -43,10 +47,12 @@ interface IAppWrapper {
 interface IVisionXContext {
     showVisionX: boolean
     toggleVisionX: () => void,
-    contentStore: ContentStore|ContentStoreFull
+    contentStore: ContentStore|ContentStoreFull|undefined,
+    server: Server|ServerFull|undefined,
+    clientId: string
 }
 
-export const VisionXContext = createContext<IVisionXContext>({ showVisionX: false, toggleVisionX: () => {}, contentStore: new ContentStore() });
+export const VisionXContext = createContext<IVisionXContext>({ showVisionX: false, toggleVisionX: () => {}, contentStore: undefined, server: undefined, clientId: "" });
 
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
@@ -60,7 +66,13 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
 
-    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ showVisionX: false, toggleVisionX: () => setVXContextState(prevState => ({...prevState, showVisionX: !prevState.showVisionX})), contentStore: context.contentStore });
+    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ 
+        showVisionX: false, 
+        toggleVisionX: () => setVXContextState(prevState => ({...prevState, showVisionX: !prevState.showVisionX})), 
+        contentStore: context.contentStore, 
+        server: context.server,
+        clientId: getClientId()
+    });
 
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();

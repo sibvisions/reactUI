@@ -35,7 +35,6 @@ import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
 import MetaDataResponse, { MetaDataReference } from "../../response/data/MetaDataResponse";
 import { IComponentConstants } from "../BaseComponent";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
 /** Interface for Tree */
 export interface ITree extends IBaseComponent {

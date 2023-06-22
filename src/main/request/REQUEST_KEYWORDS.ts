@@ -73,6 +73,9 @@ enum REQUEST_KEYWORDS {
     ROLLBACK = "rollback",
     CHANGES = "changes",
     ALIVE = "alive",
-    WIDTH = "width"
+    WIDTH = "width",
+
+    //vx
+    SET_LAYOUT = "set_layout"
 }
 export default REQUEST_KEYWORDS

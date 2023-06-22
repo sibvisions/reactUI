@@ -190,6 +190,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
         context.subscriptions.subscribeToParentChange(id, () => {
             /** New Components when component changes */
             const newComponents = buildComponents();
+            
             /** Contains the components */
             const cl = new Array<ReactElement>();
             newComponents.forEach(nc => {

@@ -79,7 +79,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>(),
                     componentConstraints: new Map<string, { constraints: string, isHorizontalConstraints: boolean, isVerticalConstraints: boolean }>(),
                     originalConstraints: compConstraintMap,
-                    componentSizes: compSizes
+                    componentSizes: compSizes,
+                    calculatedSize: null
                 }))
             }
             else {
@@ -186,7 +187,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     anchor.relatedAnchor = anchors.get(anchor.relatedAnchorName);
                 });
 
-                if (isDesignerActive()) {
+                if (isDesignerActive() && layoutInfo) {
+                    layoutInfo.componentConstraints.clear()
                     anchors.forEach(pAnchor => {
                         let anchor:Anchor|undefined = pAnchor;
                         let anchorStartChar = anchor.name.substring(0, 1);
@@ -834,6 +836,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                             /** Report the preferredSize to the parent layout */
                             else {
+                                if (isDesignerActive() && layoutInfo) {
+                                    layoutInfo.calculatedSize = { height: preferredHeight, width: preferredWidth };
+                                }
                                 onLayoutCallback({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
                             }
                         })
@@ -870,7 +875,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
          * and the compSize is the same as children size calculate the layout 
          */
         if (compSizes && compSizes.size === children.size && context.contentStore.getComponentById(id)?.visible !== false) {
-            
             calculateLayout(
                 compSizes,
                 children,

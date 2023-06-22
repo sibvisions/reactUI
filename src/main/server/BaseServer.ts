@@ -20,7 +20,7 @@ import AppSettings from "../AppSettings";
 import BaseContentStore, { IDataBook } from "../contentstore/BaseContentStore";
 import ContentStore from "../contentstore/ContentStore";
 import ContentStoreFull from "../contentstore/ContentStoreFull";
-import { createAliveRequest, createFetchRequest } from "../factories/RequestFactory";
+import { createAliveRequest, createFetchRequest, getClientId } from "../factories/RequestFactory";
 import TreePath from "../model/TreePath";
 import { SubscriptionManager } from "../SubscriptionManager";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
@@ -270,6 +270,10 @@ export default abstract class BaseServer {
                 }
                 else if (endpoint === REQUEST_KEYWORDS.LOGIN) {
                     this.subManager.emitLoginActive(true);
+                }
+
+                if (!request.clientId && endpoint !== REQUEST_KEYWORDS.STARTUP) {
+                    request.clientId = getClientId();
                 }
 
                 this.lastRequestTimeStamp = Date.now();

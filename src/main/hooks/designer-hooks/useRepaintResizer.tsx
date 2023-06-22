@@ -15,14 +15,14 @@
 import { CSSProperties, useContext, useEffect } from "react";
 import { appContext } from "../../contexts/AppProvider";
 
-const useRepaintResizer = (name: string, layoutStyle: CSSProperties|undefined) => {
+const useRepaintResizer = (name: string, layoutStyle: CSSProperties|undefined, ref: any) => {
     const context = useContext(appContext)
 
     useEffect(() => {
-        if (context.designer && context.designer.selectedComponent) {
+        if (context.designer && context.designer.selectedComponent && ref && ref.style && ref.style.visibility !== "hidden") {
             setTimeout(() => {
                 if (context.designer && context.designer.selectedComponent && context.designer.selectedComponent.component.name === name) {
-                    context.designer.paintResizer(context.designer.selectedComponent.element.getBoundingClientRect())
+                    context.designer.paintResizer(ref.getBoundingClientRect())
                 }
             }, 0)
         }

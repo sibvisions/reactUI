@@ -110,7 +110,10 @@ enum REQUEST_ENDPOINTS {
     ROLLBACK = "/api/rollback",
     CHANGES = "/api/changes",
     ALIVE = "/api/alive",
-    EXIT = "/api/exit"
+    EXIT = "/api/exit",
+
+    //vx
+    SET_LAYOUT = "/visionx/setLayout"
 }
 
 /** Server class sends requests and handles responses */
@@ -218,7 +221,8 @@ class Server extends BaseServer {
     .set(REQUEST_KEYWORDS.EXIT, REQUEST_ENDPOINTS.EXIT)
     .set(REQUEST_KEYWORDS.ABOUT, REQUEST_ENDPOINTS.ABOUT)
     .set(REQUEST_KEYWORDS.MENU, REQUEST_ENDPOINTS.MENU)
-    .set(REQUEST_KEYWORDS.WIDTH, REQUEST_ENDPOINTS.WIDTH);
+    .set(REQUEST_KEYWORDS.WIDTH, REQUEST_ENDPOINTS.WIDTH)
+    .set(REQUEST_KEYWORDS.SET_LAYOUT, REQUEST_ENDPOINTS.SET_LAYOUT);
 
     /** ----------HANDLING-RESPONSES---------- */
 

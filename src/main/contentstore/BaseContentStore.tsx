@@ -226,7 +226,7 @@ export default abstract class BaseContentStore {
             const componentEntries = mergedContent.entries();
             let foundEntry: IBaseComponent | undefined;
             let entry = componentEntries.next();
-            while (!entry.done) {
+            while (!entry.done && !foundEntry) {
                 if (entry.value[1].id === componentId) {
                     foundEntry = entry.value[1];
                 }

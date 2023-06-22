@@ -59,7 +59,7 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, forwardedRef.current ? forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
-    useRepaintResizer(props.name, layoutStyle);
+    useRepaintResizer(props.name, layoutStyle, forwardedRef.current);
 
     const designerUpdatesString = useMemo(() => {
         if (props.className === COMPONENT_CLASSNAMES.EDITOR) {
