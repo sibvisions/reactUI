@@ -113,7 +113,7 @@ enum REQUEST_ENDPOINTS {
     EXIT = "/api/exit",
 
     //vx
-    SET_LAYOUT = "/visionx/setLayout"
+    SET_LAYOUT = "/api/visionx/setLayout"
 }
 
 /** Server class sends requests and handles responses */
