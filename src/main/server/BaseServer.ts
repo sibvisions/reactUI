@@ -234,19 +234,24 @@ export default abstract class BaseServer {
                 }
                 else {
                     if (this.appSettings.transferType !== "full") {
-                        const screenName = this.getScreenName(request.dataProvider);
-                        const screenIsOpen = this.contentStore.activeScreens.some(as => as.name === screenName);
-                        
-                        // Not sending dataprovider request if the screen isnt opened
-                        if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
-                            this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
-                            resolve(undefined)
-                            return
-                        }
-    
-                        if (!this.contentStore.dataBooks.get(screenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
-                            reject("Dataprovider doesn't exist: " + request.dataProvider);
-                            return
+                        const splitDataProvider = request.dataProvider.split("/");
+                        if (splitDataProvider.length > 1) {
+                            // Contents are saved under the "main" screen (dataProvider.split("/")[1]) but to check if a content is opened we have to get the name differently.
+                            const dataProviderScreenName = this.getScreenName(request.dataProvider);
+                            const activeScreenName = splitDataProvider[splitDataProvider.length - 2];
+                            const screenIsOpen = this.contentStore.activeScreens.some(as => as.name === activeScreenName);
+                            
+                            // Not sending dataprovider request if the screen isnt opened
+                            if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
+                                this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
+                                resolve("Screen is not open: " + activeScreenName)
+                                return
+                            }
+        
+                            if (!this.contentStore.dataBooks.get(dataProviderScreenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                                reject("Dataprovider doesn't exist: " + request.dataProvider);
+                                return
+                            }
                         }
                     }
                 }
