@@ -186,12 +186,12 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Base
 
     // If the component className is a global component (globally changed via api) or is a custom container, create a customcomponentwrapper with that component
     // else just create the standard component
-    if (contentStore.globalComponents.has(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className)) {
-        Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className) as Function;
+    if (contentStore.addedComponents.has(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className)) {
+        Comp = contentStore.addedComponents.get(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className) as Function;
         return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
     }
     else {
-        if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
+        if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER || baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_COMPONENT) {
             Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.classNameEventSourceRef as string) : componentsMap.get(baseComponent.classNameEventSourceRef as string);
         }
         else {
@@ -209,12 +209,12 @@ export const componentHandler = (baseComponent: BaseComponent, contentStore:Base
         }
     }
 
-    // if (contentStore.globalComponents.has(baseComponent.className)) {
-    //     Comp = contentStore.globalComponents.get(baseComponent.className) as Function;
+    // if (contentStore.addedComponents.has(baseComponent.className)) {
+    //     Comp = contentStore.addedComponents.get(baseComponent.className) as Function;
     //     return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
     // }
     // else if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
-    //     Comp = contentStore.globalComponents.get(baseComponent.classNameEventSourceRef as string);
+    //     Comp = contentStore.addedComponents.get(baseComponent.classNameEventSourceRef as string);
     //     if (Comp) {
     //         return createCustomComponentWrapper({...baseComponent, component: <Comp {...baseComponent} />, isGlobal: false})
     //     }

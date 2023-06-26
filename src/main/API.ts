@@ -438,7 +438,7 @@ class API implements IAPI {
      * @param comp - the component to render
      */
     addGlobalComponent(name:string, comp:ReactElement) {
-        this.#contentStore.globalComponents.set(name, (props:any) => React.cloneElement(comp, props));
+        this.#contentStore.addedComponents.set(name, (props:any) => React.cloneElement(comp, props));
     }
 
     /**
