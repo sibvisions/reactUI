@@ -565,7 +565,7 @@ export default abstract class BaseServer {
                         formattedRecords[index][componentId].set(fetchData.columnNames[i], format[Math.max(0, Math.min(r[i], format.length - 1))]);
 
                         if (i === r.length - 1 && fetchData.columnNames.length > r.length) {
-                            for (let j = index; j < fetchData.columnNames.length; j++) {
+                            for (let j = i; j < fetchData.columnNames.length; j++) {
                                 formattedRecords[index][componentId].set(fetchData.columnNames[j], format[Math.max(0, Math.min(r[i], format.length - 1))]);
                             }
                         }
