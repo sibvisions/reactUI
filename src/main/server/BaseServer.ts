@@ -41,7 +41,6 @@ import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { setDateLocale } from "../util/other-util/GetDateLocale";
 import BaseRequest from "../request/BaseRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
-import GenericResponse from "../response/ui/GenericResponse";
 import { CellFormatting } from "../components/table/CellEditor";
 
 export enum RequestQueueMode {
@@ -234,19 +233,23 @@ export default abstract class BaseServer {
                 }
                 else {
                     if (this.appSettings.transferType !== "full") {
-                        const screenName = this.getScreenName(request.dataProvider);
-                        const screenIsOpen = this.contentStore.activeScreens.some(as => as.name === screenName);
-                        
-                        // Not sending dataprovider request if the screen isnt opened
-                        if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
-                            this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
-                            resolve(undefined)
-                            return
-                        }
-    
-                        if (!this.contentStore.dataBooks.get(screenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
-                            reject("Dataprovider doesn't exist: " + request.dataProvider);
-                            return
+                        const splitDataProvider = request.dataProvider.split("/");
+                        if (splitDataProvider.length > 1) {
+                            // Contents are saved under the "main" screen (dataProvider.split("/")[1]) but to check if a content is opened we have to get the name differently.
+                            const dataProviderScreenName = this.getScreenName(request.dataProvider);
+                            const activeScreenName = splitDataProvider[splitDataProvider.length - 2];
+                            const screenIsOpen = this.contentStore.activeScreens.some(as => !as.popup ? as.name === dataProviderScreenName : as.name === activeScreenName);
+                            // Not sending dataprovider request if the screen isnt opened
+                            if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
+                                this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
+                                reject("Screen is not open: " + activeScreenName)
+                                return
+                            }
+        
+                            if (!this.contentStore.dataBooks.get(dataProviderScreenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                                reject("Dataprovider doesn't exist: " + request.dataProvider);
+                                return
+                            }
                         }
                     }
                 }
@@ -564,7 +567,7 @@ export default abstract class BaseServer {
                         formattedRecords[index][componentId].set(fetchData.columnNames[i], format[Math.max(0, Math.min(r[i], format.length - 1))]);
 
                         if (i === r.length - 1 && fetchData.columnNames.length > r.length) {
-                            for (let j = index; j < fetchData.columnNames.length; j++) {
+                            for (let j = i; j < fetchData.columnNames.length; j++) {
                                 formattedRecords[index][componentId].set(fetchData.columnNames[j], format[Math.max(0, Math.min(r[i], format.length - 1))]);
                             }
                         }
@@ -668,7 +671,6 @@ export default abstract class BaseServer {
         if (this.contentStore.getDataBook(screenName, fetchData.dataProvider)) {
             const dataBook = this.contentStore.getDataBook(screenName, fetchData.dataProvider) as IDataBook
             dataBook.allFetched = fetchData.isAllFetched;
-
             if (dataBook.metaData) {
                 if (dataBook.referencedCellEditors?.length) {
                     dataBook.referencedCellEditors.forEach((column) => {

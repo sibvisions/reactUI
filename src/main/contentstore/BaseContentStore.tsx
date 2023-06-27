@@ -132,7 +132,7 @@ export default abstract class BaseContentStore {
     history?:History<any>;
 
     /** Global components are extra components which are not available in VisionX but are displayable client-side */
-    globalComponents:Map<string, Function> = new Map<string, Function>().set("SignaturePad", (props: ISignaturPad) => <SignaturePad {...props} />);
+    addedComponents:Map<string, Function> = new Map<string, Function>().set("SignaturePad", (props: ISignaturPad) => <SignaturePad {...props} />);
 
     //Maybe unnecessary in the future
     ws:WebSocket|undefined;

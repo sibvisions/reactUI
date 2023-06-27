@@ -28,7 +28,6 @@ import useMenuCollapser from "../../../main/hooks/event-hooks/useMenuCollapser";
 import useDeviceStatus from "../../../main/hooks/event-hooks/useDeviceStatus";
 import useResponsiveBreakpoints from "../../../main/hooks/event-hooks/useResponsiveBreakpoints";
 import { concatClassnames } from "../../../main/util/string-util/ConcatClassnames";
-import { getScreenIdFromNavigation } from "../../../main/util/component-util/GetScreenNameFromNavigation";
 import { EmbeddedContext } from "../../../main/contexts/EmbedProvider";
 import useScreenTitle from "../../../main/hooks/app-hooks/useScreenTitle";
 import { VisionXContext } from "../../../AppWrapper";
