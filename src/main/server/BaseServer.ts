@@ -595,63 +595,67 @@ export default abstract class BaseServer {
             dataToDisplayMap = cellEditor.linkReference.dataToDisplayMap
         }
         let notifyDataMap = false;
-        dataArray.forEach((data) => {
-            if (data) {
-                if (!cellEditor.linkReference.columnNames.length) {
-                    cellEditor.linkReference.columnNames.push(column.columnName)
-                }
-                const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
-                const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);
-                const keyObj = generateDisplayMapKey(
-                    data,
-                    referencedData,
-                    cellEditor.linkReference,
-                    column.columnName,
-                    cellEditor.displayConcatMask || cellEditor.displayReferencedColumnName,
-                    cellEditor,
-                    "build-map"
-                )
-                const columnViewNames = cellEditor.columnView ? cellEditor.columnView.columnNames : dataBook.metaData!.columnView_table_;
-                const columnViewData = getExtractedObject(data, columnViewNames);
-                if (cellEditor.displayReferencedColumnName) {
-                    const extractDisplayRef = getExtractedObject(data, [...cellEditor.linkReference.referencedColumnNames, cellEditor.displayReferencedColumnName]);
-                    dataToDisplayMap.set(JSON.stringify(keyObj), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
-                    dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
-                    if (!notifyDataMap) {
-                        notifyDataMap = true;
-                    }
-                }
-                else if (cellEditor.displayConcatMask) {
-                    let displayString = "";
-                    if (cellEditor.displayConcatMask.includes("*")) {
-                        // Replacing "*" in case the actual value which needs to be displayed is "*"
-                        displayString = cellEditor.displayConcatMask.replaceAll("*", "[asterisk_xyz]")
-                        const count = (cellEditor.displayConcatMask.match(/\*/g) || []).length;
-                        for (let i = 0; i < count; i++) {
-                            displayString = displayString.replace('[asterisk_xyz]', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
-                        }
-                    }
-                    else {
-                        columnViewNames.forEach((column, i) => {
-                            displayString += columnViewData[column] + (i !== columnViewNames.length - 1 ? cellEditor.displayConcatMask : "");
-                        });
-                    }
-                    if (!dataToDisplayMap.has(JSON.stringify(keyObj)) || dataToDisplayMap.get(JSON.stringify(keyObj)) !== displayString) {
-                        if (!notifyDataMap) {
-                            notifyDataMap = true;
-                        }
-                        dataToDisplayMap.set(JSON.stringify(keyObj), displayString);
-                    }
+        if (!cellEditor.linkReference.columnNames.length) {
+            cellEditor.linkReference.columnNames.push(column.columnName)
+        }
+        const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
 
-                    if (!dataToDisplayMap.has(JSON.stringify(referencedData)) || dataToDisplayMap.get(JSON.stringify(referencedData)) !== displayString) {
+        if (dataArray.length && Object.keys(dataArray[0]).includes(cellEditor.linkReference.referencedColumnNames[index])) {
+            dataArray.forEach((data) => {
+                if (data) {
+                    const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);          
+                    const keyObj = generateDisplayMapKey(
+                        data,
+                        referencedData,
+                        cellEditor.linkReference,
+                        column.columnName,
+                        cellEditor.displayConcatMask || cellEditor.displayReferencedColumnName,
+                        cellEditor,
+                        "build-map"
+                    )
+                    const columnViewNames = cellEditor.columnView ? cellEditor.columnView.columnNames : dataBook.metaData!.columnView_table_;
+                    const columnViewData = getExtractedObject(data, columnViewNames);
+                    if (cellEditor.displayReferencedColumnName) {
+                        const extractDisplayRef = getExtractedObject(data, [...cellEditor.linkReference.referencedColumnNames, cellEditor.displayReferencedColumnName]);
+                        dataToDisplayMap.set(JSON.stringify(keyObj), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
+                        dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
                         if (!notifyDataMap) {
                             notifyDataMap = true;
                         }
-                        dataToDisplayMap.set(JSON.stringify(referencedData), displayString);
                     }
-                }
-            }  
-        });
+                    else if (cellEditor.displayConcatMask) {
+                        let displayString = "";
+                        if (cellEditor.displayConcatMask.includes("*")) {
+                            // Replacing "*" in case the actual value which needs to be displayed is "*"
+                            displayString = cellEditor.displayConcatMask.replaceAll("*", "[asterisk_xyz]")
+                            const count = (cellEditor.displayConcatMask.match(/\*/g) || []).length;
+                            for (let i = 0; i < count; i++) {
+                                displayString = displayString.replace('[asterisk_xyz]', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
+                            }
+                        }
+                        else {
+                            columnViewNames.forEach((column, i) => {
+                                displayString += columnViewData[column] + (i !== columnViewNames.length - 1 ? cellEditor.displayConcatMask : "");
+                            });
+                        }
+                        if (!dataToDisplayMap.has(JSON.stringify(keyObj)) || dataToDisplayMap.get(JSON.stringify(keyObj)) !== displayString) {
+                            if (!notifyDataMap) {
+                                notifyDataMap = true;
+                            }
+                            dataToDisplayMap.set(JSON.stringify(keyObj), displayString);
+                        }
+    
+                        if (!dataToDisplayMap.has(JSON.stringify(referencedData)) || dataToDisplayMap.get(JSON.stringify(referencedData)) !== displayString) {
+                            if (!notifyDataMap) {
+                                notifyDataMap = true;
+                            }
+                            dataToDisplayMap.set(JSON.stringify(referencedData), displayString);
+                        }
+                    }
+                }  
+            });
+        }
+        
         cellEditor.linkReference.dataToDisplayMap = dataToDisplayMap;
         if (notifyDataMap) {
             this.subManager.notifyLinkedDisplayMapChanged(screenName, dataProvider);
