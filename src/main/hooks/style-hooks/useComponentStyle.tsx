@@ -17,7 +17,7 @@ import { CSSProperties, useLayoutEffect, useMemo, useState } from "react"
 import IBaseComponent from "../../util/types/IBaseComponent";
 
 // map to quickly get to the syscolor css variables
-const sysColorMap = new Map<string, string>([["mandatorybackground", "--mandatory-background"], ["readonlybackground", "--readonly-background"], ["invalideditorbackground", "invalid-background"]])
+const sysColorMap = new Map<string, string>([["mandatorybackground", "--mandatory-background"], ["readonlybackground", "--readonly-background"], ["invalideditorbackground", "--invalid-background"]])
 
 // Checks if the className contains a syscolor
 export function isSysColor(className:string):string {
