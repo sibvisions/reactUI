@@ -128,6 +128,9 @@ export default abstract class BaseContentStore {
     /** The currently active screens usually only one screen but with popups multiple possible */
     activeScreens:ActiveScreen[] = [];
 
+    /** Screens which aren't closed by the server but have to be removed later */
+    inactiveScreens: string[] = [];
+
     /** the react routers history object */
     history?:History<any>;
 
@@ -560,19 +563,17 @@ export default abstract class BaseContentStore {
      * @param windowName - the name of the window to close
      */
      closeScreen(windowId: string, windowName: string, closeDirectly?:boolean) {
-        // If a popup is closed or the homebutton was pressed, clean up the screen and update activescreens. 
+        this.activeScreens = this.activeScreens.filter(screen => screen.id !== windowId);
+        // If a popup is closed or the homebutton was pressed, clean up the screen and update activescreens.
         if (closeDirectly || this.server.homeButtonPressed) {
             let window = this.getComponentById(windowId);
             if (window) {
                 this.cleanUpUI(window.id, window.name, window.className, closeDirectly);
             }
-            this.activeScreens = this.activeScreens.filter(screen => screen.id !== windowId);
             this.subManager.emitActiveScreens();
             this.server.homeButtonPressed = false;
         }
         else {
-            // filter activescreens and save the screen to close for later to prevent flickering and opening the last opened screen
-            this.activeScreens = this.activeScreens.filter(screen => screen.name !== windowName);
             // this.subManager.emitActiveScreens();
             // Rather use id than name because the name could appear more than once when the homescreen gets opened by the server AND by client via maybeopenscreen.
             if (windowId) {

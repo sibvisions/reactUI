@@ -102,18 +102,36 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                 icon="fas fa-home"
                 className="menu-topbar-buttons"
                 onClick={() => {
+                    const getCloseScreenRequest = (screenName: string) => {
+                        const closeReq = createCloseScreenRequest();
+                        closeReq.componentId = screenName;
+                        return closeReq;
+                    }
+
+                    if (context.contentStore.inactiveScreens.length) {
+                        context.contentStore.inactiveScreens.forEach(inactiveScreen => {
+                            const closeReq = getCloseScreenRequest(inactiveScreen);
+                            context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN).then((res) => {
+                                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
+                                    context.contentStore.inactiveScreens = context.contentStore.inactiveScreens.filter(inactiveScreen2 => inactiveScreen2 !== inactiveScreen);
+                                }
+                            });
+                        });
+                    }
+
                     // If a screen is opened, close it, and redirect to home
                     if (context.contentStore.activeScreens.length) {
                         context.server.homeButtonPressed = true;
                         //context.subscriptions.emitSelectedMenuItem("");
+
                         if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0].name)) {
                             const screenName = context.contentStore.activeScreens[0].name;
                             const screenId = context.contentStore.getComponentByName(screenName)?.id as string
-                            const closeReq = createCloseScreenRequest();
-                            closeReq.componentId = screenName;
+                            const closeReq = getCloseScreenRequest(screenName);
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
                                 // If response is empty or there is no error close the current screen and open home
                                 if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
+                                    context.contentStore.inactiveScreens = context.contentStore.inactiveScreens.filter(inactiveScreen => inactiveScreen !== screenName);
                                     (context.server as Server).lastClosedWasPopUp = false;
                                     context.contentStore.closeScreen(screenId, screenName, false);
                                     // If there is a homeScreen don't route to home

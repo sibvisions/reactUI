@@ -414,17 +414,16 @@ class Server extends BaseServer {
                              * to the navigation-name, if not, don't add anything, and call setNavigationName
                              */
                             if (workScreen.screen_navigationName_) {
-                                const increment = getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames)
+                                const increment = getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames);
+                                if (workScreen.screen_navigationName_ + increment === this.linkOpen) {
+                                    this.linkOpen = "";
+                                }
                                 if (this.contentStore.navigationNames.has(workScreen.screen_navigationName_ + increment)) {
                                     const foundNavName = this.contentStore.navigationNames.get(workScreen.screen_navigationName_ + increment) as { screenId: string, componentId: string };
                                     foundNavName.screenId = workScreen.name;
-        
-                                    if (workScreen.screen_navigationName_ + increment === this.linkOpen) {
-                                        this.linkOpen = "";
-                                    }
                                 }
                                 else {
-                                    this.contentStore.setNavigationName(workScreen.screen_navigationName_ + getNavigationIncrement(workScreen.screen_navigationName_, this.contentStore.navigationNames), workScreen.screen_className_ as string, workScreen.name)
+                                    this.contentStore.setNavigationName(workScreen.screen_navigationName_ + increment, workScreen.screen_className_ as string, workScreen.name);
                                 }
                             }
     
@@ -508,6 +507,10 @@ class Server extends BaseServer {
         if (this.contentStore.screenHistory.length > 1) {
             const screen = this.contentStore.screenHistory[this.contentStore.screenHistory.length - 2]
             this.maybeOpenScreen = { className: screen.className, componentId: screen.componentId};
+        }
+
+        if (this.contentStore.inactiveScreens.includes(closeScreenData.componentId)) {
+            this.contentStore.inactiveScreens = this.contentStore.inactiveScreens.filter(inactiveScreen => inactiveScreen !== closeScreenData.componentId)
         }
 
         this.contentStore.closeScreen(id, closeScreenData.componentId);

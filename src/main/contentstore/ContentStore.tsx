@@ -91,6 +91,9 @@ export default class ContentStore extends BaseContentStore {
                     this.activeScreens.unshift(screenInfo);
                 }
                 else {
+                    if (this.activeScreens.length && !this.inactiveScreens.includes(this.activeScreens[0].name)) {
+                        this.inactiveScreens.push(this.activeScreens[0].name);
+                    }
                     this.activeScreens = [screenInfo];
                 }
             }

@@ -42,6 +42,9 @@ export default class ContentStoreFull extends BaseContentStore {
      */
      setActiveScreen(screenInfo?:ActiveScreen) {
         if (screenInfo) {
+            if (this.activeScreens.length && !this.inactiveScreens.includes(this.activeScreens[0].name)) {
+                this.inactiveScreens.push(this.activeScreens[0].name);
+            }
             this.activeScreens = [screenInfo];
         }
         else {
