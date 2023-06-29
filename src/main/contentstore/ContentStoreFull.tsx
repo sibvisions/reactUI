@@ -60,7 +60,7 @@ export default class ContentStoreFull extends BaseContentStore {
      * @param existingComp - the existing component already in contentstore
      * @param newComp - the new component of changedcomponents
      */
-     updateExistingComponent(existingComp:BaseComponent|undefined, newComp:BaseComponent) {
+     updateExistingComponent(existingComp:BaseComponent|undefined, newComp:BaseComponent, notifyList: string[]) {
         if (existingComp) {
             for (let newPropName in newComp) {
                 // @ts-ignore  
@@ -76,6 +76,10 @@ export default class ContentStoreFull extends BaseContentStore {
                         this.server.missingDataFetches.push(existingProp)
                         this.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
                     }
+                }
+
+                if (newPropName === "parent" && existingComp[newPropName] !== newComp[newPropName]) {
+                    this.addToNotifyList(existingComp, notifyList)
                 }
 
                 // @ts-ignore
@@ -115,7 +119,7 @@ export default class ContentStoreFull extends BaseContentStore {
                 this.removeAsChild(existingComponent);
             }
 
-            this.updateExistingComponent(existingComponent, newComponent);
+            this.updateExistingComponent(existingComponent, newComponent, notifyList);
 
             if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL && !isCustom) {
                 this.handleToolBarComponent(existingComponent as IToolBarPanel, newComponent as IToolBarPanel);
