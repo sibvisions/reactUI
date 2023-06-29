@@ -212,7 +212,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             
                             anchor = anchor.relatedAnchor;
                         }
-                    })
+                    });
 
                     formLayoutAssistant!.fillFormLayoutInfo(anchors);
                 }
@@ -222,8 +222,25 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     if (!(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) {
                         const anchorNames = component.constraints.split(";");
                         /** Get Anchors */
-                        const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);
-                        const bottomAnchor = anchors.get(anchorNames[2]); const rightAnchor = anchors.get(anchorNames[3]);
+                        let topAnchor = anchors.get(anchorNames[0]); 
+                        let leftAnchor = anchors.get(anchorNames[1]);
+                        let bottomAnchor = anchors.get(anchorNames[2]); 
+                        let rightAnchor = anchors.get(anchorNames[3]);
+
+                        if (isDesignerActive() && formLayoutAssistant) {
+                            if (!topAnchor) {
+                                topAnchor = formLayoutAssistant!.createAnchors(anchorNames[0], anchors).find(createdAnchor => createdAnchor.name === anchorNames[0]);
+                            }
+                            if (!leftAnchor) {
+                                leftAnchor = formLayoutAssistant!.createAnchors(anchorNames[1], anchors).find(createdAnchor => createdAnchor.name === anchorNames[1]);
+                            }
+                            if (!bottomAnchor) {
+                                bottomAnchor = formLayoutAssistant!.createAnchors(anchorNames[2], anchors).find(createdAnchor => createdAnchor.name === anchorNames[2]);
+                            }
+                            if (!rightAnchor) {
+                                rightAnchor = formLayoutAssistant!.createAnchors(anchorNames[3], anchors).find(createdAnchor => createdAnchor.name === anchorNames[3]);
+                            }
+                        }
 
                         /** Fill Constraints-Map */
                         if (topAnchor && leftAnchor && rightAnchor && bottomAnchor) {

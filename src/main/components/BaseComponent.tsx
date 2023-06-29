@@ -132,9 +132,9 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
             parseMaxSize(props.maximumSize),
             parseMinSize(props.minimumSize),
             clone,
-            baseProps.onLoadCallback
+            props.onLoadCallback
         ),
-        baseProps.onLoadCallback,
+        props.onLoadCallback,
         props.className === COMPONENT_CLASSNAMES.LABEL ? props.text : undefined
     );
 
