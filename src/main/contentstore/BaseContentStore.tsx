@@ -358,7 +358,7 @@ export default abstract class BaseContentStore {
      * @param existingComp - the existing component already in contentstore
      * @param newComp - the new component of changedcomponents
      */
-    abstract updateExistingComponent(existingComp:IBaseComponent|undefined, newComp:IBaseComponent): void
+    abstract updateExistingComponent(existingComp:IBaseComponent|undefined, newComp:IBaseComponent, notifyList: string[]): void
 
     /**
      * Returns the constraint of the toolbar-main sub-panel.

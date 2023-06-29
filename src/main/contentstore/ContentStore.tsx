@@ -111,7 +111,7 @@ export default class ContentStore extends BaseContentStore {
      * @param existingComp - the existing component already in contentstore
      * @param newComp - the new component of changedcomponents
      */
-    updateExistingComponent(existingComp:IBaseComponent|undefined, newComp:IBaseComponent) {
+    updateExistingComponent(existingComp:IBaseComponent|undefined, newComp:IBaseComponent, notifyList: string[]) {
         if (existingComp) {
             for (let newPropName in newComp) {
                 // @ts-ignore  
@@ -128,8 +128,11 @@ export default class ContentStore extends BaseContentStore {
                         this.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
                     }
                 }
-                
 
+                if (newPropName === "parent" && existingComp[newPropName] !== newComp[newPropName]) {
+                    this.addToNotifyList(existingComp, notifyList)
+                }
+                
                 if (newPropName === "screen_title_") {
                     this.topbarTitle = newProp;
                     const foundActiveScreen = this.activeScreens.find(as => as.id === existingComp.id);
@@ -172,7 +175,7 @@ export default class ContentStore extends BaseContentStore {
                 this.removeAsChild(existingComponent);
             }
             
-            this.updateExistingComponent(existingComponent, newComponent);
+            this.updateExistingComponent(existingComponent, newComponent, notifyList);
 
             if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL && !isCustom) {
                 this.handleToolBarComponent(existingComponent as IToolBarPanel, newComponent as IToolBarPanel);
