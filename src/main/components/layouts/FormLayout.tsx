@@ -303,7 +303,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                  */
                 const calculateAutoSize = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor, preferredSize: number | undefined, autoSizeCount: number) => {
                     let autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
-                    if(autoSizeAnchors.length === autoSizeCount && preferredSize !== undefined){
+                    if(autoSizeAnchors.length === autoSizeCount && preferredSize !== undefined) {
                         let fixedSize = rightBottomAnchor.getAbsolutePosition() - leftTopAnchor.getAbsolutePosition();
                         autoSizeAnchors.forEach(anchor => {
                             fixedSize += anchor.position;
@@ -405,11 +405,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 });
 
                 /** AutoSize calculations */
-                for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;){
+                for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;) {
                     children.forEach(component => {
                         if(component.visible !== false){
                             const constraint = componentConstraints.get(component.id);
-                            const preferredSizeObj = compSizes.get(component.id)?.preferredSize;
+                            const preferredSizeObj = getPreferredSize(component, compSizes);                            
                             if(constraint && preferredSizeObj) {
                                 calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSizeObj.height as number, autoSizeCount);
                                 calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSizeObj.width as number, autoSizeCount);
@@ -887,6 +887,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     //otherwise this calculation would run separately and would need a re render
     useMemo(() => {
         const children = context.contentStore.getChildren(id, className);
+
         /** 
          * If compSizes is set (every component in this layout reported its preferred size) 
          * and the compSize is the same as children size calculate the layout 

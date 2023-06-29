@@ -51,7 +51,7 @@ const WorkScreen: FC = () => {
         return () => {
             context.subscriptions.unsubscribeFromActiveScreens("workscreen");
         }
-    },[context.subscriptions]);
+    },[context.subscriptions, context.designer]);
 
     useEffect(() => {
         if (activeScreens.length && activeScreens[0] && activeScreens[0].title) {
@@ -62,7 +62,7 @@ const WorkScreen: FC = () => {
             context.contentStore.topbarTitle = context.appSettings.applicationMetaData.applicationName;
             context.subscriptions.notifyScreenTitleChanged(context.appSettings.applicationMetaData.applicationName);
         }
-    }, [renderedScreens])
+    }, [renderedScreens]);
 
     return (
         <ResizeHandler>

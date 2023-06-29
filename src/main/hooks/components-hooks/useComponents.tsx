@@ -120,6 +120,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
 
         /** Callback which gets called by each component in sendOnLoadCallBack */
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
+            const children = context.contentStore.getChildren(id, className);
             let componentsChanged = false
             tempSizes.current.forEach((val, key) => {
                 if (!children.has(key)) {
