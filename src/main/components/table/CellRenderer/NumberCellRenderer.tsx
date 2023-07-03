@@ -41,7 +41,7 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
     // Formats the number value to the correct format
     const displayNumberValue = useMemo(() => {
         if (props.cellData !== null) {
-            return getPrefix(castedCellEditor.numberFormat, getNumberValueAsString(props.cellData), true, context.appSettings.locale, useGrouping) + formatNumber(castedCellEditor.numberFormat, context.appSettings.locale, new bigDecimal(props.cellData).getValue(), castedMetaData.scale) + getSuffix(castedCellEditor.numberFormat, context.appSettings.locale, castedMetaData.scale)
+            return getPrefix(castedCellEditor.numberFormat, getNumberValueAsString(props.cellData, castedCellEditor.numberFormat), true, context.appSettings.locale, useGrouping) + formatNumber(castedCellEditor.numberFormat, context.appSettings.locale, getNumberValueAsString(props.cellData, castedCellEditor.numberFormat), castedMetaData.scale) + getSuffix(castedCellEditor.numberFormat, context.appSettings.locale, castedMetaData.scale)
         }
         else {
             return ""

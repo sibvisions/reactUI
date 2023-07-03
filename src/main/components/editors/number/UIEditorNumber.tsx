@@ -115,11 +115,20 @@ function replaceGroupAndDecimal(value: string, numberSeperators: { decimal: stri
     return value.replaceAll(numberSeperators.group, '').replaceAll(numberSeperators.decimal, '.')
 }
 
-export function getNumberValueAsString (value: any) {
-    if (typeof value === "number") {
-        return value.toString();
+export function getNumberValueAsString (value: any, numberFormat: string) {
+    const displayScaleDigits = getDisplayScaleDigits(numberFormat);
+    let valueToReturn = typeof value === "number" ? value.toString() : value;
+    if (value.includes(".")) {
+        const splitValue = value.split(".");
+        if (splitValue[1].length < displayScaleDigits.minScale) {
+            valueToReturn = new bigDecimal(value).round(displayScaleDigits.minScale).getValue();
+        }
+        else if (splitValue[1].length > displayScaleDigits.maxScale) {
+            valueToReturn = new bigDecimal(value).round(displayScaleDigits.maxScale).getValue();
+        }
     }
-    return value;
+    console.log(value)
+    return valueToReturn;
 }
 
 /**
@@ -135,10 +144,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
         return props.selectedRow && (props.selectedRow.data[props.columnName] !== undefined && props.selectedRow.data[props.columnName] !== null);
     }
 
-
-
     /** Current state value of input element */
-    const [value, setValue] = useState<string|null|undefined>(checkSelectedRow() ? getNumberValueAsString(props.selectedRow.data[props.columnName]) : undefined);
+    const [value, setValue] = useState<string|null|undefined>(checkSelectedRow() ? getNumberValueAsString(props.selectedRow.data[props.columnName], props.cellEditor.numberFormat) : undefined);
 
     /** True, if the user has changed the value */
     const startedEditing = useRef<boolean>(false);
@@ -190,6 +197,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
         : {minScale: 0, maxScale: 0}, 
     [props.columnMetaData, props.cellEditor.numberFormat]);
 
+    console.log(writeScaleDigits, getDisplayScaleDigits(props.cellEditor.numberFormat))
+
     /** Whether the value should be grouped or not */
     const useGrouping = getGrouping(props.cellEditor.numberFormat);
 
@@ -198,7 +207,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
      * 0s will be added
      * @returns a string which will be added before the number
      */
-    const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? getNumberValueAsString(props.selectedRow.data[props.columnName]) : undefined, false, props.context.appSettings.locale, useGrouping), [props.cellEditor.numberFormat, props.selectedRow, useGrouping]);
+    const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? getNumberValueAsString(props.selectedRow.data[props.columnName], props.cellEditor.numberFormat) : undefined, false, props.context.appSettings.locale, useGrouping), [props.cellEditor.numberFormat, props.selectedRow, useGrouping]);
 
     /** Returns a string which will be added behind the number, based on the numberFormat */
     const suffix = useMemo(() => getSuffix(props.cellEditor.numberFormat, props.context.appSettings.locale, props.columnMetaData ? (props.columnMetaData as NumericColumnDescription).scale : undefined), [props.cellEditor.numberFormat]);
@@ -230,14 +239,14 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
-        setValue(checkSelectedRow() ? getNumberValueAsString(props.selectedRow.data[props.columnName]) : undefined);
+        setValue(checkSelectedRow() ? getNumberValueAsString(props.selectedRow.data[props.columnName], props.cellEditor.numberFormat) : undefined);
         
     },[props.selectedRow]);
 
     // If the lib user extends the NumberCellEditor with onChange, call it when selectedRow changes.
     useEffect(() => {
         if (props.onChange) {
-            props.onChange(props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? getNumberValueAsString(props.selectedRow.data[props.columnName]) : undefined)
+            props.onChange(props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? getNumberValueAsString(props.selectedRow.data[props.columnName], props.cellEditor.numberFormat) : undefined)
         }
     }, [props.selectedRow, props.onChange])
 

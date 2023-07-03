@@ -59,7 +59,8 @@ interface LinkReference extends ReferencedColumnNames {
 }
 
 type AdditionalConditionsType = {
-    conditions: AdditionalConditionType[],
+    conditions?: AdditionalConditionType[],
+    condition?: AdditionalConditionType,
     type: string
 }
 
@@ -191,7 +192,12 @@ export function recurseAdditionalConditions(dataRow: any, referencedObject: any,
         }
     }
     else {
-        additionalCondition.conditions.forEach(addCon => recurseAdditionalConditions(dataRow, referencedObject, keyObject, addCon, dataProvider))
+        if (additionalCondition.conditions) {
+            additionalCondition.conditions.forEach(addCon => recurseAdditionalConditions(dataRow, referencedObject, keyObject, addCon, dataProvider));
+        }
+        else if (additionalCondition.condition) {
+            recurseAdditionalConditions(dataRow, referencedObject, keyObject, additionalCondition.condition, dataProvider); 
+        }
     }
 }
 

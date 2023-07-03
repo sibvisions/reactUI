@@ -19,7 +19,7 @@ import React, { FC, SyntheticEvent } from "react";
 export interface IExtendableNumberEditor {
     onBlur?(e:React.FocusEvent): void,
     onInput?(e: { originalEvent: SyntheticEvent, value: number | null }):void
-    onChange?(value:number|null|undefined):void
+    onChange?(value:number|string|null|undefined):void
 }
 
 // This component is an empty substitute for the component UIEditorNumber
