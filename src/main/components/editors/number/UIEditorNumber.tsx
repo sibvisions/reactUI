@@ -129,7 +129,6 @@ export function getNumberValueAsString (value: any, numberFormat: string) {
             valueToReturn = new bigDecimal(value).round(displayScaleDigits.maxScale).getValue();
         }
     }
-    console.log(value)
     return valueToReturn;
 }
 
@@ -207,8 +206,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         ? getWriteScaleDigits(props.cellEditor.numberFormat, (props.columnMetaData as NumericColumnDescription).scale) 
         : {minScale: 0, maxScale: 0}, 
     [props.columnMetaData, props.cellEditor.numberFormat]);
-
-    console.log(writeScaleDigits, getDisplayScaleDigits(props.cellEditor.numberFormat))
 
     /** Whether the value should be grouped or not */
     const useGrouping = getGrouping(props.cellEditor.numberFormat);
