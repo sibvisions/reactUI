@@ -954,7 +954,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
             return (
                 <>
-                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable === false ? " *" : "") }} /> 
+                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable === false ? " *" : "") }} />
                     <span onClick={() => handleSort(colName)} className="p-sortable-column-icon pi pi-fw"></span>
                     <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
@@ -963,17 +963,17 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         return props.columnNames.map((colName, colIndex) => {
             const columnMetaData = getColMetaData(colName, metaData);
             const className = columnMetaData?.cellEditor?.className;
-            if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED 
-                && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask 
+            if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
+                && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask
                 && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
-                    linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
+                linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
             }
 
             return <Column
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
                 key={colName}
-                headerClassName={concatClassnames(colName, (props.columnLabels[colIndex] === "☐" || props.columnLabels[colIndex] === "☑") ? 'select-column' : "") }
+                headerClassName={concatClassnames(colName, (props.columnLabels[colIndex] === "☐" || props.columnLabels[colIndex] === "☑") ? 'select-column' : "")}
                 headerStyle={{
                     overflowX: "hidden",
                     whiteSpace: 'nowrap',
@@ -982,69 +982,72 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     '--columnName': colName
                 }}
                 body={(rowData: any, tableInfo: any) => {
-                    const currDataRow = providerData[tableInfo.rowIndex]
-                    const values = primaryKeys.map(pk => currDataRow[pk]);
-                    const filter:SelectFilter = {
-                        columnNames: primaryKeys,
-                        values: values
-                    }
-                    if (!rowData) { return <div></div> }
-                    return <CellEditor
-                        rowData={rowData}
-                        pk={_.pick(rowData, primaryKeys)}
-                        screenName={screenName}
-                        name={props.name as string}
-                        colName={colName}
-                        dataProvider={props.dataBook}
-                        cellData={rowData[colName]}
-                        cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
-                        resource={context.server.RESOURCE_URL}
-                        cellId={() => ({
-                            selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()
-                        })}
-                        tableContainer={wrapRef.current ? wrapRef.current : undefined}
-                        selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
-                        selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
-                        enterNavigationMode={enterNavigationMode}
-                        tabNavigationMode={tabNavigationMode}
-                        selectedRow={selectedRow}
-                        className={className}
-                        colReadonly={columnMetaData?.readonly}
-                        tableEnabled={props.enabled}
-                        editable={props.editable}
-                        startEditing={props.startEditing}
-                        insertEnabled={metaData?.insertEnabled}
-                        updateEnabled={metaData?.updateEnabled}
-                        deleteEnabled={metaData?.deleteEnabled}
-                        dataProviderReadOnly={metaData?.readOnly}
-                        setIsEditing={setIsEditing}
-                        stopEditing={() => {
-                            const table = context.contentStore.flatContent.get(id);
-                            if (table) {
-                                (table as TableProps).startEditing = false;
-                                context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
-                            }
-                        }}
-                        rowNumber={tableInfo.rowIndex}
-                        colIndex={colIndex}
-                        filter={filter}
-                        removeTableLinkRef={
-                            (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
-                            && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
-                            ?
-                                (linkedReferenceDatabook:string) => {
-                                    if (linkedRefFetchList.current.includes(linkedReferenceDatabook)) {
-                                        linkedRefFetchList.current.splice(linkedRefFetchList.current.findIndex(linkedRef => linkedRef === linkedReferenceDatabook), 1);
 
-                                        if (linkedRefFetchList.current.length === 0) {
-                                            setMeasureFlag(prevState => !prevState);
+                    if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
+                    else {
+                        const currDataRow = providerData[tableInfo.rowIndex]
+                        const values = primaryKeys.map(pk => currDataRow[pk]);
+                        const filter: SelectFilter = {
+                            columnNames: primaryKeys,
+                            values: values
+                        }
+                        return <CellEditor
+                            rowData={rowData}
+                            pk={_.pick(rowData, primaryKeys)}
+                            screenName={screenName}
+                            name={props.name as string}
+                            colName={colName}
+                            dataProvider={props.dataBook}
+                            cellData={rowData[colName]}
+                            cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
+                            resource={context.server.RESOURCE_URL}
+                            cellId={() => ({
+                                selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()
+                            })}
+                            tableContainer={wrapRef.current ? wrapRef.current : undefined}
+                            selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
+                            selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
+                            enterNavigationMode={enterNavigationMode}
+                            tabNavigationMode={tabNavigationMode}
+                            selectedRow={selectedRow}
+                            className={className}
+                            colReadonly={columnMetaData?.readonly}
+                            tableEnabled={props.enabled}
+                            editable={props.editable}
+                            startEditing={props.startEditing}
+                            insertEnabled={metaData?.insertEnabled}
+                            updateEnabled={metaData?.updateEnabled}
+                            deleteEnabled={metaData?.deleteEnabled}
+                            dataProviderReadOnly={metaData?.readOnly}
+                            setIsEditing={setIsEditing}
+                            stopEditing={() => {
+                                const table = context.contentStore.flatContent.get(id);
+                                if (table) {
+                                    (table as TableProps).startEditing = false;
+                                    context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
+                                }
+                            }}
+                            rowNumber={tableInfo.rowIndex}
+                            colIndex={colIndex}
+                            filter={filter}
+                            removeTableLinkRef={
+                                (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
+                                    && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
+                                    ?
+                                    (linkedReferenceDatabook: string) => {
+                                        if (linkedRefFetchList.current.includes(linkedReferenceDatabook)) {
+                                            linkedRefFetchList.current.splice(linkedRefFetchList.current.findIndex(linkedRef => linkedRef === linkedReferenceDatabook), 1);
+
+                                            if (linkedRefFetchList.current.length === 0) {
+                                                setMeasureFlag(prevState => !prevState);
+                                            }
                                         }
                                     }
-                                }
-                            :
-                                undefined
-                        }
-                        tableIsSelecting={tableIsSelecting} />
+                                    :
+                                    undefined
+                            }
+                            tableIsSelecting={tableIsSelecting} />
+                    }
                 }}
                 style={{ whiteSpace: 'nowrap', '--colName': colName }}
                 bodyClassName={concatClassnames(
