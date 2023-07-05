@@ -118,7 +118,7 @@ function replaceGroupAndDecimal(value: string, numberSeperators: { decimal: stri
 export function getNumberValueAsString (value: any, numberFormat: string) {
     const displayScaleDigits = getDisplayScaleDigits(numberFormat);
     let valueToReturn = typeof value === "number" ? value.toString() : value;
-    if (valueToReturn.includes(".")) {
+    if (valueToReturn !== null && valueToReturn !== undefined && valueToReturn.includes(".")) {
         const splitValue = value.split(".");
         if (splitValue[1].length < displayScaleDigits.minScale) {
             valueToReturn = new bigDecimal(value).round(displayScaleDigits.minScale).getValue();
