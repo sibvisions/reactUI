@@ -24,6 +24,7 @@ import AppSettings from "../AppSettings";
 import ServerFull from "../server/ServerFull";
 import { createFetchRequest } from "../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
+import { Designer } from "@sibvisions/visionx/dist/moduleIndex";
 
 /** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: full*/
 export default class ContentStoreFull extends BaseContentStore {
@@ -35,6 +36,8 @@ export default class ContentStoreFull extends BaseContentStore {
 
     /** Server instance */
     server: ServerFull = new ServerFull(this, this.subManager, this.appSettings, this.history);
+
+    designer: Designer|null = null;
 
     /**
      * Sets the currently active screens or clears the array
@@ -84,6 +87,10 @@ export default class ContentStoreFull extends BaseContentStore {
 
                 // @ts-ignore
                 existingComp[newPropName] = newComp[newPropName];
+
+                if (this.designer && this.designer.selectedComponent?.component.id === existingComp.id) {
+                    this.designer.updateSelectedComponentInnerComponent(existingComp);
+                }
 
                 if (newPropName === "parent" && existingComp.className === COMPONENT_CLASSNAMES.TOOLBAR && !(existingComp.parent?.includes("TBP") || newComp.parent?.includes("TBP"))) {
                     existingComp[newPropName] = newComp[newPropName] + "-frame-toolbar";

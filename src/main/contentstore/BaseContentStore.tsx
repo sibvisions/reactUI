@@ -38,6 +38,7 @@ import { ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import FetchRequest from "../request/data/FetchRequest";
 import * as _ from "underscore"
 import Server from "../server/Server";
+import { Designer } from "@sibvisions/visionx/dist/moduleIndex";
 
 // Type for ActiveScreens
 export type ActiveScreen = {
@@ -79,6 +80,8 @@ export default abstract class BaseContentStore {
 
     /** Server instance */
     abstract server: BaseServer;
+
+    abstract designer: Designer|null;
 
     /** A Map which stores the component which are displayed, the key is the components id and the value the component */
     flatContent = new Map<string, IBaseComponent>();

@@ -29,6 +29,7 @@ import { IPanel } from "../components/panels/panel/UIPanel";
 import { createFetchRequest } from "../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
 import { ICustomDefaultLogin, ICustomMFAText, ICustomMFAUrl, ICustomMFAWait, ICustomResetLogin } from "../../application-frame/login/Login";
+import { Designer } from "@sibvisions/visionx/dist/moduleIndex";
 
 /** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: partial*/
 export default class ContentStore extends BaseContentStore {
@@ -40,6 +41,8 @@ export default class ContentStore extends BaseContentStore {
 
     /** Server instance */
     server: Server = new Server(this, this.subManager, this.appSettings, this.history);
+
+    designer: Designer|null = null;
 
     /** A Map which stores the menugroup as key and an array of the menu-item objects usable by PrimeReact as values */
     menuItems = new Map<string, Array<ServerMenuButtons>>();
@@ -144,6 +147,10 @@ export default class ContentStore extends BaseContentStore {
 
                 // @ts-ignore
                 existingComp[newPropName] = newComp[newPropName];
+
+                if (this.designer && this.designer.selectedComponent?.component.id === existingComp.id) {
+                    this.designer.updateSelectedComponentInnerComponent(existingComp);
+                }
 
                 if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                     this.updateToolBarProperties(existingComp as IToolBarPanel, newComp as IToolBarPanel, newPropName);

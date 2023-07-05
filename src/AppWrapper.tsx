@@ -93,6 +93,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
         if (vxContextState.showVisionX) {
             context.designer = getDesigner();
+            context.contentStore.designer = getDesigner();
         }
         else if (context.designer !== null) {
             context.designer = null;
