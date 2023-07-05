@@ -41,6 +41,7 @@ import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 export interface IAPI {
     sendRequest: (req: any, keyword: string) => void,
     sendOpenScreenRequest: (id:string, parameter?: { [key: string]: any }) => Promise<any>,
+    sendParameter: (parameter: { [key: string]: any }) => void,
     sendScreenParameter: (screenName: string, parameter: { [key: string]: any }) => void,
     sendCloseScreenRequest: (screenName: string, parameter?: { [key: string]: any }, popup?:boolean) => void,
     insertRecord: (id:string, dataProvider:string) => void,
