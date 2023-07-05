@@ -106,7 +106,7 @@ enum REQUEST_ENDPOINTS {
     //other
     SAVE = "/api/save",
     SET_SCREEN_PARAMETER = "/api/setScreenParameter",
-    SET_PARAMETER = "api/setParameter",
+    SET_PARAMETER = "/api/setParameter",
     RELOAD = "/api/reload",
     ROLLBACK = "/api/rollback",
     CHANGES = "/api/changes",
