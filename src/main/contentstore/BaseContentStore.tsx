@@ -72,7 +72,7 @@ export interface IDataBook {
 /** The ContentStore stores active content like user, components and data*/
 export default abstract class BaseContentStore {
     /** SubscriptionManager instance */
-    abstract subManager:SubscriptionManager
+    abstract subManager:SubscriptionManager;
 
     /** AppSettings instance */
     abstract appSettings: AppSettings;

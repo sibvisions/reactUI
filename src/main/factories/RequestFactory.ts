@@ -53,6 +53,7 @@ import ChangesRequest from "../request/other/ChangesRequest";
 import ReloadRequest from "../request/other/ReloadRequest";
 import RollbackRequest from "../request/other/RollbackRequest";
 import SaveRequest from "../request/other/SaveRequest";
+import SetParameterRequest from "../request/other/SetParameterRequest";
 import SetScreenParameterRequest from "../request/other/SetScreenParameterRequest";
 
 /**
@@ -418,6 +419,19 @@ export const createResetPasswordRequest = (values?: ResetPasswordRequest): Reset
     const req:ResetPasswordRequest = {
         clientId: values?.clientId || getClientId(),
         identifier: values?.identifier
+    }
+    return req;
+}
+
+/**
+ * Returns a set-parameter-request object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the set-screen-parameter-request
+ * @returns a set-parameter-request object
+ */
+export const createSetParameterRequest = (values?: SetParameterRequest): SetParameterRequest => {
+    const req:SetScreenParameterRequest = {
+        clientId: values?.clientId || getClientId(),
+        parameter: values?.parameter
     }
     return req;
 }

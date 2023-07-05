@@ -69,6 +69,7 @@ enum REQUEST_KEYWORDS {
     //other
     SAVE = "save",
     SET_SCREEN_PARAMETER = "set_screen_parameter",
+    SET_PARAMETER = "set_parameter",
     RELOAD = "reload",
     ROLLBACK = "rollback",
     CHANGES = "changes",
