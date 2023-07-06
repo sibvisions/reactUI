@@ -82,7 +82,7 @@ export default class ContentStoreFull extends BaseContentStore {
                 }
 
                 if (newPropName === "parent" && existingComp[newPropName] !== newComp[newPropName]) {
-                    this.addToNotifyList(existingComp, notifyList)
+                    this.addToNotifyList(existingComp, notifyList);
                 }
 
                 // @ts-ignore

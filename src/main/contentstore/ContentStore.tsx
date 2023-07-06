@@ -133,7 +133,7 @@ export default class ContentStore extends BaseContentStore {
                 }
 
                 if (newPropName === "parent" && existingComp[newPropName] !== newComp[newPropName]) {
-                    this.addToNotifyList(existingComp, notifyList)
+                    this.addToNotifyList(existingComp, notifyList);
                 }
                 
                 if (newPropName === "screen_title_") {

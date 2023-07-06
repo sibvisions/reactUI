@@ -106,6 +106,7 @@ enum REQUEST_ENDPOINTS {
     //other
     SAVE = "/api/save",
     SET_SCREEN_PARAMETER = "/api/setScreenParameter",
+    SET_PARAMETER = "/api/setParameter",
     RELOAD = "/api/reload",
     ROLLBACK = "/api/rollback",
     CHANGES = "/api/changes",
@@ -222,7 +223,8 @@ class Server extends BaseServer {
     .set(REQUEST_KEYWORDS.ABOUT, REQUEST_ENDPOINTS.ABOUT)
     .set(REQUEST_KEYWORDS.MENU, REQUEST_ENDPOINTS.MENU)
     .set(REQUEST_KEYWORDS.WIDTH, REQUEST_ENDPOINTS.WIDTH)
-    .set(REQUEST_KEYWORDS.SET_LAYOUT, REQUEST_ENDPOINTS.SET_LAYOUT);
+    .set(REQUEST_KEYWORDS.SET_LAYOUT, REQUEST_ENDPOINTS.SET_LAYOUT)
+    .set(REQUEST_KEYWORDS.SET_PARAMETER, REQUEST_ENDPOINTS.SET_PARAMETER);
 
     /** ----------HANDLING-RESPONSES---------- */
 

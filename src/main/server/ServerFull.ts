@@ -62,6 +62,7 @@ enum REQUEST_ENDPOINTS {
     //other
     ALIVE = "/v2/api/alive",
     CHANGES = "/v2/api/changes",
+    SET_PARAMETER = "/v2/api/setParameter"
 }
 
 export default class ServerFull extends BaseServer {

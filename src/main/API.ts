@@ -41,8 +41,9 @@ import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 export interface IAPI {
     sendRequest: (req: any, keyword: string) => void,
     sendOpenScreenRequest: (id:string, parameter?: { [key: string]: any }) => Promise<any>,
+    sendParameter: (parameter: { [key: string]: any }) => void,
     sendScreenParameter: (screenName: string, parameter: { [key: string]: any }) => void,
-    sendCloseScreenRequest: (id: string, parameter?: { [key: string]: any }, popup?:boolean) => void,
+    sendCloseScreenRequest: (screenName: string, parameter?: { [key: string]: any }, popup?:boolean) => void,
     insertRecord: (id:string, dataProvider:string) => void,
     deleteRecord: (id:string, dataProvider:string) => void,
     addCustomScreen: (id:string, screen:ReactElement) => void,
@@ -133,6 +134,16 @@ class API implements IAPI {
         openReq.componentId = id;
         return this.#server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN);
     }
+
+    /**
+     * Sends parameters to the server.
+     * @param parameter - the screen-parameters
+     */
+     sendParameter(parameter: { [key: string]: any }) {
+        const parameterReq = createSetScreenParameterRequest();
+        parameterReq.parameter = parameter;
+        this.#server.sendRequest(parameterReq, REQUEST_KEYWORDS.SET_PARAMETER);
+    }   
 
     /**
      * Sends screen-parameters for the given screen to the server.
