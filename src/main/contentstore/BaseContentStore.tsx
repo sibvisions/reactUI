@@ -1374,4 +1374,20 @@ export default abstract class BaseContentStore {
         }
         return false;
     }
+
+    getLastID() {
+        const allContent = Array.from(new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent, ...this.removedContent]).keys());
+        let valueToReturn = 0;
+
+        allContent.forEach(key => {
+            const matchedKey = key.match(/^[^\d]*(\d+)/);
+            if (matchedKey?.length === 2) {
+                const val = parseInt(matchedKey[1])
+                if (val > valueToReturn) {
+                    valueToReturn = val;
+                }
+            }
+        })
+        return valueToReturn;
+    }
 }
