@@ -78,6 +78,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     horizontalColumnToAnchorMap: new Map<string, { leftAnchor: Anchor, rightAnchor: Anchor }>(),
                     verticalColumnToAnchorMap: new Map<string, { topAnchor: Anchor, bottomAnchor: Anchor }>(),
                     componentConstraints: new Map<string, { constraints: string, isHorizontalConstraints: boolean, isVerticalConstraints: boolean }>(),
+                    componentIndeces: [],
                     originalConstraints: compConstraintMap,
                     componentSizes: compSizes,
                     calculatedSize: null
@@ -169,6 +170,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     castedLayoutInfo.anchorToColumnMap.clear();
                     castedLayoutInfo.horizontalColumnToAnchorMap.clear();
                     castedLayoutInfo.verticalColumnToAnchorMap.clear();
+                    castedLayoutInfo.componentIndeces = [];
                 }
 
                 anchors.clear(); componentConstraints.clear();
@@ -220,6 +222,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
                 children.forEach(component => {
                     if (!(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) {
+
                         const anchorNames = component.constraints.split(";");
                         /** Get Anchors */
                         let topAnchor = anchors.get(anchorNames[0]); 
@@ -240,6 +243,16 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             if (!rightAnchor) {
                                 rightAnchor = formLayoutAssistant!.createAnchors(anchorNames[3], anchors).find(createdAnchor => createdAnchor.name === anchorNames[3]);
                             }
+
+                            if (layoutInfo && component.indexOf !== undefined) {
+                                if (layoutInfo.componentIndeces.includes(component.name)) {
+                                    const index = layoutInfo.componentIndeces.findIndex(compName => compName === component.name);
+                                    if (index !== -1) {
+                                        layoutInfo.componentIndeces.splice(index, 1);
+                                    }
+                                }
+                                layoutInfo.componentIndeces.splice(component.indexOf, 0, component.name);
+                            }
                         }
 
                         /** Fill Constraints-Map */
@@ -248,7 +261,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             componentConstraints.set(component.id, constraint);
 
                             if (isDesignerActive() && formLayoutAssistant) {
-                                 
                                 const { newConstraints, isVerticalConstraint, isHorizontalConstraint } = formLayoutAssistant.getConvertedVerticalHorizontalConstraints(splitAnchors, component.constraints);
                                 layoutInfo!.componentConstraints.set(component.name, { constraints: newConstraints, isHorizontalConstraints: isHorizontalConstraint, isVerticalConstraints: isVerticalConstraint });
                             }
