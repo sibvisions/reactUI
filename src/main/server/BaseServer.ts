@@ -42,6 +42,7 @@ import { setDateLocale } from "../util/other-util/GetDateLocale";
 import BaseRequest from "../request/BaseRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
 import { CellFormatting } from "../components/table/CellEditor";
+import { getMetaData } from "../util/data-util/GetMetaData";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -595,7 +596,6 @@ export default abstract class BaseServer {
             cellEditor.linkReference.columnNames.push(column.columnName)
         }
         const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
-
         if (dataArray.length && Object.keys(dataArray[0]).includes(cellEditor.linkReference.referencedColumnNames[index])) {
             dataArray.forEach((data) => {
                 if (data) {
@@ -779,6 +779,9 @@ export default abstract class BaseServer {
                 fetchReq.rowCount = 1;
                 fetchReq.fromRow = changedProvider.reload;
                 fetchReq.dataProvider = changedProvider.dataProvider;
+                if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
+                    fetchReq.includeMetaData = true;
+                }
                 this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH);
             }
             else {
