@@ -599,7 +599,7 @@ export default abstract class BaseServer {
         if (dataArray.length && Object.keys(dataArray[0]).includes(cellEditor.linkReference.referencedColumnNames[index])) {
             dataArray.forEach((data) => {
                 if (data) {
-                    const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);          
+                    const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);
                     const keyObj = generateDisplayMapKey(
                         data,
                         referencedData,
