@@ -43,6 +43,7 @@ import BaseRequest from "../request/BaseRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
 import { CellFormatting } from "../components/table/CellEditor";
 import { getMetaData } from "../util/data-util/GetMetaData";
+import GenericResponse from "../response/ui/GenericResponse";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -128,6 +129,8 @@ export default abstract class BaseServer {
     ignoreHome = false;
 
     homeButtonPressed = false;
+
+    contentDataBooksToDelete: Map<string, string[]> = new Map<string, string[]>();
 
     /**
      * @constructor constructs server instance
@@ -448,7 +451,15 @@ export default abstract class BaseServer {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
         if (Array.isArray(responses) && responses.length) {
+            let contentId:string|undefined = undefined;
             responses.sort((a, b) => {
+                if ((a.name === RESPONSE_NAMES.CONTENT || b.name === RESPONSE_NAMES.CONTENT) && !contentId) {
+                    const castedResponse = a.name === RESPONSE_NAMES.CONTENT ? a as GenericResponse : b as GenericResponse;
+                    if (castedResponse.changedComponents.length && (castedResponse.changedComponents[0] as IPanel).content_className_) {
+                        contentId = (castedResponse.changedComponents[0] as IPanel).name;
+                    }
+                }
+
                 if (a.name === RESPONSE_NAMES.CLOSE_SCREEN && b.name !== RESPONSE_NAMES.CLOSE_SCREEN) {
                     return -1;
                 }
@@ -467,6 +478,15 @@ export default abstract class BaseServer {
             });
 
             for (const [, response] of responses.entries()) {
+                if (response.name === RESPONSE_NAMES.DAL_META_DATA && contentId) {
+                    const castedResponse = response as MetaDataResponse;
+                    if (!this.contentDataBooksToDelete.has(contentId)) {
+                        this.contentDataBooksToDelete.set(contentId, [castedResponse.dataProvider])
+                    }
+                    else {
+                        this.contentDataBooksToDelete.get(contentId)!.push(castedResponse.dataProvider);
+                    }
+                }
                 const mapper = this.dataResponseMap.get(response.name);
                 if (mapper) {
                     await mapper(response, request);
