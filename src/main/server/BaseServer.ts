@@ -276,6 +276,22 @@ export default abstract class BaseServer {
                     this.subManager.emitLoginActive(true);
                 }
 
+                // Update filter because with slow connection filter values were wrong
+                if (endpoint === REQUEST_KEYWORDS.SELECT_ROW && request.dataProvider) {
+                    const dataBook = this.contentStore.getDataBook(this.getScreenName(request.dataProvider), request.dataProvider);
+                    if (dataBook) {
+                        const data = dataBook.data?.get("current");
+                        const metaData = dataBook.metaData;
+                        if (data && metaData && request.rowNumber !== null && request.rowNumber !== undefined) {
+                            const primaryKeys = metaData.primaryKeyColumns ? metaData.primaryKeyColumns : metaData.columns.map(col => col.name);
+                            request.filter = {
+                                columnNames: primaryKeys,
+                                values: primaryKeys.map(pk => data[request.rowNumber][pk])
+                            }
+                        }
+                    }
+                }
+
                 this.lastRequestTimeStamp = Date.now();
                 this.timeoutRequest(
                     fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
