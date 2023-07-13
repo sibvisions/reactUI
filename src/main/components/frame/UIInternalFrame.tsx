@@ -190,9 +190,18 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
                 }
                 else {
                     if (!props.pack && props.layoutStyle && props.layoutStyle.width && props.layoutStyle.height) {
-                        //height + 35 because of header + border + padding, width + 8 because of padding + border 
-                        rndRef.current.updateSize({ width: props.layoutStyle.width as number + 8, height: props.layoutStyle.height as number + 35 });
-                        setFrameStyle(props.layoutStyle);
+                        if (children.length === 1 && children[0].preferredSize) {
+                            const prefSize = parsePrefSize(children[0].preferredSize);
+                            if (prefSize) {
+                                rndRef.current.updateSize({ width: prefSize.width + 8, height: prefSize.height + 35 });
+                                setFrameStyle({ height: prefSize.height, width: prefSize.width });
+                            }
+                        }
+                        else {
+                            //height + 35 because of header + border + padding, width + 8 because of padding + border 
+                            rndRef.current.updateSize({ width: props.layoutStyle.width as number + 8, height: props.layoutStyle.height as number + 35 });
+                            setFrameStyle(props.layoutStyle);
+                        }
                         initFrame.current = false;
                     }
                     else if (packSize) {
