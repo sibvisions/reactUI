@@ -780,11 +780,24 @@ class Server extends BaseServer {
     // Closes a content
     closeContent(closeContentData:CloseContentResponse) {
         if (closeContentData.componentId) {
+            const dataBooksToDelete = this.contentDataBooksToDelete.get(closeContentData.componentId);
+            if (dataBooksToDelete) {
+                dataBooksToDelete.forEach(dataBook => {
+                    const screenName = this.getScreenName(dataBook);
+                    if (this.contentStore.dataBooks.has(screenName)) {
+                        this.contentStore.dataBooks.get(screenName)!.delete(dataBook);
+                        dataBooksToDelete.splice(dataBooksToDelete.indexOf(dataBook), 1);
+                        if (!dataBooksToDelete.length) {
+                            this.contentDataBooksToDelete.delete(closeContentData.componentId);
+                        }
+                    }
+                });
+            }
+
             const comp = this.contentStore.getComponentByName(closeContentData.componentId)
             if (comp) {
                 this.contentStore.updateContent([{ id: comp.id, "~remove": true } as IBaseComponent], false)
             }
-            
             //this.contentStore.closeScreen(closeContentData.componentId, true);
 
             this.contentStore.activeScreens = this.contentStore.activeScreens.filter(screen => screen.name !== closeContentData.componentId);

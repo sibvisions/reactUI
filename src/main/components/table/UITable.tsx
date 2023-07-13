@@ -339,8 +339,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
         //await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
-        await showTopBar(props.context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), props.topbar);
-    }, [props.dataBook, props.name, props.context.server])
+        await showTopBar(props.context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN), props.topbar);
+    }, [props.dataBook, props.name, props.context.server, providerData])
 
 
 

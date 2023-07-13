@@ -217,7 +217,6 @@ export function generateDisplayMapKey(dataRow:any, referencedObject: any, linkRe
         if (linkReference) {
             let keyObject: any = {};
             const index = linkReference.columnNames.findIndex(colName => colName === columnName);
-            keyObject[linkReference.referencedColumnNames[index]] = referencedObject ? referencedObject[linkReference.referencedColumnNames[index]] : dataRow[linkReference.columnNames[index]];
 
             if (cellEditorMetaData) {
                 addSearchColumnMappingToKeyObject(dataRow, referencedObject, keyObject, cellEditorMetaData);
@@ -228,8 +227,9 @@ export function generateDisplayMapKey(dataRow:any, referencedObject: any, linkRe
                 
             }
 
+            keyObject[linkReference.referencedColumnNames[index]] = referencedObject ? referencedObject[linkReference.referencedColumnNames[index]] : dataRow[linkReference.columnNames[index]];
+            
             const key = objectToString(keyObject);
-
             return key;
         }
     }
@@ -248,6 +248,7 @@ export function getDisplayValue(value:any, referencedObject: any, linkReference:
         if (isDisplayRefColNameOrConcat) {
             const displayObject = generateDisplayMapKey(value, referencedObject, linkReference, columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, dataProvider);
             const extractedObject = getExtractedObject(displayObject, [linkReference.referencedColumnNames[index]]);
+            
             if (cellEditorMetaData) {
                 if (cellEditorMetaData.additionalCondition || cellEditorMetaData.searchColumnMapping) {
                     if (linkReference.dataToDisplayMap?.has(JSON.stringify(displayObject))) {
@@ -450,7 +451,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow*/
     useEffect(() => {
-        if (props.selectedRow) {  
+        if (props.selectedRow) {            
             setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
         }
     }, [props.selectedRow, cellEditorMetaData, displayMapChanged]);

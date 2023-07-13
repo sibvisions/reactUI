@@ -42,6 +42,8 @@ import { setDateLocale } from "../util/other-util/GetDateLocale";
 import BaseRequest from "../request/BaseRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
 import { CellFormatting } from "../components/table/CellEditor";
+import { getMetaData } from "../util/data-util/GetMetaData";
+import GenericResponse from "../response/ui/GenericResponse";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -127,6 +129,8 @@ export default abstract class BaseServer {
     ignoreHome = false;
 
     homeButtonPressed = false;
+
+    contentDataBooksToDelete: Map<string, string[]> = new Map<string, string[]>();
 
     /**
      * @constructor constructs server instance
@@ -277,6 +281,22 @@ export default abstract class BaseServer {
 
                 if (!request.clientId && endpoint !== REQUEST_KEYWORDS.STARTUP) {
                     request.clientId = getClientId();
+                }
+                
+                // Update filter because with slow connection filter values were wrong
+                if (endpoint === REQUEST_KEYWORDS.SELECT_ROW && request.dataProvider) {
+                    const dataBook = this.contentStore.getDataBook(this.getScreenName(request.dataProvider), request.dataProvider);
+                    if (dataBook) {
+                        const data = dataBook.data?.get("current");
+                        const metaData = dataBook.metaData;
+                        if (data && metaData && request.rowNumber !== null && request.rowNumber !== undefined) {
+                            const primaryKeys = metaData.primaryKeyColumns ? metaData.primaryKeyColumns : metaData.columns.map(col => col.name);
+                            request.filter = {
+                                columnNames: primaryKeys,
+                                values: primaryKeys.map(pk => data[request.rowNumber][pk])
+                            }
+                        }
+                    }
                 }
 
                 this.lastRequestTimeStamp = Date.now();
@@ -435,7 +455,15 @@ export default abstract class BaseServer {
         // If there is a DataProviderChanged response move it to the start of the responses array
         // to prevent flickering of components.
         if (Array.isArray(responses) && responses.length) {
+            let contentId:string|undefined = undefined;
             responses.sort((a, b) => {
+                if ((a.name === RESPONSE_NAMES.CONTENT || b.name === RESPONSE_NAMES.CONTENT) && !contentId) {
+                    const castedResponse = a.name === RESPONSE_NAMES.CONTENT ? a as GenericResponse : b as GenericResponse;
+                    if (castedResponse.changedComponents.length && (castedResponse.changedComponents[0] as IPanel).content_className_) {
+                        contentId = (castedResponse.changedComponents[0] as IPanel).name;
+                    }
+                }
+
                 if (a.name === RESPONSE_NAMES.CLOSE_SCREEN && b.name !== RESPONSE_NAMES.CLOSE_SCREEN) {
                     return -1;
                 }
@@ -454,6 +482,15 @@ export default abstract class BaseServer {
             });
 
             for (const [, response] of responses.entries()) {
+                if (response.name === RESPONSE_NAMES.DAL_META_DATA && contentId) {
+                    const castedResponse = response as MetaDataResponse;
+                    if (!this.contentDataBooksToDelete.has(contentId)) {
+                        this.contentDataBooksToDelete.set(contentId, [castedResponse.dataProvider])
+                    }
+                    else {
+                        this.contentDataBooksToDelete.get(contentId)!.push(castedResponse.dataProvider);
+                    }
+                }
                 const mapper = this.dataResponseMap.get(response.name);
                 if (mapper) {
                     await mapper(response, request);
@@ -599,11 +636,10 @@ export default abstract class BaseServer {
             cellEditor.linkReference.columnNames.push(column.columnName)
         }
         const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
-
         if (dataArray.length && Object.keys(dataArray[0]).includes(cellEditor.linkReference.referencedColumnNames[index])) {
             dataArray.forEach((data) => {
                 if (data) {
-                    const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);          
+                    const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);
                     const keyObj = generateDisplayMapKey(
                         data,
                         referencedData,
@@ -783,6 +819,9 @@ export default abstract class BaseServer {
                 fetchReq.rowCount = 1;
                 fetchReq.fromRow = changedProvider.reload;
                 fetchReq.dataProvider = changedProvider.dataProvider;
+                if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
+                    fetchReq.includeMetaData = true;
+                }
                 this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH);
             }
             else {

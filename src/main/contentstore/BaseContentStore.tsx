@@ -67,7 +67,8 @@ export interface IDataBook {
     sortedColumns?: SortDefinition[],
     readOnly?: boolean,
     referencedCellEditors?: {cellEditor: any, columnName: string, dataBook:string}[],
-    rootKey?: string
+    rootKey?: string,
+    contentId?: string
 }
 
 /** The ContentStore stores active content like user, components and data*/
@@ -796,23 +797,38 @@ export default abstract class BaseContentStore {
 
     /**
      * Returns the dataproviders of a screen as map
-     * @param screenId - the screen-id
+     * @param screenName - the screen-name
      */
-    getScreenDataproviderMap(screenId:string): Map<string, IDataBook>|undefined {
-        if (this.dataBooks.has(screenId)) {
-            return this.dataBooks.get(screenId);
+    getScreenDataproviderMap(screenName:string): Map<string, IDataBook>|undefined {
+        if (this.dataBooks.has(screenName)) {
+            return this.dataBooks.get(screenName);
         }
         return undefined;
     }
 
+    setDataBook(screenName: string, dataProvider: string, pDataBook: IDataBook): void {
+        if (!this.dataBooks.has(screenName)) {
+            this.dataBooks.set(screenName, new Map<string, IDataBook>().set(dataProvider, pDataBook))
+        }
+        else {
+            let dataBook = this.dataBooks.get(screenName)!.get(dataProvider);
+            if (dataBook) {
+                dataBook = {...dataBook, ...pDataBook}
+            }
+            else {
+                this.dataBooks.get(screenName)!.set(dataProvider, pDataBook);
+            }
+        }
+    }
+
     /**
      * Returns the databook of a specific screen
-     * @param screenId - the name of the screen
+     * @param screenName - the screen-name
      * @param dataProvider - the dataprovider
      */
-    getDataBook(screenId:string, dataProvider:string): IDataBook|undefined {
-        if (this.getScreenDataproviderMap(screenId)?.has(dataProvider)) {
-            return this.getScreenDataproviderMap(screenId)!.get(dataProvider);
+    getDataBook(screenName:string, dataProvider:string): IDataBook|undefined {
+        if (this.getScreenDataproviderMap(screenName)?.has(dataProvider)) {
+            return this.getScreenDataproviderMap(screenName)!.get(dataProvider);
         }
         return undefined;
     }
@@ -944,7 +960,7 @@ export default abstract class BaseContentStore {
             return pageKey;
         }
         
-        const fillDataMap = (mapProv:Map<string, any>, request?:FetchRequest, mapScreen?:Map<string, IDataBook>, addDPD?:boolean) => {
+        const fillDataMap = (mapProv:Map<string, any>, request?:FetchRequest, mapScreen?:Map<string, IDataBook>) => {
             mapProv.set(getPageKey(), newDataSet);
             mapProv.set("current", newDataSet);
 
@@ -953,11 +969,7 @@ export default abstract class BaseContentStore {
                     (mapScreen.get(dataProvider) as IDataBook).data = mapProv;
                 }
                 else {
-                    mapScreen.set(dataProvider, {data: mapProv});
-                }
-                
-                if (addDPD) {
-                    this.dataBooks.set(screenName, mapScreen);
+                    this.setDataBook(screenName, dataProvider, {data: mapProv})
                 }
             }
         }
@@ -1011,12 +1023,13 @@ export default abstract class BaseContentStore {
         else {
             const dataMap = new Map<string, IDataBook>();
             if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.data) {
-                fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, request, dataMap, true);
+                fillDataMap((this.getDataBook(dataProvider.split('/')[1], dataProvider) as IDataBook).data as Map<string, any>, request, dataMap);
             }
             else {
                 const providerMap = new Map<string, Array<any>>();
-                fillDataMap(providerMap, request, dataMap, true);
+                fillDataMap(providerMap, request, dataMap);
             }
+            this.dataBooks.set(screenName, dataMap);
         }
 
         if (request?.rootKey) {
@@ -1058,13 +1071,11 @@ export default abstract class BaseContentStore {
                 }
             }
             else {
-                existingMapModified.set(linkReference.referencedDataBook, { referencedCellEditors: [{ cellEditor: cellEditor, columnName: columnName, dataBook: dataProvider }] });
+                this.setDataBook(screenName, linkReference.referencedDataBook, { referencedCellEditors: [{ cellEditor: cellEditor, columnName: columnName, dataBook: dataProvider }] })
             }
         }
         else {
-            const tempMap: Map<string, IDataBook> = new Map<string, IDataBook>();
-            tempMap.set(linkReference.referencedDataBook, { referencedCellEditors: [{ cellEditor: cellEditor, columnName: columnName, dataBook: dataProvider }] });
-            this.dataBooks.set(screenName, tempMap);
+            this.setDataBook(screenName, linkReference.referencedDataBook, { referencedCellEditors: [{ cellEditor: cellEditor, columnName: columnName, dataBook: dataProvider }] })
         }
 
 
@@ -1094,19 +1105,16 @@ export default abstract class BaseContentStore {
         }))}
 
         const existingMap = this.getScreenDataproviderMap(screenName);
-
         if (existingMap) {
             if (existingMap.has(metaData.dataProvider)) {
                 (existingMap.get(metaData.dataProvider) as IDataBook).metaData = modifiedMetaData;
             }
             else {
-                existingMap.set(metaData.dataProvider, {metaData: modifiedMetaData});
+                this.setDataBook(screenName, metaData.dataProvider, {metaData: modifiedMetaData})
             }
         }
         else {
-            const tempMap:Map<string, IDataBook> = new Map<string, IDataBook>();
-            tempMap.set(metaData.dataProvider, {metaData: modifiedMetaData})
-            this.dataBooks.set(screenName, tempMap);
+            this.setDataBook(screenName, metaData.dataProvider, {metaData: modifiedMetaData})
         }
         this.subManager.notifyMetaDataChange(screenName, metaData.dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(metaData.dataProvider.split('/')[1])) {
@@ -1247,17 +1255,16 @@ export default abstract class BaseContentStore {
             }
         }
         else {
-            const tempMapRow = new Map<string, IDataBook>();
             // If the compPanel is a popup use the screenName shown in the dataProvider
+            let sr:IDataBook;
             if (compPanel && this.isPopup(compPanel) && this.getDataBook(dataProvider.split('/')[1], dataProvider)?.selectedRow) {
-                let popupSR:IDataBook = {selectedRow: this.getDataBook(dataProvider.split('/')[1], dataProvider)!.selectedRow };
-                popupSR.selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}
-                tempMapRow.set(dataProvider, popupSR);
+                sr = {selectedRow: this.getDataBook(dataProvider.split('/')[1], dataProvider)!.selectedRow };
+                sr.selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}
             }
             else {
-                tempMapRow.set(dataProvider, {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}});
+                sr = {selectedRow: {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn}}
             }
-            this.dataBooks.set(screenName, tempMapRow);
+            this.setDataBook(screenName, dataProvider, sr)
         }
         this.subManager.emitRowSelect(screenName, dataProvider);
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
