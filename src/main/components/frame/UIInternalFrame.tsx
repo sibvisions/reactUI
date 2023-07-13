@@ -193,9 +193,18 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
                 }
                 else {
                     if (!props.pack && layoutStyle && layoutStyle.width && layoutStyle.height) {
-                        //height + 35 because of header + border + padding, width + 8 because of padding + border 
-                        rndRef.current.updateSize({ width: layoutStyle.width as number + 8, height: layoutStyle.height as number + 35 });
-                        setFrameStyle(layoutStyle);
+                        if (children.length === 1 && children[0].preferredSize) {
+                            const prefSize = parsePrefSize(children[0].preferredSize);
+                            if (prefSize) {
+                                rndRef.current.updateSize({ width: prefSize.width + 8, height: prefSize.height + 35 });
+                                setFrameStyle({ height: prefSize.height, width: prefSize.width });
+                            }
+                        }
+                        else {
+                            //height + 35 because of header + border + padding, width + 8 because of padding + border 
+                            rndRef.current.updateSize({ width: layoutStyle.width as number + 8, height: layoutStyle.height as number + 35 });
+                            setFrameStyle(layoutStyle);
+                        }
                         initFrame.current = false;
                     }
                     else if (packSize) {
