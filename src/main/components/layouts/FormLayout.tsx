@@ -81,7 +81,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     componentIndeces: [],
                     originalConstraints: compConstraintMap,
                     componentSizes: compSizes,
-                    calculatedSize: null
+                    calculatedSize: null,
+                    isAdvancedFormLayout: false
                 }))
             }
             else {
@@ -214,11 +215,15 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             
                             anchor = anchor.relatedAnchor;
                         }
+
+                        if ((pAnchor.name === "r0" || pAnchor.name === "b0") && pAnchor.position === 0 && !pAnchor.autoSize) {
+                            formLayoutAssistant!.setIsAdvancedFormLayout(true)
+                        }
                     });
 
                     formLayoutAssistant!.fillFormLayoutInfo(anchors);
                 }
-
+                
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
                 children.forEach(component => {
                     if (!(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) {
