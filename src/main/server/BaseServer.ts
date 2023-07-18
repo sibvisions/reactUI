@@ -801,6 +801,9 @@ export default abstract class BaseServer {
                 this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider, true);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
+                if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
+                    fetchReq.includeMetaData = true;
+                }
                 this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
                 .then(() => {
                     this.requestQueue = this.requestQueue.filter(req => !((req.request as DataProviderRequest).dataProvider === changedProvider.dataProvider) || !(req.endpoint === REQUEST_KEYWORDS.SELECT_ROW));
