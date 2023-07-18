@@ -340,7 +340,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
             case CELLEDITOR_CLASSNAMES.TEXT:
                 return [ TextCellRenderer ]
             default:
-                return [(props:any) => <>{props.cellData}</>]
+                return [(props:any) => <span className="cell-data-content">{props.cellData}</span>]
         }
     }, [columnMetaData?.cellEditor.className])
 
