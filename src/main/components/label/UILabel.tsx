@@ -13,11 +13,10 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { Tooltip } from 'primereact/tooltip';
 import IBaseComponent from "../../util/types/IBaseComponent";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import { getAlignments, translateTextAlign } from "../comp-props/GetAlignments";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
@@ -28,6 +27,8 @@ import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableLabel } from "../../extend-components/label/ExtendLabel";
 import useIsHTMLText from "../../hooks/components-hooks/useIsHTMLText";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import * as _ from "underscore"
+import { IPanel } from "../panels/panel/UIPanel";
 import { IComponentConstants } from "../BaseComponent";
 
 /**
@@ -56,7 +57,14 @@ const UILabel: FC<IBaseComponent & IExtendableLabel & IComponentConstants> = (pr
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (labelRef.current && onLoadCallback) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
+            const workscreenComponent = props.context.contentStore.getComponentByName(props.context.contentStore.getScreenName(id) as string);
+            if (workscreenComponent && props.context.contentStore.isPopup((workscreenComponent as IPanel))) {
+                const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
+                debounced()
+            }
+            else {
+                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
+            }
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, props.layoutStyle?.width, props.layoutStyle?.height]);
 

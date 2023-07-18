@@ -18,5 +18,6 @@ import BaseRequest from "../BaseRequest";
 /** Interface for Requests with componentId */
 interface DataProviderRequest extends BaseRequest {
     dataProvider?:string|string[];
+    screenName?:string
 }
 export default DataProviderRequest;

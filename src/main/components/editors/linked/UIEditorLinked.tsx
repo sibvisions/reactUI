@@ -119,6 +119,7 @@ export function fetchLinkedRefDatabook(screenName: string, databook: string, sel
         if (!refDataBookInfo?.metaData) {
             fetchReq.includeMetaData = true;
         }
+        fetchReq.screenName = screenName;
         server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => decreaseCallback ? decreaseCallback(databook) : undefined)
     }
 }
