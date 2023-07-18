@@ -28,6 +28,8 @@ import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableLabel } from "../../extend-components/label/ExtendLabel";
 import useIsHTMLText from "../../hooks/components-hooks/useIsHTMLText";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
+import * as _ from "underscore"
+import { IPanel } from "../panels/panel/UIPanel";
 
 /**
  * Displays a simple label
@@ -39,7 +41,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     const labelRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
+    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;
@@ -59,7 +61,14 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (labelRef.current && onLoadCallback) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
+            const workscreenComponent = context.contentStore.getComponentByName(context.contentStore.getScreenName(id) as string);
+            if (workscreenComponent && context.contentStore.isPopup((workscreenComponent as IPanel))) {
+                const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
+                debounced()
+            }
+            else {
+                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
+            }
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
 
