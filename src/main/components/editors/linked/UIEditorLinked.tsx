@@ -580,7 +580,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         else {
             columnNamesToReturn = [...linkReference.columnNames];
         }
-        columnNamesToReturn = [...columnNamesToReturn, ...props.cellEditor.additionalClearColumns];
+        if (props.cellEditor.additionalClearColumns) {
+            columnNamesToReturn = [...columnNamesToReturn, ...props.cellEditor.additionalClearColumns];
+        }
+        
         return columnNamesToReturn
     }
 

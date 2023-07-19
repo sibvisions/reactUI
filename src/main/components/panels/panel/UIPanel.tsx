@@ -70,9 +70,7 @@ export function panelReportSize(id: string,
     propMax?: string,
     onLoadCallback?: LoadCallBack,
     minusHeight?: boolean,
-    minusWidth?: boolean,
-    scrollSize?: Dimension,
-    scrollCallback?: (value: React.SetStateAction<Dimension | undefined>) => void) {
+    minusWidth?: boolean) {
     if (onLoadCallback) {
         const adjustedSize: Dimension = { height: calcPref.height, width: calcPref.width }
         if (type === "G") {
@@ -81,9 +79,6 @@ export function panelReportSize(id: string,
         else if (type === "S") {
             adjustedSize.height += minusHeight ? 17 : 0
             adjustedSize.width += minusWidth ? 17 : 0
-            if (scrollCallback && (scrollSize?.height !== adjustedSize.height || scrollSize.width !== adjustedSize.width)) {
-                scrollCallback({ height: adjustedSize.height, width: adjustedSize.width })
-            }
         }
 
         if (styleClassNames.includes("f_standard_border")) {
