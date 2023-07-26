@@ -82,7 +82,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     originalConstraints: compConstraintMap,
                     componentSizes: compSizes,
                     calculatedSize: null,
-                    isAdvancedFormLayout: false
+                    isAdvancedFormLayout: false,
+                    anchors: new Map<string, Anchor>()
                 }))
             }
             else {
@@ -162,6 +163,15 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             /** True, if the target dependent anchors should be calculated again. */
             let calculatedTargetDependentAnchors = false;
 
+            const containsAnchor = (anchor:Anchor, anchorList:Anchor[]) => {
+                for (let i = 0; i < anchorList.length; i++) {
+                    if (anchorList[i].name === anchor.name) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             /** Fills the Anchors- and Constraints map */
             const setAnchorsAndConstraints = () => {
                 const clearLayoutInfo = () => {
@@ -198,16 +208,9 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         let anchorList = (["l", "r"].indexOf(anchorStartChar) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
                         const pos = anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) !== -1 ? anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) + 1 : anchorList.length;
     
-                        const containsAnchor = (anchor:Anchor) => {
-                            for (let i = 0; i < anchorList.length; i++) {
-                                if (anchorList[i].name === anchor.name) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
 
-                        while (anchor && !containsAnchor(anchor)) {
+
+                        while (anchor && !containsAnchor(anchor, anchorList)) {
                             anchorStartChar = anchor.name.substring(0, 1);
                             if (!(anchorStartChar.startsWith("v") || anchorStartChar.startsWith("h"))) {
                                 anchorList.splice(pos, 0, anchor);
@@ -221,7 +224,37 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                     });
 
-                    formLayoutAssistant!.fillFormLayoutInfo(anchors);
+                    const createDesignerAnchor = (anchor: Anchor) => {
+                        if (!anchors.has(anchor.name)) {
+                            const newAnchor = new Anchor(anchor.anchorData);
+                            newAnchor.relatedAnchor = anchors.get(newAnchor.relatedAnchorName);
+                            anchors.set(newAnchor.name, newAnchor);
+                            let anchorList = (["l", "r"].indexOf(newAnchor.name.substring(0,1)) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
+                            const pos = anchorList.findIndex(a => a.name === newAnchor.relatedAnchorName) !== -1 ? anchorList.findIndex(a => a.name === newAnchor.relatedAnchorName) + 1 : anchorList.length;
+                            if (!containsAnchor(newAnchor, anchorList)) {
+                                anchorList.splice(pos, 0, anchor);
+                            }
+                        }
+                    }
+
+                    if (formLayoutAssistant!.designerCreatedAnchorPairs.hPositive) {
+                        createDesignerAnchor(formLayoutAssistant!.designerCreatedAnchorPairs.hPositive.topLeftAnchor);
+                        createDesignerAnchor(formLayoutAssistant!.designerCreatedAnchorPairs.hPositive.bottomRightAnchor);
+                    }
+                    if (formLayoutAssistant!.designerCreatedAnchorPairs.hNegative) {
+                        createDesignerAnchor(formLayoutAssistant!.designerCreatedAnchorPairs.hNegative.bottomRightAnchor);
+                        createDesignerAnchor(formLayoutAssistant!.designerCreatedAnchorPairs.hNegative.topLeftAnchor);
+                    }
+                    if (formLayoutAssistant!.designerCreatedAnchorPairs.vPositive) {
+                        createDesignerAnchor(formLayoutAssistant!.designerCreatedAnchorPairs.vPositive.topLeftAnchor);
+                        createDesignerAnchor(formLayoutAssistant!.designerCreatedAnchorPairs.vPositive.bottomRightAnchor);
+                    }
+                    if (formLayoutAssistant!.designerCreatedAnchorPairs.vNegative) {
+                        createDesignerAnchor(formLayoutAssistant!.designerCreatedAnchorPairs.vNegative.bottomRightAnchor);
+                        createDesignerAnchor(formLayoutAssistant!.designerCreatedAnchorPairs.vNegative.topLeftAnchor);
+                    }
+
+                    formLayoutAssistant!.layoutInfo.anchors = anchors;
                 }
                 
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
@@ -237,16 +270,16 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                         if (isDesignerActive() && formLayoutAssistant) {
                             if (!topAnchor) {
-                                topAnchor = formLayoutAssistant!.createAnchors(anchorNames[0], anchors).find(createdAnchor => createdAnchor.name === anchorNames[0]);
+                                topAnchor = formLayoutAssistant!.createAnchors(anchorNames[0]).find(createdAnchor => createdAnchor.name === anchorNames[0]);
                             }
                             if (!leftAnchor) {
-                                leftAnchor = formLayoutAssistant!.createAnchors(anchorNames[1], anchors).find(createdAnchor => createdAnchor.name === anchorNames[1]);
+                                leftAnchor = formLayoutAssistant!.createAnchors(anchorNames[1]).find(createdAnchor => createdAnchor.name === anchorNames[1]);
                             }
                             if (!bottomAnchor) {
-                                bottomAnchor = formLayoutAssistant!.createAnchors(anchorNames[2], anchors).find(createdAnchor => createdAnchor.name === anchorNames[2]);
+                                bottomAnchor = formLayoutAssistant!.createAnchors(anchorNames[2]).find(createdAnchor => createdAnchor.name === anchorNames[2]);
                             }
                             if (!rightAnchor) {
-                                rightAnchor = formLayoutAssistant!.createAnchors(anchorNames[3], anchors).find(createdAnchor => createdAnchor.name === anchorNames[3]);
+                                rightAnchor = formLayoutAssistant!.createAnchors(anchorNames[3]).find(createdAnchor => createdAnchor.name === anchorNames[3]);
                             }
 
                             if (layoutInfo && component.indexOf !== undefined) {
@@ -266,12 +299,17 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             componentConstraints.set(component.id, constraint);
 
                             if (isDesignerActive() && formLayoutAssistant) {
-                                const { newConstraints, isVerticalConstraint, isHorizontalConstraint } = formLayoutAssistant.getConvertedVerticalHorizontalConstraints(splitAnchors, component.constraints);
+                                const { newConstraints, isVerticalConstraint, isHorizontalConstraint } = formLayoutAssistant.getConvertedVerticalHorizontalConstraints(component.constraints);
                                 layoutInfo!.componentConstraints.set(component.name, { constraints: newConstraints, isHorizontalConstraints: isHorizontalConstraint, isVerticalConstraints: isVerticalConstraint });
                             }
                         }
                     }
                 });
+
+                
+                if (isDesignerActive() && formLayoutAssistant) {
+                    formLayoutAssistant.fillFormLayoutInfo();
+                }
             }
 
             /** Calculate all Autosize anchors */
@@ -285,7 +323,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 const getAutoSizeAnchorsBetween = (startAnchor: Anchor, endAnchor: Anchor): Array<Anchor> => {
                     const autoSizeAnchors = Array<Anchor>();
                     let startAnchorIntern : Anchor | undefined = startAnchor
-                    while (startAnchorIntern && startAnchorIntern !== endAnchor){
+                    while (startAnchorIntern && startAnchorIntern !== endAnchor) {
                         if(startAnchorIntern.autoSize && !startAnchorIntern.autoSizeCalculated){
                             autoSizeAnchors.push(startAnchorIntern);
                         }
@@ -372,10 +410,16 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                  * clears auto size position of anchors
                  */
                 const clearAutoSize = () => {
+                    const isBorderAnchor = (name: string) => {
+                        return ["t", "l", "b", "r"].indexOf(name) !== -1;
+                    }
+
                     anchors.forEach(anchor => {
                         anchor.relative = anchor.autoSize;
                         anchor.autoSizeCalculated = false;
-                        anchor.firstCalculation = true;
+                        if (!isBorderAnchor(anchor.name)) {
+                            anchor.firstCalculation = true;
+                        }
                         anchor.used = false;
 
                         if(anchor.autoSize) {
