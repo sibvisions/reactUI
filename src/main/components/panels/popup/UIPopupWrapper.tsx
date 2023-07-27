@@ -137,7 +137,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 sizeMap.set(baseProps.id, { height: prefSize.height, width: prefSize.width });
             }
             else {
-                let popupSize:Dimension = { height: 400, width: 600 };
+                let popupSize:Dimension = { height: 0, width: 0 };
                 sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
             }
             
