@@ -1362,7 +1362,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 table.styleElement.innerHTML = innerHTML;
             }
         }
-    }, [props.layoutStyle?.width, estTableWidth]);
+    }, [props.layoutStyle?.width, estTableWidth, providerData]);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
