@@ -432,6 +432,9 @@ export default abstract class BaseContentStore {
                 this.flatContent.delete(existingComp.id + "-popup");
                 this.removedContent.delete(existingComp.id + "-popup");
             }
+            if (newComp.parent?.startsWith("IF")) {
+                existingComp.parent = existingComp.id + "-popup"
+            }
         }
         else {
             const popup:IBaseComponent = {

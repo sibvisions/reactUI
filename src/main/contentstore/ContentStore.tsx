@@ -188,7 +188,8 @@ export default class ContentStore extends BaseContentStore {
                 this.handleToolBarComponent(existingComponent as IToolBarPanel, newComponent as IToolBarPanel);
             }
 
-            if (newComponent.className === COMPONENT_CLASSNAMES.PANEL && ((newComponent as IPanel).screen_modal_ || (newComponent as IPanel).content_modal_)) {
+            if ((newComponent.className === COMPONENT_CLASSNAMES.PANEL && ((newComponent as IPanel).screen_modal_ || (newComponent as IPanel).content_modal_)) 
+                || (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.PANEL && ((existingComponent as IPanel).screen_modal_ || (existingComponent as IPanel).content_modal_))) {
                 this.handleModalPanel(existingComponent as IPanel, newComponent as IPanel);
             }
             
@@ -281,7 +282,8 @@ export default class ContentStore extends BaseContentStore {
             }
 
             if (!newComponent["~destroy"]) {
-                if (newComponent.parent) {
+                // IF check because opening content after closeContent could return IF as parent this would mess up the children structure
+                if (newComponent.parent && !newComponent.parent.startsWith("IF")) {
                     this.addAsChild(newComponent)
                 }
                 else if (existingComponent) {
