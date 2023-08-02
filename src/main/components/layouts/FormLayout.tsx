@@ -278,14 +278,18 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 if (isDesignerActive() && formLayoutAssistant) {
                     const createDesignerAnchor = (anchor: Anchor) => {
                         if (!anchors.has(anchor.name)) {
-                            const newAnchor = new Anchor(anchor.anchorData);
-                            newAnchor.relatedAnchor = anchors.get(newAnchor.relatedAnchorName);
-                            anchors.set(newAnchor.name, newAnchor);
-                            let anchorList = (["l", "r"].indexOf(newAnchor.name.substring(0,1)) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
-                            const pos = anchorList.findIndex(a => a.name === newAnchor.relatedAnchorName) !== -1 ? anchorList.findIndex(a => a.name === newAnchor.relatedAnchorName) + 1 : anchorList.length;
-                            if (!containsAnchor(newAnchor, anchorList)) {
-                                anchorList.splice(pos, 0, newAnchor);
-                            }
+                            formLayoutAssistant.createAnchors(anchor.name, false).find(a => a.name === anchor.name);
+                            // const newAnchor = new Anchor(anchor.anchorData);
+                            // newAnchor.relatedAnchor = anchors.get(newAnchor.relatedAnchorName);
+                            // if (newAnchor.name === "r-4") {
+                            //     console.log(newAnchor.relatedAnchor?.name, newAnchor.relatedAnchor?.getAbsolutePosition())
+                            // }
+                            // anchors.set(newAnchor.name, newAnchor);
+                            // let anchorList = (["l", "r"].indexOf(newAnchor.name.substring(0,1)) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
+                            // const pos = anchorList.findIndex(a => a.name === newAnchor.relatedAnchorName) !== -1 ? anchorList.findIndex(a => a.name === newAnchor.relatedAnchorName) + 1 : anchorList.length;
+                            // if (!containsAnchor(newAnchor, anchorList)) {
+                            //     anchorList.splice(pos, 0, newAnchor);
+                            // }
                         }
                     }
 
