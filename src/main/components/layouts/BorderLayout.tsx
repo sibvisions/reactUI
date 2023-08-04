@@ -405,7 +405,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             
         }
         return sizeMap;
-    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop]);
+    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, components, 
+        margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop]);
 
     useEffect(() => {
         if (context.designer && context.designer.borderLayouts.has(name)) {
