@@ -13,15 +13,16 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useContext, useEffect, useMemo, useState } from "react";
 import { LayoutContext } from "../../LayoutContext"
 import { appContext } from "../../contexts/AppProvider";
-import { ILayout } from "./Layout";
+import { ILayout, isDesignerActive } from "./Layout";
 import Gaps from "./models/Gaps";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import Dimension from "../../util/types/Dimension";
 import Margins from "./models/Margins";
+import { BorderLayoutAssistant } from "@sibvisions/visionx/dist/moduleIndex";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -64,6 +65,40 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
     const runAfterLayout = useRunAfterLayout();
 
+    const borderLayoutAssistant = useMemo(() => {
+        if (context.designer) {
+            const compConstraintMap:Map<string, string> = new Map<string, string>();
+            components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
+            if (!context.designer.borderLayouts.has(name)) {
+                context.designer.borderLayouts.set(name, new BorderLayoutAssistant({
+                    id: id,
+                    name: name,
+                    originalConstraints: compConstraintMap,
+                    componentSizes: compSizes,
+                    componentConstraints: new Map<string, string>(),
+                    calculatedSize: null,
+                    currentSize: null
+                }))
+            }
+            else {
+                context.designer.borderLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
+            }
+            return context.designer.borderLayouts.get(name) as BorderLayoutAssistant;
+        }
+        else {
+            return null;
+        }
+    }, [context.designer]);
+
+    const layoutInfo = useMemo(() => {
+        if (context.designer && borderLayoutAssistant) {
+            return borderLayoutAssistant.layoutInfo;
+        }
+        else {
+            return null;
+        }
+    }, [borderLayoutAssistant]);
+
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 
      * @returns a Map key: component ids, value style properties for components
@@ -82,6 +117,9 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
         /** If compSizes is set (every component in this layout reported its sizes) */
         if(compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
+            if (isDesignerActive(borderLayoutAssistant) && layoutInfo) {
+                layoutInfo.componentConstraints.clear();
+            }
             /** Preferred Sizes for BorderLayout areas */
             const prefConstraintSizes: BorderLayoutComponents = {
                 center: {height: 0, width: 0},
@@ -103,6 +141,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             /** Get the preferredSize for the areas of the BorderLayout */
             children.forEach(component => {
                 if (component.visible !== false) {
+                    if (isDesignerActive(borderLayoutAssistant) && layoutInfo) {
+                        layoutInfo.componentConstraints.set(component.name, component.constraints);
+                    }
+
                     const preferredSize = getPreferredSize(component, compSizes) || {height: 0, width: 0};
                     const minimumSize = getMinimumSize(component, compSizes);
                     if(component.constraints === "North") {
@@ -330,28 +372,46 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             if (reportSize) {
                 runAfterLayout(() => {
                     if (baseProps.preferredSize) {
+                        if (isDesignerActive(borderLayoutAssistant) && layoutInfo) {
+                            layoutInfo.calculatedSize = { height: baseProps.preferredSize.height, width: baseProps.preferredSize.width };
+                        }
                         reportSize({ height: baseProps.preferredSize.height, width: baseProps.preferredSize.width }, { height: minimumHeight, width: minimumWidth })
                     }
                     else {
-                        //reportSize({ height: minimumHeight || preferredHeight, width: minimumWidth || preferredWidth }, { height: minimumHeight, width: minimumWidth });
+                        if (isDesignerActive(borderLayoutAssistant) && layoutInfo) {
+                            layoutInfo.calculatedSize = { height: preferredHeight, width: preferredWidth };
+                        }
                         reportSize({ height: preferredHeight, width: preferredWidth }, { height: minimumHeight, width: minimumWidth });
                     }
                 })
             }
             
+            let layoutSize:Dimension; 
             if (baseProps.panelType === "DesktopPanel") {
-                setCalculatedStyle({ height: style.height, width: style.width, position: 'relative' });
+                layoutSize = { height: style.height as number, width: style.width as number };
             }
             else if (baseProps.popupSize) {
-                setCalculatedStyle({ height: baseProps.popupSize.height, width: baseProps.popupSize.width, position: 'relative' });
+                layoutSize = { height: baseProps.popupSize.height, width: baseProps.popupSize.width };
             }
             else {
-                setCalculatedStyle({ height: cssHeight, width: cssWidth, position: 'relative' });
+                layoutSize = { height: cssHeight, width: cssWidth };
             }
+
+            if (isDesignerActive(borderLayoutAssistant) && layoutInfo) {
+                layoutInfo.currentSize = layoutSize;
+            }
+
+            setCalculatedStyle({ height: layoutSize.height, width: layoutSize.width, position: 'relative' });
             
         }
         return sizeMap;
     }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop]);
+
+    useEffect(() => {
+        if (context.designer && context.designer.borderLayouts.has(name)) {
+            context.designer.borderLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
+        }
+    }, [compSizes, context.designer])
 
     return(
         /** Provide the allowed sizes of the children as a context */
