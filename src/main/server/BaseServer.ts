@@ -285,7 +285,7 @@ export default abstract class BaseServer {
                     if (dataBook) {
                         const data = dataBook.data?.get("current");
                         const metaData = dataBook.metaData;
-                        if (data && metaData && request.rowNumber !== null && request.rowNumber !== undefined) {
+                        if (data && metaData && request.rowNumber >= 0) {
                             const primaryKeys = metaData.primaryKeyColumns ? metaData.primaryKeyColumns : metaData.columns.map(col => col.name);
                             request.filter = {
                                 columnNames: primaryKeys,
