@@ -26,7 +26,7 @@ import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { FormLayoutInformation, Anchor, FormLayoutAssistant } from "@sibvisions/visionx/dist/moduleIndex";
+import { FormLayoutInformation, Anchor, FormLayoutAssistant, LAYOUTS } from "@sibvisions/visionx/dist/moduleIndex";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 
 /**
@@ -83,7 +83,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     componentSizes: compSizes,
                     calculatedSize: null,
                     isAdvancedFormLayout: false,
-                    anchors: new Map<string, Anchor>()
+                    anchors: new Map<string, Anchor>(),
+                    layoutType: LAYOUTS.FORMLAYOUT
                 }))
             }
             else {

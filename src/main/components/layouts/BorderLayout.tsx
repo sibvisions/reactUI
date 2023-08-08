@@ -22,7 +22,7 @@ import { getMinimumSize, getPreferredSize } from "../../util/component-util/Size
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import Dimension from "../../util/types/Dimension";
 import Margins from "./models/Margins";
-import { BorderLayoutAssistant } from "@sibvisions/visionx/dist/moduleIndex";
+import { BorderLayoutAssistant, LAYOUTS } from "@sibvisions/visionx/dist/moduleIndex";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -77,7 +77,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     componentSizes: compSizes,
                     componentConstraints: new Map<string, string>(),
                     calculatedSize: null,
-                    currentSize: null
+                    currentSize: null,
+                    layoutType: LAYOUTS.BORDERLAYOUT
                 }))
             }
             else {
