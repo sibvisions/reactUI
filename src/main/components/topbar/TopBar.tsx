@@ -30,6 +30,8 @@ export const TopBarContext = createContext<TopBarContextType>({
     hide: () => {}
 });
 
+let topbarCount = 0;
+
 /**
  * Shows the topbar and after the promise is fulfilled, the topbar disappears
  * @param promise - the promise which is being sent
@@ -37,8 +39,14 @@ export const TopBarContext = createContext<TopBarContextType>({
  * @returns 
  */
 export function showTopBar(promise: Promise<any>, topbar: TopBarContextType) {
+    topbarCount++;
     topbar.show();
-    return promise.finally(() => topbar.hide());
+    return promise.finally(() => {
+        topbarCount--;
+        if (!topbarCount) {
+            topbar.hide()
+        }
+    });
 };
 
 // Shows a topbar at the top of the browser when a promise is being processed.
@@ -83,6 +91,10 @@ const TopBar:FC = ({children}) => {
     }, [topbarSettings]);
 
     useEffect(() => {
+        context.server.topbar = {
+            show: () => setShow(true),
+            hide: () => setShow(false)
+        }
         context.server.hideTopbar = () => setShow(false);
     }, [context.server])
 

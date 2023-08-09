@@ -596,7 +596,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }
  
     // Handles the selection event
-    const handleSelect = (value: string[]) => {
+    const handleSelect = (value: any) => {
         const refColNames = linkReference.referencedColumnNames;
         const colNames = linkReference.columnNames;
         const index = colNames.findIndex(col => col === props.columnName);
@@ -625,8 +625,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         addAdditionalColumnToValue(valueToSend);
 
         setText(getDisplayValue(value, inputObj, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
-        sendSelectRequest(-1, filter);
-        sendSetValues(props.dataRow, props.name, columnNames, props.columnName, valueToSend, props.context.server, props.topbar, -1);
+        sendSelectRequest(value["__index"], filter);
+        sendSetValues(props.dataRow, props.name, columnNames, props.columnName, valueToSend, props.context.server, props.topbar, -1)
         startedEditing.current = false;
     }
 
@@ -649,7 +649,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         /** Returns the values, of the databook, that match the input of the user */
         // check if providedData has entries of text
         let foundData = 
-            providedData.filter((data: any) => {
+            providedData.filter((data: any, i:number) => {
                 if (isDisplayRefColNameOrConcat) {
                     const extractedData = getExtractedObject(data, refColNames);
                     if (getDisplayValue(data, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow)) {
@@ -752,8 +752,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     const buildSuggestions = (values:any) => {
         let suggestions:any = [];
         if (values.length > 0) {
-            values.forEach((value:any) => {
-                suggestions.push(value);
+            values.forEach((value:any, i: number) => {
+                const suggestion = {...value, __index: i}
+                suggestions.push(suggestion);
             });
         }
         return suggestions
@@ -784,7 +785,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             return <div key={0}>{getDisplayValue(d, getExtractedObject(d, linkReference.referencedColumnNames), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow)}</div>
         }
         else {
-            const suggestionObj = getExtractedObject(d, columnViewNames);;
+            const suggestionObj = getExtractedObject(d, columnViewNames);
             return Object.values(suggestionObj).map((d:any, i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
