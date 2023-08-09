@@ -575,7 +575,17 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + searchPathToSet;
                 }
                 else {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + searchPathToSet;
+                    for (let i = 0; i <= 3; i++) {
+                        splitURLPath.pop();
+                    }
+                    if (splitURLPath.length > 1) {
+
+                        baseUrlToSet = window.location.protocol + "//" + window.location.host + splitURLPath.join("/") + searchPathToSet;
+                    }
+                    else {
+                        baseUrlToSet = window.location.protocol + "//" + window.location.host + searchPathToSet;
+                    }
+                    
                 }
             }
 

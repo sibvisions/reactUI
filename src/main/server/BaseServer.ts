@@ -44,6 +44,7 @@ import DataProviderRequest from "../request/data/DataProviderRequest";
 import { CellFormatting } from "../components/table/CellEditor";
 import { getMetaData } from "../util/data-util/GetMetaData";
 import GenericResponse from "../response/ui/GenericResponse";
+import { TopBarContextType, showTopBar } from "../components/topbar/TopBar";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -119,6 +120,8 @@ export default abstract class BaseServer {
     autoRestartOnSessionExpired = false;
 
     isExiting = false;
+
+    topbar: TopBarContextType|undefined;
 
     hideTopbar:Function = () => {};
 
@@ -545,10 +548,10 @@ export default abstract class BaseServer {
                     fetchReq.fromRow = length;
                     fetchReq.rowCount = (selectedRowIndex - length) + 1;
                     fetchReq.dataProvider = dataProvider;
-                    this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then((res) => {
+                    showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then((res) => {
                         const newSelectedRow = this.contentStore.getDataRow(screenName, dataProvider, selectedRowIndex);
                         this.contentStore.setSelectedRow(screenName, dataProvider, newSelectedRow, selectedRowIndex, treePath, selectedColumn);
-                    });
+                    }), this.topbar as TopBarContextType); 
                 }
             }
             else {
@@ -804,11 +807,10 @@ export default abstract class BaseServer {
                 if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
                     fetchReq.includeMetaData = true;
                 }
-                this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
+                showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
                 .then(() => {
                     this.requestQueue = this.requestQueue.filter(req => !((req.request as DataProviderRequest).dataProvider === changedProvider.dataProvider) || !(req.endpoint === REQUEST_KEYWORDS.SELECT_ROW));
-                    this.hideTopbar();
-                });
+                }), this.topbar as TopBarContextType) ;
             } 
             else if(changedProvider.reload !== undefined) {
                 if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
@@ -821,7 +823,7 @@ export default abstract class BaseServer {
                 if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
                     fetchReq.includeMetaData = true;
                 }
-                this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH);
+                showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), this.topbar as TopBarContextType);
             }
             else {
                 const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn;

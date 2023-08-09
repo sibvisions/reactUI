@@ -29,7 +29,7 @@ export type IServerFailMessage = {
     bodyMessage:string,
     sessionExpired:boolean,
     gone:boolean,
-    retry:Function,
+    retry:Function|undefined,
     dontShowRestart:boolean,
     priority: number
 }
@@ -46,7 +46,7 @@ const ErrorBar:FC = () => {
     const [visible, setVisible] = useState<boolean>(false);
 
     /** Reference for the dialog which shows the error message */
-    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: () => {}, dontShowRestart: false, priority: 0 });
+    const [errorProps, setErrorProps] = useState<IServerFailMessage>({ headerMessage: "Server Failure", bodyMessage: "Something went wrong with the server.", sessionExpired: false, gone: false, retry: undefined, dontShowRestart: false, priority: 0 });
 
     /** True, if a request has already been sent, to prevent multiple requests being sent when spamming "esc" or click */
     const alreadySent = useRef<boolean>(false);
@@ -136,7 +136,7 @@ const ErrorBar:FC = () => {
                 alreadySent.current = true;
                 handleRestart();
             }
-            else {
+            else if (errorProps.retry !== undefined) {
                 alreadySent.current = true;
                 context.subscriptions.emitErrorBarVisible(false);
                 showTopBar(errorProps.retry(), topbar);
