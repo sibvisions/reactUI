@@ -140,7 +140,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
             /** Get the preferredSize for the areas of the BorderLayout */
             children.forEach(component => {
-                if (component.visible !== false) {
+                if (component.visible !== false && component.constraints) {
                     if (isDesignerActive(borderLayoutAssistant) && layoutInfo) {
                         layoutInfo.componentConstraints.set(component.name, component.constraints);
                     }

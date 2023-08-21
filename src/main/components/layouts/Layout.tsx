@@ -51,10 +51,6 @@ export interface ILayout {
     hasBorder?:boolean
 }
 
-// export function isDesignerActive(layoutAssistant:FormLayoutAssistant|BorderLayoutAssistant|null) {
-//     return layoutAssistant !== null;
-// }
-
 export function isDesignerActive(layoutAssistant:any) {
     return layoutAssistant !== null;
 }

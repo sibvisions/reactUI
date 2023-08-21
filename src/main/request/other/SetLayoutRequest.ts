@@ -1,4 +1,4 @@
-/* Copyright 2022 SIB Visions GmbH
+/* Copyright 2023 SIB Visions GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,14 +13,11 @@
  * the License.
  */
 
-/** Interface for rendered components with properties */
-interface ChildWithProps {
-    props: {
-        id: string,
-        constraints?: string,
-        isVisible?: boolean
-        screen_modal_?:boolean
-        screen_title_?:string
-    }
+interface SetLayoutRequest {
+    componentId?: string,
+    parentId?: string,
+    constraints?: string,
+    indexOf?: number
+    constraintCorrections?: any
 }
-export default ChildWithProps
+export default SetLayoutRequest

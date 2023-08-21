@@ -161,7 +161,6 @@ const MFAURL: FC<ILoginForm> = (props) => {
                         id="login-gauge"
                         name="login-gauge-url"
                         className="ui-gauge"
-                        constraints=""
                         title=""
                         gaugeStyle={GAUGE_STYLES.STYLE_RING}
                         minWarningValue={loginTimeout * 0.375}

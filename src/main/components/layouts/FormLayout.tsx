@@ -173,13 +173,14 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             /** Fills the Anchors- and Constraints map */
             const setAnchorsAndConstraints = () => {
                 const clearLayoutInfo = () => {
-                    const castedLayoutInfo = layoutInfo;
-                    castedLayoutInfo.horizontalAnchors = [];
-                    castedLayoutInfo.verticalAnchors = [];
-                    castedLayoutInfo.anchorToColumnMap.clear();
-                    castedLayoutInfo.horizontalColumnToAnchorMap.clear();
-                    castedLayoutInfo.verticalColumnToAnchorMap.clear();
-                    castedLayoutInfo.componentIndeces = [];
+                    if (layoutInfo) {
+                        layoutInfo.horizontalAnchors = [];
+                        layoutInfo.verticalAnchors = [];
+                        layoutInfo.anchorToColumnMap.clear();
+                        layoutInfo.horizontalColumnToAnchorMap.clear();
+                        layoutInfo.verticalColumnToAnchorMap.clear();
+                        layoutInfo.componentIndeces = [];
+                    }
                 }
 
                 anchors.clear(); componentConstraints.clear();
@@ -225,7 +226,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
                 children.forEach(component => {
-                    if (!(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) {
+                    if (component.constraints && !(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) {
 
                         const anchorNames = component.constraints.split(";");
                         /** Get Anchors */

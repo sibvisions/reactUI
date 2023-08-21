@@ -439,8 +439,7 @@ export default abstract class BaseContentStore {
             const popup:IBaseComponent = {
                 id: newComp.id + "-popup",
                 name: newComp.name + "-popup",
-                className: "PopupWrapper",
-                constraints: ""
+                className: "PopupWrapper"
             }
             newComp.parent = popup.id;
             this.flatContent.set(popup.id, popup);
