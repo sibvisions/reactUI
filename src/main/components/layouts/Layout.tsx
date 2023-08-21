@@ -21,7 +21,6 @@ import FlowLayout from "./FlowLayout";
 import FormLayout from "./FormLayout";
 import GridLayout from "./GridLayout";
 import NullLayout from "./NullLayout";
-import { BorderLayoutAssistant, FormLayoutAssistant } from "@sibvisions/visionx/dist/moduleIndex";
 
 /**
  * General information for layouts:
@@ -52,7 +51,11 @@ export interface ILayout {
     hasBorder?:boolean
 }
 
-export function isDesignerActive(layoutAssistant:FormLayoutAssistant|BorderLayoutAssistant|null) {
+// export function isDesignerActive(layoutAssistant:FormLayoutAssistant|BorderLayoutAssistant|null) {
+//     return layoutAssistant !== null;
+// }
+
+export function isDesignerActive(layoutAssistant:any) {
     return layoutAssistant !== null;
 }
 

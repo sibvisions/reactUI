@@ -29,7 +29,7 @@ import { IPanel } from "../components/panels/panel/UIPanel";
 import { createFetchRequest } from "../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
 import { ICustomDefaultLogin, ICustomMFAText, ICustomMFAUrl, ICustomMFAWait, ICustomResetLogin } from "../../application-frame/login/Login";
-import { Designer } from "@sibvisions/visionx/dist/moduleIndex";
+import { Designer } from "../../MiddleMan";
 
 /** The ContentStore stores active content like user, components and data. This ContentStore is for transferType: partial*/
 export default class ContentStore extends BaseContentStore {

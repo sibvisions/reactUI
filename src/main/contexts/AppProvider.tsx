@@ -27,7 +27,7 @@ import { createAliveRequest,
          createStartupRequest,
          createUIRefreshRequest,
          getClientId } from "../factories/RequestFactory";
-import { ICustomContent } from "../../MiddleMan";
+import { Designer, ICustomContent } from "../../MiddleMan";
 import { showTopBar, TopBarContext } from "../components/topbar/TopBar";
 import ContentStoreFull from "../contentstore/ContentStoreFull";
 import ServerFull from "../server/ServerFull";
@@ -42,12 +42,18 @@ import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import BaseResponse from "../response/BaseResponse";
 import { translation } from "../util/other-util/Translation";
-import { Designer } from "@sibvisions/visionx/dist/moduleIndex";
 import { initialURL } from "../util/InitialURL";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
     return (contentStore as ContentStore).menuItems !== undefined;
+}
+
+export function isDesignerVisible(designer: Designer|null) {
+    if (designer) {
+        return designer.isVisible;
+    }
+    return false;
 }
 
 /** Type for AppContext */
@@ -130,6 +136,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
         initValue.contentStore.history = history;
         initValue.api.history = history;
         initValue.server.history = history;
+        if (props.designer) {
+            initValue.designer = props.designer
+        }
+        
         return {
             ...initValue,
         }
@@ -435,7 +445,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showDesigner = true;
                     }
 
-                    if (data.useVisionX === true) {
+                    if (data.useUIDesigner === true) {
                         contextState.appSettings.showWSDesigner = true
                     }
 
@@ -518,7 +528,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.appSettings.showDesigner = true;
                     }
 
-                    if (data.useVisionX === true) {
+                    if (data.useUIDesigner === true) {
                         contextState.appSettings.showWSDesigner = true
                     }
 
@@ -840,7 +850,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
         else {
             fetchApp().then(() => afterConfigFetch()).catch(() => afterConfigFetch())
         }
-    }, [restart])
+    }, [restart]);
+
+    useEffect(() => {
+        if (contextState.designer) {
+            contextState.designer.contentStore = contextState.contentStore;
+            contextState.designer.server = contextState.server
+        }
+    }, [contextState.designer, contextState.contentStore, contextState.server, restart]);
 
     useEventHandler(document.body, "keydown", (event) => (event as any).key === "Control" ? contextState.ctrlPressed = true : undefined);
 

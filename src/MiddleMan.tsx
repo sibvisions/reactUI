@@ -22,6 +22,60 @@ import { IUIManagerProps } from './application-frame/screen-management/ui-manage
 import ReactUIEmbedded from './ReactUIEmbedded';
 import EmbedProvider from './main/contexts/EmbedProvider';
 import TopBar from './main/components/topbar/TopBar';
+import { ComponentSizes } from './main/hooks/components-hooks/useComponents';
+import Dimension from './main/util/types/Dimension';
+import Anchor from './main/components/layouts/models/Anchor';
+import IBaseComponent from './main/util/types/IBaseComponent';
+import BaseContentStore from './main/contentstore/BaseContentStore';
+import BaseServer from './main/server/BaseServer';
+
+interface LayoutInformation {
+    id: string,
+    name: string,
+    originalConstraints: Map<string, string>,
+    componentSizes: Map<string, ComponentSizes> | undefined,
+    calculatedSize: Dimension|null,
+    componentConstraints: Map<string, string>,
+    layoutType: number;
+}
+
+type AnchorPair = { 
+    topLeftAnchor: Anchor, 
+    bottomRightAnchor: Anchor 
+}
+
+interface FormLayoutInformation extends LayoutInformation {
+    layoutData: string,
+    horizontalGap: number,
+    verticalGap: number,
+    horizontalAnchors: Anchor[],
+    verticalAnchors: Anchor[],
+    anchorToColumnMap: Map<string, number>,
+    horizontalColumnToAnchorMap: Map<string, AnchorPair>,
+    verticalColumnToAnchorMap: Map<string, AnchorPair>,
+    componentIndeces: string[]
+    isAdvancedFormLayout: boolean,
+    anchors: Map<string, Anchor>
+}
+
+export interface BorderLayoutInformation extends LayoutInformation {
+    currentSize: Dimension|null
+}
+
+type SelectedComponent = { component: IBaseComponent, element: HTMLElement, preferredSize: Dimension };
+
+export interface Designer {
+    contentStore: BaseContentStore|undefined;
+    server: BaseServer|undefined;
+    formLayouts: Map<string, any>,
+    borderLayouts: Map<string, any>,
+    createBorderLayoutAssistant: (layoutInfo: BorderLayoutInformation) => void,
+    createFormLayoutAssistant: (layoutInfo: FormLayoutInformation) => void,
+    updateSelectedComponentInnerComponent: (comp: IBaseComponent) => void,
+    selectedComponent: SelectedComponent|null,
+    paintResizer: (rect: DOMRect) => void,
+    isVisible: boolean
+}
 
 export interface ICustomContent {
     customAppWrapper?: IUIManagerProps["customAppWrapper"]
@@ -34,6 +88,7 @@ export interface ICustomContent {
     theme?: string
     colorScheme?: string
     design?:string
+    designer?: Designer
 }
 
 /**

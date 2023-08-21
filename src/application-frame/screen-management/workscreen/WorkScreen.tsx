@@ -51,7 +51,7 @@ const WorkScreen: FC = () => {
         return () => {
             context.subscriptions.unsubscribeFromActiveScreens("workscreen");
         }
-    },[context.subscriptions, context.designer]);
+    },[context.subscriptions, context.designer?.isVisible]);
 
     useEffect(() => {
         if (activeScreens.length && activeScreens[0] && activeScreens[0].title) {

@@ -37,8 +37,7 @@ import CELLEDITOR_CLASSNAMES from "../components/editors/CELLEDITOR_CLASSNAMES";
 import { ICellEditorLinked } from "../components/editors/linked/UIEditorLinked";
 import FetchRequest from "../request/data/FetchRequest";
 import * as _ from "underscore"
-import Server from "../server/Server";
-import { Designer } from "@sibvisions/visionx/dist/moduleIndex";
+import { Designer } from "../../MiddleMan";
 
 // Type for ActiveScreens
 export type ActiveScreen = {

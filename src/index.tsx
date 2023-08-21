@@ -17,7 +17,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import '@sibvisions/reactui-designer/main.css';
 import './index.scss';
-import '@sibvisions/visionx/dist/main.css';
+//import '@sibvisions/visionx/dist/main.css';
 import MiddleMan from './MiddleMan';
 
 /** Rendering the application */

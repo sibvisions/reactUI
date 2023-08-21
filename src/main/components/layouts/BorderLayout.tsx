@@ -15,14 +15,13 @@
 
 import React, { CSSProperties, FC, useContext, useEffect, useMemo, useState } from "react";
 import { LayoutContext } from "../../LayoutContext"
-import { appContext } from "../../contexts/AppProvider";
+import { appContext, isDesignerVisible } from "../../contexts/AppProvider";
 import { ILayout, isDesignerActive } from "./Layout";
 import Gaps from "./models/Gaps";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import Dimension from "../../util/types/Dimension";
 import Margins from "./models/Margins";
-import { BorderLayoutAssistant, LAYOUTS } from "@sibvisions/visionx/dist/moduleIndex";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -66,11 +65,11 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     const runAfterLayout = useRunAfterLayout();
 
     const borderLayoutAssistant = useMemo(() => {
-        if (context.designer) {
+        if (context.designer && isDesignerVisible(context.designer)) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
             components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
             if (!context.designer.borderLayouts.has(name)) {
-                context.designer.borderLayouts.set(name, new BorderLayoutAssistant({
+                context.designer.createBorderLayoutAssistant({
                     id: id,
                     name: name,
                     originalConstraints: compConstraintMap,
@@ -78,21 +77,21 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     componentConstraints: new Map<string, string>(),
                     calculatedSize: null,
                     currentSize: null,
-                    layoutType: LAYOUTS.BORDERLAYOUT
-                }))
+                    layoutType: 0
+                })
             }
             else {
                 context.designer.borderLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
             }
-            return context.designer.borderLayouts.get(name) as BorderLayoutAssistant;
+            return context.designer.borderLayouts.get(name);
         }
         else {
             return null;
         }
-    }, [context.designer]);
+    }, [context.designer, context.designer?.isVisible]);
 
     const layoutInfo = useMemo(() => {
-        if (context.designer && borderLayoutAssistant) {
+        if (borderLayoutAssistant) {
             return borderLayoutAssistant.layoutInfo;
         }
         else {
@@ -410,7 +409,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop]);
 
     useEffect(() => {
-        if (context.designer && context.designer.borderLayouts.has(name)) {
+        if (context.designer && isDesignerVisible(context.designer) && context.designer.borderLayouts.has(name)) {
             context.designer.borderLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
         }
     }, [compSizes, context.designer])

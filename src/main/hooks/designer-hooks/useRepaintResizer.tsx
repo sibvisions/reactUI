@@ -13,19 +13,19 @@
  * the License.
  */
 import { CSSProperties, useContext, useEffect } from "react";
-import { appContext } from "../../contexts/AppProvider";
+import { appContext, isDesignerVisible } from "../../contexts/AppProvider";
 
 const useRepaintResizer = (name: string, layoutStyle: CSSProperties|undefined, ref: any) => {
     const context = useContext(appContext)
 
     useEffect(() => {
-        if (context.designer && context.designer.selectedComponent && ref && ref.style && ref.style.visibility !== "hidden") {
+        if (context.designer && isDesignerVisible(context.designer) && context.designer.selectedComponent && ref && ref.style && ref.style.visibility !== "hidden") {
             setTimeout(() => {
                 if (context.designer && context.designer.selectedComponent && context.designer.selectedComponent.component.name === name) {
                     context.designer.paintResizer(ref.getBoundingClientRect())
                 }
             }, 0)
         }
-    }, [layoutStyle]);
+    }, [layoutStyle, context.designer]);
 }
 export default useRepaintResizer

@@ -14,7 +14,7 @@
  */
 
 import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
-import { appContext } from "../../contexts/AppProvider";
+import { appContext, isDesignerVisible } from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
@@ -26,8 +26,8 @@ import Gaps from "./models/Gaps";
 import Dimension from "../../util/types/Dimension";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
-import { FormLayoutInformation, Anchor, FormLayoutAssistant, LAYOUTS } from "@sibvisions/visionx/dist/moduleIndex";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
+import Anchor from "./models/Anchor";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -61,12 +61,13 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     } = baseProps;
 
     const formLayoutAssistant = useMemo(() => {
-        if (context.designer) {
+        console.log(context.designer, isDesignerVisible(context.designer))
+        if (context.designer && isDesignerVisible(context.designer)) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
             components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
             if (!context.designer.formLayouts.has(name)) {
                 const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
-                context.designer.formLayouts.set(name, new FormLayoutAssistant({
+                context.designer.createFormLayoutAssistant({
                     id: id,
                     name: name,
                     layoutData: layoutData,
@@ -84,21 +85,21 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     calculatedSize: null,
                     isAdvancedFormLayout: false,
                     anchors: new Map<string, Anchor>(),
-                    layoutType: LAYOUTS.FORMLAYOUT
-                }))
+                    layoutType: 1
+                });
             }
             else {
                 context.designer.formLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
             }
-            return context.designer.formLayouts.get(name) as FormLayoutAssistant;
+            return context.designer.formLayouts.get(name);
         }
         else {
             return null;
         }
-    }, [context.designer])
+    }, [context.designer, context.designer?.isVisible])
 
     const layoutInfo = useMemo(() => {
-        if (context.designer && formLayoutAssistant) {
+        if (formLayoutAssistant) {
             return formLayoutAssistant.layoutInfo;
         }
         else {
@@ -172,7 +173,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             /** Fills the Anchors- and Constraints map */
             const setAnchorsAndConstraints = () => {
                 const clearLayoutInfo = () => {
-                    const castedLayoutInfo = layoutInfo as FormLayoutInformation;
+                    const castedLayoutInfo = layoutInfo;
                     castedLayoutInfo.horizontalAnchors = [];
                     castedLayoutInfo.verticalAnchors = [];
                     castedLayoutInfo.anchorToColumnMap.clear();
@@ -203,7 +204,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         let anchor:Anchor|undefined = pAnchor;
                         let anchorStartChar = anchor.name.substring(0, 1);
                         let anchorList = (["l", "r"].indexOf(anchorStartChar) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
-                        const pos = anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) !== -1 ? anchorList.findIndex(a => a.name === anchor?.relatedAnchorName) + 1 : anchorList.length;
+                        const pos = anchorList.findIndex((a: Anchor) => a.name === anchor?.relatedAnchorName) !== -1 ? anchorList.findIndex((a: Anchor) => a.name === anchor?.relatedAnchorName) + 1 : anchorList.length;
 
                         while (anchor && !containsAnchor(anchor, anchorList)) {
                             anchorStartChar = anchor.name.substring(0, 1);
@@ -235,21 +236,21 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                         if (isDesignerActive(formLayoutAssistant)) {
                             if (!topAnchor) {
-                                topAnchor = formLayoutAssistant!.createAnchors(anchorNames[0]).find(createdAnchor => createdAnchor.name === anchorNames[0]);
+                                topAnchor = formLayoutAssistant!.createAnchors(anchorNames[0]).find((createdAnchor: Anchor) => createdAnchor.name === anchorNames[0]);
                             }
                             if (!leftAnchor) {
-                                leftAnchor = formLayoutAssistant!.createAnchors(anchorNames[1]).find(createdAnchor => createdAnchor.name === anchorNames[1]);
+                                leftAnchor = formLayoutAssistant!.createAnchors(anchorNames[1]).find((createdAnchor: Anchor) => createdAnchor.name === anchorNames[1]);
                             }
                             if (!bottomAnchor) {
-                                bottomAnchor = formLayoutAssistant!.createAnchors(anchorNames[2]).find(createdAnchor => createdAnchor.name === anchorNames[2]);
+                                bottomAnchor = formLayoutAssistant!.createAnchors(anchorNames[2]).find((createdAnchor: Anchor) => createdAnchor.name === anchorNames[2]);
                             }
                             if (!rightAnchor) {
-                                rightAnchor = formLayoutAssistant!.createAnchors(anchorNames[3]).find(createdAnchor => createdAnchor.name === anchorNames[3]);
+                                rightAnchor = formLayoutAssistant!.createAnchors(anchorNames[3]).find((createdAnchor: Anchor) => createdAnchor.name === anchorNames[3]);
                             }
 
                             if (layoutInfo && component.indexOf !== undefined) {
                                 if (layoutInfo.componentIndeces.includes(component.name)) {
-                                    const index = layoutInfo.componentIndeces.findIndex(compName => compName === component.name);
+                                    const index = layoutInfo.componentIndeces.findIndex((compName: string) => compName === component.name);
                                     if (index !== -1) {
                                         layoutInfo.componentIndeces.splice(index, 1);
                                     }
@@ -274,7 +275,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 if (isDesignerActive(formLayoutAssistant) && formLayoutAssistant) {
                     const createDesignerAnchor = (anchor: Anchor) => {
                         if (!anchors.has(anchor.name)) {
-                            formLayoutAssistant.createAnchors(anchor.name, false).find(a => a.name === anchor.name);
+                            formLayoutAssistant.createAnchors(anchor.name, false).find((a: Anchor) => a.name === anchor.name);
                         }
                     }
 
@@ -957,7 +958,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     }, [layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore, components]);
 
     useEffect(() => {
-        if (context.designer && context.designer.formLayouts.has(name)) {
+        if (context.designer && isDesignerVisible(context.designer) && context.designer.formLayouts.has(name)) {
             context.designer.formLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
         }
     }, [compSizes, context.designer])

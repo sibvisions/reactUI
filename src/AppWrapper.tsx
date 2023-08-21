@@ -18,41 +18,25 @@ import { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
-import { appContext } from "./main/contexts/AppProvider";
+import { appContext, isDesignerVisible } from "./main/contexts/AppProvider";
 import { createCloseScreenRequest, createOpenScreenRequest, getClientId } from "./main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
 import { SpeedDial } from "primereact/speeddial";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
-import { VisionX, getDesigner } from "@sibvisions/visionx/dist/moduleIndex";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
-import ContentStore from "./main/contentstore/ContentStore";
 import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
 import ErrorResponse from "./main/response/error/ErrorResponse";
-import ContentStoreFull from "./main/contentstore/ContentStoreFull";
-import ServerFull from "./main/server/ServerFull";
-import Server from "./main/server/Server";
-import { SubscriptionManager } from "./main/SubscriptionManager";
-import AppSettings from "./main/AppSettings";
+
 interface IAppWrapper {
     embedOptions?: { [key: string]: any }
     theme?: string
     colorScheme?: string
     design?: string
 }
-
-interface IVisionXContext {
-    showVisionX: boolean
-    toggleVisionX: () => void,
-    contentStore: ContentStore|ContentStoreFull|undefined,
-    server: Server|ServerFull|undefined,
-    clientId: string
-}
-
-export const VisionXContext = createContext<IVisionXContext>({ showVisionX: false, toggleVisionX: () => {}, contentStore: undefined, server: undefined, clientId: "" });
 
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
@@ -65,14 +49,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
     /** True, if the designer should be displayed */
     const [showDesignerView, setShowDesignerView] = useState<boolean>(sessionStorage.getItem("reactui-designer-on") === 'true');
-
-    const [vxContextState, setVXContextState] = useState<IVisionXContext>({ 
-        showVisionX: false, 
-        toggleVisionX: () => setVXContextState(prevState => ({...prevState, showVisionX: !prevState.showVisionX})), 
-        contentStore: context.contentStore, 
-        server: context.server,
-        clientId: getClientId()
-    });
 
     /** A function which is being passed to the designer, to rerender when the images have changed */
     const setImagesChanged = useDesignerImages();
@@ -91,22 +67,14 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         const mainHeight = docStyle.getPropertyValue('--main-height');
         const mainWidth = docStyle.getPropertyValue('--main-width');
 
-        if (vxContextState.showVisionX) {
-            context.designer = getDesigner();
-            context.contentStore.designer = getDesigner();
-        }
-        else if (context.designer !== null) {
-            context.designer = null;
-        }
-
-        if (showDesignerView || vxContextState.showVisionX) {
+        if (showDesignerView || isDesignerVisible(context.designer)) {
             if (showDesignerView && !sessionStorage.getItem("reactui-designer-on")) {
                 sessionStorage.setItem("reactui-designer-on", "true");
             }
 
             if (mainHeight === "100vh") {
-                document.documentElement.style.setProperty("--main-height", 
-                `calc(100vh - ${docStyle.getPropertyValue('--designer-topbar-height')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
+                document.documentElement.style.setProperty("--main-height",
+                    `calc(100vh - ${docStyle.getPropertyValue('--designer-topbar-height')} - ${docStyle.getPropertyValue('--designer-content-padding')} - ${docStyle.getPropertyValue('--designer-content-padding')})`);
             }
 
             if (mainWidth === "100vw") {
@@ -126,14 +94,14 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                 document.documentElement.style.setProperty("--main-width", "100vw");
             }
         }
-    }, [showDesignerView, vxContextState.showVisionX])
+    }, [showDesignerView, context.designer?.isVisible])
 
     /**
      * Subscribes to app-name, css-version and restart
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
-        context.subscriptions.subscribeToTheme("appwrapper", (theme:string) => setAppTheme(theme));
+        context.subscriptions.subscribeToTheme("appwrapper", (theme: string) => setAppTheme(theme));
 
         return () => {
             context.subscriptions.unsubscribeFromTheme("appwrapper");
@@ -175,7 +143,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             else {
                                 openReq.className = navValue.componentId;
                             }
-                            
+
                             showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar)
                                 .then((responses: BaseResponse[]) => {
                                     checkAskBefore(prevPathCopy, responses)
@@ -234,14 +202,6 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                 command: () => setShowDesignerView(prevState => !prevState)
             });
         }
-
-        if (context.appSettings.showWSDesigner) {
-            speeddialModel.push({
-                label: 'Workscreen-Designer',
-                icon: 'fas fa-hammer',
-                command: () => vxContextState.toggleVisionX()
-            })
-        }
         return speeddialModel;
     }
 
@@ -249,25 +209,23 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
     const content =
         <>
-            <VisionXContext.Provider value={vxContextState}>
-                {props.children}
-                {(speeddialModel.length && !showDesignerView && !vxContextState.showVisionX) ? 
-                    <>
-                        <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
-                        <SpeedDial 
-                            className="designer-button" 
-                            model={speeddialModel} 
-                            direction="up"
-                            style={{
-                                position: "absolute",
-                                top: speeddialModel.length === 1 ? "calc(100% - 165px)" : "calc(100% - 220px)",
-                                left: "calc(100% - 90px)",
-                                opacity: "0.8",
-                                fontSize: "1.825rem"
-                            }} />
-                    </>
+            {props.children}
+            {(speeddialModel.length && !showDesignerView) ?
+                <>
+                    <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
+                    <SpeedDial
+                        className="designer-button"
+                        model={speeddialModel}
+                        direction="up"
+                        style={{
+                            position: "absolute",
+                            top: speeddialModel.length === 1 ? "calc(100% - 165px)" : "calc(100% - 220px)",
+                            left: "calc(100% - 90px)",
+                            opacity: "0.8",
+                            fontSize: "1.825rem"
+                        }} />
+                </>
                 : undefined}
-            </VisionXContext.Provider>
         </>
 
     return (
@@ -291,13 +249,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         {content}
 
                     </ReactUIDesigner> :
-                    (vxContextState.showVisionX) ?
-                        <VisionX mode="reactui" vxContext={vxContextState} >
-                            {content}
-                        </VisionX> :
-                        <>
-                            {content}
-                        </>}
+                    <>
+                        {content}
+                    </>}
             </PopupContextProvider>
         </>
     )

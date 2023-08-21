@@ -1,4 +1,4 @@
-/* Copyright 2022 SIB Visions GmbH
+/* Copyright 2023 SIB Visions GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,9 +15,12 @@
 
 /** Enum for orientation */
 export enum ORIENTATION {
-    HORIZONTAL= 0,
-    VERTICAL= 1
+    HORIZONTAL = 0,
+    VERTICAL = 1,
+    DIAGONAL = 2
 }
+
+//TODO: This is a copy from reactui, when VisionX React is used later delete Anchor class from ReactUI and import this one instead
 
 /** Class for FormLayout anchors */
 class Anchor{
@@ -44,6 +47,8 @@ class Anchor{
     /** True, if the anchor is used by a visible component. **/
     used: boolean
 
+    isPlaceholder: boolean
+
     /**
      * @constructor extracts and sets anchordata and default values
      * @param anchorData - the anchordata where the values get extracted from
@@ -56,18 +61,19 @@ class Anchor{
         this.autoSize = splitData[3] === "a";
 
         this.autoSizeCalculated = false;
-        this.firstCalculation = true;
+        this.firstCalculation = false;
         this.relative = false;
         this.position = parseInt(splitData[4]);
         this.orientation = this.getOrientationFromData(splitData[0]);
         this.used = false;
+        this.isPlaceholder = false;
     }
 
     /**
      * Returns wether the orientation of the anchor is horizontal or vertical
      * @param anchorName - name of the anchor
      */
-    getOrientationFromData(anchorName: string){
+    getOrientationFromData(anchorName: string):ORIENTATION{
         if(anchorName.startsWith("l") || anchorName.startsWith("r")){
             return ORIENTATION.HORIZONTAL;
         } else {
@@ -94,7 +100,7 @@ class Anchor{
     */
     getBorderAnchor = (): Anchor => {
         let borderAnchor: Anchor = this;
-        while (borderAnchor.relatedAnchor){
+        while (borderAnchor.relatedAnchor) {
             borderAnchor = borderAnchor.relatedAnchor
         }
         return borderAnchor
@@ -106,7 +112,7 @@ class Anchor{
 	*/
     getRelativeAnchor = (): Anchor => {
         let start: Anchor = this;
-        while(start && !start.relative && start.relatedAnchor){
+        while(start && !start.relative && start.relatedAnchor) {
             start = start.relatedAnchor;
         }
         return start
