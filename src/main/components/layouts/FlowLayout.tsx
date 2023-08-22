@@ -14,7 +14,7 @@
  */
 
 import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-import {appContext} from "../../contexts/AppProvider";
+import {appContext, isDesignerVisible} from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import Margins from "./models/Margins";
 import IBaseComponent from "../../util/types/IBaseComponent";
@@ -26,6 +26,7 @@ import { ORIENTATION } from "./models/Anchor";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { FlowGrid } from "./models/FlowGrid";
 import Dimension from "../../util/types/Dimension";
+import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
 
 /**
  * A flow layout arranges components in a directional flow, muchlike lines of text in a paragraph.
@@ -59,6 +60,40 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
 
     const runAfterLayout = useRunAfterLayout();
+
+    const borderLayoutAssistant = useMemo(() => {
+        if (context.designer && isDesignerVisible(context.designer)) {
+            const compConstraintMap:Map<string, string> = new Map<string, string>();
+            components.forEach(component => compConstraintMap.set(component.props.name, "flow-no-constraints"));
+            if (!context.designer.flowLayouts.has(name)) {
+                context.designer.createFlowLayoutAssistant({
+                    id: id,
+                    name: name,
+                    originalConstraints: compConstraintMap,
+                    componentSizes: compSizes,
+                    componentConstraints: new Map<string, string>(),
+                    calculatedSize: null,
+                    layoutType: LAYOUTS.FLOWLAYOUT
+                })
+            }
+            else {
+                context.designer.borderLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
+            }
+            return context.designer.borderLayouts.get(name);
+        }
+        else {
+            return null;
+        }
+    }, [context.designer, context.designer?.isVisible]);
+
+    const layoutInfo = useMemo(() => {
+        if (borderLayoutAssistant) {
+            return borderLayoutAssistant.layoutInfo;
+        }
+        else {
+            return null;
+        }
+    }, [borderLayoutAssistant]);
 
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 

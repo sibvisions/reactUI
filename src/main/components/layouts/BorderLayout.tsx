@@ -22,6 +22,7 @@ import { getMinimumSize, getPreferredSize } from "../../util/component-util/Size
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import Dimension from "../../util/types/Dimension";
 import Margins from "./models/Margins";
+import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -77,7 +78,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     componentConstraints: new Map<string, string>(),
                     calculatedSize: null,
                     currentSize: null,
-                    layoutType: 0
+                    layoutType: LAYOUTS.BORDERLAYOUT
                 })
             }
             else {

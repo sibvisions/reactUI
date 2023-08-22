@@ -28,6 +28,7 @@ import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import Anchor from "./models/Anchor";
+import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -85,7 +86,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     calculatedSize: null,
                     isAdvancedFormLayout: false,
                     anchors: new Map<string, Anchor>(),
-                    layoutType: 1
+                    layoutType: LAYOUTS.FORMLAYOUT
                 });
             }
             else {
