@@ -76,6 +76,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
                     originalConstraints: compConstraintMap,
                     componentSizes: compSizes,
                     componentConstraints: new Map<string, string>(),
+                    componentIndeces: [],
                     calculatedSize: null,
                     currentSize: null,
                     layoutType: LAYOUTS.BORDERLAYOUT

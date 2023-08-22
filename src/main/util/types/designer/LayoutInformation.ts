@@ -50,6 +50,7 @@ export interface LayoutInformation {
     name: string,
     originalConstraints: Map<string, string>,
     componentSizes: Map<string, ComponentSizes> | undefined,
+    componentIndeces: string[]
     calculatedSize: Dimension|null,
     componentConstraints: Map<string, string>,
     layoutType: LAYOUTS;
@@ -76,4 +77,12 @@ export interface BorderLayoutInformation extends LayoutInformation {
 
 export interface FlowLayoutInformation extends LayoutInformation {
 
+}
+
+export interface GridLayoutInformation extends LayoutInformation {
+    
+}
+
+export interface NullLayoutInformation extends LayoutInformation {
+    
 }

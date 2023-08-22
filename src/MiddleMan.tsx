@@ -26,8 +26,8 @@ import Dimension from './main/util/types/Dimension';
 import IBaseComponent from './main/util/types/IBaseComponent';
 import BaseContentStore from './main/contentstore/BaseContentStore';
 import BaseServer from './main/server/BaseServer';
-import { BorderLayoutInformation, FlowLayoutInformation, FormLayoutInformation, LAYOUTS } from './main/util/types/designer/LayoutInformation';
-import { BorderLayoutAssistant, Coordinates, DraggableComponent, DraggablePanel, FlowLayoutAssistant, FormLayoutAssistant } from './main/util/types/designer/LayoutAssistant';
+import { BorderLayoutInformation, FlowLayoutInformation, FormLayoutInformation, GridLayoutInformation, LAYOUTS, NullLayoutInformation } from './main/util/types/designer/LayoutInformation';
+import { BorderLayoutAssistant, Coordinates, DraggableComponent, DraggablePanel, FlowLayoutAssistant, FormLayoutAssistant, GridLayoutAssistant, NullLayoutAssistant } from './main/util/types/designer/LayoutAssistant';
 import { ISplit } from './main/components/panels/split/UISplitPanel';
 
 type SelectedComponent = { component: IBaseComponent, element: HTMLElement, preferredSize: Dimension };
@@ -39,6 +39,8 @@ export interface Designer {
     borderLayouts: Map<string, BorderLayoutAssistant>,
     formLayouts: Map<string, FormLayoutAssistant>,
     flowLayouts: Map<string, FlowLayoutAssistant>,
+    gridLayouts: Map<string, GridLayoutAssistant>,
+    nullLayouts: Map<string, NullLayoutAssistant>,
     selectedComponent: SelectedComponent|null,
     isDragging: boolean,
     setContentStore:(store: BaseContentStore) => void
@@ -57,6 +59,8 @@ export interface Designer {
     createBorderLayoutAssistant:(layoutInfo: BorderLayoutInformation) => void,
     createFormLayoutAssistant:(layoutInfo: FormLayoutInformation) => void,
     createFlowLayoutAssistant:(layoutInfo: FlowLayoutInformation) => void,
+    createGridLayoutAssistant:(layoutInfo: GridLayoutInformation) => void,
+    createNullLayoutAssistant:(layoutInfo: NullLayoutInformation) => void
     mouseIsInComponent:(position:Coordinates, element: HTMLElement) => boolean,
     isSecondSplit:(position:Coordinates, splitPanelComp:ISplit, splitPanelElem:HTMLElement, firstPanel: HTMLElement, secondPanel: HTMLElement) => boolean,
     getComponentByMousePosition:(mouseCoords: Coordinates, layout: boolean) => DraggableComponent|DraggablePanel|null,

@@ -20,7 +20,7 @@ import BaseContentStore from "../../../contentstore/BaseContentStore";
 import SetLayoutRequest from "../../../request/other/SetLayoutRequest";
 import Dimension from "../Dimension";
 import IBaseComponent from "../IBaseComponent";
-import { AnchorPair, BorderLayoutInformation, FlowLayoutInformation, FormLayoutInformation, LAYOUTS, RESIZE_START_POSITION } from "./LayoutInformation";
+import { AnchorPair, BorderLayoutInformation, FlowLayoutInformation, FormLayoutInformation, GridLayoutInformation, LAYOUTS, NullLayoutInformation, RESIZE_START_POSITION } from "./LayoutInformation";
 
 /** Type for Coordinates */
 export type Coordinates = {
@@ -66,11 +66,19 @@ export interface DraggableComponent {
 
 /** Interface for DraggablePanel */
 export interface DraggablePanel extends DraggableComponent { 
-    layoutAssistant: BorderLayoutAssistant | FormLayoutAssistant | null,
+    layoutAssistant: BorderLayoutAssistant | FormLayoutAssistant | FlowLayoutAssistant | GridLayoutAssistant | NullLayoutAssistant | null,
     layoutType: LAYOUTS
 }
 
-export interface FormLayoutAssistant {
+interface LayoutAssistant {
+    layoutInfo: FormLayoutInformation | BorderLayoutInformation | FlowLayoutInformation | GridLayoutInformation | NullLayoutInformation,
+    handleComponentMoving:(foundPanel: DraggablePanel, selectedComponent: SelectedComponent, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void,
+    handleComponentResizing:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null, delta: { deltaX: number, deltaY: number }|number|null, designer: Designer) => void
+    compareComponentIndex:(rect1:DOMRect, rect2:DOMRect) => -1|0|1,
+    updateComponentIndex:(name: string) => number|undefined,
+}
+
+export interface FormLayoutAssistant extends LayoutAssistant {
     layoutInfo: FormLayoutInformation,
     originalAbsoluteAnchorPositions: Map<string, number>,
     originalAnchorPositions: Map<string, number>,
@@ -136,10 +144,7 @@ export interface FormLayoutAssistant {
     increaseLayoutPreferredSize:(selectedComponentSize: Dimension, panelComponent: IBaseComponent, contentStore: BaseContentStore) => void,
     addComponentToExistingConstraints:(newConstraints: ConstraintNames, horizontal: boolean, relativePosition: Coordinates, selectedComponent: IBaseComponent, compConstrainstsToChange: Map<string, string>) => void,
     handleMouseBetweenMaxAnchors:(newConstraints: ConstraintNames, horizontal: boolean, relativePosition: number, selectedComponent: IBaseComponent) => void,
-    compareComponentIndex:(rect1:DOMRect, rect2:DOMRect) => -1|0|1,
-    updateComponentIndex:(name: string) => number|undefined,
     decreaseComponentConstraints:(selectedComponent: SelectedComponent, designer: Designer) => void,
-    handleComponentMoving:(foundPanel: DraggablePanel, selectedComponent: SelectedComponent, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void,
     getDraggingDelta:(resizeStartPosition: RESIZE_START_POSITION|null, relativePosition: Coordinates, constraints:string) => { deltaX: number, deltaY:number }|number|null,
     originalAnchorPositionsHasNames:(names: string|string[]) => boolean,
     setDraggedAnchors:(constraints: string, resizeStartPosition: RESIZE_START_POSITION | null) => void,
@@ -147,15 +152,23 @@ export interface FormLayoutAssistant {
     getAnchorsToIgnore:(resizeStartPosition: RESIZE_START_POSITION | null) => string[],
     getResizedAnchor:(position: number, allowedAnchors:string[]) => Anchor|null,
     getOrientationFromResizingPosition:(resizeStartPosition: RESIZE_START_POSITION|null) => ORIENTATION|null,
-    handleComponentResizing:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null, delta: { deltaX: number, deltaY: number }|number|null, designer: Designer) => void
 }
 
-export interface BorderLayoutAssistant {
+
+
+export interface BorderLayoutAssistant extends LayoutAssistant {
     layoutInfo: BorderLayoutInformation,
     getUsedConstraints:(original: boolean) => string[],
-    handleComponentMoving:(foundPanel: DraggablePanel, selectedComponent: SelectedComponent, designer:Designer) => void
 }
 
-export interface FlowLayoutAssistant {
+export interface FlowLayoutAssistant extends LayoutAssistant {
     layoutInfo: FlowLayoutInformation,
+}
+
+export interface GridLayoutAssistant extends LayoutAssistant {
+    layoutInfo: GridLayoutInformation,
+}
+
+export interface NullLayoutAssistant extends LayoutAssistant {
+    layoutInfo: NullLayoutInformation,
 }

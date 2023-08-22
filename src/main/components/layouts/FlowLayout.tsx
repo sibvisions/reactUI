@@ -71,6 +71,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     name: name,
                     originalConstraints: compConstraintMap,
                     componentSizes: compSizes,
+                    componentIndeces: [],
                     componentConstraints: new Map<string, string>(),
                     calculatedSize: null,
                     layoutType: LAYOUTS.FLOWLAYOUT
