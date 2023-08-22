@@ -13,20 +13,22 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useContext, useEffect, useMemo, useState } from "react";
 import {appContext, isDesignerVisible} from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import Margins from "./models/Margins";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import { ILayout } from "./Layout";
+import { ILayout, isDesignerActive } from "./Layout";
 import Gaps from "./models/Gaps";
 import { ORIENTATION } from "./models/Anchor";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
 import { FlowGrid } from "./models/FlowGrid";
 import Dimension from "../../util/types/Dimension";
 import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
+import { setComponentIndeces } from "../../util/designer-util/setComponentIndeces";
+import { FlowLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
 
 /**
  * A flow layout arranges components in a directional flow, muchlike lines of text in a paragraph.
@@ -61,7 +63,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
     const runAfterLayout = useRunAfterLayout();
 
-    const borderLayoutAssistant = useMemo(() => {
+    const flowLayoutAssistant = useMemo(() => {
         if (context.designer && isDesignerVisible(context.designer)) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
             components.forEach(component => compConstraintMap.set(component.props.name, "flow-no-constraints"));
@@ -78,9 +80,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 })
             }
             else {
-                context.designer.borderLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
+                context.designer.flowLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
             }
-            return context.designer.borderLayouts.get(name);
+            return context.designer.flowLayouts.get(name) as FlowLayoutAssistant;
         }
         else {
             return null;
@@ -88,13 +90,13 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     }, [context.designer, context.designer?.isVisible]);
 
     const layoutInfo = useMemo(() => {
-        if (borderLayoutAssistant) {
-            return borderLayoutAssistant.layoutInfo;
+        if (flowLayoutAssistant) {
+            return flowLayoutAssistant.layoutInfo;
         }
         else {
             return null;
         }
-    }, [borderLayoutAssistant]);
+    }, [flowLayoutAssistant]);
 
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 
@@ -258,6 +260,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             /** Check if the current column is taller than the current height of the FlowLayout */
                             height = Math.max(height, calcHeight);
                         }
+                    }
+
+                    if (isDesignerActive(flowLayoutAssistant)) {
+                        console.log(component.name)
+                        setComponentIndeces(layoutInfo, component.name, component.indexOf);
                     }
                 });
                 if (tbExtraSize !== 0) {
@@ -424,7 +431,13 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
         }
         return sizeMap;
-    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore]);
+    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, flowLayoutAssistant]);
+
+    useEffect(() => {
+        if (context.designer && isDesignerVisible(context.designer) && context.designer.flowLayouts.has(name)) {
+            context.designer.flowLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
+        }
+    }, [compSizes, context.designer]);
 
     return(
         /** Provide the allowed sizes of the children as a context */

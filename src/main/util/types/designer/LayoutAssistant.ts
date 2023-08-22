@@ -75,7 +75,7 @@ interface LayoutAssistant {
     handleComponentMoving:(foundPanel: DraggablePanel, selectedComponent: SelectedComponent, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void,
     handleComponentResizing:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null, delta: { deltaX: number, deltaY: number }|number|null, designer: Designer) => void
     compareComponentIndex:(rect1:DOMRect, rect2:DOMRect) => -1|0|1,
-    updateComponentIndex:(name: string) => number|undefined,
+    updateComponentIndex:(name: string, componentElement: HTMLElement|null) => number|undefined,
 }
 
 export interface FormLayoutAssistant extends LayoutAssistant {

@@ -21,6 +21,7 @@ import FlowLayout from "./FlowLayout";
 import FormLayout from "./FormLayout";
 import GridLayout from "./GridLayout";
 import NullLayout from "./NullLayout";
+import { BorderLayoutAssistant, FlowLayoutAssistant, FormLayoutAssistant, GridLayoutAssistant, NullLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
 
 /**
  * General information for layouts:
@@ -51,7 +52,7 @@ export interface ILayout {
     hasBorder?:boolean
 }
 
-export function isDesignerActive(layoutAssistant:any) {
+export function isDesignerActive(layoutAssistant:FormLayoutAssistant|BorderLayoutAssistant|FlowLayoutAssistant|GridLayoutAssistant|NullLayoutAssistant|null) {
     return layoutAssistant !== null;
 }
 

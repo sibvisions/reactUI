@@ -23,6 +23,7 @@ import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayou
 import Dimension from "../../util/types/Dimension";
 import Margins from "./models/Margins";
 import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
+import { BorderLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
 
 /** Type for borderLayoutComponents */
 type BorderLayoutComponents = {
@@ -85,7 +86,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             else {
                 context.designer.borderLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
             }
-            return context.designer.borderLayouts.get(name);
+            return context.designer.borderLayouts.get(name) as BorderLayoutAssistant;
         }
         else {
             return null;
@@ -414,7 +415,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.borderLayouts.has(name)) {
             context.designer.borderLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
         }
-    }, [compSizes, context.designer])
+    }, [compSizes, context.designer]);
 
     return(
         /** Provide the allowed sizes of the children as a context */

@@ -29,6 +29,8 @@ import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayou
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import Anchor from "./models/Anchor";
 import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
+import { setComponentIndeces } from "../../util/designer-util/setComponentIndeces";
+import { FormLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -62,7 +64,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     } = baseProps;
 
     const formLayoutAssistant = useMemo(() => {
-        console.log(context.designer, isDesignerVisible(context.designer))
         if (context.designer && isDesignerVisible(context.designer)) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
             components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
@@ -92,7 +93,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             else {
                 context.designer.formLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
             }
-            return context.designer.formLayouts.get(name);
+            return context.designer.formLayouts.get(name) as FormLayoutAssistant;
         }
         else {
             return null;
@@ -250,15 +251,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                                 rightAnchor = formLayoutAssistant!.createAnchors(anchorNames[3]).find((createdAnchor: Anchor) => createdAnchor.name === anchorNames[3]);
                             }
 
-                            if (layoutInfo && component.indexOf !== undefined) {
-                                if (layoutInfo.componentIndeces.includes(component.name)) {
-                                    const index = layoutInfo.componentIndeces.findIndex((compName: string) => compName === component.name);
-                                    if (index !== -1) {
-                                        layoutInfo.componentIndeces.splice(index, 1);
-                                    }
-                                }
-                                layoutInfo.componentIndeces.splice(component.indexOf, 0, component.name);
-                            }
+                            setComponentIndeces(layoutInfo, component.name, component.indexOf);
                         }
 
                         /** Fill Constraints-Map */
