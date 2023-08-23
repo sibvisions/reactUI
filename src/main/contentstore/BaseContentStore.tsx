@@ -762,7 +762,11 @@ export default abstract class BaseContentStore {
      */
      getScreenName(id: string, dataProvider?:string) {
         if (dataProvider) {
-            return dataProvider.split("/")[1]
+            const splitDataProvider = dataProvider.split("/");
+            if (splitDataProvider.length >= 2) {
+                return splitDataProvider[splitDataProvider.length - 2]
+            }
+            return splitDataProvider[1]
         }
         else {
             let comp: IBaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
@@ -772,7 +776,14 @@ export default abstract class BaseContentStore {
                         break;
                     }
                     else if ((comp as IPanel).content_className_) {
-                        return dataProvider ? dataProvider.split("/")[1] : comp.name;
+                        if (dataProvider) {
+                            const splitDataProvider = dataProvider.split("/");
+                            if (splitDataProvider.length >= 2) {
+                                return splitDataProvider[splitDataProvider.length - 2]
+                            }
+                            return splitDataProvider[1]
+                        }
+                        return comp.name;
                     }
     
                     comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);

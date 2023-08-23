@@ -17,7 +17,7 @@ import React, { FC,  useLayoutEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
 import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
-import useButtonMouseImages from "../../../hooks/event-hooks/useButtonMouseImages";
+import useButtonMouseImages, { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
@@ -171,7 +171,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
                         )}
                         label={!isHTML ? props.text : undefined}
                         aria-label={props.ariaLabel}
-                        icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
+                        icon={btnStyle.iconProps ? isFAIcon(btnStyle.iconProps.icon) ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : 'rc-button-icon' : undefined}
                         iconPos={btnStyle.iconPos}
 
                         disabled={isCompDisabled(props)}
