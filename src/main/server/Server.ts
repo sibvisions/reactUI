@@ -560,7 +560,11 @@ class Server extends BaseServer {
         //     }
         // }
         if (dataProvider) {
-            return dataProvider.split("/")[1];
+            const splitDataProvider = dataProvider.split("/");
+            if (splitDataProvider.length >= 2) {
+                return splitDataProvider[splitDataProvider.length - 2]
+            }
+            return splitDataProvider[1]
         }
         return ""
     }

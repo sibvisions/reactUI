@@ -403,7 +403,14 @@ export default class ContentStoreFull extends BaseContentStore {
                         break;
                     }
                     else if ((comp as IPanel).content_className_) {
-                        return dataProvider ? dataProvider.split("/")[1] : comp.name;
+                        if (dataProvider) {
+                            const splitDataProvider = dataProvider.split("/");
+                            if (splitDataProvider.length >= 2) {
+                                return splitDataProvider[splitDataProvider.length - 2]
+                            }
+                            return splitDataProvider[1]
+                        }
+                        return comp.name;
                     }
     
                     comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
