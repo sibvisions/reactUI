@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-import Anchor from "../../../components/layouts/models/Anchor";
+import Anchor, { ORIENTATION } from "../../../components/layouts/models/Anchor";
 import { ComponentSizes } from "../../../hooks/components-hooks/useComponents";
 import Dimension from "../Dimension";
 
@@ -76,7 +76,8 @@ export interface BorderLayoutInformation extends LayoutInformation {
 }
 
 export interface FlowLayoutInformation extends LayoutInformation {
-
+    orientation: ORIENTATION,
+    autoWrap: boolean
 }
 
 export interface GridLayoutInformation extends LayoutInformation {

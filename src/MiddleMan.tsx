@@ -50,7 +50,7 @@ export interface Designer {
     setSelectedComponent:(newSelectedComponent:SelectedComponent) => void
     updateSelectedComponentInnerComponent: (comp: IBaseComponent) => void,
     getLayoutType(element:HTMLElement): LAYOUTS,
-    getLayoutAssistant:(name: string, layoutType: LAYOUTS) => BorderLayoutAssistant|FormLayoutAssistant|FlowLayoutAssistant|null,
+    getLayoutAssistant:(name: string, layoutType: LAYOUTS) => BorderLayoutAssistant|FormLayoutAssistant|FlowLayoutAssistant|GridLayoutAssistant|NullLayoutAssistant|null,
     isFormLayout:(foundPanel: DraggablePanel) => boolean,
     isBorderLayout:(foundPanel: DraggablePanel) => boolean,
     isFlowLayout:(foundPanel: DraggablePanel) => boolean,
@@ -81,7 +81,8 @@ export interface ICustomContent {
     theme?: string
     colorScheme?: string
     design?:string
-    designer?: Designer
+    designer?: Designer,
+    setDesignerEnabled?: Function
 }
 
 /**

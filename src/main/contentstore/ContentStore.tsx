@@ -265,7 +265,8 @@ export default class ContentStore extends BaseContentStore {
                 newComponent["~remove"] || 
                 newComponent["~destroy"] || 
                 newComponent.visible !== undefined || 
-                newComponent.constraints
+                newComponent.constraints ||
+                newComponent.indexOf
             ) {
                 if (existingComponent) {
                     this.addToNotifyList(existingComponent, notifyList);

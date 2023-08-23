@@ -76,7 +76,9 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     componentIndeces: [],
                     componentConstraints: new Map<string, string>(),
                     calculatedSize: null,
-                    layoutType: LAYOUTS.FLOWLAYOUT
+                    layoutType: LAYOUTS.FLOWLAYOUT,
+                    autoWrap: (layout.split(",")[11] === 'true'),
+                    orientation: parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL ? ORIENTATION.HORIZONTAL : ORIENTATION.VERTICAL
                 })
             }
             else {
@@ -263,7 +265,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     }
 
                     if (isDesignerActive(flowLayoutAssistant)) {
-                        console.log(component.name)
                         setComponentIndeces(layoutInfo, component.name, component.indexOf);
                     }
                 });
@@ -431,7 +432,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
         }
         return sizeMap;
-    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, flowLayoutAssistant]);
+    }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, flowLayoutAssistant, components]);
 
     useEffect(() => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.flowLayouts.has(name)) {
