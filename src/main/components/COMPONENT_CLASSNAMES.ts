@@ -47,6 +47,7 @@ enum COMPONENT_CLASSNAMES {
     MENU = "Menu",
     INTERNAL_FRAME = "InternalFrame",
     CUSTOM_CONTAINER = "CustomContainer",
-    CUSTOM_COMPONENT = "CustomComponent"
+    CUSTOM_COMPONENT = "CustomComponent",
+    MENU_ITEM = "MenuItem"
 }
 export default COMPONENT_CLASSNAMES;

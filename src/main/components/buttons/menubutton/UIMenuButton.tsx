@@ -62,6 +62,8 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<MenuItem>>();
 
+    const [itemsChangedFlag, setItemsChangedFlag] = useState<boolean>(false);
+
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.defaultButton : undefined, props.context);
 
@@ -91,7 +93,14 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
         if (wrapperRef) {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.designerUpdate, isHTML]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, isHTML]);
+
+    useEffect(() => {
+        props.context.subscriptions.unsubscribeFromMenuButtonItems(props.popupMenu);
+        props.context.subscriptions.subscribeToMenuButtonItems(props.popupMenu, () => setItemsChangedFlag(prevState => !prevState))
+
+        return () => props.context.subscriptions.unsubscribeFromMenuButtonItems(props.popupMenu);
+    }, [props.context.subscriptions, props.popupMenu])
 
     useLayoutEffect(() => {
         //TODO: Maybe it'll be possible to change the tabindex of the menubutton without dom manipulation in PrimeReact
@@ -142,7 +151,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
         if (props.popupMenu) {
             buildMenu(props.context.contentStore.getChildren(props.popupMenu, props.className));
         }
-    }, [props.context.contentStore, props.context.server, props]);
+    }, [props.context.contentStore, props.context.server, itemsChangedFlag]);
 
     // Focus handling, so that always the entire button is focused and not only one of the parts of the button
     useEventHandler(

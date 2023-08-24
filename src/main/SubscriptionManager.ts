@@ -193,6 +193,8 @@ export class SubscriptionManager {
 
     appReadyParamsSubscriber: Function = () => {};
 
+    menuButtonItemsSubscriber:Map<string, Function> = new Map<string, Function>();
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -580,6 +582,10 @@ export class SubscriptionManager {
         this.sessionExpiredSubscriber.push(fn);
     }
 
+    subscribeToMenuButtonItems(key: string, fn: Function) {
+        this.menuButtonItemsSubscriber.set(key, fn);
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -855,6 +861,10 @@ export class SubscriptionManager {
         this.loginActiveSubscriber = () => {};
     }
 
+    unsubscribeFromMenuButtonItems(key:string) {
+        this.menuButtonItemsSubscriber.delete(key)
+    }
+
     /**
      * Unsubscribes from session-expired status
      */
@@ -945,6 +955,10 @@ export class SubscriptionManager {
 
     notifyAppReadyParamsChange() {
         this.appReadyParamsSubscriber.apply(undefined, [this.appSettings.appReadyParams])
+    }
+
+    notifyMenuButtonItemsChange(id: string) {
+        this.menuButtonItemsSubscriber.get(id)?.apply(undefined, []);
     }
 
     /**
