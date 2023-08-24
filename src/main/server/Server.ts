@@ -565,9 +565,6 @@ class Server extends BaseServer {
         // }
         if (dataProvider) {
             const splitDataProvider = dataProvider.split("/");
-            if (splitDataProvider.length >= 2) {
-                return splitDataProvider[splitDataProvider.length - 2]
-            }
             return splitDataProvider[1]
         }
         return ""

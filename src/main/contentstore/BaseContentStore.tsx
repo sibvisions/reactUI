@@ -763,9 +763,6 @@ export default abstract class BaseContentStore {
      getScreenName(id: string, dataProvider?:string) {
         if (dataProvider) {
             const splitDataProvider = dataProvider.split("/");
-            if (splitDataProvider.length >= 2) {
-                return splitDataProvider[splitDataProvider.length - 2]
-            }
             return splitDataProvider[1]
         }
         else {
@@ -778,9 +775,6 @@ export default abstract class BaseContentStore {
                     else if ((comp as IPanel).content_className_) {
                         if (dataProvider) {
                             const splitDataProvider = dataProvider.split("/");
-                            if (splitDataProvider.length >= 2) {
-                                return splitDataProvider[splitDataProvider.length - 2]
-                            }
                             return splitDataProvider[1]
                         }
                         return comp.name;
