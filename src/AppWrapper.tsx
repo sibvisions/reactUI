@@ -202,6 +202,14 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                 command: () => setShowDesignerView(prevState => !prevState)
             });
         }
+
+        if (context.appSettings.showUIDesigner !== undefined) {
+            speeddialModel.push({
+                label: 'Workscreen-Designer',
+                icon: 'fas fa-hammer',
+                command: () => (context.appSettings.showUIDesigner as Function)()
+            })
+        }
         return speeddialModel;
     }
 

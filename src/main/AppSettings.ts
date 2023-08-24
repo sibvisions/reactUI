@@ -182,6 +182,8 @@ export default class AppSettings {
     cssToAddWhenReady:Array<any> = [];
 
     showDesigner: boolean = false;
+
+    showUIDesigner: Function|undefined
     
     showDebug: boolean = false;
 

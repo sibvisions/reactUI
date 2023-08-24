@@ -446,7 +446,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (data.useUIDesigner === true && props.enableDesigner) {
-                        props.enableDesigner(true);
+                        contextState.appSettings.showUIDesigner = props.enableDesigner
+                        
                     }
 
                     if (data.designerUploadUrl) {
@@ -529,7 +530,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     }
 
                     if (data.useUIDesigner === true && props.enableDesigner) {
-                        props.enableDesigner(true);
+                        contextState.appSettings.showUIDesigner = props.enableDesigner;
                     }
 
                     if (data.transferType) {
