@@ -43,6 +43,7 @@ export interface Designer {
     nullLayouts: Map<string, NullLayoutAssistant>,
     selectedComponent: SelectedComponent|null,
     isDragging: boolean,
+    allowSetLayout: boolean,
     setContentStore:(store: BaseContentStore) => void
     setServer:(server: BaseServer) => void,
     getSelectedComponent:() => SelectedComponent|null

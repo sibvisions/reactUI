@@ -161,6 +161,7 @@ export interface FormLayoutAssistant extends LayoutAssistant {
 export interface BorderLayoutAssistant extends LayoutAssistant {
     layoutInfo: BorderLayoutInformation,
     getUsedConstraints:(original: boolean) => string[],
+    getDraggingDelta:(resizeStartPosition: RESIZE_START_POSITION|null, relativePosition: Coordinates, originalElement: HTMLElement) => { deltaX: number, deltaY:number }|number|null,
 }
 
 export interface FlowLayoutAssistant extends LayoutAssistant {
