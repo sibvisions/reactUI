@@ -160,6 +160,7 @@ export default class ContentStore extends BaseContentStore {
     updateContent(componentsToUpdate: Array<BaseComponent>, desktop:boolean) {
         /** An array of all parents which need to be notified */
         const notifyList = new Array<string>();
+        const menuButtonNotifyList = new Array<string>();
         /** 
          * Is the existing component if a component in the server sent components already exists in flatContent, replacedContent or
          * removedContent. Undefined if it is a new component
@@ -250,6 +251,11 @@ export default class ContentStore extends BaseContentStore {
                     this.removedDesktopContent.delete(newComponent.id);
                     this.removedCustomComponents.delete(newComponent.id);
                 }
+
+
+                if (existingComponent.className === COMPONENT_CLASSNAMES.MENU_ITEM && existingComponent.parent) {
+                    menuButtonNotifyList.push(existingComponent.parent); 
+                }
             }
 
             /** Add parent of newComponent to notifyList */
@@ -338,6 +344,7 @@ export default class ContentStore extends BaseContentStore {
         });
         /** Call the update function of the parentSubscribers */
         notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
+        menuButtonNotifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.notifyMenuButtonItemsChange(parentId));
     }
 
     /** Resets the contentStore */

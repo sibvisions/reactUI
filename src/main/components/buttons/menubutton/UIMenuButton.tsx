@@ -72,6 +72,8 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<MenuItem>>();
 
+    const [itemsChangedFlag, setItemsChangedFlag] = useState<boolean>(false);
+
     /** Hook for MouseListener */
     useMouseListener(props.name, buttonWrapperRef.current ? buttonWrapperRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -108,6 +110,13 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, designerUpdate, isHTML]);
+
+    useEffect(() => {
+        context.subscriptions.unsubscribeFromMenuButtonItems(props.popupMenu);
+        context.subscriptions.subscribeToMenuButtonItems(props.popupMenu, () => setItemsChangedFlag(prevState => !prevState))
+
+        return () => context.subscriptions.unsubscribeFromMenuButtonItems(props.popupMenu);
+    }, [context.subscriptions, props.popupMenu])
 
     /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
@@ -174,7 +183,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
         if (props.popupMenu) {
             buildMenu(context.contentStore.getChildren(props.popupMenu, props.className));
         }
-    }, [context.contentStore, context.server, props]);
+    }, [context.contentStore, context.server, itemsChangedFlag]);
 
     // Focus handling, so that always the entire button is focused and not only one of the parts of the button
     useEventHandler(
