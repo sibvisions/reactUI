@@ -75,8 +75,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
             const size:Dimension = { width: 0, height: 0 }
 
-            let targetColumns = 0;
-            let targetRows = 0;
+            let targetColumns = gridSize.columns;
+            let targetRows = gridSize.rows;
             
             children.forEach(component => {
                 if (component.constraints && component.visible !== false) {
@@ -126,6 +126,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
             const yPosition: number[] = [];
             let columnSize: number;
             let rowSize: number;
+
+            console.log(targetColumns, targetRows)
 
             if (targetColumns > 0 && targetRows > 0) {
                 const totalGapsWidth = (targetColumns - 1) * gaps.horizontalGap;
