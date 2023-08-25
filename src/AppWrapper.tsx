@@ -218,7 +218,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     const content =
         <>
             {props.children}
-            {(speeddialModel.length && !showDesignerView) ?
+            {(speeddialModel.length && !showDesignerView && !context.designer?.isVisible) ?
                 <>
                     <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
                     <SpeedDial
