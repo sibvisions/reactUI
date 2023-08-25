@@ -13,16 +13,18 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
-import {appContext} from "../../contexts/AppProvider";
+import React, { CSSProperties, FC, useContext, useEffect, useMemo, useState } from "react";
+import {appContext, isDesignerVisible} from "../../contexts/AppProvider";
 import {LayoutContext} from "../../LayoutContext";
 import Dimension from "../../util/types/Dimension";
-import { ILayout } from "./Layout";
+import { ILayout, isDesignerActive } from "./Layout";
 import CellConstraints from "./models/CellConstraints";
 import Gaps from "./models/Gaps";
 import GridSize from "./models/GridSize";
 import Margins from "./models/Margins";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
+import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
+import { GridLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
 
 /**
  * The GridLayout is a component that lays out a container's
@@ -50,6 +52,52 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
     const runAfterLayout = useRunAfterLayout();
 
+    /** Margins of layout */
+    const margins = useMemo(() => new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4)), [layout]);
+    /** Gaps between the components */
+    const gaps = useMemo(() => new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6)), [layout]);
+    /** GridSize of the layout */
+    const gridSize = useMemo(() => new GridSize(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(6, 8)), [layout]);
+
+    const gridLayoutAssistant = useMemo(() => {
+        if (context.designer && isDesignerVisible(context.designer)) {
+            const compConstraintMap:Map<string, string> = new Map<string, string>();
+            components.forEach(component => compConstraintMap.set(component.props.name, component.props.constraints));
+            if (!context.designer.gridLayouts.has(name)) {
+                context.designer.createGridLayoutAssistant({
+                    id: id,
+                    name: name,
+                    originalConstraints: compConstraintMap,
+                    componentSizes: compSizes,
+                    componentConstraints: new Map<string, string>(),
+                    componentIndeces: [],
+                    calculatedSize: null,
+                    layoutType: LAYOUTS.GRIDLAYOUT,
+                    gridSize: gridSize,
+                    currentSize: null,
+                    rowSize: 0,
+                    columnSize: 0
+                })
+            }
+            else {
+                context.designer.gridLayouts.get(name)!.layoutInfo.originalConstraints = compConstraintMap;
+            }
+            return context.designer.gridLayouts.get(name) as GridLayoutAssistant;
+        }
+        else {
+            return null;
+        }
+    }, [context.designer, context.designer?.isVisible, gridSize]);
+
+    const layoutInfo = useMemo(() => {
+        if (gridLayoutAssistant) {
+            return gridLayoutAssistant.layoutInfo;
+        }
+        else {
+            return null;
+        }
+    }, [gridLayoutAssistant]);
+
     /** 
      * Returns a Map, the keys are the ids of the components, the values are the positioning and sizing properties given to the child components 
      * @returns a Map key: component ids, value style properties for components
@@ -57,12 +105,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
     const componentSizes = useMemo(() => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
         const sizeMap = new Map<string, CSSProperties>();
-        /** Margins of layout */
-        const margins = new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4));
-        /** Gaps between the components */
-        const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
-        /** GridSize of the layout */
-        const gridSize = new GridSize(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(6, 8));
+
 
         const children = context.contentStore.getChildren(id, className);
 
@@ -81,6 +124,11 @@ const GridLayout: FC<ILayout> = (baseProps) => {
             children.forEach(component => {
                 if (component.constraints && component.visible !== false) {
                     const constraints = new CellConstraints(component.constraints);
+
+                    if (isDesignerActive(gridLayoutAssistant) && layoutInfo) {
+                        layoutInfo.componentConstraints.set(component.name, component.constraints);
+                    }
+
                     const prefSize = compSizes.get(component.id)?.preferredSize || {width: 0, height: 0};
 
                     const width = (prefSize.width + constraints.gridWidth - 1) / constraints.gridWidth;
@@ -136,6 +184,11 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
                 columnSize = totalWidth / targetColumns;
                 rowSize = totalHeight / targetRows;
+
+                if (isDesignerActive(gridLayoutAssistant) && layoutInfo) {
+                    layoutInfo.columnSize = columnSize;
+                    layoutInfo.rowSize = rowSize;
+                }
 
                 const widthCalcError = totalWidth - columnSize * targetColumns;
 				const heightCalcError = totalHeight - rowSize * targetRows;
@@ -206,12 +259,22 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                 })
                 
             }
+
+            if (isDesignerActive(gridLayoutAssistant) && layoutInfo) {
+                layoutInfo.currentSize = size;
+            }
             /** Set the state of the calculated Style */
             setCalculatedStyle({height: size.height, width: size.width, position: 'relative'});
         }
 
         return sizeMap
-    },[layout, compSizes, reportSize, id, style, context.contentStore])
+    },[layout, compSizes, reportSize, id, style, context.contentStore, components, margins, gaps, gridSize]);
+
+    useEffect(() => {
+        if (context.designer && isDesignerVisible(context.designer) && context.designer.gridLayouts.has(name)) {
+            context.designer.gridLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
+        }
+    }, [compSizes, context.designer]);
 
     return (
         /** Provide the allowed sizes of the children as a context */

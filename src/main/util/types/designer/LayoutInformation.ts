@@ -13,6 +13,7 @@
  * the License.
  */
 import Anchor, { ORIENTATION } from "../../../components/layouts/models/Anchor";
+import GridSize from "../../../components/layouts/models/GridSize";
 import { ComponentSizes } from "../../../hooks/components-hooks/useComponents";
 import Dimension from "../Dimension";
 
@@ -81,7 +82,10 @@ export interface FlowLayoutInformation extends LayoutInformation {
 }
 
 export interface GridLayoutInformation extends LayoutInformation {
-    
+    gridSize: GridSize,
+    currentSize: Dimension|null,
+    columnSize: number,
+    rowSize: number
 }
 
 export interface NullLayoutInformation extends LayoutInformation {
