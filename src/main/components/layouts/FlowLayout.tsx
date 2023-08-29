@@ -438,7 +438,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.flowLayouts.has(name)) {
             context.designer.flowLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
         }
-    }, [compSizes, context.designer]);
+    }, [compSizes, context.designer?.isVisible]);
 
     return(
         /** Provide the allowed sizes of the children as a context */

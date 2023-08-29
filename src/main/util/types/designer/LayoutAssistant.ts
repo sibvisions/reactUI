@@ -73,7 +73,7 @@ export interface DraggablePanel extends DraggableComponent {
 interface LayoutAssistant {
     layoutInfo: FormLayoutInformation | BorderLayoutInformation | FlowLayoutInformation | GridLayoutInformation | NullLayoutInformation,
     handleComponentMoving:(foundPanel: DraggablePanel, selectedComponent: SelectedComponent, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void,
-    handleComponentResizing:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null, delta: number|null, designer: Designer) => void
+    
     compareComponentIndex:(rect1:DOMRect, rect2:DOMRect) => -1|0|1,
     updateComponentIndex:(name: string, componentElement: HTMLElement|null) => number|undefined,
     getDraggingPanel:(foundPanel: DraggablePanel, selectedComponent: SelectedComponent, designer: Designer) => string,
@@ -154,6 +154,7 @@ export interface FormLayoutAssistant extends LayoutAssistant {
     getAnchorsToIgnore:(resizeStartPosition: RESIZE_START_POSITION | null) => string[],
     getResizedAnchor:(position: number, allowedAnchors:string[]) => Anchor|null,
     getOrientationFromResizingPosition:(resizeStartPosition: RESIZE_START_POSITION|null) => ORIENTATION|null,
+    handleComponentResizing:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null, delta: number|null, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void
 }
 
 

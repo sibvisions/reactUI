@@ -415,7 +415,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.borderLayouts.has(name)) {
             context.designer.borderLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
         }
-    }, [compSizes, context.designer]);
+    }, [compSizes, context.designer?.isVisible]);
 
     return(
         /** Provide the allowed sizes of the children as a context */

@@ -954,9 +954,10 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     useEffect(() => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.formLayouts.has(name)) {
+            console.log(compSizes)
             context.designer.formLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
         }
-    }, [compSizes, context.designer])
+    }, [compSizes, context.designer?.isVisible])
 
     return(
         /** Provide the allowed sizes of the children as a context */

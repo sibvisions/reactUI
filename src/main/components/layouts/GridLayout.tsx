@@ -274,7 +274,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.gridLayouts.has(name)) {
             context.designer.gridLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
         }
-    }, [compSizes, context.designer]);
+    }, [compSizes, context.designer?.isVisible]);
 
     return (
         /** Provide the allowed sizes of the children as a context */
