@@ -22,17 +22,28 @@ import { useState, useEffect, MutableRefObject, useMemo } from "react"
  * @param breakPoints - an array of values at which size the state should be changed
  * @param menuCollapsed - true, if the menu is currently collapsed
  */
-const useResponsiveBreakpoints = (elRef:MutableRefObject<any>, breakPoints:number[], menuCollapsed:boolean) => {
+const useResponsiveBreakpoints = (elRef:HTMLElement, breakPoints:number[], menuCollapsed:boolean) => {
     /** Current value of the size of the ref */
     const [breakSize, setBreakSize] = useState(breakPoints[0]);
+
+    const [initialise, setInitialise] = useState(false);
+
+    useEffect(() => {
+        if (elRef !== null && !initialise) {
+            setInitialise(true)
+        }
+    }, [elRef]);
 
     const observer = useMemo(() => {
         /** Returns the nearest break point */
         const findBreakPoint = (width:number):number => {
-            if (elRef.current?.classList.contains("collapsed"))
+            if (elRef && elRef.classList.contains("collapsed")) {
                 return Math.ceil(width/10)*10;
-            else
+            }
+            else {
                 return Math.floor(width/10)*10;
+            }
+                
         }
 
         return new ResizeObserver(entries => {
@@ -41,19 +52,18 @@ const useResponsiveBreakpoints = (elRef:MutableRefObject<any>, breakPoints:numbe
             setBreakSize(findBreakPoint(width+1))
             
         })
-    },[menuCollapsed, breakPoints, elRef])
+    },[initialise])
 
     /**
      * Enable the observer
      * @returns disable the observer
      */
     useEffect(() => {
-        const currElRef = elRef.current;
         const currObserverRef = observer
-        if (currElRef)
-            currObserverRef.observe(currElRef);
+        if (elRef)
+            currObserverRef.observe(elRef);
 
-        return () => currElRef && currObserverRef.unobserve(currElRef);
+        return () => elRef && currObserverRef.unobserve(elRef);
     }, [elRef, observer, menuCollapsed])
 
     return breakSize;

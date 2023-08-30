@@ -70,9 +70,29 @@ export interface DraggablePanel extends DraggableComponent {
     layoutType: LAYOUTS
 }
 
+export enum DRAG_ACTION {
+    MOVE = 0,
+    RESIZE = 1
+}
+
+export type GhostComponentType = {
+    createGhostComponent: (event: React.DragEvent<HTMLElement>, element: HTMLElement, action: DRAG_ACTION) => void,
+    resizeGhostComponent: (delta: ResizeDelta, resizeStartPosition: RESIZE_START_POSITION|null) => void,
+    handleGhostComponentDragging: (dragCoordinates: Coordinates) => void,
+    removeGhostComponent: () => void
+}
+
+export type ResizeDelta = { deltaX: number, deltaY:number }|number|null
+
 interface LayoutAssistant {
     layoutInfo: FormLayoutInformation | BorderLayoutInformation | FlowLayoutInformation | GridLayoutInformation | NullLayoutInformation,
+    handleResizeDragStart:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null) => void,
+    handleMoveDragStart(component:IBaseComponent, element: HTMLElement, handleSelectedComponentChange: (newComponent: IBaseComponent, newElement: HTMLElement, size: Dimension) => void): void
     handleComponentMoving:(foundPanel: DraggablePanel, selectedComponent: SelectedComponent, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void,
+    handleComponentResizing:(selectedComponent: SelectedComponent, resizeStartPosition: RESIZE_START_POSITION | null,
+        relativePosition: Coordinates, oldDelta: ResizeDelta, ghostComponent: GhostComponentType,
+        designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void, resizeStartConstraints: string | null | undefined) => ResizeDelta
+    handleDragEnd:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null, designer: Designer, setLayoutRequest: SetLayoutRequest|null, dragAction: DRAG_ACTION|null, delta: ResizeDelta|null) => void
     
     compareComponentIndex:(rect1:DOMRect, rect2:DOMRect) => -1|0|1,
     updateComponentIndex:(name: string, componentElement: HTMLElement|null) => number|undefined,
@@ -147,6 +167,7 @@ export interface FormLayoutAssistant extends LayoutAssistant {
     addComponentToExistingConstraints:(newConstraints: ConstraintNames, horizontal: boolean, relativePosition: Coordinates, selectedComponent: IBaseComponent, compConstrainstsToChange: Map<string, string>) => void,
     handleMouseBetweenMaxAnchors:(newConstraints: ConstraintNames, horizontal: boolean, relativePosition: number, selectedComponent: IBaseComponent) => void,
     decreaseComponentConstraints:(selectedComponent: SelectedComponent, designer: Designer) => void,
+    updateComponentConstraints:(foundPanel: DraggablePanel, selectedComponent: SelectedComponent, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void
     getDraggingDelta:(resizeStartPosition: RESIZE_START_POSITION|null, relativePosition: Coordinates, constraints:string) => { deltaX: number, deltaY:number }|number|null,
     originalAnchorPositionsHasNames:(names: string|string[]) => boolean,
     setDraggedAnchors:(constraints: string, resizeStartPosition: RESIZE_START_POSITION | null) => void,
@@ -154,7 +175,7 @@ export interface FormLayoutAssistant extends LayoutAssistant {
     getAnchorsToIgnore:(resizeStartPosition: RESIZE_START_POSITION | null) => string[],
     getResizedAnchor:(position: number, allowedAnchors:string[]) => Anchor|null,
     getOrientationFromResizingPosition:(resizeStartPosition: RESIZE_START_POSITION|null) => ORIENTATION|null,
-    handleComponentResizing:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null, delta: number|null, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void
+    resizeComponent:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null, delta: ResizeDelta, designer: Designer, setSetLayoutRequest: (newSetLayoutRequest: SetLayoutRequest) => void) => void
 }
 
 
@@ -166,11 +187,15 @@ export interface BorderLayoutAssistant extends LayoutAssistant {
 }
 
 export interface FlowLayoutAssistant extends LayoutAssistant {
+    getDraggingDelta:(resizeStartPosition: RESIZE_START_POSITION|null, relativePosition: Coordinates, originalElement: HTMLElement) => ResizeDelta|null
     layoutInfo: FlowLayoutInformation,
 }
 
 export interface GridLayoutAssistant extends LayoutAssistant {
     layoutInfo: GridLayoutInformation,
+    getCoveredAreas:(gridX: number, gridY: number, gridWidth: number, gridHeight: number) => string[],
+    getUsedAreas:(selectedComponentName: string) => string[],
+    getNewGridConstraints:(relativePosition: Coordinates, constraints: string, usedAreas: string[]) => string|null
 }
 
 export interface NullLayoutAssistant extends LayoutAssistant {

@@ -98,7 +98,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     }
 
     /** Current state of menu size */
-    const menuSize = useResponsiveBreakpoints(menuRef, 
+    const menuSize = useResponsiveBreakpoints(menuRef.current, 
     getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-width')),
     menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-collapsed-width')) : 0), menuCollapsed);
 
