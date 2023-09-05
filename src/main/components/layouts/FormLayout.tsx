@@ -909,8 +909,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     /** Set the state of the calculated Style */
                     calculatedStyle.current = {
                         style: {
-                            height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
-                            width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
+                            height: style?.height || borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
+                            width: style?.width || borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
                             left:  style?.left || borderConstraint.leftAnchor.getAbsolutePosition(),
                             top:  style?.top || borderConstraint.topAnchor.getAbsolutePosition(),
                             position: "relative",
@@ -954,7 +954,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     useEffect(() => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.formLayouts.has(name)) {
-            console.log(compSizes)
             context.designer.formLayouts.get(name)!.layoutInfo.componentSizes = compSizes;
         }
     }, [compSizes, context.designer?.isVisible])

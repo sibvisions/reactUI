@@ -179,7 +179,7 @@ const ErrorDialog:FC = () => {
             footer={errorFooter} 
             visible={visible} 
             onHide={handleOnHide} 
-            baseZIndex={1020}
+            baseZIndex={5000}
             resizable
             closable={context.appReady}
             draggable={context.appReady} >
