@@ -212,13 +212,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     connectWs();
                     index++
                     if (index <= 5) {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, true, 8, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
+                        contextState.subscriptions.emitErrorBarProperties(false, false, true, 8, translation.get("Server not reachable!") , translation.get("The server is not reachable, trying again in 5 seconds. Retry: ") + index);
                         if (index === 1) {
                             contextState.subscriptions.emitErrorBarVisible(true);
                         }
                     }
                     else {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, false, 8, "Server not reachable!", "The server is not reachable", () => {
+                        contextState.subscriptions.emitErrorBarProperties(false, false, false, 8, translation.get("Server not reachable!"), translation.get("The server is not reachable"), () => {
                             return new Promise<void>((resolve) => {
                                 index = 0;
                                 connectWs().then(() => resolve());

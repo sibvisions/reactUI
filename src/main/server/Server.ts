@@ -703,7 +703,7 @@ class Server extends BaseServer {
             }
         }
         else {
-            this.subManager.emitErrorBarProperties(true, false, false, 5, "Could not load translation", "There was a problem when fetching the translation");
+            this.subManager.emitErrorBarProperties(true, false, false, 5, translation.get("Could not load translation"), translation.get("There was a problem when fetching the translation"));
             this.subManager.emitErrorBarVisible(true);
         }
 
