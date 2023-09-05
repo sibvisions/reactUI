@@ -20,6 +20,7 @@ import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import { createAliveRequest } from "../../main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import { translation } from "../../main/util/other-util/Translation";
 
 /**
  * Interface for server-error messages
@@ -159,9 +160,9 @@ const ErrorBar:FC = () => {
             if (errorProps.dontShowRestart) {
                 return errorProps.bodyMessage;
             }
-            return errorProps.bodyMessage + ". <u>Click here!</u> or press Escape to retry!"
+            return errorProps.bodyMessage + ". " + translation.get("Click here! Or press Escape to retry!")
         }
-        return "<u>Click here!</u> or press Escape to retry!"
+        return translation.get("Click here! Or press Escape to retry!") 
     }
     
     return (

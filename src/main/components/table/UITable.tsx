@@ -1067,11 +1067,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const length = last - first + 1;
             setListLoading(true);
             firstRowIndex.current = first;
-            if((providerData.length < last + length * 2) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
+            if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = props.dataBook;
                 fetchReq.fromRow = providerData.length;
-                fetchReq.rowCount = length * 4;
+                fetchReq.rowCount = 100;
                 showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar).then((result) => {
                     if (props.onLazyLoadFetch && result[0]) {
                         props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { useState, useEffect, MutableRefObject, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
 
 /**
  * This hook returns a new value every 10 pixels when the menu collapses or expands to trigger a resize event on the layout to
