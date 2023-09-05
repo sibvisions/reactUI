@@ -421,7 +421,7 @@ export default abstract class BaseServer {
     timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
-                this.subManager.emitErrorBarProperties(false, false, false, 6, translation.get("Server Error!"), translation.get("TimeOut! Couldn't connect to the server."), retry);
+                this.subManager.emitErrorBarProperties(false, false, false, 6, translation.get("Server error!"), translation.get("Timeout! Couldn't connect to the server."), retry);
                 this.subManager.emitErrorBarVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
@@ -430,7 +430,7 @@ export default abstract class BaseServer {
                     resolve(res);
                 },
                 err => {
-                    this.subManager.emitErrorBarProperties(false, false, false, 6, translation.get("Server Error!"), translation.get("TimeOut! Couldn't connect to the server."), retry);
+                    this.subManager.emitErrorBarProperties(false, false, false, 6, translation.get("Server error!"), translation.get("Timeout! Couldn't connect to the server."), retry);
                     this.subManager.emitErrorBarVisible(true);
                     clearTimeout(timeoutId);
                     reject(err);
