@@ -45,6 +45,7 @@ import { CellFormatting } from "../components/table/CellEditor";
 import { getMetaData } from "../util/data-util/GetMetaData";
 import GenericResponse from "../response/ui/GenericResponse";
 import { TopBarContextType, showTopBar } from "../components/topbar/TopBar";
+import IBaseComponent from "../util/types/IBaseComponent";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -364,6 +365,12 @@ export default abstract class BaseServer {
                     }).finally(() => {
                         if (this.uiRefreshInProgress) {
                             this.uiRefreshInProgress = false;
+                        }
+
+                        if (endpoint === REQUEST_KEYWORDS.SET_LAYOUT) {
+                            const componentsToDestroy:IBaseComponent[] = this.contentStore.designerCreatedComponents.map((compName: string) => { return { id: compName, "~destroy": true } as IBaseComponent });
+                            this.contentStore.designerCreatedComponents = [];
+                            this.contentStore.updateContent(componentsToDestroy, false);
                         }
 
                         this.openRequests.delete(request);

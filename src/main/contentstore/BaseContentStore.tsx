@@ -156,6 +156,8 @@ export default abstract class BaseContentStore {
 
     lastFocusedComponent:{id: string, className: string}|undefined = undefined;
 
+    designerCreatedComponents: string[] = []
+
     constructor(history?:History<any>) {
         this.history = history;
     }

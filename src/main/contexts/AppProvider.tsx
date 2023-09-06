@@ -747,6 +747,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             else {
                 contextState.server = new Server(contextState.contentStore, contextState.subscriptions, contextState.appSettings, history);
                 contextState.contentStore.setServer(contextState.server);
+                contextState.contentStore.designer = contextState.designer
 
                 if (aliveIntervalToSet !== undefined) {
                     contextState.server.aliveInterval = aliveIntervalToSet
@@ -856,7 +857,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
     useEffect(() => {
         if (contextState.designer) {
             contextState.designer.contentStore = contextState.contentStore;
-            contextState.designer.server = contextState.server
+            contextState.designer.server = contextState.server;
+            contextState.contentStore.designer = contextState.designer;
         }
     }, [contextState.designer, contextState.contentStore, contextState.server, restart]);
 
