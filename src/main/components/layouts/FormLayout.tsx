@@ -206,7 +206,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     anchors.forEach(pAnchor => {
                         let anchor:Anchor|undefined = pAnchor;
                         let anchorStartChar = anchor.name.substring(0, 1);
-                        let anchorList = (["l", "r"].indexOf(anchorStartChar) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
+                        let anchorList = (["l", "r", "h"].indexOf(anchorStartChar) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
                         const pos = anchorList.findIndex((a: Anchor) => a.name === anchor?.relatedAnchorName) !== -1 ? anchorList.findIndex((a: Anchor) => a.name === anchor?.relatedAnchorName) + 1 : anchorList.length;
 
                         while (anchor && !containsAnchor(anchor, anchorList)) {

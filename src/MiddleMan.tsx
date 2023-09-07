@@ -49,6 +49,7 @@ export interface Designer {
     getSelectedComponent:() => SelectedComponent|null
     updateGlassPaneSelectedComponent: (newInnerComponent:IBaseComponent) => void,
     setSelectedComponent:(newSelectedComponent:SelectedComponent) => void
+    setGlassPaneSelectedComponent: (comp: IBaseComponent) => void,
     updateSelectedComponentInnerComponent: (comp: IBaseComponent) => void,
     getLayoutType(element:HTMLElement): LAYOUTS,
     getLayoutAssistant:(name: string, layoutType: LAYOUTS) => BorderLayoutAssistant|FormLayoutAssistant|FlowLayoutAssistant|GridLayoutAssistant|NullLayoutAssistant|null,

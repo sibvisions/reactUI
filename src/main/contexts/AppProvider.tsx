@@ -325,7 +325,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                 else if (jscmd.command === "api/reopenScreen") {
                                     const openReq = createOpenScreenRequest();
                                     openReq.className = jscmd.arguments.className;
-                                    //showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
+                                    showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
                                 }
                                 else if (jscmd.command === "dyn:reloadCss") {
                                     contextState.subscriptions.emitAppCssVersion(jscmd.arguments.version);

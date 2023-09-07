@@ -308,6 +308,11 @@ export default class ContentStore extends BaseContentStore {
                             this.flatContent.set(newComponent.id, newComponent);
                         }
                     }
+
+                    if (this.designer && this.designer.selectedComponent && this.designer.selectedComponent.component.name === newComponent.name) {
+                        this.designer.selectedComponent.component = newComponent;
+                        this.designer.setGlassPaneSelectedComponent(newComponent)
+                    }
                 }
                 else {
                     // Add the basic properties to the custom component
