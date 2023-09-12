@@ -60,18 +60,33 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, context.transferType);
         minusWidth.current = false;
         minusHeight.current = false;
-        componentSizes?.forEach((size) => {
-            if (s.height !== undefined && (s.height as number) < size.preferredSize.height) {
-                s.height = size.preferredSize.height;
+        if (panelRef.current && panelRef.current.childNodes[0]) {
+            const layoutStyle = panelRef.current.childNodes[0].style;
+            if (s.height !== undefined && !isNaN(parseInt(layoutStyle.height)) && (s.height as number) < parseInt(layoutStyle.height)) {
+                //s.height = layoutStyle.height;
                 (s.width as number) -= 17;
                 minusWidth.current = true;
             }
-            if (s.width !== undefined && (s.width as number) < size.preferredSize.width) {
-                s.width = size.preferredSize.width;
+
+            if (s.width !== undefined && !isNaN(parseInt(layoutStyle.width)) && (s.width as number) < parseInt(layoutStyle.width)) {
+                //s.width = layoutStyle.width;
                 (s.height as number) -= 17;
                 minusHeight.current = true;
             }
-        });
+        }
+
+        // componentSizes?.forEach((size, str) => {
+        //     if (s.height !== undefined && (s.height as number) < size.preferredSize.height) {
+        //         s.height = size.preferredSize.height;
+        //         (s.width as number) -= 17;
+        //         minusWidth.current = true;
+        //     }
+        //     if (s.width !== undefined && (s.width as number) < size.preferredSize.width) {
+        //         s.width = size.preferredSize.width;
+        //         (s.height as number) -= 17;
+        //         minusHeight.current = true;
+        //     }
+        // });
 
         return s;
 
