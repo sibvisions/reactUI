@@ -222,7 +222,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
             const dialogMessage =
                 <>
                     <div className="message-dialog-content">
-                        {messageProps.message?.includes("<html>") ? <span dangerouslySetInnerHTML={{ __html: messageProps.message as string}} /> : <>{messageProps.message}</>}
+                        {messageProps.message?.startsWith("<html>") ? <span dangerouslySetInnerHTML={{ __html: messageProps.message as string}} /> : <>{messageProps.message}</>}
                     </div>
                 </>
 
