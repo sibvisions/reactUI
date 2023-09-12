@@ -169,7 +169,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
                     menuMini ? "" : "screen-no-mini",
                     menuOptions.toolBar ? "toolbar-visible" : "",
                     (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) ? "menu-not-visible" : "",
-                    !activeScreens.length && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
+                    (!activeScreens.length || activeScreens[0].popup) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
                 )}>
                     <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active: boolean) => setMobileStandard(active)}>
                         <ScreenManager />

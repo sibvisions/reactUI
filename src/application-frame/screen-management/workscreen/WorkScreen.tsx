@@ -62,14 +62,24 @@ const WorkScreen: FC = () => {
             context.contentStore.topbarTitle = context.appSettings.applicationMetaData.applicationName;
             context.subscriptions.notifyScreenTitleChanged(context.appSettings.applicationMetaData.applicationName);
         }
-    }, [renderedScreens])
+    }, [renderedScreens]);
 
     return (
         <ResizeHandler>
-            {renderedScreens.length ? 
-            renderedScreens : context.appSettings.desktopPanel && !context.server.linkOpen ? componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore) : <></>}
+            {activeScreens.length && renderedScreens.length ?
+                activeScreens[0].popup && context.appSettings.desktopPanel && !context.server.linkOpen ?
+                    <>
+                        {renderedScreens}
+                        {componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)}
+                    </>
+                    :
+                    renderedScreens
+                :
+                context.appSettings.desktopPanel && !context.server.linkOpen ?
+                    componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)
+                    :
+                    <></>}
         </ResizeHandler>
-
     )
 }
 export default WorkScreen
