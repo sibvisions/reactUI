@@ -201,9 +201,9 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
         
         if (Comp) {
             if (contentStore.appSettings.transferType !== "full") {
-                return maybePopup(<BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>);
+                return maybePopup(<BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp key={baseComponent.id} /></BaseComponent>);
             }
-            return <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>;
+            return <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp key={baseComponent.id} /></BaseComponent>;
         }
         else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
             return <Dummy {...baseComponent} key={baseComponent.id} />

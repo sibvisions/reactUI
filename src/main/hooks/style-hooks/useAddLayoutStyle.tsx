@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { CSSProperties, useEffect } from "react";
+import { CSSProperties, useEffect, useLayoutEffect } from "react";
 import LoadCallBack from "../../util/types/LoadCallBack";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 
@@ -25,7 +25,7 @@ import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
  * @param additionalDependency - an optional additional dependency to trigger the useEffect
  */
 const useAddLayoutStyle = (className: string, ref: any, layoutStyle: CSSProperties|undefined, loadBackFunction:LoadCallBack|undefined, addDep1?:any, addDep2?:any) => {
-    useEffect(() => {
+    useLayoutEffect(() => {
         if ([COMPONENT_CLASSNAMES.INTERNAL_FRAME, COMPONENT_CLASSNAMES.MOBILELAUNCHER, COMPONENT_CLASSNAMES.DESKTOPPANEL,
              COMPONENT_CLASSNAMES.SPLITPANEL, COMPONENT_CLASSNAMES.TOOLBARPANEL, COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER,
              COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN].indexOf(className as COMPONENT_CLASSNAMES) === -1) {
