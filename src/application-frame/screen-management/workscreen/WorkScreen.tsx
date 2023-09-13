@@ -44,6 +44,17 @@ const WorkScreen: FC = () => {
         return buildWindow(activeScreens)
     }, [activeScreens]);
 
+    /** Check if the opened screens are only popups, if yes show the desktoppanel */
+    const onlyPopupsOpen = useMemo(() => {
+        let onlyPopups = true;
+        activeScreens.forEach(activeScreen => {
+            if (!activeScreen.popup) {
+                onlyPopups = false;
+            }
+        });
+        return onlyPopups
+    }, [activeScreens])
+
     // Subscribes to the active-screens to have the up to date active-screen state
     useLayoutEffect(() => {
         context.subscriptions.subscribeToActiveScreens("workscreen", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
@@ -64,10 +75,12 @@ const WorkScreen: FC = () => {
         }
     }, [renderedScreens]);
 
+
+
     return (
         <ResizeHandler>
             {activeScreens.length && renderedScreens.length ?
-                activeScreens[0].popup && context.appSettings.desktopPanel && !context.server.linkOpen ?
+                onlyPopupsOpen && context.appSettings.desktopPanel && !context.server.linkOpen ?
                     <>
                         {renderedScreens}
                         {componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)}
