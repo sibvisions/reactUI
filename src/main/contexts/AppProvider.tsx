@@ -396,11 +396,19 @@ const AppProvider: FC<ICustomContent> = (props) => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app.json').then((r) => r.json())
                 .then((data) => {
+                    if (data.appName) {
+                        startUpRequest.applicationName = data.appName
+                    }
+
+                    if (data.baseUrl) {
+                        baseUrlToSet = data.baseUrl;
+                    }
+
                     if (data.requestTimeout) {
                         timeoutToSet = parseInt(data.requestTimeout);
                     }
 
-                    if (data.searchPath){
+                    if (data.searchPath) {
                         searchPathToSet = data.searchPath;
                     }
 
@@ -452,7 +460,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             startUpRequest.applicationName = v;
                         }
                     });
-                    baseUrlToSet = data.baseUrl;
+
+                    if (data.baseUrl) {
+                        baseUrlToSet = data.baseUrl;
+                    }
 
                     if (data.searchPath) {
                         searchPathToSet = data.searchPath;
@@ -559,26 +570,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
                 baseUrlToSet = baseUrl;
                 convertedOptions.delete("baseUrl");
-            }
-            else if (process.env.NODE_ENV === "production") {
-                const splitURLPath = window.location.pathname.split("/");
-
-                if (splitURLPath.length === 4) {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + searchPathToSet;
-                }
-                else {
-                    for (let i = 0; i <= 3; i++) {
-                        splitURLPath.pop();
-                    }
-                    if (splitURLPath.length > 1) {
-
-                        baseUrlToSet = window.location.protocol + "//" + window.location.host + splitURLPath.join("/") + searchPathToSet;
-                    }
-                    else {
-                        baseUrlToSet = window.location.protocol + "//" + window.location.host + searchPathToSet;
-                    }
-                    
-                }
             }
 
             if (convertedOptions.has("username")) {
@@ -825,6 +816,26 @@ const AppProvider: FC<ICustomContent> = (props) => {
             .catch(() => afterConfigFetch())
         }
         else {
+            if (process.env.NODE_ENV === "production") {
+                const splitURLPath = window.location.pathname.split("/");
+
+                if (splitURLPath.length === 4) {
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + searchPathToSet;
+                }
+                else {
+                    for (let i = 0; i <= 3; i++) {
+                        splitURLPath.pop();
+                    }
+                    if (splitURLPath.length > 1) {
+
+                        baseUrlToSet = window.location.protocol + "//" + window.location.host + splitURLPath.join("/") + searchPathToSet;
+                    }
+                    else {
+                        baseUrlToSet = window.location.protocol + "//" + window.location.host + searchPathToSet;
+                    }
+                    
+                }
+            }
             fetchApp().then(() => afterConfigFetch()).catch(() => afterConfigFetch())
         }
     }, [restart])
