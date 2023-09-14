@@ -215,7 +215,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
             frameContext.openFramesCallback(props.name, true);
         }
     //@ts-ignore
-    }, [props.layoutStyle?.width, props.layoutStyle?.height, packSize, context.launcherReady, bounds]);
+    }, [props.layoutStyle?.width, props.layoutStyle?.height, packSize, props.context.launcherReady, bounds]);
 
     // useEffect(() => {
     //     console.log(!initFrame.current && !positionFlag && frameStyle && framePosition)
