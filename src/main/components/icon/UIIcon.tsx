@@ -32,16 +32,20 @@ import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableIcon } from "../../extend-components/icon/ExtendIcon";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 
+interface IIcon extends BaseComponent {
+    preserveAspectRatio?: boolean
+}
+
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
+const UIIcon: FC<IIcon & IExtendableIcon> = (baseProps) => {
     /** Reference for the span that is wrapping the icon containing layout information */
     const iconRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<BaseComponent & IExtendableIcon>(baseProps);
+    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IIcon & IExtendableIcon>(baseProps);
 
     /** Properties for icon */
     const iconProps = useMemo(() => parseIconData(props.foreground, props.image), [props.foreground, props.image]);
@@ -50,7 +54,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
     const {onLoadCallback, id, horizontalAlignment, verticalAlignment} = props;
 
     /**CSS properties for icon */
-    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined);
+    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined, props.preserveAspectRatio);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, iconRef.current ? iconRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -62,7 +66,9 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
     const popupMenu = usePopupMenu(props);
 
     /** The alignment of the component */
-    const alignments = useMemo(() => getAlignments(props), [props.horizontalAlignment, props.verticalAlignment])
+    const alignments = useMemo(() => getAlignments(props), [props.horizontalAlignment, props.verticalAlignment]);
+
+    const [iconSize, setIconSize] = useState<Dimension|null>(null);
     
     /**
      * When the icon is loaded, measure the icon and then report its preferred-, minimum-, maximum and measured-size to the layout.
@@ -80,6 +86,9 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
             prefSize.height = event.currentTarget.height;
             prefSize.width = event.currentTarget.width;
         }
+
+        setIconSize({ width: prefSize.width, height: prefSize.height });
+
         if (onLoadCallback) {
             sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
@@ -138,6 +147,7 @@ const UIIcon: FC<BaseComponent & IExtendableIcon> = (baseProps) => {
                     alt="icon"
                     src={context.server.RESOURCE_URL + icon}
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}
+                    style={iconSize ? { width: !imageStyle.includes("image-h-stretch") ? iconSize.width : undefined, height: !imageStyle.includes("image-v-stretch") ? iconSize.height : undefined } : undefined}
                     onLoad={iconLoaded}
                     onError={iconLoaded}
                     data-pr-tooltip={props.toolTipText}
