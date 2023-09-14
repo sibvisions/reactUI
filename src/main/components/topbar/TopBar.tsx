@@ -41,7 +41,7 @@ let topbarCount = 0;
 export function showTopBar(promise: Promise<any>, topbar: TopBarContextType) {
     topbarCount++;
     topbar.show();
-    return promise.finally(() => {
+    return promise.catch((err) => console.error(err)).finally(() => {
         topbarCount--;
         if (!topbarCount) {
             topbar.hide()
