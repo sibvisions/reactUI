@@ -381,27 +381,29 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             contextState.server.sendRequest(req, (preserve && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
             .then(result => {
-                contextState.appSettings.setAppReadyParam("startup");
-                if (!preserve) {
-                    sessionStorage.setItem("startup", JSON.stringify(result));
-                }
-
-                if (contextState.server.aliveInterval >= 0) {
-                    aliveInterval.current = setInterval(() => {
-                        if ((Math.ceil(Date.now() / 1000) - Math.ceil(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
-                            if (getClientId() !== "ClientIdNotFound") {
-                                contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                if (result !== null) {
+                    contextState.appSettings.setAppReadyParam("startup");
+                    if (!preserve) {
+                        sessionStorage.setItem("startup", JSON.stringify(result));
+                    }
+    
+                    if (contextState.server.aliveInterval >= 0) {
+                        aliveInterval.current = setInterval(() => {
+                            if ((Math.ceil(Date.now() / 1000) - Math.ceil(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
+                                if (getClientId() !== "ClientIdNotFound") {
+                                    contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                                }
                             }
-                        }
-                    }, contextState.server.aliveInterval)
-                }
-
-                if (([RESPONSE_NAMES.SESSION_EXPIRED, RESPONSE_NAMES.ERROR] as string[]).indexOf((result[0] as BaseResponse).name) === -1) {
-                    initWS(contextState.server.BASE_URL);
-                }
-                
-                if (props.onStartup) {
-                    props.onStartup();
+                        }, contextState.server.aliveInterval)
+                    }
+    
+                    if (([RESPONSE_NAMES.SESSION_EXPIRED, RESPONSE_NAMES.ERROR] as string[]).indexOf((result[0] as BaseResponse).name) === -1) {
+                        initWS(contextState.server.BASE_URL);
+                    }
+                    
+                    if (props.onStartup) {
+                        props.onStartup();
+                    }
                 }
             })
             .catch(() => {});

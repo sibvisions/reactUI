@@ -29,11 +29,15 @@ import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableIcon } from "../../extend-components/icon/ExtendIcon";
 import { IComponentConstants } from "../BaseComponent";
 
+interface IIcon extends IBaseComponent {
+    preserveAspectRatio?: boolean
+}
+
 /**
  * This component displays either a FontAwesome icon or an image sent by the server
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIIcon: FC<IBaseComponent & IExtendableIcon & IComponentConstants> = (props) => {
+const UIIcon: FC<IIcon & IExtendableIcon & IComponentConstants> = (props) => {
     /** Properties for icon */
     const iconProps = useMemo(() => parseIconData(props.foreground, props.image), [props.foreground, props.image]);
 
@@ -41,7 +45,7 @@ const UIIcon: FC<IBaseComponent & IExtendableIcon & IComponentConstants> = (prop
     const {onLoadCallback, id, horizontalAlignment, verticalAlignment} = props;
 
     /**CSS properties for icon */
-    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined);
+    const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, undefined, undefined, props.preserveAspectRatio);
 
     /** True, if the icon is loaded */
     const [iconIsLoaded, setIconIsLoaded] = useState<boolean>(false);
@@ -50,7 +54,9 @@ const UIIcon: FC<IBaseComponent & IExtendableIcon & IComponentConstants> = (prop
     const popupMenu = usePopupMenu(props);
 
     /** The alignment of the component */
-    const alignments = useMemo(() => getAlignments(props), [props.horizontalAlignment, props.verticalAlignment])
+    const alignments = useMemo(() => getAlignments(props), [props.horizontalAlignment, props.verticalAlignment]);
+
+    const [iconSize, setIconSize] = useState<Dimension|null>(null);
     
     /**
      * When the icon is loaded, measure the icon and then report its preferred-, minimum-, maximum and measured-size to the layout.
@@ -68,6 +74,9 @@ const UIIcon: FC<IBaseComponent & IExtendableIcon & IComponentConstants> = (prop
             prefSize.height = event.currentTarget.height;
             prefSize.width = event.currentTarget.width;
         }
+
+        setIconSize({ width: prefSize.width, height: prefSize.height });
+
         if (onLoadCallback) {
             sendOnLoadCallback(id, props.className, prefSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback);
         }
@@ -124,6 +133,7 @@ const UIIcon: FC<IBaseComponent & IExtendableIcon & IComponentConstants> = (prop
                     alt="icon"
                     src={props.context.server.RESOURCE_URL + icon}
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}
+                    style={iconSize ? { width: !imageStyle.includes("image-h-stretch") ? iconSize.width : undefined, height: !imageStyle.includes("image-v-stretch") ? iconSize.height : undefined } : undefined}
                     onLoad={iconLoaded}
                     onError={iconLoaded}
                     data-pr-tooltip={props.toolTipText}

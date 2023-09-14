@@ -345,6 +345,14 @@ export default abstract class BaseServer {
                             if (code === "410") {
                                 this.subManager.emitErrorBarProperties(false, true, false, 5, splitErr[0], splitErr[1]);
                             }
+                            else if (error === "no valid json") {
+                                if (endpoint === REQUEST_KEYWORDS.STARTUP) {
+                                    this.subManager.emitErrorBarProperties(false, false, false, 7, translation.get("Startup failed!"), translation.get("Check if the server is available"), () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
+                                }
+                                else {
+                                    this.subManager.emitErrorBarProperties(false, false, false, 5, translation.get("Error occured!"), translation.get("Check the console for more info"), () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                                }
+                            }
                             else {
                                 this.subManager.emitErrorBarProperties(false, false, false, 5,  splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
@@ -357,9 +365,7 @@ export default abstract class BaseServer {
                                 this.subManager.emitErrorBarProperties(false, false, false, 5, translation.get("Error occured!"), translation.get("Check the console for more info"), () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
                         }
-                        if (error !== "no valid json") {
-                            this.subManager.emitErrorBarVisible(true);
-                        }
+                        this.subManager.emitErrorBarVisible(true);
                         reject(error);
                         console.error(error);
                     }).finally(() => {
