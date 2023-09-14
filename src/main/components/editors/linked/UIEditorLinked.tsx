@@ -679,7 +679,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         if (!checkText || props.cellEditor.validationEnabled === false) {
             sendSelectRequest(-1, null);
             if (props.cellEditor.clearColumns) {
-                const valueToSend = {...props.selectedRow.data};
+                const valueToSend = _.pick(props.selectedRow.data, columnNames) as any;
                 delete valueToSend.recordStatus;
                 delete valueToSend["__recordFormats"];
                 if (props.cellEditor.clearColumns) {
