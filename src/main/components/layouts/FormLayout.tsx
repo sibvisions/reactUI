@@ -790,7 +790,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={calculatedStyle.current?.componentSizes || new Map<string, React.CSSProperties>()}>
-            <div data-layout="form" style={{...calculatedStyle.current?.style}}>
+            <div className="rc-layout-element" data-layout="form" style={{...calculatedStyle.current?.style}}>
                 {components}
             </div>
         </LayoutContext.Provider>
