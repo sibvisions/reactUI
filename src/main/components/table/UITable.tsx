@@ -968,7 +968,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
                 linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
             }
-
             return <Column
                 field={colName}
                 header={createColumnHeader(colName, colIndex)}
@@ -1290,29 +1289,31 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      * @param columnName - the column name
      */
     const handleSort = (columnName:string) => {
-        if (clickedResizer.current) {
-            clickedResizer.current = false;
-        }
-        else {
-            if (metaData && metaData.columns.find(column => column.name === columnName)?.sortable) {
-                const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
-                const sortReq = createSortRequest();
-                sortReq.dataProvider = props.dataBook;
-                sortReq.columnName = columnName
-                let sortDefToSend: SortDefinition[] = sortDefinitions || [];
-                if (context.ctrlPressed) {
-                    if (!sortDef) {
-                        sortDefToSend.push({ columnName: columnName, mode: "Ascending" })
+        if (props.sortOnHeaderEnabled !== false) {
+            if (clickedResizer.current) {
+                clickedResizer.current = false;
+            }
+            else {
+                if (metaData && metaData.columns.find(column => column.name === columnName)?.sortable) {
+                    const sortDef = sortDefinitions?.find(sortDef => sortDef.columnName === columnName);
+                    const sortReq = createSortRequest();
+                    sortReq.dataProvider = props.dataBook;
+                    sortReq.columnName = columnName
+                    let sortDefToSend: SortDefinition[] = sortDefinitions || [];
+                    if (context.ctrlPressed) {
+                        if (!sortDef) {
+                            sortDefToSend.push({ columnName: columnName, mode: "Ascending" })
+                        }
+                        else {
+                            sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === columnName)] = { columnName: columnName, mode: getNextSort(sortDef?.mode) }
+                        }
                     }
                     else {
-                        sortDefToSend[sortDefToSend.findIndex(sortDef => sortDef.columnName === columnName)] = { columnName: columnName, mode: getNextSort(sortDef?.mode) }
+                        sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
                     }
+                    sortReq.sortDefinition = sortDefToSend;
+                    showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
                 }
-                else {
-                    sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
-                }
-                sortReq.sortDefinition = sortDefToSend;
-                showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
             }
         }
     }
