@@ -30,8 +30,6 @@ const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number |
         let verticalAlignment = va !== undefined ? va : cva;
 
         const imgClassNames:string[] = []
-        console.log('horizontal', horizontalAlignment, aspectRatio);
-        console.log('vertical', verticalAlignment, aspectRatio);
         switch (horizontalAlignment) {
             case HORIZONTAL_ALIGNMENT.LEFT:
                 imgClassNames.push("image-h-left");

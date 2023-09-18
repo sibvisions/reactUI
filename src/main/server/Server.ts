@@ -613,9 +613,11 @@ class Server extends BaseServer {
      */
     download(downloadData: DownloadResponse) {
         const a = document.createElement('a');
-        a.href = downloadData.url.split(';')[0];
+        document.body.append(a);
+        a.href = downloadData.url.split(';')[0] + "&FILENAME=" + downloadData.fileName;
         a.setAttribute('download', downloadData.fileName);
         a.click();
+        document.body.removeChild(a);
     }
 
     /**
