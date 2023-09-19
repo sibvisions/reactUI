@@ -161,13 +161,13 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     const docStyle = window.getComputedStyle(document.documentElement);
 
     // Calculates the minus margin-left to display no gap when opening the cell-editor
-    const calcMarginLeft = "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-left-right') + " / 2) - 0.05rem)";
+    const calcMarginLeft = useMemo(() => "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-left-right') + " / 2) - 0.05rem)", []);
 
     // Calculates the minus margin-top to display no gap when opening the cell-editor
-    const calcMarginTop = "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)";
-
+    const calcMarginTop = useMemo(() => "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)", []);
+ 
     /** State if the CellEditor is currently waiting for the selectedRow */
-    const [waiting, setWaiting] = useState<boolean>(false);
+    //const [waiting, setWaiting] = useState<boolean>(false);
 
     const [storedClickEvent, setStoredClickEvent] = useState<Function|undefined>(undefined)
 
@@ -178,9 +178,9 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                 passRef.current = "";
             }
             const pickedVals = _.pick(props.selectedRow.data, Object.keys(props.pk));
-            if (waiting && _.isEqual(pickedVals, props.pk)) {
-                setWaiting(false);
-            }
+            // if (waiting && _.isEqual(pickedVals, props.pk)) {
+            //     setWaiting(false);
+            // }
         }
     }, [props.selectedRow, edit]);
 
@@ -274,55 +274,58 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         
     }, [props.dataProviderReadOnly, props.updateEnabled, props.colReadonly, props.tableEnabled, props.editable, props.cellData]);
 
-    let cellStyle:any = { };
-    const cellClassNames:string[] = ['cell-data', typeof props.cellData === "string" && (props.cellData as string).includes("<html>") ? "html-cell" : ""];
-    let cellIcon: IconProps | null = null;
-
-    // Fills cell-classnames and cell-style based on the server-sent properties
-    if (props.cellFormatting && props.cellFormatting.has(props.colName)) {
-        const cellFormat = props.cellFormatting.get(props.colName) as CellFormatting
-        if (cellFormat !== null) {
-            if(cellFormat.background) {
-                cellStyle.backgroundColor = cellFormat.background;
-                cellClassNames.push('cancel-padding');
-            }
-            if(cellFormat.foreground) {
-                cellStyle.color = cellFormat.foreground;
-            }
-            if(cellFormat.font) {
-                const font = getFont(cellFormat.font);
-                cellStyle = {
-                    ...cellStyle,
-                    fontFamily: font ? font.fontFamily : undefined,
-                    fontWeight: font ? font.fontWeight : undefined,
-                    fontStyle: font ? font.fontStyle : undefined,
-                    fontSize: font ? font.fontSize : undefined
+    const cellStyles: { cellStyle: CSSProperties, cellClassNames: string[], cellIcon: IconProps | null } = useMemo(() => {
+        let cellStyle:any = { };
+        const cellClassNames:string[] = ['cell-data', typeof props.cellData === "string" && (props.cellData as string).includes("<html>") ? "html-cell" : ""];
+        let cellIcon: IconProps | null = null;
+    
+        // Fills cell-classnames and cell-style based on the server-sent properties
+        if (props.cellFormatting && props.cellFormatting.has(props.colName)) {
+            const cellFormat = props.cellFormatting.get(props.colName) as CellFormatting
+            if (cellFormat !== null) {
+                if(cellFormat.background) {
+                    cellStyle.backgroundColor = cellFormat.background;
+                    cellClassNames.push('cancel-padding');
                 }
-            }
-            if(cellFormat.image) {
-                cellIcon = parseIconData(cellFormat.foreground, cellFormat.image);
+                if(cellFormat.foreground) {
+                    cellStyle.color = cellFormat.foreground;
+                }
+                if(cellFormat.font) {
+                    const font = getFont(cellFormat.font);
+                    cellStyle = {
+                        ...cellStyle,
+                        fontFamily: font ? font.fontFamily : undefined,
+                        fontWeight: font ? font.fontWeight : undefined,
+                        fontStyle: font ? font.fontStyle : undefined,
+                        fontSize: font ? font.fontSize : undefined
+                    }
+                }
+                if(cellFormat.image) {
+                    cellIcon = parseIconData(cellFormat.foreground, cellFormat.image);
+                }
             }
         }
 
-    }
+        return { cellStyle: cellStyle, cellClassNames: cellClassNames, cellIcon: cellIcon }
+    }, [props.cellFormatting, props.colName])
 
     // Returns the cell-icon or null
     const icon = useMemo(() => {
-        if (cellIcon?.icon) {
-            if(isFAIcon(cellIcon.icon))
-                return <i className={cellIcon.icon} style={{ fontSize: cellIcon.size?.height, color: cellIcon.color}}/>
+        if (cellStyles.cellIcon?.icon) {
+            if(isFAIcon(cellStyles.cellIcon.icon))
+                return <i className={cellStyles.cellIcon.icon} style={{ fontSize: cellStyles.cellIcon.size?.height, color: cellStyles.cellIcon.color}}/>
             else {
                 return <img
                     id={props.name}
                     alt="icon"
-                    src={context.server.RESOURCE_URL + cellIcon.icon}
-                    style={{width: `${cellIcon.size?.width}px`, height: `${cellIcon.size?.height}px` }}
+                    src={context.server.RESOURCE_URL + cellStyles.cellIcon.icon}
+                    style={{width: `${cellStyles.cellIcon.size?.width}px`, height: `${cellStyles.cellIcon.size?.height}px` }}
                 />
             }    
         } else {
             return null
         }
-    }, [cellIcon?.icon, context.server.RESOURCE_URL]);
+    }, [cellStyles.cellIcon?.icon, context.server.RESOURCE_URL]);
 
     const [Component, extraProps] = useMemo(() => {
         switch (columnMetaData?.cellEditor.className) {
@@ -330,11 +333,17 @@ export const CellEditor: FC<ICellEditor> = (props) => {
             case CELLEDITOR_CLASSNAMES.CHOICE:
                 return [ DirectCellRenderer ]
             case CELLEDITOR_CLASSNAMES.DATE:
-                return [ DateCellRenderer, {stateCallback: () => { setWaiting(true); setEdit(true) }} ]
+                return [ DateCellRenderer, {stateCallback: () => { 
+                    //setWaiting(true); 
+                    setEdit(true) 
+                }} ]
             case CELLEDITOR_CLASSNAMES.IMAGE:
                 return [ ImageCellRenderer ]
             case CELLEDITOR_CLASSNAMES.LINKED:
-                return [ LinkedCellRenderer, {stateCallback: () => { setWaiting(true); setEdit(true) }, decreaseCallback: (linkDatabook:string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}]
+                return [ LinkedCellRenderer, {stateCallback: () => { 
+                    //setWaiting(true);
+                    setEdit(true) 
+                }, decreaseCallback: (linkDatabook:string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}]
             case CELLEDITOR_CLASSNAMES.NUMBER:
                 return [ NumberCellRenderer ]
             case CELLEDITOR_CLASSNAMES.TEXT:
@@ -346,10 +355,13 @@ export const CellEditor: FC<ICellEditor> = (props) => {
 
     const handleDoubleClick = useCallback(() => {
         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
-            setWaiting(true);
+            //setWaiting(true);
             setEdit(true)
         }
-    }, [setWaiting, setEdit]);
+    }, [
+        //setWaiting, 
+        setEdit
+    ]);
 
     useEffect(() => {
         props.setIsEditing(edit);
@@ -365,18 +377,20 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
         (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
-            ((edit && !waiting && isEditable) ?
+            ((edit && 
+              //!waiting && 
+              isEditable) ?
                 <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
                     {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable}, stopCellEditing, passRef.current)}
                 </div>
                 :
                 <div
-                    style={cellStyle}
-                    className={cellClassNames.join(' ') + " " + isEditable}
+                    style={cellStyles.cellStyle}
+                    className={cellStyles.cellClassNames.join(' ') + " " + isEditable}
                     onClick={() => {
                         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
                             setStoredClickEvent(() => {
-                                setWaiting(true);
+                                //setWaiting(true);
                                 setEdit(true);
                             });
                         }
@@ -389,8 +403,8 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                 </div>
                 :
                 <div
-                    style={cellStyle}
-                    className={cellClassNames.join(' ')}
+                    style={cellStyles.cellStyle}
+                    className={cellStyles.cellClassNames.join(' ')}
                     onDoubleClick={() => setStoredClickEvent(() => handleDoubleClick())}>
                     <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
                 </div>

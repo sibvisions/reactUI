@@ -980,8 +980,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     display: props.tableHeaderVisible === false ? 'none' : undefined,
                     '--columnName': colName
                 }}
-                body={(rowData: any, tableInfo: any) => {
-
+                body={(rowData: any, tableInfo: any) => {               
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
                     else {
                         const currDataRow = providerData[tableInfo.rowIndex]
@@ -1061,7 +1060,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             />
         })
     }, [
-        props.columnNames, props.columnLabels, props.dataBook, context.contentStore, props.id,
+        props.columnNames, props.columnLabels, props.dataBook,
         context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
         enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
         props.startEditing, tableIsSelecting
