@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
 import { createCloseFrameRequest } from "../../factories/RequestFactory";
 import BaseComponent from "../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
@@ -53,16 +53,28 @@ const UIFrame: FC<IFrame> = (props) => {
     const castedContentStore = context.contentStore as ContentStoreFull
 
     /** The menubar-properties of the frame or undefined if there is no menubar */
-    const menuBarProps = useMemo(() => castedContentStore.getMenuBar(props.id), [props.children]);
+    const menuBarProps = useMemo(() => castedContentStore.getMenuBar(props.id), [props.components]);
 
     /** True, if the frame has one or more toolbars */
-    const hasToolBars = useMemo(() => castedContentStore.hasToolBars(props.id), [props.children]);
+    const hasToolBars = useMemo(() => castedContentStore.hasToolBars(props.id), [props.components]);
 
     /** The size of the menubar */
     const [menuBarSize, setMenuBarSize] = useState<Dimension>({ width: 0, height: 0 });
 
     /** The size of the toolbar */
     const [toolBarSize, setToolBarSize] = useState<Dimension>({ width: 0, height: 0 });
+
+    useEffect(() => {
+        if (!menuBarProps) {
+            setMenuBarSize({ width: 0, height: 0 })
+        }
+    }, [menuBarProps]);
+
+    useEffect(() => {
+        if (!hasToolBars) {
+            setToolBarSize({ width: 0, height: 0 })
+        }
+    }, [hasToolBars]);
 
     /** A callback to set the menubar-size */
     const menuBarSizeCallback = useCallback((size:Dimension) => setMenuBarSize(size), []);
@@ -83,11 +95,12 @@ const UIFrame: FC<IFrame> = (props) => {
         if (props.frameStyle) {
             styleCopy.height = (props.frameStyle.height as number) - menuBarSize.height - toolBarSize.height;
         }
+
         return styleCopy;
     }, [menuBarSize, toolBarSize, props.frameStyle]);
 
     return (
-        <div id={props.id + "-frame"} style={{ visibility: props.compSizes ? undefined : "hidden" }}>
+        <div id={props.id + "-frame"} style={{ height: "100%", width: "100%", visibility: props.compSizes ? undefined : "hidden" }}>
             {props.internal &&
                 <div className="rc-frame-header">
                     {props.iconImage !== undefined &&
@@ -126,7 +139,7 @@ const UIFrame: FC<IFrame> = (props) => {
                 {menuBarProps && <UIMenuBar {...menuBarProps} sizeCallback={menuBarSizeCallback} currentSize={menuBarSize} />}
                 {hasToolBars && <UIToolbar id={props.id + "-frame-toolbar"} sizeCallback={toolBarSizeCallback} />}
             </div>
-            <div className={props.internal ? "rc-frame-content" : ""}>
+            <div className={props.internal ? "rc-frame-window-content" : "rc-frame-content"}>
                 <Layout
                     id={props.id}
                     name={props.name}

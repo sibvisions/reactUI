@@ -118,7 +118,7 @@ const UIIcon: FC<IIcon & IExtendableIcon> = (baseProps) => {
         if (props.onChange) {
             props.onChange(props.image)
         }
-    }, [props.image])
+    }, [props.image]);
 
     /** 
     * Returns wether the icon is a FontAwesome icon or an image sent by the server 
@@ -147,7 +147,7 @@ const UIIcon: FC<IIcon & IExtendableIcon> = (baseProps) => {
                     alt="icon"
                     src={context.server.RESOURCE_URL + icon}
                     className={imageStyle && iconIsLoaded ? imageStyle : ""}
-                    style={iconSize ? { width: !imageStyle.includes("image-h-stretch") ? iconSize.width : undefined, height: !imageStyle.includes("image-v-stretch") ? iconSize.height : undefined } : undefined}
+                    style={iconSize ? { width: (!imageStyle.includes("image-h-stretch") && imageStyle.includes("image-v-stretch")) ? iconSize.width : undefined, height: !imageStyle.includes("image-v-stretch") && imageStyle.includes("image-h-stretch") ? iconSize.height : undefined } : undefined}
                     onLoad={iconLoaded}
                     onError={iconLoaded}
                     data-pr-tooltip={props.toolTipText}
