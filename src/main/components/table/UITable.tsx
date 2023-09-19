@@ -25,7 +25,7 @@ import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
-import MetaDataResponse from "../../response/data/MetaDataResponse";
+import MetaDataResponse, { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
@@ -91,8 +91,11 @@ interface ISelectedCell {
 export const SelectedCellContext = createContext<ISelectedCell>({});
 
 /** Returns the columnMetaData */
-export const getColMetaData = (colName:string, metaData?:MetaDataResponse) => {
-    return metaData?.columns.find(column => column.name === colName);
+export const getColMetaData = (colName:string, columns?:(LengthBasedColumnDescription | NumericColumnDescription)[]) => {
+    if (columns) {
+        return columns.find(column => column.name === colName);
+    }
+    return undefined
 }
 
 function convertRemToPixels(rem:number) {    
@@ -562,7 +565,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         theader[i].style.removeProperty('width')
                         const newCellWidth = { widthPreSet: false, width: 0 }
                         const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
-                        const columnMetaData = getColMetaData(colName, metaData);
+                        const columnMetaData = getColMetaData(colName, metaData?.columns);
                         if (columnMetaData?.width) {
                             newCellWidth.width = columnMetaData.width;
                             newCellWidth.widthPreSet = true;
@@ -641,6 +644,17 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             return out;
         })());
     }, [providerData, rows]);
+
+    useLayoutEffect(() => {
+        props.columnNames.forEach(colName => {
+            const columnMetaData = getColMetaData(colName, metaData?.columns);
+            if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
+                && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask
+                && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
+                linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
+            }
+        })
+    }, [metaData?.columns, props.columnNames])
 
     // Adds and removes the sort classnames to the headers for styling
     // If the lib user extends the Table with onSort, call it when the user sorts.
@@ -944,7 +958,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     /** Building the columns */
     const columns = useMemo(() => {
-        const createColumnHeader = (colName: string, colIndex: number) => {
+        console.log("IN COLUMNS")
+        const createColumnHeader = (colName: string, colIndex: number, isNullable?: boolean) => {
             let sortIndex = ""
             if (sortDefinitions && sortDefinitions.length) {
                 let foundIndex = sortDefinitions.findIndex(sortDef => sortDef.columnName === colName);
@@ -954,23 +969,18 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
             return (
                 <>
-                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable === false ? " *" : "") }} />
+                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (isNullable === false ? " *" : "") }} />
                     <span onClick={() => handleSort(colName)} className="p-sortable-column-icon pi pi-fw"></span>
                     <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
         }
 
         return props.columnNames.map((colName, colIndex) => {
-            const columnMetaData = getColMetaData(colName, metaData);
+            const columnMetaData = getColMetaData(colName, metaData?.columns);
             const className = columnMetaData?.cellEditor?.className;
-            if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
-                && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask
-                && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
-                linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
-            }
             return <Column
                 field={colName}
-                header={createColumnHeader(colName, colIndex)}
+                header={createColumnHeader(colName, colIndex, columnMetaData?.nullable)}
                 key={colName}
                 headerClassName={concatClassnames(colName, (props.columnLabels[colIndex] === "☐" || props.columnLabels[colIndex] === "☑") ? 'select-column' : "")}
                 headerStyle={{
@@ -1007,7 +1017,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
                             enterNavigationMode={enterNavigationMode}
                             tabNavigationMode={tabNavigationMode}
-                            selectedRow={selectedRow}
                             className={className}
                             colReadonly={columnMetaData?.readonly}
                             tableEnabled={props.enabled}
@@ -1060,9 +1069,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             />
         })
     }, [
-        props.columnNames, props.columnLabels, props.dataBook,
-        context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
-        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
+        props.columnNames, props.columnLabels, props.dataBook, props.name, 
+        screenName, props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
+        metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled, metaData?.deleteEnabled,
+        enterNavigationMode, tabNavigationMode, primaryKeys, columnOrder, providerData,
         props.startEditing, tableIsSelecting
     ])
 

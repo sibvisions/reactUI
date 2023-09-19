@@ -74,7 +74,6 @@ export interface ICellEditor {
     selectPrevious: Function,
     enterNavigationMode: number,
     tabNavigationMode: number,
-    selectedRow: any,
     className?: string,
     colReadonly?: boolean,
     tableEnabled?: boolean
@@ -166,23 +165,13 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     // Calculates the minus margin-top to display no gap when opening the cell-editor
     const calcMarginTop = useMemo(() => "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)", []);
  
-    /** State if the CellEditor is currently waiting for the selectedRow */
-    //const [waiting, setWaiting] = useState<boolean>(false);
-
     const [storedClickEvent, setStoredClickEvent] = useState<Function|undefined>(undefined)
 
-    /** When a new selectedRow is set, set waiting to false and if edit is false reset the passRef */
     useEffect(() => {
-        if (props.selectedRow) {
-            if (!edit) {
-                passRef.current = "";
-            }
-            const pickedVals = _.pick(props.selectedRow.data, Object.keys(props.pk));
-            // if (waiting && _.isEqual(pickedVals, props.pk)) {
-            //     setWaiting(false);
-            // }
+        if (!edit) {
+            passRef.current = "";
         }
-    }, [props.selectedRow, edit]);
+    }, [edit]);
 
     /** Whenn the selected cell changes and the editor is editable close it */
     useEffect(() => {
@@ -373,6 +362,8 @@ export const CellEditor: FC<ICellEditor> = (props) => {
             setStoredClickEvent(undefined);
         }
     }, [props.tableIsSelecting, storedClickEvent]);
+
+    console.log('rendering celleditor')
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
