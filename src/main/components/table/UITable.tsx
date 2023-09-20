@@ -182,7 +182,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<TableProps & IExtendableTable>(baseProps);
 
     /** Name of the screen */
-    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [context.contentStore, props.id, props.dataBook]);
+    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [props.id, props.dataBook]);
 
     /** Metadata of the databook */
     const metaData = useMetaData(screenName, props.dataBook, undefined);
@@ -954,11 +954,14 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 selectPreviousCellAndRow(true)
             }
         }
-    }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow])
+    }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow]);
+
+    const selectNextCallback = useCallback((navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode), [selectNext.current]);
+
+    const selectPreviousCallback = useCallback((navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode), [selectPrevious.current]);
 
     /** Building the columns */
     const columns = useMemo(() => {
-        console.log("IN COLUMNS")
         const createColumnHeader = (colName: string, colIndex: number, isNullable?: boolean) => {
             let sortIndex = ""
             if (sortDefinitions && sortDefinitions.length) {
@@ -1001,7 +1004,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         }
                         return <CellEditor
                             rowData={rowData}
-                            pk={_.pick(rowData, primaryKeys)}
+                            //pk={_.pick(rowData, primaryKeys)}
                             screenName={screenName}
                             name={props.name as string}
                             colName={colName}
@@ -1009,12 +1012,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             cellData={rowData[colName]}
                             cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                             resource={context.server.RESOURCE_URL}
-                            cellId={() => ({
-                                selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()
-                            })}
+                            cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
                             tableContainer={wrapRef.current ? wrapRef.current : undefined}
-                            selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
-                            selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
+                            selectNext={selectNextCallback}
+                            selectPrevious={selectPreviousCallback}
                             enterNavigationMode={enterNavigationMode}
                             tabNavigationMode={tabNavigationMode}
                             className={className}
@@ -1053,7 +1054,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                     :
                                     undefined
                             }
-                            tableIsSelecting={tableIsSelecting} />
+                            tableIsSelecting={tableIsSelecting} 
+                            />
                     }
                 }}
                 style={{ whiteSpace: 'nowrap', '--colName': colName }}
@@ -1069,11 +1071,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             />
         })
     }, [
-        props.columnNames, props.columnLabels, props.dataBook, props.name, 
-        screenName, props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
-        metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled, metaData?.deleteEnabled,
-        enterNavigationMode, tabNavigationMode, primaryKeys, columnOrder, providerData,
-        props.startEditing, tableIsSelecting
+        providerData
+        // props.columnNames, props.columnLabels, props.dataBook, props.name, 
+        // screenName, props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
+        // metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled, metaData?.deleteEnabled,
+        // enterNavigationMode, tabNavigationMode, primaryKeys, columnOrder, providerData,
+        // props.startEditing, tableIsSelecting
     ])
 
     // When a row is selected send a selectRow request to the server
@@ -1098,29 +1101,32 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
      */
     const handleLazyLoad = useCallback((e: VirtualScrollerLazyParams) => {
         let {first, last} = e;
-        if(typeof first === "number" && typeof last === "number") {
-            last = Math.max(first, last);
-            const length = last - first + 1;
-            setListLoading(true);
-            firstRowIndex.current = first;
-            if((providerData.length <= last) && !context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
-                const fetchReq = createFetchRequest();
-                fetchReq.dataProvider = props.dataBook;
-                fetchReq.fromRow = providerData.length;
-                fetchReq.rowCount = 100;
-                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar).then((result) => {
-                    if (props.onLazyLoadFetch && result[0]) {
-                        props.onLazyLoadFetch(context.server.buildDatasets(result[0]))
-                    }
-
+        if(typeof first === "number" && typeof last === "number" && firstRowIndex.current !== first) {
+            if (firstRowIndex.current !== first) {
+                last = Math.max(first, last);
+                const length = last - first + 1;
+                setListLoading(true);
+                if((providerData.length <= last) && !context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
+                    const fetchReq = createFetchRequest();
+                    fetchReq.dataProvider = props.dataBook;
+                    fetchReq.fromRow = providerData.length;
+                    fetchReq.rowCount = 100;
+                    showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar).then((result) => {
+                        if (props.onLazyLoadFetch && result[0]) {
+                            props.onLazyLoadFetch(context.server.buildDatasets(result[0]))
+                        }
+    
+                        setListLoading(false);
+                    });
+                } 
+                else {
+                    const slicedProviderData = providerData.slice(first, last);
+                    const data = [...virtualRows];
+                    data.splice(first, slicedProviderData.length, ...slicedProviderData);
+                    setVirtualRows(data);
                     setListLoading(false);
-                });
-            } else {
-                const slicedProviderData = providerData.slice(first, last);
-                const data = [...virtualRows];
-                data.splice(first, slicedProviderData.length, ...slicedProviderData);
-                setVirtualRows(data);
-                setListLoading(false);
+                }
+                firstRowIndex.current = first;
             }
         }
     }, [virtualRows]);

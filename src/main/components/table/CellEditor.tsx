@@ -61,14 +61,14 @@ export interface ICellRender extends ICellEditor {
 
 /** Type for CellEditor */
 export interface ICellEditor {
-    pk: any,
+    //primaryKeys: string[],
     screenName: string,
     name: string,
     cellData: any,
     dataProvider: string,
     colName: string,
     resource: string,
-    cellId: Function,
+    cellId: string,
     tableContainer?: any,
     selectNext: Function,
     selectPrevious: Function,
@@ -173,9 +173,13 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [edit]);
 
+    useEffect(() => {
+        console.log(props.selectPrevious)
+    }, [props.selectPrevious])
+
     /** Whenn the selected cell changes and the editor is editable close it */
     useEffect(() => {
-        if (edit && cellContext.selectedCellId !== props.cellId().selectedCellId) {
+        if (edit && cellContext.selectedCellId !== props.cellId) {
             setEdit(false);
             props.stopEditing()
         }
@@ -183,7 +187,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
 
     // If the selected-cell id is this cell-editors id and startEditing is true, set the edit-state to true
     useEffect(() => {
-        if (cellContext.selectedCellId === props.cellId().selectedCellId && props.startEditing) {
+        if (cellContext.selectedCellId === props.cellId && props.startEditing) {
             setEdit(true);
         }
     },[props.startEditing]);
@@ -233,7 +237,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
      * Keylistener for cells, if F2 key is pressed, open the editor of the selected cell, if a key is pressed which is an input, open the editor and use the input
      */
     const handleCellKeyDown = useCallback((event: KeyboardEvent) => {
-        if (cellContext.selectedCellId === props.cellId().selectedCellId) {
+        if (cellContext.selectedCellId === props.cellId) {
             switch (event.key) {
                 case "F2":
                     setEdit(true);
@@ -363,7 +367,8 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [props.tableIsSelecting, storedClickEvent]);
 
-    console.log('rendering celleditor')
+    console.log('celleditor render')
+
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
