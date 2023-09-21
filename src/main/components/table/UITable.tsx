@@ -25,7 +25,7 @@ import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
-import MetaDataResponse, { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
+import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
 import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
@@ -330,15 +330,17 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     props.onRowSelect({ originalEvent: rowSelectionHelper.current.event, selectedRow: rowSelectionHelper.current.data })
                 }
                 if (selectedRow.index !== rowSelectionHelper.current.index) {
-                    setTableIsSelecting(true);
+                    //setTableIsSelecting(true);
                 }
                 sendSelectRequest(rowSelectionHelper.current.selectedColumn, rowSelectionHelper.current.filter, rowSelectionHelper.current.index).then(() => {
-                    setTableIsSelecting(false);
+                    //setTableIsSelecting(false);
                     rowSelectionHelper.current = undefined;
                 });
             }
         }
     );
+
+    console.log('rerender')
 
     /**
      * Sends a selectRequest to the server, if a new row is selected selectRow, else selectColumn
@@ -355,8 +357,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         //await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
         await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN), topbar);
     }, [props.dataBook, props.name, context.server, providerData])
-
-
 
     /**
      * Scrolls the table to the selected cell
@@ -632,8 +632,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 }
             }
         }
-
-        setColumnOrder(props.columnNames)
     },[metaData])
 
     /** When providerData changes set state of virtual rows*/
@@ -995,18 +993,16 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 }}
                 body={(rowData: any, tableInfo: any) => {               
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
+                    // else {
+                    //     return rowData[colName]
+                    // }
                     else {
-                        const currDataRow = providerData[tableInfo.rowIndex]
-                        const values = primaryKeys.map(pk => currDataRow[pk]);
-                        const filter: SelectFilter = {
-                            columnNames: primaryKeys,
-                            values: values
-                        }
                         return <CellEditor
+                            key={colName + '-' + tableInfo.rowIndex}
                             rowData={rowData}
-                            //pk={_.pick(rowData, primaryKeys)}
+                            primaryKeys={primaryKeys}
                             screenName={screenName}
-                            name={props.name as string}
+                            name={props.name}
                             colName={colName}
                             dataProvider={props.dataBook}
                             cellData={rowData[colName]}
@@ -1028,16 +1024,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             deleteEnabled={metaData?.deleteEnabled}
                             dataProviderReadOnly={metaData?.readOnly}
                             setIsEditing={setIsEditing}
-                            stopEditing={() => {
-                                const table = context.contentStore.flatContent.get(id);
-                                if (table) {
-                                    (table as TableProps).startEditing = false;
-                                    context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
-                                }
-                            }}
                             rowNumber={tableInfo.rowIndex}
                             colIndex={colIndex}
-                            filter={filter}
                             removeTableLinkRef={
                                 (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
                                     && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
@@ -1351,7 +1339,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     useEffect(() => {
         //this will force the table to refresh its internal visible item count
-        setItemSize(tableRowHeight + Math.random() / 1E10);
+        //setItemSize(tableRowHeight + Math.random() / 1E10);
 
         if (tableRef.current) {
             const table = tableRef.current as any;

@@ -31,9 +31,9 @@ import ImageCellRenderer from "./CellRenderer/ImageCellRenderer";
 import LinkedCellRenderer from "./CellRenderer/LinkedCellRenderer";
 import NumberCellRenderer from "./CellRenderer/NumberCellRenderer";
 import TextCellRenderer from "./CellRenderer/TextCellRenderer";
-import { SelectedCellContext } from "./UITable";
-import { SelectFilter } from "../../request/data/SelectRowRequest";
+import { SelectedCellContext, TableProps } from "./UITable";
 import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
+import { SelectFilter } from "../../request/data/SelectRowRequest";
 
 // Interface for in-table-editors
 export interface IInTableEditor {
@@ -55,13 +55,14 @@ export interface CellFormatting {
 export interface ICellRender extends ICellEditor {
     columnMetaData: ColumnDescription,
     icon: JSX.Element|null,
+    filter?: SelectFilter
     stateCallback?: Function,
     decreaseCallback?: Function
 }
 
 /** Type for CellEditor */
 export interface ICellEditor {
-    //primaryKeys: string[],
+    primaryKeys: string[],
     screenName: string,
     name: string,
     cellData: any,
@@ -79,7 +80,6 @@ export interface ICellEditor {
     tableEnabled?: boolean
     cellFormatting?: Map<string, CellFormatting>,
     startEditing?:boolean,
-    stopEditing:Function,
     editable?: boolean,
     insertEnabled?: boolean,
     updateEnabled?: boolean,
@@ -87,7 +87,6 @@ export interface ICellEditor {
     dataProviderReadOnly?: boolean
     rowNumber: number
     colIndex: number
-    filter?: SelectFilter
     rowData: any,
     setIsEditing: Function,
     removeTableLinkRef?: Function,
@@ -165,7 +164,15 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     // Calculates the minus margin-top to display no gap when opening the cell-editor
     const calcMarginTop = useMemo(() => "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)", []);
  
-    const [storedClickEvent, setStoredClickEvent] = useState<Function|undefined>(undefined)
+    const [storedClickEvent, setStoredClickEvent] = useState<Function|undefined>(undefined);
+
+    const filter = useMemo(() => {
+        const values = props.primaryKeys.map(pk => props.rowData[pk]);
+        return {
+            columnNames: props.primaryKeys,
+            values: values
+        }
+    }, [props.rowData, props.primaryKeys])
 
     useEffect(() => {
         if (!edit) {
@@ -173,15 +180,19 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [edit]);
 
-    useEffect(() => {
-        console.log(props.selectPrevious)
-    }, [props.selectPrevious])
+    const stopEditing = useCallback(() => {
+        const table = context.contentStore.getComponentByName(props.name);
+        if (table) {
+            (table as TableProps).startEditing = false;
+            context.subscriptions.propertiesSubscriber.get(table.id)?.apply(undefined, [table]);
+        }
+    }, [props.name])
 
     /** Whenn the selected cell changes and the editor is editable close it */
     useEffect(() => {
         if (edit && cellContext.selectedCellId !== props.cellId) {
             setEdit(false);
-            props.stopEditing()
+            stopEditing()
         }
     }, [cellContext.selectedCellId]);
 
@@ -199,7 +210,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     const stopCellEditing = useCallback(async (event?:KeyboardEvent) => {
         let focusTable = true;
         setEdit(false);
-        props.stopEditing()
+        stopEditing()
         if (event) {
             if (event.key === "Enter") {
                 if (event.shiftKey) {
@@ -230,7 +241,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, () => { 
         setEdit(false); 
-        props.stopEditing();
+        stopEditing();
     }, columnMetaData);
 
     /**
@@ -324,7 +335,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         switch (columnMetaData?.cellEditor.className) {
             case CELLEDITOR_CLASSNAMES.CHECKBOX:
             case CELLEDITOR_CLASSNAMES.CHOICE:
-                return [ DirectCellRenderer ]
+                return [ DirectCellRenderer, {filter: filter} ]
             case CELLEDITOR_CLASSNAMES.DATE:
                 return [ DateCellRenderer, {stateCallback: () => { 
                     //setWaiting(true); 

@@ -135,6 +135,8 @@ export default abstract class BaseServer {
 
     contentDataBooksToDelete: Map<string, string[]> = new Map<string, string[]>();
 
+    timeStart:number|undefined = undefined;
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
@@ -302,7 +304,7 @@ export default abstract class BaseServer {
                 this.timeoutRequest(
                     fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                     this.timeoutMs, 
-                    () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse)
+                    () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse), finalEndpoint
                 )
                     .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                     .then(result => {
@@ -424,14 +426,21 @@ export default abstract class BaseServer {
      * @param promise - the promise
      * @param ms - the ms to wait before a timeout
      */
-    timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
+    timeoutRequest(promise: Promise<any>, ms: number, retry?:Function, endpoint?:string) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
                 this.subManager.emitErrorBarProperties(false, false, false, 6, translation.get("Server error!"), translation.get("Timeout! Couldn't connect to the server."), retry);
                 this.subManager.emitErrorBarVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
+            if (endpoint === "/api/dal/selectRecord") {
+                this.timeStart = Date.now();
+            }
             promise.then(res => {
+                    if (endpoint === "/api/dal/selectRecord" && this.timeStart) {
+                        console.log('start', this.timeStart)
+                        console.log('end', Date.now())
+                    }
                     clearTimeout(timeoutId);
                     resolve(res);
                 },
