@@ -119,7 +119,7 @@ export function createEditor(props: IRCCellEditor) {
  */
 const maybePopup = (element: JSX.Element) => {
     if (element.props.screen_modal_ || element.props.content_modal_) {
-        return <UIPopupWrapper {...element.props} render={element} key={'PopupWrapper-' + element.props.id}/> 
+        return <UIPopupWrapper {...element.props} popupId={element.props.id + "-popup"} render={element} key={'PopupWrapper-' + element.props.id}/> 
     }
     else {
         return element

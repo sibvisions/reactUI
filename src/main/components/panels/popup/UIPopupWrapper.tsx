@@ -30,10 +30,12 @@ import { parsePrefSize } from "../../../util/component-util/SizeUtil";
 import RESPONSE_NAMES from "../../../response/RESPONSE_NAMES";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import CELLEDITOR_CLASSNAMES from "../../editors/CELLEDITOR_CLASSNAMES";
+import useProperties from "../../../hooks/data-hooks/useProperties";
 
 /** Interface for Popup */
 export interface IPopup extends IPanel {
     render: ReactElement;
+    popupId: string
 }
 
 /**
@@ -44,11 +46,13 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    const [props] = useProperties<IPopup>(baseProps.popupId, baseProps);
+
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, componentSizes] = useComponents(baseProps.id + "-popup", baseProps.className);
+    const [, components, componentSizes] = useComponents(props.popupId, props.className);
 
     /** Current state of the size of the popup-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
@@ -77,29 +81,29 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
             baseProps.onClose();
         }
         
-        if (baseProps.screen_modal_) {
+        if (props.screen_modal_) {
             const csRequest = createCloseScreenRequest();
-            csRequest.componentId = baseProps.name;
+            csRequest.componentId = props.name;
             context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
                 if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
                     }
-                    context.contentStore.closeScreen(baseProps.id, baseProps.name, true);
+                    context.contentStore.closeScreen(props.id, props.name, true);
                 }
             });
         }
-        else if (baseProps.content_modal_) {
+        else if (props.content_modal_) {
             const ccRequest = createCloseContentRequest();
-            ccRequest.componentId = baseProps.name;
+            ccRequest.componentId = props.name;
             context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
                 if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                     if (context.transferType !== "full") {
                         context.server.lastClosedWasPopUp = true;
-                        (context.server as Server).closeContent({ name: "closeContent", componentId: baseProps.name })
+                        (context.server as Server).closeContent({ name: "closeContent", componentId: props.name })
                     }
 
-                    //context.contentStore.closeScreen(baseProps.name, true);
+                    //context.contentStore.closeScreen(props.name, true);
                 }
             });
         }
@@ -131,14 +135,14 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** Sets the initial size for the popup */
     const handleInitialSize = () => {
         if (popupRef.current && popupRef.current.contentEl) {
-            const prefSize = parsePrefSize(baseProps.preferredSize);
+            const prefSize = parsePrefSize(props.preferredSize);
             const sizeMap = new Map<string, CSSProperties>();
             if (prefSize) {
-                sizeMap.set(baseProps.id, { height: prefSize.height, width: prefSize.width });
+                sizeMap.set(props.id, { height: prefSize.height, width: prefSize.width });
             }
             else {
                 let popupSize:Dimension = { height: 0, width: 0 };
-                sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+                sizeMap.set(props.id, { height: popupSize.height, width: popupSize.width });
             }
             
             setComponentSize(sizeMap);
@@ -151,18 +155,18 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
      * If the popup frame (eg. header) is bigger than the panel, set the size of the panel-frame instead.
      */
     const handleAfterInitial = () => {
-        const prefSize = parsePrefSize(baseProps.preferredSize);
+        const prefSize = parsePrefSize(props.preferredSize);
         const sizeMap = new Map<string, CSSProperties>();
-        if (componentSizes && componentSizes.has(baseProps.id)) {
+        if (componentSizes && componentSizes.has(props.id)) {
             if (prefSize) {
-                sizeMap.set(baseProps.id, { height: prefSize.height, width: prefSize.width });
+                sizeMap.set(props.id, { height: prefSize.height, width: prefSize.width });
             }
             else {
                 let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
-                const compSize = componentSizes.get(baseProps.id);
+                const compSize = componentSizes.get(props.id);
                 popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
                 popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
-                sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+                sizeMap.set(props.id, { height: popupSize.height, width: popupSize.width });
             }
             setComponentSize(sizeMap);
         }
@@ -174,7 +178,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (popupRef.current && popupRef.current.contentEl) {
             const sizeMap = new Map<string, CSSProperties>();
             const popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth };
-            sizeMap.set(baseProps.id, { height: popupSize.height, width: popupSize.width });
+            sizeMap.set(props.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }
     }
@@ -191,13 +195,15 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         }
     }, [componentSizes]);
 
+    console.log(props)
+
     // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any
     return (
         <LayoutContext.Provider value={componentSize}>
             <Dialog
-                className={concatClassnames("rc-popup", baseProps.style, appTheme, 'reactUI')}
-                header={baseProps.screen_title_ || baseProps.content_title_}
-                visible={baseProps.screen_modal_ || baseProps.content_modal_}
+                className={concatClassnames("rc-popup", props.style, appTheme, 'reactUI')}
+                header={props.screen_title_ || props.content_title_}
+                visible={props.screen_modal_ || props.content_modal_}
                 onDrag={(e) => baseProps.onDrag ? baseProps.onDrag(e) : undefined}
                 onDragStart={(e) => baseProps.onDragStart ? baseProps.onDragStart(e) : undefined}
                 onDragEnd={(e) => baseProps.onDragEnd ? baseProps.onDragEnd(e) : undefined}
