@@ -42,7 +42,7 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
     const passwordRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextField & IExtendableText>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextField & IExtendableText>(baseProps);
 
     /** Current state of password value */
     const [pwValue, setPwValue] = useState(props.text || "");
@@ -112,7 +112,7 @@ const UIPassword: FC<ITextField & IExtendableText> = (baseProps) => {
                     }
 
                     if (startedEditing.current) {
-                        sendSetValue(props.name, pwValue, context.server, topbar);
+                        sendSetValue(props.name, pwValue, context.server, context.server.topbar);
                         startedEditing.current = false;
                     }
     

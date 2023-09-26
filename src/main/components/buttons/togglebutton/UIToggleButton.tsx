@@ -48,7 +48,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableToggleButton>(baseProps);
 
     /** True, if the togglebutton is selected */
     const [checked, setChecked] = useState<boolean|undefined>(props.selected)
@@ -133,7 +133,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (basePro
 
         const req = createDispatchActionRequest();
         req.componentId = props.name;
-        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
     }
 
     return (

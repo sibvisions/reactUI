@@ -36,7 +36,7 @@ import * as _ from 'underscore';
 import { createSelectRowRequest } from "../../factories/RequestFactory";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import MetaDataResponse from "../../response/data/MetaDataResponse";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { showTopBar } from "../topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
@@ -192,7 +192,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     const chartRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IChart>(baseProps);
+    const [context, [props], layoutStyle,, styleClassNames] = useComponentConstants<IChart>(baseProps);
 
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
@@ -208,9 +208,6 @@ const UIChart: FC<IChart> = (baseProps) => {
 
     /** The metadata for the given databook */
     const metaData:MetaDataResponse = useMetaData(screenName, props.dataBook) as MetaDataResponse
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, chartRef.current ? chartRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -654,7 +651,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                                 values: Object.values(_.pick(foundData, metaData.primaryKeyColumns))
                             }
                             selectReq.selectedColumn = label
-                            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), topbar);
+                            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), context.server.topbar);
                         }
 
                     }

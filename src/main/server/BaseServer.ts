@@ -123,8 +123,6 @@ export default abstract class BaseServer {
 
     topbar: TopBarContextType|undefined;
 
-    hideTopbar:Function = () => {};
-
     maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
 
     screensToClose:{windowId: string, windowName: string, closeDirectly: boolean|undefined}[] = [];
@@ -437,10 +435,6 @@ export default abstract class BaseServer {
                 this.timeStart = Date.now();
             }
             promise.then(res => {
-                    if (endpoint === "/api/dal/selectRecord" && this.timeStart) {
-                        console.log('start', this.timeStart)
-                        console.log('end', Date.now())
-                    }
                     clearTimeout(timeoutId);
                     resolve(res);
                 },

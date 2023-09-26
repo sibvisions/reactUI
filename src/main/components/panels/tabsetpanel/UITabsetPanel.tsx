@@ -44,7 +44,7 @@ export type TabProperties = {
  */
 const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITabsetPanel & IExtendableTabsetPanel>(baseProps, {visibility: 'hidden'});
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITabsetPanel & IExtendableTabsetPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, compSizes] = useComponents(baseProps.id, props.className);
@@ -68,7 +68,7 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => 
                 props.onTabChange(tabId);
             } 
 
-            showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.SELECT_TAB), topbar);
+            showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.SELECT_TAB), context.server.topbar);
         }
         closing.current = false;
     }
@@ -80,7 +80,7 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel> = (baseProps) => 
             props.onTabClose(tabId);
         }
         
-        showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.CLOSE_TAB), topbar);
+        showTopBar(context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.CLOSE_TAB), context.server.topbar);
         closing.current = true
     }
 

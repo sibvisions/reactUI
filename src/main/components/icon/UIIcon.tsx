@@ -45,7 +45,7 @@ const UIIcon: FC<IIcon & IExtendableIcon> = (baseProps) => {
     const iconRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IIcon & IExtendableIcon>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IIcon & IExtendableIcon>(baseProps);
 
     /** Properties for icon */
     const iconProps = useMemo(() => parseIconData(props.foreground, props.image), [props.foreground, props.image]);

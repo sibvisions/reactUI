@@ -27,7 +27,6 @@ import { MenuOptions, VisibleButtons } from "../../main/AppSettings";
 import ContentStore from "../../main/contentstore/ContentStore";
 import Server from "../../main/server/Server";
 import { EmbeddedContext } from "../../main/contexts/EmbedProvider";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import useProfileMenuItems from "../../main/hooks/data-hooks/useProfileMenuItems";
 import useMenuCollapser from "../../main/hooks/event-hooks/useMenuCollapser";
 import useDeviceStatus from "../../main/hooks/event-hooks/useDeviceStatus";
@@ -66,7 +65,7 @@ interface IProfileMenu {
  */
 export const ProfileMenu:FC<IProfileMenu> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** State of button-visibility */
     const [visibleButtons, setVisibleButtons] = useState<VisibleButtons>(context.appSettings.visibleButtons);
@@ -128,7 +127,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             const screenName = context.contentStore.activeScreens[0].name;
                             const screenId = context.contentStore.getComponentByName(screenName)?.id as string
                             const closeReq = getCloseScreenRequest(screenName);
-                            showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar).then((res) => {
+                            showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), context.server.topbar).then((res) => {
                                 // If response is empty or there is no error close the current screen and open home
                                 if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                                     context.contentStore.inactiveScreens = context.contentStore.inactiveScreens.filter(inactiveScreen => inactiveScreen !== screenName);
@@ -136,13 +135,13 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                                     context.contentStore.closeScreen(screenId, screenName, false);
                                     // If there is a homeScreen don't route to home
                                     if (!context.appSettings.homeScreen) {
-                                        showTopBar((context.server as Server).routeToHome(), topbar);
+                                        showTopBar((context.server as Server).routeToHome(), context.server.topbar);
                                     }
                                 }
                             });
                         }
                         else {
-                            showTopBar((context.server as Server).routeToHome(), topbar);
+                            showTopBar((context.server as Server).routeToHome(), context.server.topbar);
                         }
                     }
                 }}
@@ -152,7 +151,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
             {props.showButtons && (!visibleButtons || visibleButtons.save) && <Button
                 icon="fas fa-save"
                 className="menu-topbar-buttons"
-                onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_KEYWORDS.SAVE), topbar)}
+                onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_KEYWORDS.SAVE), context.server.topbar)}
                 tooltip={translation.get("Save")}
                 tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
             {(!visibleButtons || (visibleButtons.reload || visibleButtons.rollback) && props.showButtons) &&
@@ -161,10 +160,10 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     className="menu-topbar-buttons"
                     onClick={() => {
                         if (!visibleButtons || (visibleButtons.reload && !visibleButtons.rollback)) {
-                            showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_KEYWORDS.RELOAD), topbar)
+                            showTopBar(context.server.sendRequest(createReloadRequest(), REQUEST_KEYWORDS.RELOAD), context.server.topbar)
                         }
                         else {
-                            showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_KEYWORDS.ROLLBACK), topbar)
+                            showTopBar(context.server.sendRequest(createRollbackRequest(), REQUEST_KEYWORDS.ROLLBACK), context.server.topbar)
                         }
                     }}
                     tooltip={translation.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}

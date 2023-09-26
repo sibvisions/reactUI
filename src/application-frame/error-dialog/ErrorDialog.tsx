@@ -17,9 +17,8 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import { ListBox } from "primereact/listbox"
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import tinycolor from "tinycolor2";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import ErrorResponse from "../../main/response/error/ErrorResponse";
 import { translation } from "../../main/util/other-util/Translation";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
@@ -27,11 +26,12 @@ import { createCloseFrameRequest } from "../../main/factories/RequestFactory";
 import REQUEST_KEYWORDS from '../../main/request/REQUEST_KEYWORDS'
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
+import { appContext } from "../../main/contexts/AppProvider";
 
 /** Displays an error-message as dialog */
 const ErrorDialog:FC = () => {
     /** Returns utility variables */
-    const [context] = useConstants();
+    const context = useContext(appContext);
 
     /** True, if the error-dialog is visible */
     const [visible, setVisible] = useState<boolean>(false);

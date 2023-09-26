@@ -25,10 +25,10 @@ export interface TopBarContextType {
 }
 
 
-export const TopBarContext = createContext<TopBarContextType>({
-    show: () => {},
-    hide: () => {}
-});
+// export const TopBarContext = createContext<TopBarContextType>({
+//     show: () => {},
+//     hide: () => {}
+// });
 
 let topbarCount = 0;
 
@@ -38,15 +38,21 @@ let topbarCount = 0;
  * @param topbar - the topbar to display
  * @returns 
  */
-export function showTopBar(promise: Promise<any>, topbar: TopBarContextType) {
-    topbarCount++;
-    topbar.show();
-    return promise.catch((err) => console.error(err)).finally(() => {
-        topbarCount--;
-        if (!topbarCount) {
-            topbar.hide()
-        }
-    });
+export function showTopBar(promise: Promise<any>, topbar: TopBarContextType|undefined) {
+    if (topbar) {
+        topbarCount++;
+        topbar.show();
+        return promise.catch((err) => console.error(err)).finally(() => {
+            topbarCount--;
+            if (!topbarCount) {
+                topbar.hide()
+            }
+        });
+    }
+    else {
+        console.error('topbar is undefined')
+        return Promise.resolve();
+    }
 };
 
 // Shows a topbar at the top of the browser when a promise is being processed.
@@ -95,16 +101,13 @@ const TopBar:FC = ({children}) => {
             show: () => setShow(true),
             hide: () => setShow(false)
         }
-        context.server.hideTopbar = () => setShow(false);
     }, [context.server])
 
-    return <TopBarContext.Provider value={{
-        show: () => setShow(true),
-        hide: () => setShow(false)
-    }} >
-        {children}
-        {show ? <TopBarProgress /> : null }
-    </TopBarContext.Provider>
+    return (
+        <>
+            {show ? <TopBarProgress /> : null }
+        </>
+    )
 }
 
 export default TopBar;

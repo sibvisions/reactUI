@@ -39,7 +39,7 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { getFocusComponent } from "../../util/html-util/GetFocusComponent";
-import { CellEditor } from "./CellEditor";
+import { CellEditor, ICellRender } from "./CellEditor";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
@@ -50,6 +50,7 @@ import { IExtendableTable } from "../../extend-components/table/ExtendTable";
 import { ICellEditorLinked } from "../editors/linked/UIEditorLinked";
 import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
+import CellRenderer from "./CellRenderer/CellRenderer";
 
 
 /** Interface for Table */
@@ -179,7 +180,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const tableRef = useRef<DataTable>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<TableProps & IExtendableTable>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<TableProps & IExtendableTable>(baseProps);
 
     /** Name of the screen */
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBook) as string, [props.id, props.dataBook]);
@@ -340,8 +341,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         }
     );
 
-    console.log('rerender')
-
     /**
      * Sends a selectRequest to the server, if a new row is selected selectRow, else selectColumn
      * @param selectedColumn - the selected column
@@ -355,7 +354,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         if (selectedColumn) selectReq.selectedColumn = selectedColumn;
         if (filter) selectReq.filter = filter;
         //await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
-        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN), topbar);
+        await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN), context.server.topbar);
     }, [props.dataBook, props.name, context.server, providerData])
 
     /**
@@ -954,9 +953,9 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         }
     }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow]);
 
-    const selectNextCallback = useCallback((navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode), [selectNext.current]);
+    const selectNextCallback = useCallback((key: string) => selectNext.current && selectNext.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectNext.current, props.enterNavigationMode, props.tabNavigationMode]);
 
-    const selectPreviousCallback = useCallback((navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode), [selectPrevious.current]);
+    const selectPreviousCallback = useCallback((key: string) => selectPrevious.current && selectPrevious.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectPrevious.current, props.enterNavigationMode, props.tabNavigationMode]);
 
     /** Building the columns */
     const columns = useMemo(() => {
@@ -991,12 +990,9 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     display: props.tableHeaderVisible === false ? 'none' : undefined,
                     '--columnName': colName
                 }}
-                body={(rowData: any, tableInfo: any) => {               
+                body={(rowData: any, tableInfo: any) => {
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
-                    // else {
-                    //     return rowData[colName]
-                    // }
-                    else {
+                    else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
                         return <CellEditor
                             key={colName + '-' + tableInfo.rowIndex}
                             rowData={rowData}
@@ -1012,8 +1008,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             tableContainer={wrapRef.current ? wrapRef.current : undefined}
                             selectNext={selectNextCallback}
                             selectPrevious={selectPreviousCallback}
-                            enterNavigationMode={enterNavigationMode}
-                            tabNavigationMode={tabNavigationMode}
                             className={className}
                             colReadonly={columnMetaData?.readonly}
                             tableEnabled={props.enabled}
@@ -1042,8 +1036,26 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                     :
                                     undefined
                             }
-                            tableIsSelecting={tableIsSelecting} 
-                            />
+                            tableIsSelecting={tableIsSelecting}
+                        />
+                    }
+                    else {
+                        return (
+                            <CellRenderer
+                                key={"cell-" + colName + '-' + tableInfo.rowIndex}
+                                name={props.name}
+                                screenName={screenName}
+                                cellData={rowData[colName]}
+                                dataProvider={props.dataBook}
+                                dataProviderReadOnly={metaData?.readOnly}
+                                colName={colName}
+                                colIndex={colIndex}
+                                primaryKeys={primaryKeys}
+                                rowData={rowData}
+                                rowNumber={tableInfo.rowIndex}
+                                cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
+                                isHTML={typeof rowData[colName] === "string" && (rowData[colName] as string).includes("<html>")} />
+                        )
                     }
                 }}
                 style={{ whiteSpace: 'nowrap', '--colName': colName }}
@@ -1059,12 +1071,11 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             />
         })
     }, [
-        providerData
-        // props.columnNames, props.columnLabels, props.dataBook, props.name, 
-        // screenName, props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
-        // metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled, metaData?.deleteEnabled,
-        // enterNavigationMode, tabNavigationMode, primaryKeys, columnOrder, providerData,
-        // props.startEditing, tableIsSelecting
+        props.columnNames, props.columnLabels, props.dataBook, 
+        props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
+        metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled, 
+        primaryKeys, metaData?.deleteEnabled, props.startEditing,
+        tableIsSelecting, columnOrder, providerData, selectedRow?.index
     ])
 
     // When a row is selected send a selectRow request to the server
@@ -1099,7 +1110,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     fetchReq.dataProvider = props.dataBook;
                     fetchReq.fromRow = providerData.length;
                     fetchReq.rowCount = 100;
-                    showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar).then((result) => {
+                    showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), context.server.topbar).then((result) => {
                         if (props.onLazyLoadFetch && result[0]) {
                             props.onLazyLoadFetch(context.server.buildDatasets(result[0]))
                         }
@@ -1187,7 +1198,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             else {
                 widthReq.width = e.element.offsetWidth;
             }
-            showTopBar(context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), topbar);
+            showTopBar(context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), context.server.topbar);
         }
     }
 
@@ -1271,7 +1282,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         context.contentStore.insertDataProviderData(screenName, props.dataBook);
                         const insertReq = createInsertRecordRequest();
                         insertReq.dataProvider = props.dataBook;
-                        showTopBar(context.server.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD), topbar);
+                        showTopBar(context.server.sendRequest(insertReq, REQUEST_KEYWORDS.INSERT_RECORD), context.server.topbar);
                     }
                     break;
                 case "Delete":
@@ -1281,7 +1292,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         selectReq.dataProvider = props.dataBook;
                         selectReq.componentId = props.name;
                         selectReq.rowNumber = selectedRow && selectedRow.index !== undefined ? selectedRow.index : undefined;
-                        showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), topbar)
+                        showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.DELETE_RECORD), context.server.topbar)
                     }
             }
         }
@@ -1315,7 +1326,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         sortDefToSend = [{ columnName: columnName, mode: getNextSort(sortDef?.mode) }]
                     }
                     sortReq.sortDefinition = sortDefToSend;
-                    showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), topbar);
+                    showTopBar(context.server.sendRequest(sortReq, REQUEST_KEYWORDS.SORT), context.server.topbar);
                 }
             }
         }

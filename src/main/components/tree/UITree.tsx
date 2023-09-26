@@ -74,7 +74,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     const treeWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<ITree & IExtendableTree>(baseProps);
+    const [context, [props], layoutStyle,, styleClassNames] = useComponentConstants<ITree & IExtendableTree>(baseProps);
 
     /** Name of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBooks && props.dataBooks.length ? props.dataBooks[0] : undefined) as string;
@@ -291,7 +291,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                         .then(() => {
                             const builtData = providedData.get(fetchDataPage).get(pkObjStringified);
                             addNodesToParent(builtData);
-                        }), topbar)
+                        }), context.server.topbar)
                 } else {
                     //the data is already fetched so don't send a fetch and get the data by pkObjStringified
                     const builtData = providedData.get(fetchDataPage).get(pkObjStringified);
@@ -352,7 +352,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             selectReq.componentId = props.name;
             selectReq.dataProvider = props.dataBooks
             selectReq.filter = selectedFilters;
-            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_TREE), topbar);
+            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_TREE), context.server.topbar);
         }
     }
 
@@ -432,7 +432,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                     values: []
                 }
                 fetchReq.rootKey = true;
-                const fetchResponse = await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar);
+                const fetchResponse = await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), context.server.topbar);
                 if (fetchResponse && fetchResponse.length) {
                     const rootKey = context.contentStore.getDataBook(screenName, firstLvlDataBook)?.rootKey;
                     if (rootKey) {

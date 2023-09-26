@@ -20,8 +20,6 @@ import useMetaData from "../../hooks/data-hooks/useMetaData";
 import useEventHandler from "../../hooks/event-hooks/useEventHandler";
 import useOutsideClick from "../../hooks/event-hooks/useOutsideClick";
 import { ColumnDescription, LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
-
-import { getFont, parseIconData } from "../comp-props/ComponentProperties";
 import IconProps from "../comp-props/IconProps";
 import CellEditorWrapper from "../editors/CellEditorWrapper";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
@@ -34,6 +32,7 @@ import TextCellRenderer from "./CellRenderer/TextCellRenderer";
 import { SelectedCellContext, TableProps } from "./UITable";
 import { isFAIcon } from "../../hooks/event-hooks/useButtonMouseImages";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
+import CellRenderer, { ICellRenderer } from "./CellRenderer/CellRenderer";
 
 // Interface for in-table-editors
 export interface IInTableEditor {
@@ -52,7 +51,7 @@ export interface CellFormatting {
 }
 
 // Interface for cell-renderer
-export interface ICellRender extends ICellEditor {
+export interface ICellRender extends ICellRenderer {
     columnMetaData: ColumnDescription,
     icon: JSX.Element|null,
     filter?: SelectFilter
@@ -73,8 +72,6 @@ export interface ICellEditor {
     tableContainer?: any,
     selectNext: Function,
     selectPrevious: Function,
-    enterNavigationMode: number,
-    tabNavigationMode: number,
     className?: string,
     colReadonly?: boolean,
     tableEnabled?: boolean
@@ -136,7 +133,7 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
  * @param props - props received by Table
  */
 export const CellEditor: FC<ICellEditor> = (props) => {
-    const { selectNext, selectPrevious, enterNavigationMode, tabNavigationMode, tableContainer } = props;
+    const { selectNext, selectPrevious, tableContainer } = props;
     
     /** State if editing is currently possible */
     const [edit, setEdit] = useState(false);
@@ -212,31 +209,20 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         setEdit(false);
         stopEditing()
         if (event) {
-            if (event.key === "Enter") {
-                if (event.shiftKey) {
-                    focusTable = selectPrevious(enterNavigationMode);
-                }
-                else {
-                    focusTable = selectNext(enterNavigationMode);
-                }
+            if (event.shiftKey) {
+                focusTable = selectPrevious(event.key);
             }
-            else if (event.key === "Tab") {
-                event.preventDefault();
-                if (event.shiftKey) {
-                    focusTable = selectPrevious(tabNavigationMode);
-                }
-                else {
-                    focusTable = selectNext(tabNavigationMode);
-                }
+            else {
+                focusTable = selectNext(event.key);
             }
         }
         else {
-            focusTable = selectNext(enterNavigationMode);
+            focusTable = selectNext("Enter");
         }
         if (focusTable) {
             tableContainer.focus();
         }
-    }, [setEdit, selectNext, selectPrevious, enterNavigationMode, tabNavigationMode]);
+    }, [setEdit, selectNext, selectPrevious]);
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, () => { 
@@ -278,58 +264,23 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         
     }, [props.dataProviderReadOnly, props.updateEnabled, props.colReadonly, props.tableEnabled, props.editable, props.cellData]);
 
-    const cellStyles: { cellStyle: CSSProperties, cellClassNames: string[], cellIcon: IconProps | null } = useMemo(() => {
-        let cellStyle:any = { };
-        const cellClassNames:string[] = ['cell-data', typeof props.cellData === "string" && (props.cellData as string).includes("<html>") ? "html-cell" : ""];
-        let cellIcon: IconProps | null = null;
-    
-        // Fills cell-classnames and cell-style based on the server-sent properties
-        if (props.cellFormatting && props.cellFormatting.has(props.colName)) {
-            const cellFormat = props.cellFormatting.get(props.colName) as CellFormatting
-            if (cellFormat !== null) {
-                if(cellFormat.background) {
-                    cellStyle.backgroundColor = cellFormat.background;
-                    cellClassNames.push('cancel-padding');
-                }
-                if(cellFormat.foreground) {
-                    cellStyle.color = cellFormat.foreground;
-                }
-                if(cellFormat.font) {
-                    const font = getFont(cellFormat.font);
-                    cellStyle = {
-                        ...cellStyle,
-                        fontFamily: font ? font.fontFamily : undefined,
-                        fontWeight: font ? font.fontWeight : undefined,
-                        fontStyle: font ? font.fontStyle : undefined,
-                        fontSize: font ? font.fontSize : undefined
-                    }
-                }
-                if(cellFormat.image) {
-                    cellIcon = parseIconData(cellFormat.foreground, cellFormat.image);
-                }
-            }
-        }
-
-        return { cellStyle: cellStyle, cellClassNames: cellClassNames, cellIcon: cellIcon }
-    }, [props.cellFormatting, props.colName])
-
     // Returns the cell-icon or null
-    const icon = useMemo(() => {
-        if (cellStyles.cellIcon?.icon) {
-            if(isFAIcon(cellStyles.cellIcon.icon))
-                return <i className={cellStyles.cellIcon.icon} style={{ fontSize: cellStyles.cellIcon.size?.height, color: cellStyles.cellIcon.color}}/>
-            else {
-                return <img
-                    id={props.name}
-                    alt="icon"
-                    src={context.server.RESOURCE_URL + cellStyles.cellIcon.icon}
-                    style={{width: `${cellStyles.cellIcon.size?.width}px`, height: `${cellStyles.cellIcon.size?.height}px` }}
-                />
-            }    
-        } else {
-            return null
-        }
-    }, [cellStyles.cellIcon?.icon, context.server.RESOURCE_URL]);
+    // const icon = useMemo(() => {
+    //     if (props.cellStyle.cellIcon?.icon) {
+    //         if(isFAIcon(props.cellStyle.cellIcon.icon))
+    //             return <i className={props.cellStyle.cellIcon.icon} style={{ fontSize: props.cellStyle.cellIcon.size?.height, color: props.cellStyle.cellIcon.color}}/>
+    //         else {
+    //             return <img
+    //                 id={props.name}
+    //                 alt="icon"
+    //                 src={context.server.RESOURCE_URL + props.cellStyle.cellIcon.icon}
+    //                 style={{width: `${props.cellStyle.cellIcon.size?.width}px`, height: `${props.cellStyle.cellIcon.size?.height}px` }}
+    //             />
+    //         }    
+    //     } else {
+    //         return null
+    //     }
+    // }, [props.cellStyle.cellIcon?.icon, context.server.RESOURCE_URL]);
 
     const [Component, extraProps] = useMemo(() => {
         switch (columnMetaData?.cellEditor.className) {
@@ -378,43 +329,78 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [props.tableIsSelecting, storedClickEvent]);
 
-    console.log('celleditor render')
-
-
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
-        (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
-            ((edit && 
-              //!waiting && 
-              isEditable) ?
-                <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                    {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable}, stopCellEditing, passRef.current)}
-                </div>
-                :
-                <div
-                    style={cellStyles.cellStyle}
-                    className={cellStyles.cellClassNames.join(' ') + " " + isEditable}
-                    onClick={() => {
-                        if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
-                            setStoredClickEvent(() => {
-                                //setWaiting(true);
-                                setEdit(true);
-                            });
-                        }
-                    }}>
-                    <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
-                </div>
-            ) : (edit && isEditable ?
-                <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                    {displayEditor(columnMetaData, { ...props, isReadOnly: !isEditable }, stopCellEditing, passRef.current)}
-                </div>
-                :
-                <div
-                    style={cellStyles.cellStyle}
-                    className={cellStyles.cellClassNames.join(' ')}
-                    onDoubleClick={() => setStoredClickEvent(() => handleDoubleClick())}>
-                    <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
-                </div>
-            )
+        (edit && isEditable) ?
+            <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
+                {displayEditor(columnMetaData, { ...props, isReadOnly: !isEditable }, stopCellEditing, passRef.current)}
+            </div> : <CellRenderer
+                name={props.name}
+                screenName={props.screenName}
+                cellData={props.cellData}
+                dataProvider={props.dataProvider}
+                dataProviderReadOnly={props.dataProviderReadOnly}
+                colName={props.colName}
+                colIndex={props.colIndex}
+                primaryKeys={props.primaryKeys}
+                rowData={props.rowData}
+                rowNumber={props.rowNumber}
+                cellFormatting={props.cellFormatting}
+                isHTML={typeof props.cellData === "string" && (props.cellData as string).includes("<html>")}
+                setStoredClickEvent={setStoredClickEvent}
+                setEdit={setEdit}
+                decreaseCallback={(linkDatabook: string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}
+            />
+        // (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
+        //     ((edit && 
+        //       //!waiting && 
+        //       isEditable) ?
+        //         <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
+        //             {displayEditor(columnMetaData, {...props, isReadOnly: !isEditable}, stopCellEditing, passRef.current)}
+        //         </div>
+        //         :
+        //         <CellRenderer 
+        //             name={props.name}
+        //             screenName={props.screenName}
+        //             cellData={props.cellData}
+        //             dataProvider={props.dataProvider}
+        //             dataProviderReadOnly={props.dataProviderReadOnly}
+        //             colName={props.colName}
+        //             colIndex={props.colIndex}
+        //             primaryKeys={props.primaryKeys}
+        //             rowData={props.rowData}
+        //             rowNumber={props.rowNumber}
+        //             cellFormatting={props.cellFormatting}
+        //             isHTML={typeof props.cellData === "string" && (props.cellData as string).includes("<html>")}
+        //             setStoredClickEvent={setStoredClickEvent}
+        //             setEdit={setEdit}
+        //             decreaseCallback={(linkDatabook:string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}
+        //              />
+        //         // <div
+        //         //     style={props.cellStyle.cellStyle}
+        //         //     className={props.cellStyle.cellClassNames.join(' ') + " " + isEditable}
+        //         //     onClick={() => {
+        //         //         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
+        //         //             setStoredClickEvent(() => {
+        //         //                 //setWaiting(true);
+        //         //                 setEdit(true);
+        //         //             });
+        //         //         }
+        //         //     }}>
+        //         //     <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
+        //         // </div>
+        //     ) : (edit && isEditable ?
+        //         <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
+        //             {displayEditor(columnMetaData, { ...props, isReadOnly: !isEditable }, stopCellEditing, passRef.current)}
+        //         </div>
+        //         :
+        //         <CellRenderer />
+        //         // <div
+        //         //     style={props.cellStyle.cellStyle}
+        //         //     className={props.cellStyle.cellClassNames.join(' ')}
+        //         //     onDoubleClick={() => setStoredClickEvent(() => handleDoubleClick())}>
+        //         //     <Component icon={icon} columnMetaData={columnMetaData!} {...props} {...extraProps} />
+        //         // </div>
+        //     )
     )
 }

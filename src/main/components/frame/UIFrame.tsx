@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { createCloseFrameRequest } from "../../factories/RequestFactory";
 import BaseComponent from "../../util/types/BaseComponent";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
@@ -25,13 +25,13 @@ import { IInternalFrame } from "./UIInternalFrame";
 import { panelGetStyle } from "../panels/panel/UIPanel";
 import ContentStoreFull from "../../contentstore/ContentStoreFull";
 import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
-import useConstants from "../../hooks/components-hooks/useConstants";
 import Dimension from "../../util/types/Dimension";
 import { parseIconData } from "../comp-props/ComponentProperties";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import Layout from "../layouts/Layout";
+import { appContext } from "../../contexts/AppProvider";
 
 // Interface for Frames
 export interface IFrame extends IInternalFrame {
@@ -47,7 +47,7 @@ export interface IFrame extends IInternalFrame {
 /** This component renders a frame which can contain a menubar, toolbars and content sent by the server (workscreen, content, launcher etc.) */
 const UIFrame: FC<IFrame> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** Casts the contentStore to contentstore-full because the UIFrame is only used in Full transferType */
     const castedContentStore = context.contentStore as ContentStoreFull
@@ -125,7 +125,7 @@ const UIFrame: FC<IFrame> = (props) => {
                         onClick={() => {
                             const closeReq = createCloseFrameRequest();
                             closeReq.componentId = props.name;
-                            showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
+                            showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), context.server.topbar);
                         }}
                     />}
                 </div>
