@@ -52,7 +52,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, componentSizes] = useComponents(props.popupId, props.className);
+    const [children, components, componentSizes] = useComponents(props.popupId, props.className);
 
     /** Current state of the size of the popup-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
@@ -80,69 +80,72 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (baseProps.onClose) {
             baseProps.onClose();
         }
-        
-        if (props.screen_modal_) {
-            const csRequest = createCloseScreenRequest();
-            csRequest.componentId = props.name;
-            context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
-                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
-                    if (context.transferType !== "full") {
-                        context.server.lastClosedWasPopUp = true;
+        if (children.length) {
+            if ((children[0] as IPanel).screen_modal_) {
+                const csRequest = createCloseScreenRequest();
+                csRequest.componentId = children[0].name;
+                context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
+                    if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
+                        if (context.transferType !== "full") {
+                            context.server.lastClosedWasPopUp = true;
+                        }
+                        context.contentStore.closeScreen(children[0].id, children[0].name, true);
                     }
-                    context.contentStore.closeScreen(props.id, props.name, true);
-                }
-            });
-        }
-        else if (props.content_modal_) {
-            const ccRequest = createCloseContentRequest();
-            ccRequest.componentId = props.name;
-            context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
-                if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
-                    if (context.transferType !== "full") {
-                        context.server.lastClosedWasPopUp = true;
-                        (context.server as Server).closeContent({ name: "closeContent", componentId: props.name })
+                });
+            }
+            else if ((children[0] as IPanel).content_modal_) {
+                const ccRequest = createCloseContentRequest();
+                ccRequest.componentId = children[0].name;
+                context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
+                    if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
+                        if (context.transferType !== "full") {
+                            context.server.lastClosedWasPopUp = true;
+                            (context.server as Server).closeContent({ name: "closeContent", componentId: children[0].name })
+                        }
+    
+                        //context.contentStore.closeScreen(props.name, true);
                     }
-
-                    //context.contentStore.closeScreen(props.name, true);
-                }
-            });
-        }
-
-        const lastFocusedComponent = context.contentStore.lastFocusedComponent
-        if (lastFocusedComponent) {
-            let componentToFocus = document.getElementById(lastFocusedComponent.id);
-            if (componentToFocus) {
-                if ([COMPONENT_CLASSNAMES.CHECKBOX, COMPONENT_CLASSNAMES.RADIOBUTTON, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.LINKED].indexOf(lastFocusedComponent.className as COMPONENT_CLASSNAMES|CELLEDITOR_CLASSNAMES) !== -1) {
-                    componentToFocus = componentToFocus.querySelector("input");
-                    if (componentToFocus) {
+                });
+            }
+    
+            const lastFocusedComponent = context.contentStore.lastFocusedComponent
+            if (lastFocusedComponent) {
+                let componentToFocus = document.getElementById(lastFocusedComponent.id);
+                if (componentToFocus) {
+                    if ([COMPONENT_CLASSNAMES.CHECKBOX, COMPONENT_CLASSNAMES.RADIOBUTTON, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.LINKED].indexOf(lastFocusedComponent.className as COMPONENT_CLASSNAMES|CELLEDITOR_CLASSNAMES) !== -1) {
+                        componentToFocus = componentToFocus.querySelector("input");
+                        if (componentToFocus) {
+                            componentToFocus.focus();
+                        }
+                    }
+                    else if (lastFocusedComponent.className === COMPONENT_CLASSNAMES.POPUPMENUBUTTON) {
+                        componentToFocus = componentToFocus.querySelector(".p-splitbutton-menubutton");
+                        if (componentToFocus) {
+                            componentToFocus.focus();
+                        }
+                    }
+                    else {
                         componentToFocus.focus();
                     }
-                }
-                else if (lastFocusedComponent.className === COMPONENT_CLASSNAMES.POPUPMENUBUTTON) {
-                    componentToFocus = componentToFocus.querySelector(".p-splitbutton-menubutton");
-                    if (componentToFocus) {
-                        componentToFocus.focus();
-                    }
-                }
-                else {
-                    componentToFocus.focus();
                 }
             }
         }
-
+        else {
+            console.error("Closing of popup not possible, child is missing")
+        }
     }
 
     /** Sets the initial size for the popup */
     const handleInitialSize = () => {
-        if (popupRef.current && popupRef.current.contentEl) {
-            const prefSize = parsePrefSize(props.preferredSize);
+        if (popupRef.current && popupRef.current.contentEl && children.length) {
+            const prefSize = parsePrefSize(children[0].preferredSize);
             const sizeMap = new Map<string, CSSProperties>();
             if (prefSize) {
-                sizeMap.set(props.id, { height: prefSize.height, width: prefSize.width });
+                sizeMap.set(children[0].id, { height: prefSize.height, width: prefSize.width });
             }
             else {
                 let popupSize:Dimension = { height: 0, width: 0 };
-                sizeMap.set(props.id, { height: popupSize.height, width: popupSize.width });
+                sizeMap.set(children[0].id, { height: popupSize.height, width: popupSize.width });
             }
             
             setComponentSize(sizeMap);
@@ -157,28 +160,31 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     const handleAfterInitial = () => {
         const prefSize = parsePrefSize(props.preferredSize);
         const sizeMap = new Map<string, CSSProperties>();
-        if (componentSizes && componentSizes.has(props.id)) {
-            if (prefSize) {
-                sizeMap.set(props.id, { height: prefSize.height, width: prefSize.width });
+        if (children.length) {
+            if (componentSizes && componentSizes.has(children[0].id)) {
+                if (prefSize) {
+                    sizeMap.set(children[0].id, { height: prefSize.height, width: prefSize.width });
+                }
+                else {
+                    let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
+                    const compSize = componentSizes.get(children[0].id);
+                    popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
+                    popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
+                    sizeMap.set(children[0].id, { height: popupSize.height, width: popupSize.width });
+                }
+                setComponentSize(sizeMap);
             }
-            else {
-                let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
-                const compSize = componentSizes.get(props.id);
-                popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
-                popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
-                sizeMap.set(props.id, { height: popupSize.height, width: popupSize.width });
-            }
-            setComponentSize(sizeMap);
         }
+
         setInitializeCompSizes(true);
     }
 
     /** When the popup is being resized update the size to resize the panel */
     const handlePopupResize = () => {
-        if (popupRef.current && popupRef.current.contentEl) {
+        if (popupRef.current && popupRef.current.contentEl && children.length) {
             const sizeMap = new Map<string, CSSProperties>();
             const popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth };
-            sizeMap.set(props.id, { height: popupSize.height, width: popupSize.width });
+            sizeMap.set(children[0].id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }
     }
@@ -194,8 +200,6 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
             handleAfterInitial();
         }
     }, [componentSizes]);
-
-    console.log(props)
 
     // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any
     return (
