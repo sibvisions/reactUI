@@ -1064,8 +1064,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
         enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
         props.startEditing, tableIsSelecting
-    ])
-
+    ]);
+    
     // When a row is selected send a selectRow request to the server
     // If the lib user extends the Table with onRowSelect, call it when a new row is selected.
     const handleRowSelection = (event: DataTableSelectionChangeParams) => {
