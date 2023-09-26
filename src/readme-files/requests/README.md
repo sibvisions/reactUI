@@ -212,6 +212,7 @@ parameter | { [key:string]: any } | Additional parameters sent to the server whe
 ```typescript
     const req = createOpenScreenRequest();
     req.componentId = screenToOpen;
+    req.readAheadLimit = 100;
     api.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
 ```
 
