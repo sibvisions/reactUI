@@ -177,7 +177,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     const isToolBar = useMemo(() => props.className === COMPONENT_CLASSNAMES.TOOLBAR, [props.className]);
 
     const isOverflowHidden = useMemo(() => {
-        let isHidden = false;
+        let isHidden = true;
         if (props.parent) {
             let parentComp = context.contentStore.getComponentById(props.parent);
             if (parentComp) {
@@ -188,13 +188,13 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 if (props.layout && props.layout.startsWith("FlowLayout") && props.layout.split(",")[11] === 'false') {
                     return true;
                 }
-                // while (parentComp) {
-                //     if (parentComp.className === COMPONENT_CLASSNAMES.SCROLLPANEL) {
-                //         isHidden = false;
-                //         break;
-                //     }
-                //     parentComp = context.contentStore.getComponentById(parentComp.parent);
-                // }
+                while (parentComp) {
+                    if (parentComp.className === COMPONENT_CLASSNAMES.SCROLLPANEL) {
+                        isHidden = false;
+                        break;
+                    }
+                    parentComp = context.contentStore.getComponentById(parentComp.parent);
+                }
             }
         }
         return isHidden;

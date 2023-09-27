@@ -102,7 +102,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             clone,
             onLoadCallback
         ),
-        onLoadCallback
+        onLoadCallback,
+        props.text
     );
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */

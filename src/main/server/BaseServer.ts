@@ -245,7 +245,17 @@ export default abstract class BaseServer {
                             // Contents are saved under the "main" screen (dataProvider.split("/")[1]) but to check if a content is opened we have to get the name differently.
                             const dataProviderScreenName = this.getScreenName(request.dataProvider);
                             const activeScreenName = request.screenName ? request.screenName : splitDataProvider[splitDataProvider.length - 2];
-                            const screenIsOpen = this.contentStore.activeScreens.some(as => !as.popup ? as.name === dataProviderScreenName : as.name === activeScreenName);
+                            const screenIsOpen = this.contentStore.activeScreens.some(as => {
+                                const acitveScreenComponent = this.contentStore.getComponentById(as.id);
+                                if (acitveScreenComponent) {
+                                    if ((acitveScreenComponent as IPanel).content_modal_) {
+                                        return as.name === activeScreenName;
+                                    }
+                                    else {
+                                        return as.name === dataProviderScreenName;
+                                    }
+                                }
+                            });
                             // Not sending dataprovider request if the screen isnt opened
                             if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
                                 this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);

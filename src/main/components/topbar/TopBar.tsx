@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useState, createContext, useMemo, useEffect, useContext } from "react";
+import React, { FC, useState, createContext, useMemo, useEffect, useContext, useLayoutEffect, useRef } from "react";
 import TopBarProgress from "react-topbar-progress-indicator";
 import { appContext } from "../../contexts/AppProvider";
 import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
@@ -61,39 +61,78 @@ const TopBar:FC = ({children}) => {
 
     const [show, setShow] = useState(false);
 
+    const [allowTopbarSettings, setAllowTopbarSettings] = useState(false);
+
     const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
 
     useEffect(() => {
         context.designerSubscriptions.subscribeToTopbarColor(() => setDesignerTopbarChanged(prevState => !prevState))
 
         return () => context.designerSubscriptions.unsubscribeFromTopbarColor();
-    }, [context.designerSubscriptions])
+    }, [context.designerSubscriptions]);
 
-    const topbarSettings = useMemo(() => {
-        return getSettingsFromCSSVar({
-            barColors: {
-                cssVar: '--topbar-colors',
-                transform: 'csv'
-            },
-            shadowBlur: {
-                cssVar: '--topbar-shadow-blur',
-                transform: 'float'
-            },
-            barThickness: {
-                cssVar: '--topbar-thickness',
-                transform: 'float'
-            },
-            shadowColor: '--topbar-shadow-color'
-        })
-    }, [designerTopbarChanged])
+    useLayoutEffect(() => {
+            TopBarProgress.config({
+                barColors: {0: "#ffffff"},
+                barThickness: 0
+            });
+            showTopBar(new Promise((resolve) => {
+                setShow(true);
+                resolve({})
+            }), {
+                show: () => setShow(true),
+                hide: () => setShow(false)
+            }).then(() => {
+                setShow(false);
+            })
+    }, [])
 
     useEffect(() => {
-        TopBarProgress.config({
-            barColors: Object.fromEntries((topbarSettings.barColors as string[]).map((v, idx, a) => [idx / (a.length - 1), v])),
-            shadowBlur: topbarSettings.shadowBlur,
-            barThickness: topbarSettings.barThickness,
-            shadowColor: topbarSettings.shadowColor
-        });
+        if (context.appReady) {
+            if (window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-position") === "\"bottom\"") {
+                const canvases = Array.from(document.getElementsByTagName("canvas"));
+                canvases.forEach(canvas => {
+                    if (canvas.style.zIndex === "100001") {
+                        canvas.style.top = "calc(100% - " + `${window.getComputedStyle(document.documentElement).getPropertyValue('--topbar-thickness')}px`;
+                    }
+                });
+            }
+            setAllowTopbarSettings(true);
+        }
+    }, [context.appReady]);
+
+    const topbarSettings = useMemo(() => {
+        if (allowTopbarSettings) {
+            return getSettingsFromCSSVar({
+                barColors: {
+                    cssVar: '--topbar-colors',
+                    transform: 'csv'
+                },
+                shadowBlur: {
+                    cssVar: '--topbar-shadow-blur',
+                    transform: 'float'
+                },
+                barThickness: {
+                    cssVar: '--topbar-thickness',
+                    transform: 'float'
+                },
+                shadowColor: '--topbar-shadow-color'
+            })
+        }
+        else {
+            return undefined;
+        }
+    }, [designerTopbarChanged, allowTopbarSettings]);
+
+    useEffect(() => {
+        if (topbarSettings) {
+            TopBarProgress.config({
+                barColors: Object.fromEntries((topbarSettings.barColors as string[]).map((v, idx, a) => [idx / (a.length - 1), v])),
+                shadowBlur: topbarSettings.shadowBlur,
+                barThickness: topbarSettings.barThickness,
+                shadowColor: topbarSettings.shadowColor
+            });
+        }
     }, [topbarSettings]);
 
     useEffect(() => {
@@ -101,7 +140,7 @@ const TopBar:FC = ({children}) => {
             show: () => setShow(true),
             hide: () => setShow(false)
         }
-    }, [context.server])
+    }, [context.server]);
 
     return (
         <>
