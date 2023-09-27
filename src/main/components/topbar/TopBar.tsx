@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useState, createContext, useMemo, useEffect, useContext } from "react";
+import React, { FC, useState, createContext, useMemo, useEffect, useContext, useLayoutEffect, useRef } from "react";
 import TopBarProgress from "react-topbar-progress-indicator";
 import { appContext } from "../../contexts/AppProvider";
 import getSettingsFromCSSVar from "../../util/html-util/GetSettingsFromCSSVar";
@@ -55,40 +55,78 @@ const TopBar:FC = ({children}) => {
 
     const [show, setShow] = useState(false);
 
+    const [initial, setInitial] = useState(true);
+
     const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
+
+    const testRef = useRef<boolean>(false);
 
     useEffect(() => {
         context.designerSubscriptions.subscribeToTopbarColor(() => setDesignerTopbarChanged(prevState => !prevState))
 
         return () => context.designerSubscriptions.unsubscribeFromTopbarColor();
-    }, [context.designerSubscriptions])
+    }, [context.designerSubscriptions]);
 
-    const topbarSettings = useMemo(() => {
-        return getSettingsFromCSSVar({
-            barColors: {
-                cssVar: '--topbar-colors',
-                transform: 'csv'
-            },
-            shadowBlur: {
-                cssVar: '--topbar-shadow-blur',
-                transform: 'float'
-            },
-            barThickness: {
-                cssVar: '--topbar-thickness',
-                transform: 'float'
-            },
-            shadowColor: '--topbar-shadow-color'
+    useLayoutEffect(() => {
+        TopBarProgress.config({
+            barColors: {0: "#ffffff"},
+            barThickness: 0
+        });
+        showTopBar(new Promise((resolve) => {
+            setShow(true);
+            resolve({})
+        }), {
+            show: () => setShow(true),
+            hide: () => setShow(false)
+        }).then(() => {
+            setTimeout(() => {
+                console.log('then')
+                setShow(false);
+                setInitial(false);
+            }, 800)
         })
-    }, [designerTopbarChanged])
+    }, [])
 
     useEffect(() => {
-        TopBarProgress.config({
-            barColors: Object.fromEntries((topbarSettings.barColors as string[]).map((v, idx, a) => [idx / (a.length - 1), v])),
-            shadowBlur: topbarSettings.shadowBlur,
-            barThickness: topbarSettings.barThickness,
-            shadowColor: topbarSettings.shadowColor
-        });
-    }, [topbarSettings]);
+        if (!initial) {
+            const canvases = document.getElementsByTagName("canvas");
+        }
+        console.log(initial, document.getElementsByTagName("canvas"))
+    }, [initial])
+
+    const topbarSettings = useMemo(() => {
+        if (!initial) {
+            return getSettingsFromCSSVar({
+                barColors: {
+                    cssVar: '--topbar-colors',
+                    transform: 'csv'
+                },
+                shadowBlur: {
+                    cssVar: '--topbar-shadow-blur',
+                    transform: 'float'
+                },
+                barThickness: {
+                    cssVar: '--topbar-thickness',
+                    transform: 'float'
+                },
+                shadowColor: '--topbar-shadow-color'
+            })
+        }
+        else {
+            return undefined;
+        }
+    }, [designerTopbarChanged, initial]);
+
+    useEffect(() => {
+        if (topbarSettings) {
+            TopBarProgress.config({
+                barColors: Object.fromEntries((topbarSettings.barColors as string[]).map((v, idx, a) => [idx / (a.length - 1), v])),
+                shadowBlur: topbarSettings.shadowBlur,
+                barThickness: topbarSettings.barThickness,
+                shadowColor: topbarSettings.shadowColor
+            });
+        }
+    }, [topbarSettings, initial, show]);
 
     useEffect(() => {
         context.server.topbar = {

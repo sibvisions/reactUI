@@ -288,7 +288,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
         // }
 
         return () => {
-            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor && numberInput.current && startedEditing.current) {
+            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && numberInput.current && startedEditing.current) {
                 numberInput.current.blur();
             }
         }
@@ -465,10 +465,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     onFocus={(event:any) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
                     onBlur={(event:any) => {
                         if (!props.isReadOnly) {
-                            if (props.eventFocusLost) {
-                                onFocusLost(props.name, props.context.server);
-                            }
-
                             if (props.onBlur) {
                                 props.onBlur(event)
                             }
@@ -484,6 +480,10 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                                     props.rowNumber
                                 );
                                 startedEditing.current = false;
+                            }
+
+                            if (props.eventFocusLost) {
+                                onFocusLost(props.name, props.context.server);
                             }
                         }
                     }}
