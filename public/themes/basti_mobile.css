@@ -75,6 +75,7 @@
   --error-dialog-icon-size:2rem;
   --crash-message-size:2rem;
   --crash-stack-height:8rem;
+  --topbar-position: "top";
 }
 
 body {

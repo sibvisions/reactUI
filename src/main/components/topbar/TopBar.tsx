@@ -55,11 +55,9 @@ const TopBar:FC = ({children}) => {
 
     const [show, setShow] = useState(false);
 
-    const [initial, setInitial] = useState(true);
+    const [allowTopbarSettings, setAllowTopbarSettings] = useState(false);
 
     const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
-
-    const testRef = useRef<boolean>(false);
 
     useEffect(() => {
         context.designerSubscriptions.subscribeToTopbarColor(() => setDesignerTopbarChanged(prevState => !prevState))
@@ -68,34 +66,37 @@ const TopBar:FC = ({children}) => {
     }, [context.designerSubscriptions]);
 
     useLayoutEffect(() => {
-        TopBarProgress.config({
-            barColors: {0: "#ffffff"},
-            barThickness: 0
-        });
-        showTopBar(new Promise((resolve) => {
-            setShow(true);
-            resolve({})
-        }), {
-            show: () => setShow(true),
-            hide: () => setShow(false)
-        }).then(() => {
-            setTimeout(() => {
-                console.log('then')
+            TopBarProgress.config({
+                barColors: {0: "#ffffff"},
+                barThickness: 0
+            });
+            showTopBar(new Promise((resolve) => {
+                setShow(true);
+                resolve({})
+            }), {
+                show: () => setShow(true),
+                hide: () => setShow(false)
+            }).then(() => {
                 setShow(false);
-                setInitial(false);
-            }, 800)
-        })
+            })
     }, [])
 
     useEffect(() => {
-        if (!initial) {
-            const canvases = document.getElementsByTagName("canvas");
+        if (context.appReady) {
+            if (window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-position") === "\"bottom\"") {
+                const canvases = Array.from(document.getElementsByTagName("canvas"));
+                canvases.forEach(canvas => {
+                    if (canvas.style.zIndex === "100001") {
+                        canvas.style.top = "calc(100% - " + `${window.getComputedStyle(document.documentElement).getPropertyValue('--topbar-thickness')}px`;
+                    }
+                });
+            }
+            setAllowTopbarSettings(true);
         }
-        console.log(initial, document.getElementsByTagName("canvas"))
-    }, [initial])
+    }, [context.appReady]);
 
     const topbarSettings = useMemo(() => {
-        if (!initial) {
+        if (allowTopbarSettings) {
             return getSettingsFromCSSVar({
                 barColors: {
                     cssVar: '--topbar-colors',
@@ -115,7 +116,7 @@ const TopBar:FC = ({children}) => {
         else {
             return undefined;
         }
-    }, [designerTopbarChanged, initial]);
+    }, [designerTopbarChanged, allowTopbarSettings]);
 
     useEffect(() => {
         if (topbarSettings) {
@@ -126,7 +127,7 @@ const TopBar:FC = ({children}) => {
                 shadowColor: topbarSettings.shadowColor
             });
         }
-    }, [topbarSettings, initial, show]);
+    }, [topbarSettings]);
 
     useEffect(() => {
         context.server.topbar = {
@@ -134,7 +135,7 @@ const TopBar:FC = ({children}) => {
             hide: () => setShow(false)
         }
         context.server.hideTopbar = () => setShow(false);
-    }, [context.server])
+    }, [context.server]);
 
     return <TopBarContext.Provider value={{
         show: () => setShow(true),

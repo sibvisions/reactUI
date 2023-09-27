@@ -72,7 +72,8 @@
   --error-dialog-textarea-height:8rem;
   --error-dialog-icon-size:2rem;
   --crash-message-size:2rem;
-  --crash-stack-height:8rem; }
+  --crash-stack-height:8rem;
+  --topbar-position: "top"; }
 
 body {
   font-size: var(--font-size); }
