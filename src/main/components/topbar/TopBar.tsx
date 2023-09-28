@@ -56,7 +56,7 @@ export function showTopBar(promise: Promise<any>, topbar: TopBarContextType|unde
 };
 
 // Shows a topbar at the top of the browser when a promise is being processed.
-const TopBar:FC = ({children}) => {
+const TopBar:FC = () => {
     const context = useContext(appContext);
 
     const [show, setShow] = useState(false);
@@ -64,6 +64,10 @@ const TopBar:FC = ({children}) => {
     const [allowTopbarSettings, setAllowTopbarSettings] = useState(false);
 
     const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
+
+    const yellowTimeout = useRef<NodeJS.Timeout|null>(null);
+
+    const redTimeout = useRef<NodeJS.Timeout|null>(null);
 
     useEffect(() => {
         context.designerSubscriptions.subscribeToTopbarColor(() => setDesignerTopbarChanged(prevState => !prevState))
@@ -141,6 +145,55 @@ const TopBar:FC = ({children}) => {
             hide: () => setShow(false)
         }
     }, [context.server]);
+
+    useEffect(() => {
+        if (show) {
+            let  yellowTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-medium-interval"));
+            console.log(yellowTimeoutInterval)
+            if (!isNaN(yellowTimeoutInterval) && yellowTimeoutInterval) {
+                yellowTimeout.current = setTimeout(() => {
+                    TopBarProgress.config({
+                        barColors: {0: "#efff40"},
+                        shadowBlur: topbarSettings.shadowBlur,
+                        barThickness: topbarSettings.barThickness,
+                        shadowColor: topbarSettings.shadowColor
+                    });
+                }, yellowTimeoutInterval);
+            }
+
+            let  redTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-long-interval"));
+            if (!isNaN(redTimeoutInterval) && redTimeoutInterval) {
+                redTimeout.current = setTimeout(() => {
+                    TopBarProgress.config({
+                        barColors: {0: "#d60000"},
+                        shadowBlur: topbarSettings.shadowBlur,
+                        barThickness: topbarSettings.barThickness,
+                        shadowColor: topbarSettings.shadowColor
+                    });
+                }, redTimeoutInterval);
+            }
+        }
+        else {
+            if (yellowTimeout.current) {
+                clearTimeout(yellowTimeout.current);
+                yellowTimeout.current = null;
+            }
+
+            if (redTimeout.current) {
+                clearTimeout(redTimeout.current);
+                redTimeout.current = null;
+            }
+
+            if (topbarSettings) {
+                TopBarProgress.config({
+                    barColors: Object.fromEntries((topbarSettings.barColors as string[]).map((v, idx, a) => [idx / (a.length - 1), v])),
+                    shadowBlur: topbarSettings.shadowBlur,
+                    barThickness: topbarSettings.barThickness,
+                    shadowColor: topbarSettings.shadowColor
+                });
+            }
+        }
+    }, [show])
 
     return (
         <>
