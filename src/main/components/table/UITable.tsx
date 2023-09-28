@@ -1046,6 +1046,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                 name={props.name}
                                 screenName={screenName}
                                 cellData={rowData[colName]}
+                                cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
                                 dataProvider={props.dataBook}
                                 dataProviderReadOnly={metaData?.readOnly}
                                 colName={colName}

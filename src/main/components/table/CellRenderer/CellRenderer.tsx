@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useContext, useMemo } from "react"
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo } from "react"
 import CELLEDITOR_CLASSNAMES from "../../editors/CELLEDITOR_CLASSNAMES"
 import DirectCellRenderer from "./DirectCellRenderer"
 import ImageCellRenderer from "./ImageCellRenderer"
@@ -27,11 +27,13 @@ import useMetaData from "../../../hooks/data-hooks/useMetaData"
 import IconProps from "../../comp-props/IconProps"
 import { CellFormatting } from "../CellEditor"
 import { getFont, parseIconData } from "../../comp-props/ComponentProperties"
+import { SelectedCellContext } from "../UITable"
 
 export interface ICellRenderer {
     name:string
     screenName: string,
     cellData: any,
+    cellId: string,
     dataProvider: string,
     dataProviderReadOnly?: boolean,
     colName: string,
@@ -49,6 +51,9 @@ export interface ICellRenderer {
 const CellRenderer: FC<ICellRenderer> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
+    /** Context for the selected cell */
+    const cellContext = useContext(SelectedCellContext);
 
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
@@ -141,6 +146,7 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
     }, [columnMetaData?.cellEditor.className]);
 
     const handleClickEvent = useCallback(() => {
+        console.log('CLICK EVENT')
         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1 &&
             props.setStoredClickEvent && props.setEdit) {
             props.setStoredClickEvent(() => {
@@ -153,12 +159,13 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
         <div
             style={cellStyles.cellStyle}
             className={cellStyles.cellClassNames.join(' ')}
-            onClick={columnMetaData?.cellEditor.preferredEditorMode === 1 ? () => {
-                handleClickEvent()
-            }: undefined}
-            onDoubleClick={columnMetaData?.cellEditor.preferredEditorMode !== 1 ? () => {
-                handleClickEvent()
-            }: undefined}>
+            onMouseUp={(e) => {
+                if (cellContext.selectedCellId === props.cellId) {
+                    if ((columnMetaData?.cellEditor.preferredEditorMode === 1 && e.detail === 1) || (columnMetaData?.cellEditor.preferredEditorMode !== 1 && e.detail === 2)) {
+                        handleClickEvent();
+                    }
+                }
+            }}>
             <Renderer columnMetaData={columnMetaData!} icon={icon} {...props} {...rendererProps} />
         </div>
     )

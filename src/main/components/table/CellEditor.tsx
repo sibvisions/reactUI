@@ -282,42 +282,6 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     //     }
     // }, [props.cellStyle.cellIcon?.icon, context.server.RESOURCE_URL]);
 
-    const [Component, extraProps] = useMemo(() => {
-        switch (columnMetaData?.cellEditor.className) {
-            case CELLEDITOR_CLASSNAMES.CHECKBOX:
-            case CELLEDITOR_CLASSNAMES.CHOICE:
-                return [ DirectCellRenderer, {filter: filter} ]
-            case CELLEDITOR_CLASSNAMES.DATE:
-                return [ DateCellRenderer, {stateCallback: () => { 
-                    //setWaiting(true); 
-                    setEdit(true) 
-                }} ]
-            case CELLEDITOR_CLASSNAMES.IMAGE:
-                return [ ImageCellRenderer ]
-            case CELLEDITOR_CLASSNAMES.LINKED:
-                return [ LinkedCellRenderer, {stateCallback: () => { 
-                    //setWaiting(true);
-                    setEdit(true) 
-                }, decreaseCallback: (linkDatabook:string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}]
-            case CELLEDITOR_CLASSNAMES.NUMBER:
-                return [ NumberCellRenderer ]
-            case CELLEDITOR_CLASSNAMES.TEXT:
-                return [ TextCellRenderer ]
-            default:
-                return [(props:any) => <span className="cell-data-content">{props.cellData}</span>]
-        }
-    }, [columnMetaData?.cellEditor.className])
-
-    const handleDoubleClick = useCallback(() => {
-        if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1) {
-            //setWaiting(true);
-            setEdit(true)
-        }
-    }, [
-        //setWaiting, 
-        setEdit
-    ]);
-
     useEffect(() => {
         props.setIsEditing(edit);
     }, [edit])
@@ -338,6 +302,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                 name={props.name}
                 screenName={props.screenName}
                 cellData={props.cellData}
+                cellId={props.cellId}
                 dataProvider={props.dataProvider}
                 dataProviderReadOnly={props.dataProviderReadOnly}
                 colName={props.colName}
