@@ -257,7 +257,12 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
             if (outerVa === VERTICAL_ALIGNMENT.STRETCH) {
                 top = margins.marginTop;
-                height = (style.height as number) - margins.marginTop - margins.marginBottom;
+                if (style.height) {
+                    height = (style.height as number) - margins.marginTop - margins.marginBottom;
+                }
+                else {
+                    height = prefSize.height - margins.marginTop - margins.marginBottom;
+                }
             }
             else {
                 if (style.height) {
