@@ -54,7 +54,7 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
     }, [baseProps.className])
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IBaseComponent>(baseProps, hasConstantFallback ? {visibility: "hidden"} : undefined);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IBaseComponent>(baseProps, hasConstantFallback ? {visibility: "hidden"} : undefined);
 
     /** Hook for MouseListener */
     useMouseListener(props.name, forwardedRef.current ? forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -135,7 +135,7 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
             props.onLoadCallback
         ),
         props.onLoadCallback,
-        props.className === COMPONENT_CLASSNAMES.LABEL ? props.text : undefined
+        [COMPONENT_CLASSNAMES.LABEL, COMPONENT_CLASSNAMES.BUTTON].indexOf(props.className as COMPONENT_CLASSNAMES) !== -1 ? props.text : undefined
     );
 
     const childrenWithProps = React.Children.map(baseProps.children, (child: any) => {
@@ -146,7 +146,7 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
                 ...props,
                 forwardedRef: forwardedRef,
                 context: context,
-                topbar: topbar,
+                topbar: context.server.topbar,
                 layoutStyle: layoutStyle,
                 compStyle: compStyle,
                 styleClassNames: styleClassNames,
