@@ -207,7 +207,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     /** The metadata for the given databook */
-    const metaData:MetaDataResponse = useMetaData(screenName, props.dataBook) as MetaDataResponse
+    const metaData:MetaDataResponse|undefined = useMetaData(screenName, props.dataBook) as MetaDataResponse|undefined
 
     /** Hook for MouseListener */
     useMouseListener(props.name, chartRef.current ? chartRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -264,7 +264,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                         return labels.indexOf(dataRow[xColumnName])
                     }
                     else {
-                        const foundColumnDefinition = metaData.columns.find(column => column.name === xColumnName);
+                        const foundColumnDefinition = metaData?.columns.find(column => column.name === xColumnName);
                         if (foundColumnDefinition) {
                             if (foundColumnDefinition.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE) {
                                 return new Date(dataRow[xColumnName]);
@@ -528,7 +528,8 @@ const UIChart: FC<IChart> = (baseProps) => {
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
         const isDateXColumn = () => {
-            return metaData.columns.find(column => column.name === xColumnName)?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE;
+            console.log(metaData, xColumnName, props.dataBook)
+            return metaData?.columns.find(column => column.name === xColumnName)?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE;
         }
 
         const tooltip = {
@@ -647,8 +648,8 @@ const UIChart: FC<IChart> = (baseProps) => {
                             selectReq.componentId = props.name;
                             selectReq.dataProvider = props.dataBook;
                             selectReq.filter = {
-                                columnNames: metaData.primaryKeyColumns,
-                                values: Object.values(_.pick(foundData, metaData.primaryKeyColumns))
+                                columnNames: metaData?.primaryKeyColumns || [],
+                                values: Object.values(_.pick(foundData, metaData?.primaryKeyColumns || []))
                             }
                             selectReq.selectedColumn = label
                             showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), context.server.topbar);
@@ -665,7 +666,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 indexAxis: horizontal ? 'y' : 'x',
             }
         }
-    }, [props.chartStyle, providerData, layoutStyle?.width, layoutStyle?.height]);
+    }, [props.chartStyle, providerData, layoutStyle?.width, layoutStyle?.height, metaData]);
 
     /** Fetches the data from the databook if the data isn't available */
     useFetchMissingData(screenName, props.dataBook);
