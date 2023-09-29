@@ -28,7 +28,7 @@ import { createAliveRequest,
          createUIRefreshRequest,
          getClientId } from "../factories/RequestFactory";
 import { Designer, ICustomContent } from "../../MiddleMan";
-import { showTopBar, TopBarContext } from "../components/topbar/TopBar";
+import { showTopBar } from "../components/topbar/TopBar";
 import ContentStoreFull from "../contentstore/ContentStoreFull";
 import ServerFull from "../server/ServerFull";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
@@ -164,9 +164,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
     const [restart, setRestart] = useState<boolean>(false);
 
     const [sessionExpired, setSessionExpired] = useState<boolean>(false);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
 
     const aliveInterval = useRef<any>();
 
@@ -326,7 +323,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                     if (!isDesignerVisible(contextState.designer)) {
                                         const openReq = createOpenScreenRequest();
                                         openReq.className = jscmd.arguments.className;
-                                        showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
+                                        showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), contextState.server.topbar);
                                     }
                                 }
                                 else if (jscmd.command === "dyn:reloadCss") {
@@ -334,7 +331,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                 }
                                 else if (jscmd.command === "api/menu") {
                                     const menuReq = createBaseRequest();
-                                    showTopBar(contextState.server.sendRequest(menuReq, REQUEST_KEYWORDS.MENU), topbar);
+                                    showTopBar(contextState.server.sendRequest(menuReq, REQUEST_KEYWORDS.MENU), contextState.server.topbar);
                                 }
                             }
                             reader.readAsText(e.data);

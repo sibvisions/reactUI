@@ -17,7 +17,7 @@ import { useEffect, useState, useContext, useCallback } from "react";
 import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
 import { appContext } from "../../contexts/AppProvider";
 import { createAboutRequest, createLogoutRequest } from "../../factories/RequestFactory";
-import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
+import { showTopBar } from "../../components/topbar/TopBar";
 import ContentStore from "../../contentstore/ContentStore";
 import { MenuOptions, VisibleButtons } from "../../AppSettings";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
@@ -31,9 +31,6 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
     /** The model of the profile-menu */
     const [model, setModel] = useState<Array<MenuItem>>();
 
@@ -46,7 +43,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
         localStorage.removeItem("authKey")
         context.contentStore.reset();
         (context.contentStore as ContentStore).currentUser  = new UserData();
-        showTopBar(context.server.sendRequest(logoutRequest, REQUEST_KEYWORDS.LOGOUT), topbar)
+        showTopBar(context.server.sendRequest(logoutRequest, REQUEST_KEYWORDS.LOGOUT), context.server.topbar)
     }, [context.server, context.contentStore]);
 
     // Subscribes to appsettings
@@ -98,7 +95,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             label: translation.get("About"),
             icon: "pi pi-info-circle",
             command() {
-                showTopBar(context.server.sendRequest(createAboutRequest(), REQUEST_KEYWORDS.ABOUT), topbar)
+                showTopBar(context.server.sendRequest(createAboutRequest(), REQUEST_KEYWORDS.ABOUT), context.server.topbar)
                 //context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
             }
         })

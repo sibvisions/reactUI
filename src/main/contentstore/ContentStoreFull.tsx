@@ -99,6 +99,9 @@ export default class ContentStoreFull extends BaseContentStore {
                 if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                     this.updateToolBarProperties(existingComp as IToolBarPanel, newComp as IToolBarPanel, newPropName);
                 }
+                else if (existingComp.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComp as IPanel)) {
+                    this.updatePopupProperties(existingComp as IPanel, newComp as IPanel, newPropName)
+                }
             }
         }
     }
@@ -281,6 +284,15 @@ export default class ContentStoreFull extends BaseContentStore {
                         if (updateMain && updateCenter) {
                             updateMain(existingTbMain);
                             updateCenter(existingTbCenter);
+                        }
+                    }
+                }
+                else if (existingComponent.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComponent as IPanel)) {
+                    const existingPopup = this.flatContent.get(existingComponent.id + "-popup") || this.removedContent.get(existingComponent.id + "-popup");
+                    if (existingPopup) {
+                        const updatePopup = this.subManager.propertiesSubscriber.get(existingPopup.id);
+                        if (updatePopup) {
+                            updatePopup(existingPopup);
                         }
                     }
                 }

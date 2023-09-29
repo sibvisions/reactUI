@@ -36,7 +36,7 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
     const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle] = useComponentConstants<ICustomComponentWrapper>(baseProps);
+    const [context, [props], layoutStyle] = useComponentConstants<ICustomComponentWrapper>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

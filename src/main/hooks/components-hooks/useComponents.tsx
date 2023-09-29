@@ -178,7 +178,11 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
     },[context.contentStore, id, preferredSizes, className, tempSizes.current]);
     
     /** Current state of a parents Childcomponents as reactchildren */
-    const [components, setComponents] = useState<Array<ReactElement>>(buildComponents());
+    const [components, setComponents] = useState<Array<ReactElement>>([]);
+
+    useEffect(() => {
+        setComponents(buildComponents())
+    }, [])
 
     // The children components of a parent
     const children = useMemo(() => Array.from(context.contentStore.getChildren(id).values()), [components]);

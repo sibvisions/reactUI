@@ -97,11 +97,10 @@ const MiddleMan: FC<ICustomContent> = (props) => {
     return (
         <HashRouter>
             <AppProvider {...props}>
-                <TopBar>
-                    <EmbedProvider embedOptions={props.embedOptions}>
-                        {props.embedOptions !== undefined ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
-                    </EmbedProvider>
-                </TopBar>
+                <TopBar />
+                <EmbedProvider embedOptions={props.embedOptions}>
+                    {props.embedOptions !== undefined ? <ReactUIEmbedded {...props} /> : <ReactUI {...props}/>}
+                </EmbedProvider>
             </AppProvider>
         </HashRouter>
     )

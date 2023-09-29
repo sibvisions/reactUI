@@ -17,6 +17,7 @@ import ParameterRequest from "../comp/ParameterRequest";
 
 /** Interface for OpenScreenRequest */
 interface OpenScreenRequest extends ParameterRequest {
-    className?:string
+    className?:string,
+    readAheadLimit?: number
 }
 export default OpenScreenRequest;

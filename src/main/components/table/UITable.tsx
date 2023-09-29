@@ -25,7 +25,7 @@ import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
 import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
-import MetaDataResponse from "../../response/data/MetaDataResponse";
+import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
 import useSortDefinitions from "../../hooks/data-hooks/useSortDefinitions";
@@ -38,7 +38,7 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { getFocusComponent } from "../../util/html-util/GetFocusComponent";
-import { CellEditor } from "./CellEditor";
+import { CellEditor, ICellRender } from "./CellEditor";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
@@ -47,6 +47,7 @@ import Dimension from "../../util/types/Dimension";
 import { IExtendableTable } from "../../extend-components/table/ExtendTable";
 import { ICellEditorLinked } from "../editors/linked/UIEditorLinked";
 import { IComponentConstants } from "../BaseComponent";
+import CellRenderer from "./CellRenderer/CellRenderer";
 
 
 /** Interface for Table */
@@ -88,8 +89,11 @@ interface ISelectedCell {
 export const SelectedCellContext = createContext<ISelectedCell>({});
 
 /** Returns the columnMetaData */
-export const getColMetaData = (colName:string, metaData?:MetaDataResponse) => {
-    return metaData?.columns.find(column => column.name === colName);
+export const getColMetaData = (colName:string, columns?:(LengthBasedColumnDescription | NumericColumnDescription)[]) => {
+    if (columns) {
+        return columns.find(column => column.name === colName);
+    }
+    return undefined
 }
 
 function convertRemToPixels(rem:number) {    
@@ -316,10 +320,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     props.onRowSelect({ originalEvent: rowSelectionHelper.current.event, selectedRow: rowSelectionHelper.current.data })
                 }
                 if (selectedRow.index !== rowSelectionHelper.current.index) {
-                    setTableIsSelecting(true);
+                    //setTableIsSelecting(true);
                 }
                 sendSelectRequest(rowSelectionHelper.current.selectedColumn, rowSelectionHelper.current.filter, rowSelectionHelper.current.index).then(() => {
-                    setTableIsSelecting(false);
+                    //setTableIsSelecting(false);
                     rowSelectionHelper.current = undefined;
                 });
             }
@@ -341,8 +345,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         //await showTopBar(context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true, RequestQueueMode.IMMEDIATE), topbar);
         await showTopBar(props.context.server.sendRequest(selectReq, filter ? REQUEST_KEYWORDS.SELECT_ROW : REQUEST_KEYWORDS.SELECT_COLUMN), props.topbar);
     }, [props.dataBook, props.name, props.context.server, providerData])
-
-
 
     /**
      * Scrolls the table to the selected cell
@@ -535,7 +537,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         theader[i].style.removeProperty('width')
                         const newCellWidth = { widthPreSet: false, width: 0 }
                         const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
-                        const columnMetaData = getColMetaData(colName, metaData);
+                        const columnMetaData = getColMetaData(colName, metaData?.columns);
                         if (columnMetaData?.width) {
                             newCellWidth.width = columnMetaData.width;
                             newCellWidth.widthPreSet = true;
@@ -602,8 +604,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 }
             }
         }
-
-        setColumnOrder(props.columnNames)
     },[metaData])
 
     /** When providerData changes set state of virtual rows*/
@@ -614,6 +614,17 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             return out;
         })());
     }, [providerData, rows]);
+
+    useLayoutEffect(() => {
+        props.columnNames.forEach(colName => {
+            const columnMetaData = getColMetaData(colName, metaData?.columns);
+            if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
+                && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask
+                && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
+                linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
+            }
+        })
+    }, [metaData?.columns, props.columnNames])
 
     // Adds and removes the sort classnames to the headers for styling
     // If the lib user extends the Table with onSort, call it when the user sorts.
@@ -913,11 +924,15 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 selectPreviousCellAndRow(true)
             }
         }
-    }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow])
+    }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow]);
+
+    const selectNextCallback = useCallback((key: string) => selectNext.current && selectNext.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectNext.current, props.enterNavigationMode, props.tabNavigationMode]);
+
+    const selectPreviousCallback = useCallback((key: string) => selectPrevious.current && selectPrevious.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectPrevious.current, props.enterNavigationMode, props.tabNavigationMode]);
 
     /** Building the columns */
     const columns = useMemo(() => {
-        const createColumnHeader = (colName: string, colIndex: number) => {
+        const createColumnHeader = (colName: string, colIndex: number, isNullable?: boolean) => {
             let sortIndex = ""
             if (sortDefinitions && sortDefinitions.length) {
                 let foundIndex = sortDefinitions.findIndex(sortDef => sortDef.columnName === colName);
@@ -927,23 +942,18 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
             return (
                 <>
-                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (getColMetaData(colName, metaData)?.nullable === false ? " *" : "") }} />
+                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (isNullable === false ? " *" : "") }} />
                     <span onClick={() => handleSort(colName)} className="p-sortable-column-icon pi pi-fw"></span>
                     <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
         }
 
         return props.columnNames.map((colName, colIndex) => {
-            const columnMetaData = getColMetaData(colName, metaData);
+            const columnMetaData = getColMetaData(colName, metaData?.columns);
             const className = columnMetaData?.cellEditor?.className;
-            if (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
-                && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask
-                && !linkedRefFetchList.current.includes((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook)) {
-                linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
-            }
             return <Column
                 field={colName}
-                header={createColumnHeader(colName, colIndex)}
+                header={createColumnHeader(colName, colIndex, columnMetaData?.nullable)}
                 key={colName}
                 headerClassName={concatClassnames(colName, (props.columnLabels[colIndex] === "☐" || props.columnLabels[colIndex] === "☑") ? 'select-column' : "")}
                 headerStyle={{
@@ -955,32 +965,22 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 }}
                 body={(rowData: any, tableInfo: any) => {
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
-                    else {
-                        const currDataRow = providerData[tableInfo.rowIndex]
-                        const values = primaryKeys.map(pk => currDataRow[pk]);
-                        const filter: SelectFilter = {
-                            columnNames: primaryKeys,
-                            values: values
-                        }
+                    else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
                         return <CellEditor
+                            key={colName + '-' + tableInfo.rowIndex}
                             rowData={rowData}
-                            pk={_.pick(rowData, primaryKeys)}
+                            primaryKeys={primaryKeys}
                             screenName={screenName}
-                            name={props.name as string}
+                            name={props.name}
                             colName={colName}
                             dataProvider={props.dataBook}
                             cellData={rowData[colName]}
                             cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                             resource={props.context.server.RESOURCE_URL}
-                            cellId={() => ({
-                                selectedCellId: props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()
-                            })}
+                            cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
                             tableContainer={props.forwardedRef.current ? props.forwardedRef.current : undefined}
-                            selectNext={(navigationMode: Navigation) => selectNext.current && selectNext.current(navigationMode)}
-                            selectPrevious={(navigationMode: Navigation) => selectPrevious.current && selectPrevious.current(navigationMode)}
-                            enterNavigationMode={enterNavigationMode}
-                            tabNavigationMode={tabNavigationMode}
-                            selectedRow={selectedRow}
+                            selectNext={selectNextCallback}
+                            selectPrevious={selectPreviousCallback}
                             className={className}
                             colReadonly={columnMetaData?.readonly}
                             tableEnabled={props.enabled}
@@ -991,16 +991,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                             deleteEnabled={metaData?.deleteEnabled}
                             dataProviderReadOnly={metaData?.readOnly}
                             setIsEditing={setIsEditing}
-                            stopEditing={() => {
-                                const table = props.context.contentStore.flatContent.get(id);
-                                if (table) {
-                                    (table as TableProps).startEditing = false;
-                                    props.context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [table]);
-                                }
-                            }}
                             rowNumber={tableInfo.rowIndex}
                             colIndex={colIndex}
-                            filter={filter}
                             removeTableLinkRef={
                                 (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
                                     && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
@@ -1017,7 +1009,27 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                                     :
                                     undefined
                             }
-                            tableIsSelecting={tableIsSelecting} />
+                            tableIsSelecting={tableIsSelecting}
+                        />
+                    }
+                    else {
+                        return (
+                            <CellRenderer
+                                key={"cell-" + colName + '-' + tableInfo.rowIndex}
+                                name={props.name}
+                                screenName={screenName}
+                                cellData={rowData[colName]}
+                                cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
+                                dataProvider={props.dataBook}
+                                dataProviderReadOnly={metaData?.readOnly}
+                                colName={colName}
+                                colIndex={colIndex}
+                                primaryKeys={primaryKeys}
+                                rowData={rowData}
+                                rowNumber={tableInfo.rowIndex}
+                                cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
+                                isHTML={typeof rowData[colName] === "string" && (rowData[colName] as string).includes("<html>")} />
+                        )
                     }
                 }}
                 style={{ whiteSpace: 'nowrap', '--colName': colName }}
@@ -1033,10 +1045,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             />
         })
     }, [
-        props.columnNames, props.columnLabels, props.dataBook, props.context.contentStore, props.id,
-        props.context.server.RESOURCE_URL, props.name, screenName, props.tableHeaderVisible, sortDefinitions,
-        enterNavigationMode, tabNavigationMode, metaData, primaryKeys, columnOrder, selectedRow, providerData,
-        props.startEditing, tableIsSelecting
+        props.columnNames, props.columnLabels, props.dataBook, 
+        props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
+        metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled, 
+        primaryKeys, metaData?.deleteEnabled, props.startEditing,
+        tableIsSelecting, columnOrder, providerData, selectedRow?.index
     ])
 
     // When a row is selected send a selectRow request to the server
@@ -1061,29 +1074,32 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
     const handleLazyLoad = useCallback((e: VirtualScrollerLazyParams) => {
         let {first, last} = e;
-        if(typeof first === "number" && typeof last === "number") {
-            last = Math.max(first, last);
-            const length = last - first + 1;
-            setListLoading(true);
-            firstRowIndex.current = first;
-            if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
-                const fetchReq = createFetchRequest();
-                fetchReq.dataProvider = props.dataBook;
-                fetchReq.fromRow = providerData.length;
-                fetchReq.rowCount = 100;
-                showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar).then((result) => {
-                    if (props.onLazyLoadFetch && result[0]) {
-                        props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))
-                    }
-
+        if(typeof first === "number" && typeof last === "number" && firstRowIndex.current !== first) {
+            if (firstRowIndex.current !== first) {
+                last = Math.max(first, last);
+                const length = last - first + 1;
+                setListLoading(true);
+                if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
+                    const fetchReq = createFetchRequest();
+                    fetchReq.dataProvider = props.dataBook;
+                    fetchReq.fromRow = providerData.length;
+                    fetchReq.rowCount = 100;
+                    showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar).then((result) => {
+                        if (props.onLazyLoadFetch && result[0]) {
+                            props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))
+                        }
+    
+                        setListLoading(false);
+                    });
+                } 
+                else {
+                    const slicedProviderData = providerData.slice(first, last);
+                    const data = [...virtualRows];
+                    data.splice(first, slicedProviderData.length, ...slicedProviderData);
+                    setVirtualRows(data);
                     setListLoading(false);
-                });
-            } else {
-                const slicedProviderData = providerData.slice(first, last);
-                const data = [...virtualRows];
-                data.splice(first, slicedProviderData.length, ...slicedProviderData);
-                setVirtualRows(data);
-                setListLoading(false);
+                }
+                firstRowIndex.current = first;
             }
         }
     }, [virtualRows]);
@@ -1308,7 +1324,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     useEffect(() => {
         //this will force the table to refresh its internal visible item count
-        setItemSize(tableRowHeight + Math.random() / 1E10);
+        //setItemSize(tableRowHeight + Math.random() / 1E10);
 
         if (tableRef.current) {
             const table = tableRef.current as any;

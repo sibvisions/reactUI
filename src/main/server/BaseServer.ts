@@ -124,8 +124,6 @@ export default abstract class BaseServer {
 
     topbar: TopBarContextType|undefined;
 
-    hideTopbar:Function = () => {};
-
     maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
 
     screensToClose:{windowId: string, windowName: string, closeDirectly: boolean|undefined}[] = [];
@@ -135,6 +133,8 @@ export default abstract class BaseServer {
     homeButtonPressed = false;
 
     contentDataBooksToDelete: Map<string, string[]> = new Map<string, string[]>();
+
+    timeStart:number|undefined = undefined;
 
     /**
      * @constructor constructs server instance
@@ -246,7 +246,17 @@ export default abstract class BaseServer {
                             // Contents are saved under the "main" screen (dataProvider.split("/")[1]) but to check if a content is opened we have to get the name differently.
                             const dataProviderScreenName = this.getScreenName(request.dataProvider);
                             const activeScreenName = request.screenName ? request.screenName : splitDataProvider[splitDataProvider.length - 2];
-                            const screenIsOpen = this.contentStore.activeScreens.some(as => !as.popup ? as.name === dataProviderScreenName : as.name === activeScreenName);
+                            const screenIsOpen = this.contentStore.activeScreens.some(as => {
+                                const acitveScreenComponent = this.contentStore.getComponentById(as.id);
+                                if (acitveScreenComponent) {
+                                    if ((acitveScreenComponent as IPanel).content_modal_) {
+                                        return as.name === activeScreenName;
+                                    }
+                                    else {
+                                        return as.name === dataProviderScreenName;
+                                    }
+                                }
+                            });
                             // Not sending dataprovider request if the screen isnt opened
                             if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
                                 this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
@@ -307,7 +317,7 @@ export default abstract class BaseServer {
                 this.timeoutRequest(
                     fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                     this.timeoutMs, 
-                    () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse)
+                    () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse), finalEndpoint
                 )
                     .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                     .then(result => {
@@ -435,13 +445,16 @@ export default abstract class BaseServer {
      * @param promise - the promise
      * @param ms - the ms to wait before a timeout
      */
-    timeoutRequest(promise: Promise<any>, ms: number, retry?:Function) {
+    timeoutRequest(promise: Promise<any>, ms: number, retry?:Function, endpoint?:string) {
         return new Promise((resolve, reject) => {
             let timeoutId= setTimeout(() => {
                 this.subManager.emitErrorBarProperties(false, false, false, 6, translation.get("Server error!"), translation.get("Timeout! Couldn't connect to the server."), retry);
                 this.subManager.emitErrorBarVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
+            if (endpoint === "/api/dal/selectRecord") {
+                this.timeStart = Date.now();
+            }
             promise.then(res => {
                     clearTimeout(timeoutId);
                     resolve(res);

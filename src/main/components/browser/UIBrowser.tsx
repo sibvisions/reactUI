@@ -34,7 +34,6 @@ export interface IBrowser extends IBaseComponent, IComponentConstants {
  * @param baseProps - Initial properties sent by the server for this component
  */
 const UIBrowser: FC<IBrowser> = (props) => {
-
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
 

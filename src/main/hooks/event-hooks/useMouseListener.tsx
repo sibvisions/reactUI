@@ -17,7 +17,7 @@ import { useContext, useMemo, useRef } from "react";
 import useEventHandler from "../event-hooks/useEventHandler";
 import { appContext } from "../../contexts/AppProvider";
 import { createMouseClickedRequest, createMouseRequest } from "../../factories/RequestFactory";
-import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
+import { showTopBar } from "../../components/topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 
 /** Returns which mouse-button was pressed */
@@ -55,9 +55,6 @@ const useMouseListener = (
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
     const pressedElement = useRef<boolean>(false);
 
     const pressedX = useRef<number>();
@@ -92,7 +89,7 @@ const useMouseListener = (
             pressReq.x = event.x;
             pressReq.y = event.y;
             pressReq.clickCount = event.detail;
-            const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_KEYWORDS.MOUSE_PRESSED), topbar);
+            const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_KEYWORDS.MOUSE_PRESSED), context.server.topbar);
             hold ? hold("pressed", release) : release();
         }
     }
@@ -109,7 +106,7 @@ const useMouseListener = (
             clickReq.x = event.x;
             clickReq.y = event.y;
             clickReq.clickCount = event.detail;
-            const release = () => showTopBar(context.server.sendRequest(clickReq, REQUEST_KEYWORDS.MOUSE_CLICKED), topbar);
+            const release = () => showTopBar(context.server.sendRequest(clickReq, REQUEST_KEYWORDS.MOUSE_CLICKED), context.server.topbar);
             hold ? hold("clicked", release) : release();
         } else if (hold) {
             hold("cancelled", () => {});
@@ -122,7 +119,7 @@ const useMouseListener = (
             releaseReq.x = event.x;
             releaseReq.y = event.y;
             releaseReq.clickCount = event.detail;
-            const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_KEYWORDS.MOUSE_RELEASED), topbar);
+            const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_KEYWORDS.MOUSE_RELEASED), context.server.topbar);
             hold ? hold("released", release) : release();
         }
 

@@ -116,9 +116,14 @@ class API implements IAPI {
      * @param id - the id of the screen opened
      * @param parameter - optional parameters that are being sent to the server
      */
-    sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }) {
+    sendOpenScreenRequest(id:string, parameter?: { [key: string]: any }, readAheadLimit?: number) {
         const openReq = createOpenScreenRequest();
         openReq.className = id;
+
+        if (readAheadLimit !== undefined) {
+            openReq.readAheadLimit = readAheadLimit;
+        }
+
         if (parameter) {
             openReq.parameter = parameter;
         }

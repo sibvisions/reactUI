@@ -267,7 +267,7 @@ class Server extends BaseServer {
      * @param responses - the responses received
      */
     async responseHandler(responses: Array<BaseResponse>, request: any) {
-        if (Array.isArray(responses)) {
+        if (Array.isArray(responses)) {       
             await super.responseHandler(responses, request);
             // if there is a screen to close don't route to prevent flickering
             if (!this.screensToClose.length) {

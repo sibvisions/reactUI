@@ -20,7 +20,7 @@ import L, { PolylineOptions } from "leaflet";
 import tinycolor from 'tinycolor2';
 import { appContext } from "../../contexts/AppProvider";
 import IBaseComponent from "../../util/types/IBaseComponent";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { showTopBar } from "../topbar/TopBar";
 import MapLocation from "../../util/types/MapLocation";
 import { parseMapLocation, parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
@@ -124,9 +124,6 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.pointsDataBook || props.groupDataBook) as string;
 
@@ -170,7 +167,7 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
             shadowUrl: require("leaflet/dist/images/marker-shadow.png")
           });
 
-        showTopBar(sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server), topbar);
+        showTopBar(sendMapFetchRequests(props.groupDataBook, props.pointsDataBook, context.server), context.server.topbar);
     },[context.server, props.groupDataBook, props.pointsDataBook]);
 
     // When the center changes set map view
@@ -222,8 +219,8 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
         }
 
         if (props.pointSelectionLockedOnCenter && selectedMarker) {
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server, topbar);
-            setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getLatLng().lat, selectedMarker.getLatLng().lng], context.server, context.server.topbar);
+            setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), context.server.topbar), 200);
         }
     },[props.pointSelectionLockedOnCenter, selectedMarker, context.server, props.latitudeColumnName, 
        props.longitudeColumnName, props.name, props.pointsDataBook, props.onDragEnd])
@@ -242,8 +239,8 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
                 props.onSelectedMarkerChanged(e.latlng.lat, e.latlng.lng);
             }
 
-            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [e.latlng.lat, e.latlng.lng], context.server, topbar);
-            setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
+            sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [e.latlng.lat, e.latlng.lng], context.server, context.server.topbar);
+            setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), context.server.topbar), 200);
         }
     },[selectedMarker, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter, context.server, 
        props.latitudeColumnName, props.longitudeColumnName, props.name, props.pointsDataBook, props.onClick])
