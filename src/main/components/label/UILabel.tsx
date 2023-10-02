@@ -61,14 +61,8 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (labelRef.current && onLoadCallback) {
-            const workscreenComponent = context.contentStore.getComponentByName(context.contentStore.getScreenName(id) as string);
-            if (workscreenComponent && context.contentStore.isPopup((workscreenComponent as IPanel))) {
-                const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
-                debounced()
-            }
-            else {
-                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
-            }
+            const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
+            debounced()
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
 
