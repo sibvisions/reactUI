@@ -17,7 +17,7 @@ import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useMe
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
 import { ILoginForm } from "./LoginForm";
-import { showTopBar } from "../../main/components/topbar/TopBar";
+import { TopBarContextType, showTopBar } from "../../main/components/topbar/TopBar";
 import { MFAURLType } from "../../main/response/login/LoginResponse";
 import UIGauge, { GAUGE_STYLES } from "../../main/components/gauge/UIGauge";
 import { createCancelLoginRequest } from "../../main/factories/RequestFactory";
@@ -152,7 +152,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
                     </div>
                     <UIGauge
                         context={context}
-                        topbar={topbar}
+                        topbar={context.server.topbar as TopBarContextType}
                         translation={new Map<string, string>()}
                         compStyle={{}}
                         forwardedRef={gaugeRef}
