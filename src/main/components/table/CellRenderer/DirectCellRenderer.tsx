@@ -13,10 +13,10 @@
  * the License.
  */
 
-import React, { FC, useRef } from "react";
+import React, { FC, useContext, useRef } from "react";
 import CellEditorWrapper from "../../editors/CellEditorWrapper";
 import { ICellRender } from "../CellEditor";
-import useConstants from "../../../hooks/components-hooks/useConstants";
+import { appContext } from "../../../contexts/AppProvider";
 
 /**
  * This Component renders Direct-Cell-Editors, which can be clicked directly and don't have to be opened extra. Eg. Checkbox and Choice
@@ -25,7 +25,7 @@ import useConstants from "../../../hooks/components-hooks/useConstants";
 const DirectCellRenderer: FC<ICellRender> = (props) => {
     const forwardedRef = useRef<any>();
 
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext)
 
     return (
         <>
@@ -48,7 +48,7 @@ const DirectCellRenderer: FC<ICellRender> = (props) => {
                         colIndex: props.colIndex,
                         forwardedRef: forwardedRef,
                         context: context,
-                        topbar: topbar,
+                        topbar: context.server.topbar,
                         layoutStyle: { width: "100%", height: "100%" }
                     }}
                 />
