@@ -370,7 +370,10 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
             if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {
                 runAfterLayout(() => {
-                    reportSize({ height: prefSize.height + margins.marginTop + margins.marginBottom, width: prefSize.width + margins.marginLeft + margins.marginRight });
+                    reportSize({ 
+                        height: prefSize.height + margins.marginTop + margins.marginBottom + (toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0), 
+                        width: prefSize.width + margins.marginLeft + margins.marginRight + (toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0)
+                    });
                 });
             }
             if (baseProps.popupSize) {
