@@ -597,6 +597,7 @@ class Server extends BaseServer {
                 const inputElem = document.getElementById(request.componentId + "-upload");
                 if (inputElem) {
                     inputElem.setAttribute("upload-file-id", uploadData.fileId);
+                    inputElem.click()
                 }
             }
 
