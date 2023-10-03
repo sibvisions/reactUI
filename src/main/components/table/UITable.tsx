@@ -1079,7 +1079,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 last = Math.max(first, last);
                 const length = last - first + 1;
                 setListLoading(true);
-                if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
+                if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
                     const fetchReq = createFetchRequest();
                     fetchReq.dataProvider = props.dataBook;
                     fetchReq.fromRow = providerData.length;
