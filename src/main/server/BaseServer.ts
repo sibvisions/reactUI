@@ -727,8 +727,16 @@ export default abstract class BaseServer {
         const screenName = this.getScreenName(fetchData.dataProvider);
 
         if (this.contentStore.getDataBook(screenName, fetchData.dataProvider)) {
-            const dataBook = this.contentStore.getDataBook(screenName, fetchData.dataProvider) as IDataBook
-            dataBook.isAllFetched = fetchData.isAllFetched;
+            const dataBook = this.contentStore.getDataBook(screenName, fetchData.dataProvider) as IDataBook;
+
+            if (fetchData.clear) {
+                dataBook.isAllFetched = undefined;
+            }
+
+            if (dataBook.isAllFetched === undefined || fetchData.isAllFetched) {
+                dataBook.isAllFetched = fetchData.isAllFetched;
+            }
+            
             if (dataBook.metaData) {
                 if (dataBook.referencedCellEditors?.length) {
                     dataBook.referencedCellEditors.forEach((column) => {
@@ -820,6 +828,12 @@ export default abstract class BaseServer {
                 if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
                     this.missingDataFetches.push(changedProvider.dataProvider);
                 }
+
+                if (this.contentStore.getDataBook(screenName, changedProvider.dataProvider)) {
+                    const dataBook = this.contentStore.getDataBook(screenName, changedProvider.dataProvider);
+                    dataBook!.isAllFetched = undefined;
+                }
+
                 this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider, true);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
