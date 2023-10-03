@@ -728,7 +728,7 @@ export default abstract class BaseServer {
 
         if (this.contentStore.getDataBook(screenName, fetchData.dataProvider)) {
             const dataBook = this.contentStore.getDataBook(screenName, fetchData.dataProvider) as IDataBook
-            dataBook.allFetched = fetchData.isAllFetched;
+            dataBook.isAllFetched = fetchData.isAllFetched;
             if (dataBook.metaData) {
                 if (dataBook.referencedCellEditors?.length) {
                     dataBook.referencedCellEditors.forEach((column) => {

@@ -61,7 +61,7 @@ export interface ISelectedRow {
 export interface IDataBook {
     data?: Map<string, any>,
     metaData?: MetaDataResponse,
-    allFetched?: boolean,
+    isAllFetched?: boolean,
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
     readOnly?: boolean,
