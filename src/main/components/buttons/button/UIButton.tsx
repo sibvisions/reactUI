@@ -78,9 +78,9 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
             props.onClick(event)
         }
 
-        if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
-            inputRef.current.click();
-        }
+        // if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
+        //     inputRef.current.click();
+        // }
 
         if (props.eventAction) {
             const req = createDispatchActionRequest();

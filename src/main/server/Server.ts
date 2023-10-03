@@ -593,14 +593,22 @@ class Server extends BaseServer {
                 }
             }
             catch(e) {
-                console.log("showpicker function not supported")
+                console.log('caught')
+                this.subManager.notifyUploadDialog(uploadData.fileId);
             }
         }
         else {
             if (request && request.componentId) {
                 const inputElem = document.getElementById(request.componentId + "-upload");
                 if (inputElem) {
-                    inputElem.setAttribute("upload-file-id", uploadData.fileId);
+                    try {
+                        inputElem.setAttribute("upload-file-id", uploadData.fileId);
+                        //@ts-ignore
+                        inputElem.showPicker()
+                    }
+                    catch (e) {
+                        this.subManager.notifyUploadDialog(uploadData.fileId);
+                    }
                 }
             }
 

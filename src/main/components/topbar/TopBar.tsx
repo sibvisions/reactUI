@@ -149,7 +149,6 @@ const TopBar:FC = () => {
     useEffect(() => {
         if (show) {
             let  yellowTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-medium-interval"));
-            console.log(yellowTimeoutInterval)
             if (!isNaN(yellowTimeoutInterval) && yellowTimeoutInterval) {
                 yellowTimeout.current = setTimeout(() => {
                     TopBarProgress.config({
