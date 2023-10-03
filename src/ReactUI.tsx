@@ -34,6 +34,7 @@ import UIToast from './main/components/toast/UIToast';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import ErrorBar from './application-frame/error-bar/ErrorBar';
 import useConfirmDialogProps from './main/hooks/components-hooks/useConfirmDialogProps';
+import UploadDialog from './application-frame/upload-dialog/UploadDialog';
 
 const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unknown>) => void }> = ({ error, resetErrorBoundary }) => {
     const [showDetails, setShowDetails] = useState<boolean>();
@@ -173,6 +174,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
                     <title>{tabTitle ? tabTitle : "..."}</title>
                 </Helmet>
                 <ErrorDialog />
+                <UploadDialog />
                 <UIToast />
                 <ConfirmDialog visible={messageVisible} {...messageProps} />
                 <ErrorBar />
