@@ -1106,7 +1106,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 last = Math.max(first, last);
                 const length = last - first + 1;
                 setListLoading(true);
-                if((providerData.length <= last) && !context.contentStore.getDataBook(screenName, props.dataBook)?.allFetched) {
+                if((providerData.length <= last) && !context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
                     const fetchReq = createFetchRequest();
                     fetchReq.dataProvider = props.dataBook;
                     fetchReq.fromRow = providerData.length;
@@ -1348,6 +1348,17 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     )
 
     const focused = useRef<boolean>(false);
+
+    // useEffect(() => {
+        // const dataBook = context.contentStore.getDataBook(screenName, props.dataBook)
+        // if (dataBook?.data && !dataBook.isAllFetched && providerData.length < rows) {
+        //     const fetchReq = createFetchRequest();
+        //     fetchReq.dataProvider = props.dataBook;
+        //     fetchReq.fromRow = providerData.length - 1;
+        //     fetchReq.rowCount = 100;
+        //     showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), context.server.topbar);
+        // }
+    // }, [providerData])
 
     useEffect(() => {
         //this will force the table to refresh its internal visible item count
