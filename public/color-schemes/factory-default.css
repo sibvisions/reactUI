@@ -290,9 +290,6 @@ body {
   border-color: var(--std-menu-item-hover-background);
   color: var(--std-menu-item-hover-text-color); }
 
-.p-panelmenu .p-panelmenu-header.p-highlight > a, .p-panelmenu .p-panelmenu-header.p-highlight:not(.p-disabled) > a:hover {
-  color: var(--std-menu-item-hover-text-color); }
-
 .p-panelmenu .p-panelmenu-content {
   background: var(--std-menu-background); }
   .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link {
