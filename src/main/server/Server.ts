@@ -589,7 +589,6 @@ class Server extends BaseServer {
                 }
             }
             catch(e) {
-                console.log('caught')
                 this.subManager.notifyUploadDialog(uploadData.fileId);
             }
         }
