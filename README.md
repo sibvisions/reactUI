@@ -65,11 +65,11 @@ After you logged in or if you have a valid username, password combination you wi
 # Documentation
 
 ## API
-- [Available API functions](src/readme-files/api-functions)
-- [Available hooks](src/readme-files/hooks)
-- [Available requests](src/readme-files/requests)
+- [Available API functions](https://github.com/sibvisions/reactUI/wiki/API-Functions)
+- [Available hooks](https://github.com/sibvisions/reactUI/wiki/Hooks)
+- [Available requests](https://github.com/sibvisions/reactUI/wiki/Requests)
 ## User Interface
-- [Loading-Screen Customization](src/readme-files/loading-screen/)
+- [Loading-Screen Customization](https://github.com/sibvisions/reactUI/wiki/Loading-Screen-Customization)
 
 # Examples & Customizing
-More information about customizing screens, components and more can be found [here](https://github.com/sibvisions/reactUI.example#features)
+More information about customizing screens, components and more can be found [here](https://github.com/sibvisions/reactUI.example/wiki#features)

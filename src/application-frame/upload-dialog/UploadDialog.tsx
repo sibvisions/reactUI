@@ -40,13 +40,10 @@ const UploadDialog:FC = () => {
     /** Subscribes to upload dialog visibility and fileId */
     useEffect(() => {
         context.subscriptions.subscribeToUploadDialog((fileId: string) => {
-            console.log(fileId)
             setFileId(fileId);
             setVisible(true);
         })
     }, [context.subscriptions]);
-
-    console.log(visible)
 
     return (
         <Dialog

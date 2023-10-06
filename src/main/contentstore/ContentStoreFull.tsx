@@ -268,8 +268,12 @@ export default class ContentStoreFull extends BaseContentStore {
             }
         });
 
+        /** Call the update function of the parentSubscribers */
+        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
+        menuButtonNotifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.notifyMenuButtonItemsChange(parentId));
+
         /** If the component already exists and it is subscribed to properties update the state */
-        componentsToUpdate.forEach(newComponent => {
+        componentsToUpdate.forEach(newComponent => {    
             existingComponent = this.getExistingComponent(newComponent.id)
 
             const updateFunction = this.subManager.propertiesSubscriber.get(newComponent.id);
@@ -296,14 +300,12 @@ export default class ContentStoreFull extends BaseContentStore {
                         }
                     }
                 }
+
                 if (updateFunction) {
                     updateFunction(existingComponent);
                 }
             }
         });
-        /** Call the update function of the parentSubscribers */
-        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
-        menuButtonNotifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.notifyMenuButtonItemsChange(parentId));
     }
 
     /**

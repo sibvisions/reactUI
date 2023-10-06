@@ -146,7 +146,6 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
     }, [columnMetaData?.cellEditor.className]);
 
     const handleClickEvent = useCallback(() => {
-        console.log('CLICK EVENT')
         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1 &&
             props.setStoredClickEvent && props.setEdit) {
             props.setStoredClickEvent(() => {

@@ -37,7 +37,7 @@ const useProperties = <T extends IBaseComponent>(id: string, init: T) : [T] => {
             setProps({...value});
         });
         return() => {
-           context.subscriptions.unsubscribeFromPropChange(id);
+            context.subscriptions.unsubscribeFromPropChange(id);
         };
     }, [id, context.subscriptions, props]);
 

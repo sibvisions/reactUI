@@ -1323,6 +1323,17 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const focused = useRef<boolean>(false);
 
     useEffect(() => {
+        const dataBook = props.context.contentStore.getDataBook(screenName, props.dataBook)
+        if (dataBook?.data && !dataBook.isAllFetched && providerData.length < rows) {
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = props.dataBook;
+            fetchReq.fromRow = providerData.length - 1;
+            fetchReq.rowCount = 100;
+            showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar);
+        }
+    }, [providerData])
+
+    useEffect(() => {
         //this will force the table to refresh its internal visible item count
         //setItemSize(tableRowHeight + Math.random() / 1E10);
 

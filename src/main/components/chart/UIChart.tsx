@@ -517,7 +517,6 @@ const UIChart: FC<IChart> = (props) => {
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
         const isDateXColumn = () => {
-            console.log(metaData, xColumnName, props.dataBook)
             return metaData?.columns.find(column => column.name === xColumnName)?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE;
         }
 
