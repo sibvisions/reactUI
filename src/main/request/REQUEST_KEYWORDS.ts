@@ -77,6 +77,7 @@ enum REQUEST_KEYWORDS {
     WIDTH = "width",
 
     //vx
-    SET_LAYOUT = "set_layout"
+    SET_LAYOUT = "set_layout",
+    GET_DESIGNER_COMPONENTS = "get_designer_components"
 }
 export default REQUEST_KEYWORDS
