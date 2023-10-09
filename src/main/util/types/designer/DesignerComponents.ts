@@ -13,12 +13,13 @@
  * the License.
  */
 
-interface SetLayoutRequest {
-    componentId?: string,
-    parentId?: string,
-    constraints?: string,
-    index?: number
-    constraintCorrections?: any,
-    preferredSize?: string
+/** Interface for the designer components */
+export interface DesignerComponent {
+    text: string,
+    image: string
 }
-export default SetLayoutRequest
+
+/** Interface for menu groups of the designer components */
+export interface DesignerComponentGroup extends DesignerComponent {
+    elements: DesignerComponent[]
+}

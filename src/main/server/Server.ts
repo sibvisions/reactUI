@@ -50,6 +50,9 @@ import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
 import IBaseComponent from "../util/types/IBaseComponent";
 import DispatchActionRequest from "../request/events/DispatchActionRequest";
+import { DesignerComponentGroup } from "../util/types/designer/DesignerComponents";
+import { isDesignerVisible } from "../contexts/AppProvider";
+import DesignerComponentsResponse from "../response/designer/DesignerComponentsResponse";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -263,6 +266,7 @@ class Server extends BaseServer {
         .set(RESPONSE_NAMES.CONTENT, this.content.bind(this))
         .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
         .set(RESPONSE_NAMES.BAD_CLIENT, this.badClient.bind(this))
+        .set(RESPONSE_NAMES.DESIGNER_COMPONENTS, this.designerComponents.bind(this))
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -814,6 +818,14 @@ class Server extends BaseServer {
 
             this.contentStore.activeScreens = this.contentStore.activeScreens.filter(screen => screen.name !== closeContentData.componentId);
             this.subManager.emitActiveScreens();
+        }
+    }
+
+    designerComponents(designerComponentsData: DesignerComponentsResponse) {
+        if (this.contentStore.designer && isDesignerVisible(this.contentStore.designer)) {
+            designerComponentsData.designerComponents.forEach(componentGroup => {
+                this.contentStore.designer!.designerComponentMap.set(componentGroup.text, componentGroup);
+            });
         }
     }
 

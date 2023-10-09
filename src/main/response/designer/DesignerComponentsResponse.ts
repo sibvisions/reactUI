@@ -13,12 +13,11 @@
  * the License.
  */
 
-interface SetLayoutRequest {
-    componentId?: string,
-    parentId?: string,
-    constraints?: string,
-    index?: number
-    constraintCorrections?: any,
-    preferredSize?: string
+import { DesignerComponentGroup } from "../../util/types/designer/DesignerComponents";
+import BaseResponse from "../BaseResponse";
+
+/** Interface for DesignerComponentsResponse */
+interface DesignerComponentsResponse extends BaseResponse {
+    designerComponents: DesignerComponentGroup[]
 }
-export default SetLayoutRequest
+export default DesignerComponentsResponse
