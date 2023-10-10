@@ -42,7 +42,7 @@ const DirectCellRenderer: FC<ICellRender> = (props) => {
                         autoFocus: true,
                         rowIndex: () => props.rowNumber,
                         filter: props.filter,
-                        readonly: props.columnMetaData?.readonly || props.dataProviderReadOnly,
+                        readonly: !props.isEditable,
                         isCellEditor: true,
                         rowNumber: props.rowNumber,
                         colIndex: props.colIndex,

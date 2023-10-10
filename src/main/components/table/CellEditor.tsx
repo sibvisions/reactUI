@@ -64,21 +64,19 @@ export interface ICellEditor {
     selectNext: Function,
     selectPrevious: Function,
     className?: string,
-    colReadonly?: boolean,
-    tableEnabled?: boolean
     cellFormatting?: Map<string, CellFormatting>,
+    cellReadOnly?: Map<string, number>,
     startEditing?:boolean,
-    editable?: boolean,
     insertEnabled?: boolean,
-    updateEnabled?: boolean,
     deleteEnabled?: boolean,
-    dataProviderReadOnly?: boolean
     rowNumber: number
     colIndex: number
     rowData: any,
     setIsEditing: Function,
     removeTableLinkRef?: Function,
-    tableIsSelecting: boolean
+    tableIsSelecting: boolean,
+    isEditable: boolean,
+    addReadOnlyClass: boolean
 }
 
 /** 
@@ -250,19 +248,6 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Adds Keylistener to the tableContainer */
     useEventHandler(tableContainer, "keydown", handleCellKeyDown);
 
-    // Returns true if the cell is editable
-    const isEditable = useMemo(() => {
-        if (!props.colReadonly
-            && !props.dataProviderReadOnly 
-            && props.updateEnabled 
-            && props.tableEnabled !== false 
-            && props.editable !== false) {
-            return true;
-        }
-        return false;
-        
-    }, [props.dataProviderReadOnly, props.updateEnabled, props.colReadonly, props.tableEnabled, props.editable, props.cellData]);
-
     // Returns the cell-icon or null
     // const icon = useMemo(() => {
     //     if (props.cellStyle.cellIcon?.icon) {
@@ -294,26 +279,27 @@ export const CellEditor: FC<ICellEditor> = (props) => {
 
     /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
     return (
-        (edit && isEditable) ?
+        (edit && props.isEditable) ?
             <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                {displayEditor(columnMetaData, { ...props, isReadOnly: !isEditable }, stopCellEditing, passRef.current)}
+                {displayEditor(columnMetaData, { ...props, isReadOnly: !props.isEditable }, stopCellEditing, passRef.current)}
             </div> : <CellRenderer
                 name={props.name}
                 screenName={props.screenName}
                 cellData={props.cellData}
                 cellId={props.cellId}
                 dataProvider={props.dataProvider}
-                dataProviderReadOnly={props.dataProviderReadOnly}
                 colName={props.colName}
                 colIndex={props.colIndex}
                 primaryKeys={props.primaryKeys}
                 rowData={props.rowData}
                 rowNumber={props.rowNumber}
                 cellFormatting={props.cellFormatting}
+                isEditable={props.isEditable}
                 isHTML={typeof props.cellData === "string" && (props.cellData as string).includes("<html>")}
                 setStoredClickEvent={setStoredClickEvent}
                 setEdit={setEdit}
                 decreaseCallback={(linkDatabook: string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}
+                addReadOnlyClass={props.addReadOnlyClass}
             />
         // (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
         //     ((edit && 

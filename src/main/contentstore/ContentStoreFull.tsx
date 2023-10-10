@@ -172,7 +172,7 @@ export default class ContentStoreFull extends BaseContentStore {
                         if (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
                             // Close screen when InternalFrame is a workscreen
                             if (isWorkScreen(existingComponent as IPanel)) {
-                                this.closeScreen(existingComponent.id, existingComponent.name);
+                                this.closeScreen(existingComponent.id, existingComponent.name, true);
                             }
                             else {
                                 // Close screen and delete InternalFrame when first child of InternalFrame is a workscreen or login

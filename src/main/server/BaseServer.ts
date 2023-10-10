@@ -623,7 +623,7 @@ export default abstract class BaseServer {
                 const styleKeys = ['background', 'foreground', 'font', 'image'];
                 const format = entry.format.map(f => f ? f.split(';', 4).reduce((agg, v, i) => v ? {...agg, [styleKeys[i]]: v} : agg, {}) : f);
                 entry.records.forEach((r, index) => {
-                    if(r.length === 1 && r[0] === -1) {
+                    if (r.length === 1 && r[0] === -1) {
                         return;
                     }
                     formattedRecords[index] = formattedRecords[index] || {};
@@ -641,10 +641,27 @@ export default abstract class BaseServer {
                 });
             }
         }
+
+        const readOnlyRecords: Record<string, any>[] = [];
+        if (fetchData.recordReadOnly) {
+            fetchData.recordReadOnly.records.forEach((readOnlyArray, index) => {
+                readOnlyRecords[index] = new Map<string, number>();
+                for (let i = 0; i < readOnlyArray.length; i++) {
+                    readOnlyRecords[index].set(fetchData.columnNames[i], readOnlyArray[i]);
+
+                    if (i === readOnlyArray.length - 1 && fetchData.columnNames.length > readOnlyArray.length) {
+                        for (let j = i; j < fetchData.columnNames.length; j++) {
+                            readOnlyRecords[index].set(fetchData.columnNames[j], readOnlyArray[readOnlyArray.length - 1]);
+                        }
+                    }
+                };
+            })
+        }
         
         return fetchData.records.map((record, index) => {
             const data : any = {
                 __recordFormats: formattedRecords[index],
+                __recordReadOnly: readOnlyRecords[index]
             }
             fetchData.columnNames.forEach((columnName, index) => {
                 data[columnName] = record[index];
