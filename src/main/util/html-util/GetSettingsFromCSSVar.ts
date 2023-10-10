@@ -17,12 +17,20 @@ import tinycolor from "tinycolor2";
 
 const defaultTransforms = {
     'csv': (v:string) => {
-        if (v.includes("rgb") || v.includes("hsl")) {
-            if (tinycolor(v.substring(0, v.indexOf('), ') + 1)).isValid() && tinycolor(v.substring(v.indexOf('), ') + 4)).isValid()) {
-                return [tinycolor(v.substring(0, v.indexOf('), ') + 1)).toHexString(), tinycolor(v.substring(v.indexOf('), ') + 4)).toHexString()]
+        const regexMatch = (v.match(/(rgb|hsl|#)(\((\d+,\s*\d+%,\s*\d+%|\d+,\s*\d+,\s*\d+)\)|[0-9a-fA-F]{6})/g));
+        if (regexMatch) {
+            const colorArray = Array.from(regexMatch);
+            if (colorArray.length) {
+                return colorArray.map(color => tinycolor(color).toHexString())
+            }
+            else {
+                const primaryColorMatch = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color').match(/(rgb|hsl|#)(\((\d+,\s*\d+%,\s*\d+%|\d+,\s*\d+,\s*\d+)\)|[0-9a-fA-F]{6})/g);
+                if (primaryColorMatch?.length) {
+                    return tinycolor(primaryColorMatch[0]).toHexString();
+                }
             }
         }
-        return v.split(',').map(v => v.trim())
+        return "#2196F3";
     } ,
     'float': (v:string) => parseFloat(v),
 };
