@@ -218,6 +218,7 @@ export default abstract class BaseServer {
                 && endpoint !== REQUEST_KEYWORDS.OPEN_SCREEN 
                 && endpoint !== REQUEST_KEYWORDS.CLOSE_FRAME 
                 && endpoint !== REQUEST_KEYWORDS.CLOSE_SCREEN
+                && endpoint !== REQUEST_KEYWORDS.CREATE_NEW_COMPONENT
                 && !this.componentExists(request.componentId)
             ) {
                 reject("Component doesn't exist: " + request.componentId);

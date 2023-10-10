@@ -12,17 +12,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+import BaseRequest from "../BaseRequest";
 
-/** Interface for the designer components */
-export interface DesignerComponent {
-    id: string,
-    text: string,
-    image: string
-}
+/** Interface for changes-request */
+interface GetDesignerComponentsRequest extends BaseRequest {
 
-/** Interface for menu groups of the designer components */
-export interface DesignerComponentGroup {
-    text: string,
-    image: string,
-    elements: DesignerComponent[]
 }
+export default GetDesignerComponentsRequest;

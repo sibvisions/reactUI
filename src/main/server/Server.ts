@@ -118,7 +118,8 @@ enum REQUEST_ENDPOINTS {
 
     //vx
     SET_LAYOUT = "/api/visionx/setLayout",
-    GET_DESIGNER_COMPONENTS = "/api/visionx/getDesignerComponents"
+    GET_DESIGNER_COMPONENTS = "/api/visionx/getDesignerComponents",
+    CREATE_NEW_COMPONENT = "/api/visionx/createNewComponent"
 }
 
 /** Server class sends requests and handles responses */
@@ -229,6 +230,7 @@ class Server extends BaseServer {
     .set(REQUEST_KEYWORDS.WIDTH, REQUEST_ENDPOINTS.WIDTH)
     .set(REQUEST_KEYWORDS.SET_LAYOUT, REQUEST_ENDPOINTS.SET_LAYOUT)
     .set(REQUEST_KEYWORDS.GET_DESIGNER_COMPONENTS, REQUEST_ENDPOINTS.GET_DESIGNER_COMPONENTS)
+    .set(REQUEST_KEYWORDS.CREATE_NEW_COMPONENT, REQUEST_ENDPOINTS.CREATE_NEW_COMPONENT)
     .set(REQUEST_KEYWORDS.SET_PARAMETER, REQUEST_ENDPOINTS.SET_PARAMETER);
 
     /** ----------HANDLING-RESPONSES---------- */

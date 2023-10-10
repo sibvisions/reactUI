@@ -78,6 +78,7 @@ enum REQUEST_KEYWORDS {
 
     //vx
     SET_LAYOUT = "set_layout",
-    GET_DESIGNER_COMPONENTS = "get_designer_components"
+    GET_DESIGNER_COMPONENTS = "get_designer_components",
+    CREATE_NEW_COMPONENT = "create_new_component"
 }
 export default REQUEST_KEYWORDS

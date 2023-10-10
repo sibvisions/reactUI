@@ -12,17 +12,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+import ComponentRequest from "../comp/ComponentRequest";
 
-/** Interface for the designer components */
-export interface DesignerComponent {
-    id: string,
-    text: string,
-    image: string
+/** Interface for changes-request */
+interface CreateNewComponentRequest extends ComponentRequest {
+    parentId?: string
 }
-
-/** Interface for menu groups of the designer components */
-export interface DesignerComponentGroup {
-    text: string,
-    image: string,
-    elements: DesignerComponent[]
-}
+export default CreateNewComponentRequest;

@@ -37,6 +37,8 @@ import SelectTreeRequest from "../request/data/SelectTreeRequest";
 import SetValuesRequest from "../request/data/SetValuesRequest";
 import SortRequest from "../request/data/SortRequest";
 import WidthRequest from "../request/data/WidthRequest";
+import CreateNewComponentRequest from "../request/designer/CreateNewComponentRequest";
+import GetDesignerComponentsRequest from "../request/designer/GetDesignerComponentsRequest";
 import DispatchActionRequest from "../request/events/DispatchActionRequest";
 import FocusGainedRequest from "../request/events/FocusGainedRequest";
 import FocusLostRequest from "../request/events/FocusLostRequest";
@@ -654,6 +656,22 @@ export const createWidthRequest = (values?: WidthRequest): WidthRequest => {
         columnName: values?.columnName,
         width: values?.width,
         dataProvider: values?.dataProvider
+    }
+    return req;
+}
+
+export const createGetDesignerComponentsRequest = (values?: GetDesignerComponentsRequest): GetDesignerComponentsRequest => {
+    const req:GetDesignerComponentsRequest = {
+        clientId: values?.clientId || getClientId()
+    }
+    return req;
+}
+
+export const createCreateNewComponentsRequest = (values?: CreateNewComponentRequest): CreateNewComponentRequest => {
+    const req:CreateNewComponentRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        parentId: values?.parentId
     }
     return req;
 }
