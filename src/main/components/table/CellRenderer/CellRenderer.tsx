@@ -45,7 +45,8 @@ export interface ICellRenderer {
     setStoredClickEvent?: (value: React.SetStateAction<Function | undefined>) => void
     setEdit?: (value: React.SetStateAction<boolean>) => void,
     decreaseCallback?: Function|undefined,
-    isEditable: boolean
+    isEditable: boolean,
+    addReadOnlyClass: boolean
 }
 
 const CellRenderer: FC<ICellRenderer> = (props) => {
@@ -62,14 +63,14 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
 
     useLayoutEffect(() => {
         if (cellRef.current && cellRef.current.parentElement) {
-            if (props.isEditable && cellRef.current.parentElement.classList.contains("cell-readonly")) {
+            if (!props.addReadOnlyClass && cellRef.current.parentElement.classList.contains("cell-readonly")) {
                 cellRef.current.parentElement.classList.remove("cell-readonly");
             }
-            else if (!props.isEditable && !cellRef.current.parentElement.classList.contains("cell-readonly")) {
+            else if (props.addReadOnlyClass && !cellRef.current.parentElement.classList.contains("cell-readonly")) {
                 cellRef.current.parentElement.classList.add("cell-readonly")
             }
         }
-    }, [props.isEditable])
+    }, [props.addReadOnlyClass])
 
     const cellStyles: { cellStyle: CSSProperties, cellClassNames: string[], cellIcon: IconProps | null } = useMemo(() => {
         let cellStyle:any = { };

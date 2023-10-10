@@ -84,7 +84,8 @@ export interface ICellEditor {
     setIsEditing: Function,
     removeTableLinkRef?: Function,
     tableIsSelecting: boolean,
-    isEditable: boolean
+    isEditable: boolean,
+    addReadOnlyClass: boolean
 }
 
 /** 
@@ -299,6 +300,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                 setStoredClickEvent={setStoredClickEvent}
                 setEdit={setEdit}
                 decreaseCallback={(linkDatabook: string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}
+                addReadOnlyClass={props.addReadOnlyClass}
             />
         // (columnMetaData?.cellEditor?.preferredEditorMode === 1) ?
         //     ((edit && 
