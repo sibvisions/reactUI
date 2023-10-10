@@ -978,6 +978,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         return props.columnNames.map((colName, colIndex) => {
             const columnMetaData = getColMetaData(colName, metaData?.columns);
             const className = columnMetaData?.cellEditor?.className;
+
             return <Column
                 field={colName}
                 header={createColumnHeader(colName, colIndex, columnMetaData?.nullable)}
@@ -991,6 +992,12 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     '--columnName': colName
                 }}
                 body={(rowData: any, tableInfo: any) => {
+                    const isEditable = (!columnMetaData?.readonly 
+                                        && !metaData?.readOnly 
+                                        && metaData?.updateEnabled 
+                                        && props.enabled !== false 
+                                        && props.editable !== false
+                                        && rowData.__recordReadOnly?.get(colName) === 1) ? true : false
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
                     else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
                         return <CellEditor
@@ -1002,21 +1009,18 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             colName={colName}
                             dataProvider={props.dataBook}
                             cellData={rowData[colName]}
+                            isEditable={isEditable}
                             cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
+                            cellReadOnly={rowData.__recordReadOnly && rowData.__recordReadOnly}
                             resource={context.server.RESOURCE_URL}
                             cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
                             tableContainer={wrapRef.current ? wrapRef.current : undefined}
                             selectNext={selectNextCallback}
                             selectPrevious={selectPreviousCallback}
                             className={className}
-                            colReadonly={columnMetaData?.readonly}
-                            tableEnabled={props.enabled}
-                            editable={props.editable}
                             startEditing={props.startEditing}
                             insertEnabled={metaData?.insertEnabled}
-                            updateEnabled={metaData?.updateEnabled}
                             deleteEnabled={metaData?.deleteEnabled}
-                            dataProviderReadOnly={metaData?.readOnly}
                             setIsEditing={setIsEditing}
                             rowNumber={tableInfo.rowIndex}
                             colIndex={colIndex}
@@ -1048,7 +1052,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                 cellData={rowData[colName]}
                                 cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
                                 dataProvider={props.dataBook}
-                                dataProviderReadOnly={metaData?.readOnly}
+                                isEditable={isEditable}
                                 colName={colName}
                                 colIndex={colIndex}
                                 primaryKeys={primaryKeys}
@@ -1063,7 +1067,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 bodyClassName={concatClassnames(
                     className,
                     !columnMetaData?.resizable ? "cell-not-resizable" : "",
-                    columnMetaData?.readonly ? "cell-readonly" : "",
+                    //columnMetaData?.readonly ? "cell-readonly" : "",
                     columnMetaData?.nullable === false ? "cell-required" : ""
                 )}
                 //loadingBody={() => <div className="loading-text" style={{ height: 30 }} />}
@@ -1072,10 +1076,10 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             />
         })
     }, [
-        props.columnNames, props.columnLabels, props.dataBook, 
+        props.columnNames, props.columnLabels, props.dataBook, props.enabled,
         props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
         metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled, 
-        primaryKeys, metaData?.deleteEnabled, props.startEditing,
+        primaryKeys, metaData?.deleteEnabled, props.startEditing, props.editable,
         tableIsSelecting, columnOrder, providerData, selectedRow?.index
     ])
 

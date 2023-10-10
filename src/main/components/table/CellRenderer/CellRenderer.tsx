@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo } from "react"
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import CELLEDITOR_CLASSNAMES from "../../editors/CELLEDITOR_CLASSNAMES"
 import DirectCellRenderer from "./DirectCellRenderer"
 import ImageCellRenderer from "./ImageCellRenderer"
@@ -35,7 +35,6 @@ export interface ICellRenderer {
     cellData: any,
     cellId: string,
     dataProvider: string,
-    dataProviderReadOnly?: boolean,
     colName: string,
     colIndex: number,
     primaryKeys: string[],
@@ -45,7 +44,8 @@ export interface ICellRenderer {
     isHTML: boolean,
     setStoredClickEvent?: (value: React.SetStateAction<Function | undefined>) => void
     setEdit?: (value: React.SetStateAction<boolean>) => void,
-    decreaseCallback?: Function|undefined
+    decreaseCallback?: Function|undefined,
+    isEditable: boolean
 }
 
 const CellRenderer: FC<ICellRenderer> = (props) => {
@@ -57,6 +57,19 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
 
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
+
+    const cellRef = useRef<any>(null);
+
+    useLayoutEffect(() => {
+        if (cellRef.current && cellRef.current.parentElement) {
+            if (props.isEditable && cellRef.current.parentElement.classList.contains("cell-readonly")) {
+                cellRef.current.parentElement.classList.remove("cell-readonly");
+            }
+            else if (!props.isEditable && !cellRef.current.parentElement.classList.contains("cell-readonly")) {
+                cellRef.current.parentElement.classList.add("cell-readonly")
+            }
+        }
+    }, [props.isEditable])
 
     const cellStyles: { cellStyle: CSSProperties, cellClassNames: string[], cellIcon: IconProps | null } = useMemo(() => {
         let cellStyle:any = { };
@@ -156,10 +169,11 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
 
     return (
         <div
+            ref={cellRef}
             style={cellStyles.cellStyle}
             className={cellStyles.cellClassNames.join(' ')}
             onMouseUp={(e) => {
-                if (cellContext.selectedCellId === props.cellId) {
+                if (props.isEditable && cellContext.selectedCellId === props.cellId) {
                     if ((columnMetaData?.cellEditor.preferredEditorMode === 1 && e.detail === 1) || (columnMetaData?.cellEditor.preferredEditorMode !== 1 && e.detail === 2)) {
                         handleClickEvent();
                     }
