@@ -94,8 +94,8 @@ const UIMapOSM: FC<IMap & IExtendableMap & IComponentConstants> = (props) => {
      */
     if (props.layoutStyle) {
         return (
-            <div ref={props.forwardedRef} id={props.name + "-_wrapper"} className="rc-map-wrapper" {...popupMenu} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
-                <MapContainer id={props.name} center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
+            <div ref={props.forwardedRef} id={props.name} className="rc-map-wrapper" {...popupMenu} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)} >
+                <MapContainer center={centerPosition ? [centerPosition.latitude, centerPosition.longitude] : [0, 0]} zoom={startZoom} style={{height: "100%", width: "100%"}}>
                     <UIMapOSMConsumer {...props} zoomLevel={startZoom} layoutVal={props.layoutStyle} centerPosition={centerPosition} style={concatClassnames(props.styleClassNames)} />
                 </MapContainer>
             </div>

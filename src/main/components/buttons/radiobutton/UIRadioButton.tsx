@@ -77,9 +77,8 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (props) => 
     }
 
     return (
-        <span id={props.name + "-_wrapper"} ref={props.forwardedRef} style={props.layoutStyle}>
+        <span id={props.name} ref={props.forwardedRef} style={props.layoutStyle}>
             <span
-                id={props.name}
                 aria-label={props.ariaLabel}
                 className={concatClassnames(
                     "rc-radiobutton",

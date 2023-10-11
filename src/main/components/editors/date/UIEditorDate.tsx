@@ -365,7 +365,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     return (
         <span 
             ref={props.forwardedRef}
-            id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
+            id={!props.isCellEditor ? props.name : undefined}
             aria-label={props.ariaLabel} 
             {...usePopupMenu(props)} 
             aria-expanded={visible} 
@@ -374,7 +374,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             } as CSSProperties}>
             <CustomCalendar
                 ref={calendar}
-                id={!props.isCellEditor ? props.name : undefined}
                 inputRef={calendarInput}
                 className={concatClassnames(
                     "rc-editor-text",

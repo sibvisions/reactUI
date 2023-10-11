@@ -669,7 +669,7 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
     return (
         <span 
             ref={props.forwardedRef}
-            id={props.name + "-_wrapper"} 
+            id={props.name} 
             style={props.layoutStyle}
             tabIndex={props.tabIndex ? props.tabIndex : 0}
             onFocus={(event) => {
@@ -689,7 +689,6 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
             {...usePopupMenu(props)}
         >  
             <Tree
-                id={props.name}
                 className={concatClassnames("rc-tree", props.styleClassNames)}
                 value={nodes}
                 selectionMode="single"

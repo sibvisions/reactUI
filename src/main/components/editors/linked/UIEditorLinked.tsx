@@ -864,14 +864,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         <span 
             ref={props.forwardedRef}
             aria-label={props.ariaLabel} 
-            id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
+            id={!props.isCellEditor ? props.name : undefined}
             {...usePopupMenu(props)} 
             style={{
                 ...props.layoutStyle
             } as CSSProperties}>
             <AutoComplete
                 ref={linkedRef}
-                id={!props.isCellEditor ? props.name : undefined}
                 style={{ 
                     width: 'inherit',
                     height: 'inherit',

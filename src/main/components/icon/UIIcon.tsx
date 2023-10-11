@@ -128,7 +128,6 @@ const UIIcon: FC<IIcon & IExtendableIcon & IComponentConstants> = (props) => {
             else {
                 return (
                 <img
-                    id={props.name}
                     {...popupMenu}
                     alt="icon"
                     src={props.context.server.RESOURCE_URL + icon}
@@ -151,7 +150,7 @@ const UIIcon: FC<IIcon & IExtendableIcon & IComponentConstants> = (props) => {
     return (
         <span 
             ref={props.forwardedRef} 
-            id={props.name + "-_wrapper"}
+            id={props.name}
             className={concatClassnames(
                 "rc-icon", 
                 props.focusable === false ? "no-focus-rect" : "",

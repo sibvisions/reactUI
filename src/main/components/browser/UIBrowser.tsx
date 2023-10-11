@@ -46,10 +46,9 @@ const UIBrowser: FC<IBrowser> = (props) => {
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     return (
-        <span ref={props.forwardedRef} style={props.layoutStyle}>
+        <span id={props.name} ref={props.forwardedRef} style={props.layoutStyle}>
             <Tooltip target={"#" + props.name} />
             <iframe
-                id={props.name} 
                 className={concatClassnames("rc-mobile-browser", props.styleClassNames)}
                 style={{...props.compStyle}}
                 src={props.url}

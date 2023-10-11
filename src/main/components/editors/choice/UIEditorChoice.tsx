@@ -218,7 +218,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
 
     return (
         <span
-            id={!props.isCellEditor ? props.name + "-_wrapper" : ""}
+            id={!props.isCellEditor ? props.name : undefined}
             ref={props.forwardedRef}
             className={concatClassnames(
                 "rc-editor-choice",
@@ -246,7 +246,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
                     setNextValue()
                 }
             }}
-            onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name + "-wrapper", props.context, props.isCellEditor)}
+            onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
             {...usePopupMenu(props)}
@@ -255,8 +255,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
             {validImages[currentImageValue] && validImages[currentImageValue].icon ?
                 <i
                     ref={imgRef}
-                    layoutstyle-wrapper={props.name + "-_wrapper"}
-                    id={!props.isCellEditor ? props.name : undefined}
+                    layoutstyle-wrapper={props.name}
                     className={concatClassnames(
                         "rc-editor-choice-img",
                         props.isReadOnly ? "choice-read-only" : "",
@@ -279,7 +278,6 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
                 :
                 <img
                     ref={imgRef}
-                    id={!props.isCellEditor ? props.name : undefined}
                     className={concatClassnames(
                         "rc-editor-choice-img",
                         props.isReadOnly ? "choice-read-only" : "",

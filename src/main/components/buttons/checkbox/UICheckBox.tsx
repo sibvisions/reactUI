@@ -78,9 +78,8 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
     }
 
     return (
-        <span ref={props.forwardedRef} id={props.name + "-_wrapper"} style={props.layoutStyle}>
+        <span ref={props.forwardedRef} id={props.name} style={props.layoutStyle}>
             <span
-                id={props.name}
                 aria-label={props.ariaLabel}
                 className={concatClassnames(
                     "rc-checkbox",

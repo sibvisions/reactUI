@@ -675,9 +675,8 @@ const UIChart: FC<IChart> = (props) => {
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
     return (
-        <span ref={props.forwardedRef} id={props.name + "-_wrapper"} className={concatClassnames("rc-chart", props.styleClassNames)} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <span ref={props.forwardedRef} id={props.name} className={concatClassnames("rc-chart", props.styleClassNames)} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
-                id={props.name}
                 type={chartType}
                 data={chartData}
                 options={options}

@@ -126,7 +126,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
     return (
         <span
             ref={props.forwardedRef}
-            id={!props.isCellEditor ? props.name + "-_wrapper" : undefined}
+            id={!props.isCellEditor ? props.name : undefined}
             className={concatClassnames(
                 "rc-editor-image",
                 props.columnMetaData?.nullable === false ? "required-field" : "",
@@ -134,14 +134,13 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
             )}
             style={{ ...props.layoutStyle, ...props.cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
-            onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name + "-_wrapper", props.context, props.isCellEditor)}
+            onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
         >
             <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
             {((props.selectedRow && props.selectedRow.data[props.columnName]) || props.cellEditor.defaultImageName) &&
                 <img
-                    id={!props.isCellEditor ? props.name : undefined}
                     className={concatClassnames(imageStyle, props.styleClassNames)}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}

@@ -182,17 +182,16 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     return (
         <span
             className={concatClassnames("rc-popupmenubutton-wrapper", props.focusable === false ? "no-focus-rect" : "")}
-            id={props.name + "-_wrapper"}
+            id={props.name}
             ref={props.forwardedRef}
             style={{ position: 'absolute', ...props.layoutStyle }}
             aria-label={props.ariaLabel}
-            onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name + "-wrapper", props.context)}
+            onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
             tabIndex={btnStyle.tabIndex}
         >
             <SplitButton
                 ref={buttonRef}
-                id={props.name}
                 className={concatClassnames(
                     "rc-popupmenubutton",
                     props.borderPainted === false ? "border-notpainted" : '',

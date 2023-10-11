@@ -92,7 +92,6 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
 
     const getElementToRender = () => {
         const btnProps = {
-            id: props.name,
             ref: buttonRef,
             style: {
                 ...btnStyle.style,
@@ -142,7 +141,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
                         )}
                         href={props.url}
                         target={props.target}
-                        layoutstyle-wrapper={props.name + "-_wrapper"}
+                        layoutstyle-wrapper={props.name}
                         aria-label={props.ariaLabel}
                         {...popupMenu}>
                         {props.text}
@@ -177,7 +176,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
                         disabled={isCompDisabled(props)}
                         tooltip={props.toolTipText}
                         tooltipOptions={{ position: "left" }}
-                        layoutstyle-wrapper={props.name + "-_wrapper"}
+                        layoutstyle-wrapper={props.name}
                         {...popupMenu}>
                         {isHTML && props.text && <RenderButtonHTML text={props.text} />}
                     </Button>
@@ -205,7 +204,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
     }
 
     return (
-        <span id={props.name + "-_wrapper"} ref={props.forwardedRef} style={props.layoutStyle}>
+        <span id={props.name} ref={props.forwardedRef} style={props.layoutStyle}>
             {getElementToRender()}
         </span>
     )

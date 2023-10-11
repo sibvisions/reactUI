@@ -106,14 +106,13 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
     return (
         <span
             ref={props.forwardedRef}
-            id={props.name + "-_wrapper"}
+            id={props.name}
             style={props.layoutStyle}
             aria-label={props.ariaLabel}
             aria-pressed={props.ariaPressed}
         >
             <ToggleButton
                 ref={buttonRef}
-                id={props.name}
                 className={concatClassnames(
                     "rc-togglebutton",
                     !btnStyle.borderPainted ? "border-notpainted" : '',
