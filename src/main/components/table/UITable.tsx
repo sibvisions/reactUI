@@ -997,7 +997,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                         && metaData?.updateEnabled
                         && props.enabled !== false
                         && props.editable !== false
-                        && (rowData && rowData.__recordReadOnly !== undefined ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) ? true : false
+                        && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) ? true : false
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
                     else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
                         return <CellEditor
@@ -1041,9 +1041,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                     undefined
                             }
                             tableIsSelecting={tableIsSelecting}
-                            addReadOnlyClass={rowData.__recordReadOnly !== undefined ?
-                                columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0
-                                : columnMetaData?.readonly === true || metaData?.readOnly === true}
+                            addReadOnlyClass={columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
                         />
                     }
                     else {
@@ -1063,9 +1061,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                                 rowNumber={tableInfo.rowIndex}
                                 cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                                 isHTML={typeof rowData[colName] === "string" && (rowData[colName] as string).includes("<html>")}
-                                addReadOnlyClass={rowData.__recordReadOnly !== undefined ?
-                                    columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0
-                                    : columnMetaData?.readonly === true || metaData?.readOnly === true} />
+                                addReadOnlyClass={columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0} />
                         )
                     }
                 }}
