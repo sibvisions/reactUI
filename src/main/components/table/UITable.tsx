@@ -964,13 +964,13 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     display: props.tableHeaderVisible === false ? 'none' : undefined,
                     '--columnName': colName
                 }}
-                body={(rowData: any, tableInfo: any) => {
-                    const isEditable = (!columnMetaData?.readonly 
-                                        && !metaData?.readOnly 
-                                        && metaData?.updateEnabled 
-                                        && props.enabled !== false 
-                                        && props.editable !== false
-                                        && (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1)) ? true : false
+                body={(rowData: any|undefined, tableInfo: any) => {
+                    const isEditable = (!columnMetaData?.readonly
+                        && !metaData?.readOnly
+                        && metaData?.updateEnabled
+                        && props.enabled !== false
+                        && props.editable !== false
+                        && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) ? true : false
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
                     else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
                         return <CellEditor
@@ -1053,10 +1053,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     }, [
         props.columnNames, props.columnLabels, props.dataBook, props.enabled,
         props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
-        metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled, 
+        metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled,
         primaryKeys, metaData?.deleteEnabled, props.startEditing, props.editable,
         tableIsSelecting, columnOrder, providerData, selectedRow?.index
-    ])
+    ]);
 
     // When a row is selected send a selectRow request to the server
     // If the lib user extends the Table with onRowSelect, call it when a new row is selected.
