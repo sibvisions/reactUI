@@ -103,8 +103,8 @@ const ResizeHandler:FC = (props) => {
         }
 
         if (sizeRef.current) {
-            const width = sizeRef.current.offsetWidth
-            const height = sizeRef.current.offsetHeight
+            const width = sizeRef.current.offsetWidth;
+            const height = sizeRef.current.offsetHeight;
             const sizeMap = new Map<string, CSSProperties>();
             Children.forEach(props.children, child => {
                 const childWithProps = (child as ChildWithProps);
@@ -123,7 +123,7 @@ const ResizeHandler:FC = (props) => {
             //TODO: maybe fetch ids via screenId instead of relying on the children 
             setComponentSize(sizeMap);
         }
-    }, [props.children, designerUpdate]);
+    }, [props.children, designerUpdate, context.designer?.isVisible]);
 
     /** Using underscore debounce for throttling resize event */
     const handleResize = useCallback(_.debounce(doResize, 50),[doResize, sizeRef.current]);

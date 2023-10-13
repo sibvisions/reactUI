@@ -31,6 +31,7 @@ import Anchor from "./models/Anchor";
 import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
 import { setComponentIndeces } from "../../util/designer-util/setComponentIndeces";
 import { FormLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
+import { quickSort } from "../../util/other-util/QuickSort";
 
 /**
  * The FormLayout is a simple to use Layout which allows complex forms.
@@ -250,7 +251,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                                 rightAnchor = formLayoutAssistant!.createAnchors(anchorNames[3]).find((createdAnchor: Anchor) => createdAnchor.name === anchorNames[3]);
                             }
 
-                            setComponentIndeces(layoutInfo, component.name, component.indexOf);
+                            //setComponentIndeces(layoutInfo, component.name, component.indexOf);
                         }
 
                         /** Fill Constraints-Map */
@@ -908,6 +909,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
                 /** Map which contains component ids as key and positioning and sizing properties as value */
                 const sizeMap = new Map<string, CSSProperties>();
+                const indexArr: { top: number,left: number, name: string }[] = []
 
                 /** Build the sizemap with each component based on the constraints with their component id as key and css style as value */
                 children.forEach(component => {
@@ -924,9 +926,16 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             left: left,
                             top: top
                         });
+
+                        indexArr.push({ top: top, left: left, name: component.name })
                     }
                     else if (panelType === "DesktopPanel" && context.transferType === "full") {
                         sizeMap.set(component.id, { height: (style?.height as number) * 0.75, width: (style?.width as number) * 0.75 })
+                    }
+
+                    if (isDesignerActive(formLayoutAssistant) && layoutInfo) {
+                        quickSort(indexArr, 0, indexArr.length - 1);
+                        layoutInfo.componentIndeces = indexArr.map(o => o.name);
                     }
                 });
                 if(borderConstraint && marginConstraint){
