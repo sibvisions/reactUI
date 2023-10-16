@@ -126,6 +126,8 @@ const colors = [
     'rgba(255, 159, 64, 0.7)'
 ]
 
+let pieColorHelper = 0;
+
 /**
  * Retrieves the color for the given index. 
  * The colors are returned in the order of the colors list and start from the beginning if the end of the list is reached.
@@ -134,9 +136,18 @@ const colors = [
  * @param customColors - A custom list of colors to use for retrieval
  * @returns 
  */
-function getColor(idx: number, opacity = 1, customColors?: string[]) {
+function getColor(idx: number, opacity = 1, customColors?: string[], pie?:boolean) {
     const c = customColors || colors;
-    const cv = c[idx % c.length];
+    const cv = pie ? c[pieColorHelper] : c[idx % c.length];
+
+    if (pie) {
+        if (pieColorHelper === c.length - 1) {
+            pieColorHelper = 0;
+        }
+        else {
+            pieColorHelper++
+        }
+    }
     return opacity < 1 ?  tinycolor(cv).setAlpha(opacity).toRgbString() : cv;
 }
 
@@ -270,10 +281,10 @@ const UIChart: FC<IChart> = (props) => {
 
                 const foundIndex = agg.findIndex(xy => xy ? xy.x === lidx : false);
                 if (foundIndex !== -1) {
-                    agg[foundIndex] = { x: lidx, y: (agg[foundIndex] ? agg[foundIndex].y || 0 : 0) + dataRow[name] };
+                    agg[foundIndex] = { x: lidx, y: (agg[foundIndex] ? agg[foundIndex].y || 0 : 0) + parseFloat(dataRow[name]) };
                 }
                 else {
-                    agg[idx] = { x: lidx, y: (agg[idx] ? agg[idx].y || 0 : 0) + dataRow[name] };
+                    agg[idx] = { x: lidx, y: (agg[idx] ? agg[idx].y || 0 : 0) + parseFloat(dataRow[name]) };
                 }
                 xmin = Math.min(xmin, lidx); 
                 xmax = Math.max(xmax, lidx);
@@ -303,12 +314,14 @@ const UIChart: FC<IChart> = (props) => {
             data = data.map(d => d.map(v => {
                 return { x: v.x, y: 100 * v.y / pieSum } 
             }))
-        } else if (percentage) {
+        } 
+        else if (percentage) {
             //convert values to percentages
             data = data.map(d => d.map((v, idx) => {
                 return { x: v.x, y: 100 * v.y / sum[idx].y }
             }))
-        } else {
+        } 
+        else {
             //find the actual minimum and maximum values
             const minReducedArray = data.reduce((agg, d) => {
                 d.forEach((v, idx) => stacked ? 
@@ -434,19 +447,19 @@ const UIChart: FC<IChart> = (props) => {
         const primeChart = {
             //a dataset per y-Axis unless for a pie chart where we only need a single data set
             datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
-                const singleColor = getColor(idx, opacity, colors);
+                const singleColor = getColor(idx, opacity, colors, pie);
                 const axisID = overlapped ? `axis-${idx}` : "axis-0";
 
                 return {
                     ...(horizontal ? { yAxisID: axisID, xAxisID: 'caxis-0' } : { xAxisID: axisID, yAxisID: 'caxis-0' }),
-                    label: yColumnLabels[idx],
-                    data: data[idx],
+                    label: data[idx],
+                    data: pie && data[idx] ? data[idx].map(v => v.y) :  data[idx],
                     ...(!pie ? {parsing: {
                         xAxisKey: horizontal ? 'y' : 'x',
                         yAxisKey: horizontal ? 'x' : 'y'
                     }} : {}),
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
-                        [...Array(providerData.length).keys()].map((k, idx) => getColor(idx, opacity, colors)) : singleColor,
+                        [...Array(providerData.length).keys()].map((k, idx2) => data[idx] && data[idx][idx2] ? getColor(idx2, opacity, colors, pie) : undefined) : singleColor,
                     borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING, CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA].includes(chartStyle) ? singleColor : undefined,
                     borderWidth: 1,
                     fill: [CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA, CHART_STYLES.STACKEDPERCENTAREA].includes(chartStyle) ? 'origin' : false,
@@ -528,8 +541,18 @@ const UIChart: FC<IChart> = (props) => {
                     if(pie && !value) {
                         value = raw;
                     }
-                    
-                    return (pie || percentage) ? `${parseFloat(value).toFixed(2).replace('.00', '')}%` : formattedValue;
+
+                    if (pie || percentage) {
+                        if (providerData[context.dataIndex] && providerData[context.dataIndex][xColumnName] !== undefined) {
+                            return `${providerData[context.dataIndex][xColumnName] + ': ' + parseFloat(value).toFixed(2).replace('.00', '')}%`
+                        }
+                        else {
+                            return `${parseFloat(value).toFixed(2).replace('.00', '')}%`
+                        }
+                    }
+                    else {
+                        return formattedValue;
+                    }
                 }
             }
         }
