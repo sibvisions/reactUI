@@ -69,7 +69,7 @@ export interface Designer {
     mouseIsInComponent:(position:Coordinates, element: HTMLElement) => boolean,
     isSecondSplit:(position:Coordinates, splitPanelComp:ISplit, splitPanelElem:HTMLElement, firstPanel: HTMLElement, secondPanel: HTMLElement) => boolean,
     getComponentByMousePosition:(mouseCoords: Coordinates, layout: boolean) => DraggableComponent|DraggablePanel|null,
-    isChildOf: (childId:string, parentId:string) => boolean
+    componentIsChildOf: (childId:string, parentId:string) => boolean
     removeComponentFromLayout:(component: IBaseComponent) => void,
     addComponentToLayout:(component: IBaseComponent) => void
     paintResizer: (rect: DOMRect) => void
