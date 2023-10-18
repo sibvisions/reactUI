@@ -720,7 +720,8 @@ export default abstract class BaseContentStore {
         let parent = component.parent;
         let invalid = false;
         while (parent && !parent.includes("IF")) {
-            if (this.getComponentById(parent) && this.getComponentById(parent)!.visible !== false && this.getComponentById(parent)!.invalid !== true) {
+            const parentComp = this.getComponentById(parent);
+            if (parentComp && parentComp.visible !== false && parentComp.invalid !== true) {
                 parent = this.getComponentById(parent)!.parent;
             }
             else {
@@ -1389,11 +1390,21 @@ export default abstract class BaseContentStore {
         }
     }
 
-    componentIsChildOf(id: string, parent: string) {
-        if (this.componentChildren.has(parent)) {
-            const children = this.componentChildren.get(parent);
-            if (children && children.has(id)) {
-                return true;
+    componentIsChildOf(component: IBaseComponent, parent: string) {
+        let childComp: IBaseComponent|undefined = component;
+        while (childComp) {
+            if (this.componentChildren.has(parent)) {
+                const children = this.componentChildren.get(parent);
+                if (children && children.has(childComp.id)) {
+                    return true;
+                }
+            }
+            const newComp = this.getComponentById(childComp.parent)
+            if (newComp) {
+                childComp = newComp;
+            }
+            else {
+                childComp = undefined;
             }
         }
         return false;
