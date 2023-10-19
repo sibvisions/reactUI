@@ -30,7 +30,7 @@ const defaultTransforms = {
                 }
             }
         }
-        return "#2196F3";
+        return ["#2196F3"];
     } ,
     'float': (v:string) => parseFloat(v),
 };
