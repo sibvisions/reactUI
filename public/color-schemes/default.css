@@ -178,6 +178,8 @@
   --dialog-border-radius:3px;
   --toolbar-border-radius:0px;
   --topbar-colors:var(--primary-color), var(--primary-color);
+  --topbar-medium-interval-colors: #f3ff6f;
+  --topbar-long-interval-colors: #ff3030;
   --mandatory-background:#fff4d2;
   --readonly-background:#efefef;
   --invalid-background:#d13333;
