@@ -71,5 +71,12 @@ After you logged in or if you have a valid username, password combination you wi
 ## User Interface
 - [Loading-Screen Customization](https://github.com/sibvisions/reactUI/wiki/Loading-Screen-Customization)
 
-# Examples & Customizing
+# Examples & Component Customizing
 More information about customizing screens, components and more can be found [here](https://github.com/sibvisions/reactUI.example/wiki#features)
+
+# Style Customizing
+The style of the ReactUI is extremely customizable, check out the [style example](https://github.com/sibvisions/reactUI.styleexample/wiki) for more info.
+[Theme Variables](https://github.com/sibvisions/reactUI.styleexample/wiki/Themes-CSS%E2%80%90Variables)
+[Color-Scheme Variables](https://github.com/sibvisions/reactUI.styleexample/wiki/Color-Schemes-CSS%E2%80%90Variables)
+
+We are also offering a [Designer](https://github.com/sibvisions/reactUIDesigner) which simplifies the creation of themes and color-schemes and directly uploads them.
