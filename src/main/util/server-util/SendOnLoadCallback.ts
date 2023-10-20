@@ -83,10 +83,11 @@ export function sendOnLoadCallback(id: string, className:string, preferredSize:D
     if (onLoadCallback) {
         if (preferredSize) {
             checkedSize = checkSizes(preferredSize, minSize, maxSize);
+            onLoadCallback(id, checkedSize, minSize, maxSize);
         }
-        else {
-            let prefSize:Dimension = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};
+        else {    
             if (ref) {
+                let prefSize:Dimension;
                 if (className !== COMPONENT_CLASSNAMES.LABEL && className !== COMPONENT_CLASSNAMES.SPLITPANEL) {
                     if (ref.getAttribute("layoutstyle-wrapper")) {
                         removeLayoutStyle(document.getElementById(ref.getAttribute("layoutstyle-wrapper")));
@@ -97,9 +98,9 @@ export function sendOnLoadCallback(id: string, className:string, preferredSize:D
                 }
                 /** Measure how big the component wants to be initially */
                 prefSize = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};
+                checkedSize = checkSizes(prefSize, minSize, maxSize);
+                onLoadCallback(id, checkedSize, minSize, maxSize);
             }
-            checkedSize = checkSizes(prefSize, minSize, maxSize);
         }
-        onLoadCallback(id, checkedSize, minSize, maxSize);
     }
 }

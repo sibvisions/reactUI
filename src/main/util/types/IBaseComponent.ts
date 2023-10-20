@@ -58,6 +58,7 @@ interface IBaseComponent {
     requestFocus?: boolean
     nameComponentRef?: string
     invalid?:boolean,
-    contentParentName?:string
+    contentParentName?:string,
+    designerNew?:boolean
 }
 export default IBaseComponent

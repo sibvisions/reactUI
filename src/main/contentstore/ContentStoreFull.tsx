@@ -217,6 +217,11 @@ export default class ContentStoreFull extends BaseContentStore {
                         if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBAR && !newComponent.parent?.includes("TBP")) {
                             newComponent.parent = newComponent.parent + "-frame-toolbar";
                         }
+
+                        if (this.designer?.isVisible && newComponent.name.startsWith('new_') && newComponent.constraints === "West") {
+                            newComponent.designerNew = true;
+                        }
+                        
                         this.flatContent.set(newComponent.id, newComponent);
                     }
                 }
