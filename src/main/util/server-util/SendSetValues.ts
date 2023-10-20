@@ -35,7 +35,7 @@ export async function sendSetValues(
     editorColumnName: string,
     value: string | number | boolean | Array<any> | null,
     server: Server|ServerFull,
-    topbar: TopBarContextType,
+    topbar: TopBarContextType|undefined,
     rowIndex?: number,
     selectedIndex?: number,
     filter?: SelectFilter) {
@@ -78,7 +78,7 @@ export async function sendSetValue(
     name: string,
     value: string | number | boolean | Array<any> | null,
     server: Server|ServerFull,
-    topbar:TopBarContextType) {
+    topbar:TopBarContextType|undefined) {
         const req = createSetValueRequest();
         req.componentId = name;
         req.value = value;

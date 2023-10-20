@@ -15,16 +15,16 @@
 
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, FormEvent, useMemo, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useContext, useMemo, useState } from "react";
 import { createResetPasswordRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { ILoginForm } from "./LoginForm";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { translation } from "../../main/util/other-util/Translation";
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
+import { appContext } from "../../main/contexts/AppProvider";
 
 /**
  * Returns the reset-form to reset the password of a user.
@@ -32,7 +32,7 @@ import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackgroun
  */
 const ResetForm:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** State of the email field */
     const [email, setEmail] = useState<string>("");
@@ -57,7 +57,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
         else {
             const resetReq = createResetPasswordRequest();
             resetReq.identifier = email;
-            showTopBar(context.server.sendRequest(resetReq, REQUEST_KEYWORDS.RESET_PASSWORD), topbar)
+            showTopBar(context.server.sendRequest(resetReq, REQUEST_KEYWORDS.RESET_PASSWORD), context.server.topbar)
         }
     }
 

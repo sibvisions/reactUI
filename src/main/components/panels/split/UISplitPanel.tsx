@@ -41,7 +41,7 @@ export interface ISplit extends BaseComponent{
  */
 const UISplitPanel: FC<ISplit & IExtendableSplitPanel> = (baseProps) => {
     /** Component constants */
-    const [,, [props], layoutStyle,, styleClassNames] = useComponentConstants<ISplit & IExtendableSplitPanel>(baseProps, {visibility: 'hidden'});
+    const [, [props], layoutStyle,, styleClassNames] = useComponentConstants<ISplit & IExtendableSplitPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children */
     const [children, components, compSizes] = useComponents(props.id, props.className);

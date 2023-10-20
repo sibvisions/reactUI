@@ -182,8 +182,6 @@ export default class AppSettings {
     cssToAddWhenReady:Array<any> = [];
 
     showDesigner: boolean = false;
-
-    showWSDesigner: boolean = false;
     
     showDebug: boolean = false;
 
@@ -237,6 +235,9 @@ export default class AppSettings {
         
         if (appMetaData.applicationName) {
             this.applicationMetaData.applicationName = appMetaData.applicationName;
+            if (this.transferType === "full") {
+                this.#subManager.notifyTabTitleChanged(appMetaData.applicationName);
+            }
         }
 
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {

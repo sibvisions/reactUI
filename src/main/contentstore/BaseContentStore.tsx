@@ -61,7 +61,7 @@ export interface ISelectedRow {
 export interface IDataBook {
     data?: Map<string, any>,
     metaData?: MetaDataResponse,
-    allFetched?: boolean,
+    isAllFetched?: boolean,
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
     readOnly?: boolean,
@@ -230,7 +230,7 @@ export default abstract class BaseContentStore {
             const componentEntries = mergedContent.entries();
             let foundEntry: BaseComponent | undefined;
             let entry = componentEntries.next();
-            while (!entry.done) {
+            while (!entry.done && !foundEntry) {
                 if (entry.value[1].id === componentId) {
                     foundEntry = entry.value[1];
                 }
@@ -402,6 +402,14 @@ export default abstract class BaseContentStore {
         }
     }
 
+    updatePopupProperties(existingComp:IPanel, newComp:IPanel, newProp:string) {
+        const popup = this.getExistingComponent(existingComp.id + "-popup") as IPanel;
+        if (newProp !== "id") {
+            // @ts-ignore
+            popup[newProp] = newComp[newProp];
+        }
+    }
+
     /**
      * Handles adding or removing popups
      * @param existingComp - the previous component before the update
@@ -429,9 +437,13 @@ export default abstract class BaseContentStore {
                 this.flatContent.delete(existingComp.id + "-popup");
                 this.removedContent.delete(existingComp.id + "-popup");
             }
+            if (newComp.parent?.startsWith("IF")) {
+                existingComp.parent = existingComp.id + "-popup"
+            }
         }
         else {
             const popup:BaseComponent = {
+                ...newComp,
                 id: newComp.id + "-popup",
                 name: newComp.name + "-popup",
                 className: "PopupWrapper",
@@ -758,7 +770,8 @@ export default abstract class BaseContentStore {
      */
      getScreenName(id: string, dataProvider?:string) {
         if (dataProvider) {
-            return dataProvider.split("/")[1]
+            const splitDataProvider = dataProvider.split("/");
+            return splitDataProvider[1]
         }
         else {
             let comp: BaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
@@ -768,7 +781,11 @@ export default abstract class BaseContentStore {
                         break;
                     }
                     else if ((comp as IPanel).content_className_) {
-                        return dataProvider ? dataProvider.split("/")[1] : comp.name;
+                        if (dataProvider) {
+                            const splitDataProvider = dataProvider.split("/");
+                            return splitDataProvider[1]
+                        }
+                        return comp.name;
                     }
     
                     comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);

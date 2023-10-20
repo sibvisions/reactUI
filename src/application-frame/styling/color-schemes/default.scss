@@ -449,6 +449,10 @@
     /// Default Topbar color
     --topbar-colors:var(--primary-color), var(--primary-color);
 
+    --topbar-medium-interval-colors: #f3ff6f;
+
+    --topbar-long-interval-colors: #ff3030;
+
     ///System Colors
 
     /// Default mandatory background
@@ -1943,11 +1947,11 @@ body {
         border-width: 0 var(--frame-border-width) 0 var(--frame-border-width);
     }
 
-    .rc-frame-content {
+    .rc-frame-window-content {
         border-width: 0 var(--frame-border-width) var(--frame-border-width) var(--frame-border-width);
     }
 
-    .rc-frame-content, .rc-frame-menu {
+    .rc-frame-window-content, .rc-frame-menu {
         border-color: var(--frame-header-background);
     }
 }

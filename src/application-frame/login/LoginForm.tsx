@@ -16,19 +16,18 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, FormEvent, useMemo, useState } from "react";
+import React, { CSSProperties, FC, FormEvent, useContext, useMemo, useState } from "react";
 import { createLoginRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import ChangePasswordDialog from "../change-password/ChangePasswordDialog";
 import ILoginCredentials from "./ILoginCredentials";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import { translation } from "../../main/util/other-util/Translation";
 import ContentStore from "../../main/contentstore/ContentStore";
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
+import { appContext } from "../../main/contexts/AppProvider";
 
 /** Interface for the default-login form */
 export interface ILoginForm extends ILoginCredentials {
@@ -44,7 +43,7 @@ export interface ILoginForm extends ILoginCredentials {
  */
 const LoginForm:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** State for username field */
     const [username, setUsername] = useState<string>((context.contentStore as ContentStore).currentUser.userName);
@@ -77,7 +76,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
         loginReq.createAuthKey = rememberMe;
         context.server.loginError = undefined;
         context.subscriptions.emitLoginChanged(undefined, undefined)
-        showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar);
+        showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), context.server.topbar);
         context.subscriptions.emitMenuUpdate();
     }
 

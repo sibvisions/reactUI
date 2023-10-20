@@ -13,12 +13,11 @@
  * the License.
  */
 
-import { CSSProperties } from "react";
+import { CSSProperties, useContext } from "react";
 import useProperties from "../data-hooks/useProperties";
 import useLayoutValue from "../style-hooks/useLayoutValue";
-import useConstants from "../components-hooks/useConstants";
 import useComponentStyle from "../style-hooks/useComponentStyle";
-import { AppContextType } from "../../contexts/AppProvider";
+import { AppContextType, appContext } from "../../contexts/AppProvider";
 import BaseComponent from "../../util/types/BaseComponent";
 import { TopBarContextType } from "../../components/topbar/TopBar";
 import { IPanel } from "../../components/panels/panel/UIPanel";
@@ -30,9 +29,9 @@ import useStyleClassNames from "./useStyleClassNames";
  * @param fb - the fallback value for styles
  */
 const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSProperties):
-[AppContextType, TopBarContextType, [T], CSSProperties|undefined, CSSProperties, string[]] => {
+[AppContextType, [T], CSSProperties|undefined, CSSProperties, string[]] => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** Up to date properties for the component */
     const [props] = useProperties<T>(baseProps.id, {...baseProps});
@@ -45,6 +44,6 @@ const useComponentConstants = <T extends BaseComponent> (baseProps:T, fb?:CSSPro
 
     const styleClassNames = useStyleClassNames(props.style)
 
-    return [context, topbar, [props], layoutStyle, compStyle, styleClassNames];
+    return [context, [props], layoutStyle, compStyle, styleClassNames];
 }
 export default useComponentConstants

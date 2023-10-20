@@ -47,7 +47,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextArea & IExtendableText>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextArea & IExtendableText>(baseProps);
 
     /** Current state of the textarea value */
     const [text, setText] = useState(props.text || "");
@@ -117,7 +117,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (baseProps) => {
                     }
 
                     if (startedEditing.current) {
-                        sendSetValue(props.name, text, context.server, topbar);
+                        sendSetValue(props.name, text, context.server, context.server.topbar);
                         startedEditing.current = false;
                     }
 

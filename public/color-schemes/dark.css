@@ -178,6 +178,8 @@
   --dialog-border-radius:3px;
   --toolbar-border-radius:0px;
   --topbar-colors:var(--primary-color), var(--primary-color);
+  --topbar-medium-interval-colors: #f3ff6f;
+  --topbar-long-interval-colors: #ff3030;
   --mandatory-background:rgb(255, 244, 210);
   --readonly-background:#2a323d;
   --invalid-background:rgb(209, 51, 51);
@@ -1219,10 +1221,10 @@ body {
 .rc-frame .rc-frame-menu {
   border-width: 0 var(--frame-border-width) 0 var(--frame-border-width);
 }
-.rc-frame .rc-frame-content {
+.rc-frame .rc-frame-window-content {
   border-width: 0 var(--frame-border-width) var(--frame-border-width) var(--frame-border-width);
 }
-.rc-frame .rc-frame-content, .rc-frame .rc-frame-menu {
+.rc-frame .rc-frame-window-content, .rc-frame .rc-frame-menu {
   border-color: var(--frame-header-background);
 }
 

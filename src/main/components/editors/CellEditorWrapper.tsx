@@ -56,7 +56,7 @@ export interface IRCCellEditor extends IEditor, ICellEditorWrapperProps, IInTabl
  */
 const CellEditorWrapper:FC<any> = (baseProps) => {
     /** Current state of the properties for the component sent by the server */
-    const [context, topbar, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle, styleClassNames] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
+    const [context, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle, styleClassNames] = useEditorConstants<any>(baseProps, baseProps.editorStyle);
 
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataRow);
@@ -67,7 +67,7 @@ const CellEditorWrapper:FC<any> = (baseProps) => {
         {
             ...props,
             context: context,
-            topbar: topbar,
+            topbar: context.server.topbar,
             layoutStyle: layoutStyle,
             translation: translation,
             screenName: screenName,

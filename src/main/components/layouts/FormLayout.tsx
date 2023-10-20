@@ -152,8 +152,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 const getAutoSizeAnchorsBetween = (startAnchor: Anchor, endAnchor: Anchor): Array<Anchor> => {
                     const autoSizeAnchors = Array<Anchor>();
                     let startAnchorIntern : Anchor | undefined = startAnchor
-                    while (startAnchorIntern && startAnchorIntern !== endAnchor){
-                        if(startAnchorIntern.autoSize && !startAnchorIntern.autoSizeCalculated){
+                    while (startAnchorIntern && startAnchorIntern !== endAnchor) {
+                        if(startAnchorIntern.autoSize && !startAnchorIntern.autoSizeCalculated) {
                             autoSizeAnchors.push(startAnchorIntern);
                         }
                         startAnchorIntern = startAnchorIntern.relatedAnchor;
@@ -225,14 +225,14 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                  */
                 const finishAutoSizeCalculation = (leftTopAnchor: Anchor, rightBottomAnchor: Anchor): number => {
                     const autoSizeAnchors = getAutoSizeAnchorsBetween(leftTopAnchor, rightBottomAnchor);
-                    let counter = 0;
+                    let count = autoSizeAnchors.length;
                     autoSizeAnchors.forEach(anchor => {
                         if (!anchor.firstCalculation) {
                             anchor.autoSizeCalculated = true;
-                            counter++;
+                            count--;
                         }
                     });
-                    return autoSizeAnchors.length - counter
+                    return count
                 }
 
                 /**
@@ -288,10 +288,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
                 });
 
-                /** AutoSize calculations */
-                for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;){
+                let autoSizeCount = 1;
+
+                do {
                     children.forEach(component => {
-                        if(component.visible !== false){
+                        if(component.visible !== false) {
                             const constraint = componentConstraints.get(component.id);
                             const preferredSizeObj = compSizes.get(component.id)?.preferredSize;
                             if(constraint && preferredSizeObj) {
@@ -301,7 +302,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
                     });
                     autoSizeCount = 100000;
-
                     /** Finish AutoSize */
                     children.forEach(component => {
                         const constraints = componentConstraints.get(component.id)
@@ -329,7 +329,50 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                         }
                     });
-                }
+                } while (autoSizeCount > 0 && autoSizeCount < 100000)
+
+                /** AutoSize calculations */
+                // for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;) {
+                //     children.forEach(component => {
+                //         if(component.visible !== false) {
+                //             const constraint = componentConstraints.get(component.id);
+                //             const preferredSizeObj = compSizes.get(component.id)?.preferredSize;
+                //             if(constraint && preferredSizeObj) {
+                //                 calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSizeObj.height as number, autoSizeCount);
+                //                 calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSizeObj.width as number, autoSizeCount);
+                //             }
+                //         }
+                //     });
+                //     autoSizeCount = 100000;
+
+                //     /** Finish AutoSize */
+                //     children.forEach(component => {
+                //         const constraints = componentConstraints.get(component.id)
+                //         if(constraints){
+                //             let count: number
+                //             /** 
+                //              * Finish AutoSize calculation for each constraint count is the autosize anchors left.
+                //              * Leaves loop when there are no unfinished autosize anchors left
+                //              */
+                //             count = finishAutoSizeCalculation(constraints.leftAnchor, constraints.rightAnchor);
+                //             if (count > 0 && count < autoSizeCount) {
+                //                 autoSizeCount = count;
+                //             }
+                //             count = finishAutoSizeCalculation(constraints.rightAnchor, constraints.leftAnchor);
+                //             if (count > 0 && count < autoSizeCount) {
+                //                 autoSizeCount = count;
+                //             }
+                //             count = finishAutoSizeCalculation(constraints.topAnchor, constraints.bottomAnchor);
+                //             if (count > 0 && count < autoSizeCount) {
+                //                 autoSizeCount = count;
+                //             }
+                //             count = finishAutoSizeCalculation(constraints.bottomAnchor, constraints.topAnchor);
+                //             if (count > 0 && count < autoSizeCount) {
+                //                 autoSizeCount = count;
+                //             }
+                //         }
+                //     });
+                // }
                 let leftWidth = 0;
                 let rightWidth = 0;
                 let topHeight = 0;
@@ -773,7 +816,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
          * If compSizes is set (every component in this layout reported its preferred size) 
          * and the compSize is the same as children size calculate the layout 
          */
-        if(compSizes && compSizes.size === children.size && context.contentStore.getComponentById(id)?.visible !== false){
+        if(compSizes && compSizes.size === children.size && context.contentStore.getComponentById(id)?.visible !== false) {
             calculateLayout(
                 compSizes,
                 children,
@@ -790,7 +833,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
     return(
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={calculatedStyle.current?.componentSizes || new Map<string, React.CSSProperties>()}>
-            <div data-layout="form" style={{...calculatedStyle.current?.style}}>
+            <div className="rc-layout-element" data-layout="form" style={{...calculatedStyle.current?.style}}>
                 {components}
             </div>
         </LayoutContext.Provider>

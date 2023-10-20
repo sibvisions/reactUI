@@ -148,6 +148,9 @@ export default class ContentStore extends BaseContentStore {
                 if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                     this.updateToolBarProperties(existingComp as IToolBarPanel, newComp as IToolBarPanel, newPropName);
                 }
+                else if (existingComp.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComp as IPanel)) {
+                    this.updatePopupProperties(existingComp as IPanel, newComp as IPanel, newPropName)
+                }
             }
         }
     }
@@ -160,6 +163,7 @@ export default class ContentStore extends BaseContentStore {
     updateContent(componentsToUpdate: Array<BaseComponent>, desktop:boolean) {
         /** An array of all parents which need to be notified */
         const notifyList = new Array<string>();
+        const menuButtonNotifyList = new Array<string>();
         /** 
          * Is the existing component if a component in the server sent components already exists in flatContent, replacedContent or
          * removedContent. Undefined if it is a new component
@@ -181,7 +185,8 @@ export default class ContentStore extends BaseContentStore {
                 this.handleToolBarComponent(existingComponent as IToolBarPanel, newComponent as IToolBarPanel);
             }
 
-            if (newComponent.className === COMPONENT_CLASSNAMES.PANEL && ((newComponent as IPanel).screen_modal_ || (newComponent as IPanel).content_modal_)) {
+            if ((newComponent.className === COMPONENT_CLASSNAMES.PANEL && ((newComponent as IPanel).screen_modal_ || (newComponent as IPanel).content_modal_)) 
+                || (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.PANEL && ((existingComponent as IPanel).screen_modal_ || (existingComponent as IPanel).content_modal_))) {
                 this.handleModalPanel(existingComponent as IPanel, newComponent as IPanel);
             }
             
@@ -249,6 +254,11 @@ export default class ContentStore extends BaseContentStore {
                     this.removedDesktopContent.delete(newComponent.id);
                     this.removedCustomComponents.delete(newComponent.id);
                 }
+
+
+                if (existingComponent.className === COMPONENT_CLASSNAMES.MENU_ITEM && existingComponent.parent) {
+                    menuButtonNotifyList.push(existingComponent.parent); 
+                }
             }
 
             /** Add parent of newComponent to notifyList */
@@ -274,7 +284,8 @@ export default class ContentStore extends BaseContentStore {
             }
 
             if (!newComponent["~destroy"]) {
-                if (newComponent.parent) {
+                // IF check because opening content after closeContent could return IF as parent this would mess up the children structure
+                if (newComponent.parent && !newComponent.parent.startsWith("IF")) {
                     this.addAsChild(newComponent)
                 }
                 else if (existingComponent) {
@@ -310,6 +321,10 @@ export default class ContentStore extends BaseContentStore {
             }
         });
 
+        /** Call the update function of the parentSubscribers */
+        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
+        menuButtonNotifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.notifyMenuButtonItemsChange(parentId));
+
         /** If the component already exists and it is subscribed to properties update the state */
         componentsToUpdate.forEach(newComponent => {
             existingComponent = this.getExistingComponent(newComponent.id)
@@ -329,13 +344,20 @@ export default class ContentStore extends BaseContentStore {
                         }
                     }
                 }
+                else if (existingComponent.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComponent as IPanel)) {
+                    const existingPopup = this.flatContent.get(existingComponent.id + "-popup") || this.removedContent.get(existingComponent.id + "-popup");
+                    if (existingPopup) {
+                        const updatePopup = this.subManager.propertiesSubscriber.get(existingPopup.id);
+                        if (updatePopup) {
+                            updatePopup(existingPopup);
+                        }
+                    }
+                }
                 if (updateFunction) {
                     updateFunction(existingComponent);
                 }
             }
         });
-        /** Call the update function of the parentSubscribers */
-        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
     }
 
     /** Resets the contentStore */

@@ -50,7 +50,12 @@
     }
 }
 
-.rc-frame-content, .rc-frame-menu {
+.rc-frame-window-content, .rc-frame-menu {
     border: 1px solid;
     overflow: hidden;
+}
+
+.rc-frame-content {
+    height: 100%;
+    width: 100%;
 }

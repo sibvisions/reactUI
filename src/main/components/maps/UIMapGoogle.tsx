@@ -50,7 +50,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
     const mapInnerRef = useRef(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<IMap & IExtendableMapGoogle>(baseProps);
+    const [context, [props], layoutStyle,, styleClassNames] = useComponentConstants<IMap & IExtendableMapGoogle>(baseProps);
 
     /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
@@ -221,8 +221,8 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
 
                 if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: e.latLng.lat(), lng: e.latLng.lng()})
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "" || "LATITUDE", [e.latLng.lat(), e.latLng.lng()], context.server, topbar);
-                    showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar)
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "" || "LATITUDE", [e.latLng.lat(), e.latLng.lng()], context.server, context.server.topbar);
+                    showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), context.server.topbar)
                 }
             }
 
@@ -245,8 +245,8 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
                 }
 
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, topbar);
-                    setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, context.server.topbar);
+                    setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), context.server.topbar), 200);
                 }
             }
 
@@ -259,8 +259,8 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
 
                 if (selectedMarker && props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: map.getCenter().lat(), lng: map.getCenter().lng()});
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, topbar);
-                    setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), topbar), 200);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "", [selectedMarker.getPosition()?.lat(), selectedMarker.getPosition()?.lng()], context.server, context.server.topbar);
+                    setTimeout(() => showTopBar(sendSaveRequest(props.pointsDataBook, true, context.server), context.server.topbar), 200);
                 }
             }
 

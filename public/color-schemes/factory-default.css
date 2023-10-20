@@ -290,9 +290,6 @@ body {
   border-color: var(--std-menu-item-hover-background);
   color: var(--std-menu-item-hover-text-color); }
 
-.p-panelmenu .p-panelmenu-header.p-highlight > a, .p-panelmenu .p-panelmenu-header.p-highlight:not(.p-disabled) > a:hover {
-  color: var(--std-menu-item-hover-text-color); }
-
 .p-panelmenu .p-panelmenu-content {
   background: var(--std-menu-background); }
   .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link {
@@ -975,9 +972,9 @@ body {
       border-bottom: var(--toolbar-separator); }
   .rc-frame .rc-frame-menu {
     border-width: 0 var(--frame-border-width) 0 var(--frame-border-width); }
-  .rc-frame .rc-frame-content {
+  .rc-frame .rc-frame-window-content {
     border-width: 0 var(--frame-border-width) var(--frame-border-width) var(--frame-border-width); }
-  .rc-frame .rc-frame-content, .rc-frame .rc-frame-menu {
+  .rc-frame .rc-frame-window-content, .rc-frame .rc-frame-menu {
     border-color: var(--frame-header-background); }
 
 .crash-banner {

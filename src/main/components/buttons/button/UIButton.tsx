@@ -18,7 +18,7 @@ import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
-import useButtonMouseImages from "../../../hooks/event-hooks/useButtonMouseImages";
+import useButtonMouseImages, { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
@@ -56,7 +56,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButton & IExtendableButton>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButton & IExtendableButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)
@@ -102,7 +102,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             clone,
             onLoadCallback
         ),
-        onLoadCallback
+        onLoadCallback,
+        props.text
     );
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
@@ -111,15 +112,15 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             props.onClick(event)
         }
 
-        if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
-            inputRef.current.click();
-        }
+        // if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
+        //     inputRef.current.click();
+        // }
 
         if (props.eventAction) {
             const req = createDispatchActionRequest();
             req.componentId = props.name;
             req.isUploadButton = props.classNameEventSourceRef === "UploadButton" ? true : undefined
-            showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+            showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
         }
     }
 
@@ -204,7 +205,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                         )}
                         label={!isHTML ? props.text : undefined}
                         aria-label={props.ariaLabel}
-                        icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
+                        icon={btnStyle.iconProps ? isFAIcon(btnStyle.iconProps.icon) ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : 'rc-button-icon' : undefined}
                         iconPos={btnStyle.iconPos}
 
                         disabled={isCompDisabled(props)}

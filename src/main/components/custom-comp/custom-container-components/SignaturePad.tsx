@@ -49,7 +49,7 @@ enum EDITLOCK_STATUS {
  */
 const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,,styleClassNames] = useComponentConstants<ISignaturPad>(baseProps);
+    const [context, [props], layoutStyle,,styleClassNames] = useComponentConstants<ISignaturPad>(baseProps);
 
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow]) 
 
@@ -154,7 +154,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                                     svReq.columnNames = [props.columnName];
                                     const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
                                     svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
-                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar);
+                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), context.server.topbar);
                                     setEditStatus(EDITLOCK_STATUS.EDITING);
                                 }
                             }} />
@@ -188,7 +188,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                                     svReq.columnNames = [props.columnName];
                                     const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
                                     svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
-                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar)
+                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), context.server.topbar)
                                 }
                             }} />
                         <Button
@@ -207,7 +207,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                                     svReq.columnNames = [props.columnName];
                                     const newDataURI = await resizedataURL(sigRef.current.toDataURL("image/png"), layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200);
                                     svReq.values = [newDataURI.replace("data:image/png;base64,", "")];
-                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), topbar);
+                                    showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), context.server.topbar);
                                     setEditStatus(props.saveLock ? EDITLOCK_STATUS.NO_BUTTONS : EDITLOCK_STATUS.LOCK);
                                     if (props.saveLock) {
                                         setSaveLocked(true);

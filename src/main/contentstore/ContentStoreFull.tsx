@@ -92,6 +92,9 @@ export default class ContentStoreFull extends BaseContentStore {
                 if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                     this.updateToolBarProperties(existingComp as IToolBarPanel, newComp as IToolBarPanel, newPropName);
                 }
+                else if (existingComp.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComp as IPanel)) {
+                    this.updatePopupProperties(existingComp as IPanel, newComp as IPanel, newPropName)
+                }
             }
         }
     }
@@ -104,6 +107,7 @@ export default class ContentStoreFull extends BaseContentStore {
      updateContent(componentsToUpdate: Array<BaseComponent>) {
         /** An array of all parents which need to be notified */
         const notifyList = new Array<string>();
+        const menuButtonNotifyList = new Array<string>();
         /** 
          * Is the existing component if a component in the server sent components already exists in flatContent, replacedContent or
          * removedContent. Undefined if it is a new component
@@ -161,7 +165,7 @@ export default class ContentStoreFull extends BaseContentStore {
                         if (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
                             // Close screen when InternalFrame is a workscreen
                             if (isWorkScreen(existingComponent as IPanel)) {
-                                this.closeScreen(existingComponent.id, existingComponent.name);
+                                this.closeScreen(existingComponent.id, existingComponent.name, true);
                             }
                             else {
                                 // Close screen and delete InternalFrame when first child of InternalFrame is a workscreen or login
@@ -193,6 +197,10 @@ export default class ContentStoreFull extends BaseContentStore {
                     this.flatContent.delete(newComponent.id);
                     this.removedContent.delete(newComponent.id);
                     this.removedCustomComponents.delete(newComponent.id);
+                }
+
+                if (existingComponent.className === COMPONENT_CLASSNAMES.MENU_ITEM && existingComponent.parent) {
+                    menuButtonNotifyList.push(existingComponent.parent); 
                 }
             }
 
@@ -253,8 +261,12 @@ export default class ContentStoreFull extends BaseContentStore {
             }
         });
 
+        /** Call the update function of the parentSubscribers */
+        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
+        menuButtonNotifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.notifyMenuButtonItemsChange(parentId));
+
         /** If the component already exists and it is subscribed to properties update the state */
-        componentsToUpdate.forEach(newComponent => {
+        componentsToUpdate.forEach(newComponent => {    
             existingComponent = this.getExistingComponent(newComponent.id)
 
             const updateFunction = this.subManager.propertiesSubscriber.get(newComponent.id);
@@ -272,13 +284,21 @@ export default class ContentStoreFull extends BaseContentStore {
                         }
                     }
                 }
+                else if (existingComponent.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComponent as IPanel)) {
+                    const existingPopup = this.flatContent.get(existingComponent.id + "-popup") || this.removedContent.get(existingComponent.id + "-popup");
+                    if (existingPopup) {
+                        const updatePopup = this.subManager.propertiesSubscriber.get(existingPopup.id);
+                        if (updatePopup) {
+                            updatePopup(existingPopup);
+                        }
+                    }
+                }
+
                 if (updateFunction) {
                     updateFunction(existingComponent);
                 }
             }
         });
-        /** Call the update function of the parentSubscribers */
-        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
     }
 
     /**
@@ -403,7 +423,11 @@ export default class ContentStoreFull extends BaseContentStore {
                         break;
                     }
                     else if ((comp as IPanel).content_className_) {
-                        return dataProvider ? dataProvider.split("/")[1] : comp.name;
+                        if (dataProvider) {
+                            const splitDataProvider = dataProvider.split("/");
+                            return splitDataProvider[1]
+                        }
+                        return comp.name;
                     }
     
                     comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);

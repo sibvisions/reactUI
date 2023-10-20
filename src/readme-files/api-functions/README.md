@@ -23,14 +23,14 @@ For the second parameter use the [REQUEST_KEYWORDS](https://github.com/sibvision
         api.sendRequest(req, "set_values");
 ```
 
-## sendOpenScreenRequest(id: string, parameter?: { [key: string]: any })
+## sendOpenScreenRequest(id: string, parameter?: { [key: string]: any }, readAheadLimit?: number)
 Sends an open-screen-request to the server to open a workscreen.
 
-For the first parameter use the classpath of the screen you want to open. The second parameter is optional, it is used to send additional parameters to the server in the open-screen request.
+For the first parameter use the classpath of the screen you want to open. The second parameter is optional, it is used to send additional parameters to the server in the open-screen request. The third parameter limits how many records are being fetched at once from the server
 
 ### Usage
 ```typescript
-    api.sendOpenScreenRequest("com.sibvisions.apps.mobile.demo.screens.features.PopupExampleWorkScreen", { testParam: 'test', hello: 'world' })
+    api.sendOpenScreenRequest("com.sibvisions.apps.mobile.demo.screens.features.PopupExampleWorkScreen", { testParam: 'test', hello: 'world' }, 100)
 ```
 
 ## sendScreenParameter(screenName: string, parameter: { [key: string]: any })

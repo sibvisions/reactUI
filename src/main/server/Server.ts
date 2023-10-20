@@ -263,7 +263,7 @@ class Server extends BaseServer {
      * @param responses - the responses received
      */
     async responseHandler(responses: Array<BaseResponse>, request: any) {
-        if (Array.isArray(responses)) {
+        if (Array.isArray(responses)) {       
             await super.responseHandler(responses, request);
             // if there is a screen to close don't route to prevent flickering
             if (!this.screensToClose.length) {
@@ -560,7 +560,8 @@ class Server extends BaseServer {
         //     }
         // }
         if (dataProvider) {
-            return dataProvider.split("/")[1];
+            const splitDataProvider = dataProvider.split("/");
+            return splitDataProvider[1]
         }
         return ""
     }
@@ -588,14 +589,21 @@ class Server extends BaseServer {
                 }
             }
             catch(e) {
-                console.log("showpicker function not supported")
+                this.subManager.notifyUploadDialog(uploadData.fileId);
             }
         }
         else {
             if (request && request.componentId) {
                 const inputElem = document.getElementById(request.componentId + "-upload");
                 if (inputElem) {
-                    inputElem.setAttribute("upload-file-id", uploadData.fileId);
+                    try {
+                        inputElem.setAttribute("upload-file-id", uploadData.fileId);
+                        //@ts-ignore
+                        inputElem.showPicker()
+                    }
+                    catch (e) {
+                        this.subManager.notifyUploadDialog(uploadData.fileId);
+                    }
                 }
             }
 
@@ -608,9 +616,11 @@ class Server extends BaseServer {
      */
     download(downloadData: DownloadResponse) {
         const a = document.createElement('a');
-        a.href = downloadData.url.split(';')[0];
+        document.body.append(a);
+        a.href = downloadData.url.split(';')[0] + "&FILENAME=" + downloadData.fileName;
         a.setAttribute('download', downloadData.fileName);
         a.click();
+        document.body.removeChild(a);
     }
 
     /**
@@ -702,7 +712,7 @@ class Server extends BaseServer {
             }
         }
         else {
-            this.subManager.emitErrorBarProperties(true, false, false, 5, "Could not load translation", "There was a problem when fetching the translation");
+            this.subManager.emitErrorBarProperties(true, false, false, 5, translation.get("Could not load translation"), translation.get("An error occured while fetching the translation."));
             this.subManager.emitErrorBarVisible(true);
         }
 

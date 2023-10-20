@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useState, ReactElement } from "react";
+import React, { FC, useEffect, useState, ReactElement, useContext } from "react";
 import { componentHandler } from "../../main/factories/UIFactory";
 import ResizeHandler from "../screen-management/ResizeHandler";
 import BaseComponent from "../../main/util/types/BaseComponent";
@@ -28,9 +28,9 @@ import { LoginModeType, MFAURLType } from "../../main/response/login/LoginRespon
 import ContentStore from "../../main/contentstore/ContentStore";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { createLoginRequest, createResetPasswordRequest } from "../../main/factories/RequestFactory";
 import ChangePasswordDialog from "../change-password/ChangePasswordDialog";
+import { appContext } from "../../main/contexts/AppProvider";
 
 /** 
  * Type for the different login-modes
@@ -95,7 +95,7 @@ export interface ICustomMFAUrl extends ICustomLogin {
 /** Component which handles logging in */
 const Login: FC = () => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** State of the current login-mode to display */
     const [loginMode, setLoginMode] = useState<LoginMode>(LOGINMODES.DEFAULT);
@@ -178,7 +178,7 @@ const Login: FC = () => {
             }
 
             context.subscriptions.emitLoginChanged(undefined, undefined);
-            showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
+            showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), context.server.topbar)
         }
 
         /**
@@ -200,7 +200,7 @@ const Login: FC = () => {
                 loginReq = { ...options, ...loginReq };
             }
 
-            showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar)
+            showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), context.server.topbar)
         }
 
         /**
@@ -216,7 +216,7 @@ const Login: FC = () => {
                 resetReq = { ...options, ...resetReq };
             }
 
-            showTopBar(context.server.sendRequest(resetReq, REQUEST_KEYWORDS.RESET_PASSWORD), topbar)
+            showTopBar(context.server.sendRequest(resetReq, REQUEST_KEYWORDS.RESET_PASSWORD), context.server.topbar)
         }
 
         let customLoginView: {

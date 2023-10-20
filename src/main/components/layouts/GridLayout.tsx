@@ -74,8 +74,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
             const size:Dimension = { width: 0, height: 0 }
 
-            let targetColumns = 0;
-            let targetRows = 0;
+            let targetColumns = gridSize.columns;
+            let targetRows = gridSize.rows;
             
             children.forEach(component => {
                 if (component.visible !== false) {
@@ -215,7 +215,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
     return (
         /** Provide the allowed sizes of the children as a context */
         <LayoutContext.Provider value={componentSizes}>
-            <div data-layout="grid" style={calculatedStyle}>
+            <div className="rc-layout-element" data-layout="grid" style={calculatedStyle}>
                 {components}
             </div>
         </LayoutContext.Provider>

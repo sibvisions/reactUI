@@ -193,6 +193,10 @@ export class SubscriptionManager {
 
     appReadyParamsSubscriber: Function = () => {};
 
+    menuButtonItemsSubscriber:Map<string, Function> = new Map<string, Function>();
+
+    uploadDialogSubscriber: Function = () => {};
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -580,6 +584,14 @@ export class SubscriptionManager {
         this.sessionExpiredSubscriber.push(fn);
     }
 
+    subscribeToMenuButtonItems(key: string, fn: Function) {
+        this.menuButtonItemsSubscriber.set(key, fn);
+    }
+
+    subscribeToUploadDialog(fn: Function) {
+        this.uploadDialogSubscriber = fn;
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -855,11 +867,22 @@ export class SubscriptionManager {
         this.loginActiveSubscriber = () => {};
     }
 
+    unsubscribeFromMenuButtonItems(key:string) {
+        this.menuButtonItemsSubscriber.delete(key)
+    }
+
     /**
      * Unsubscribes from session-expired status
      */
     unsubscribeFromSessionExpired(fn:Function) {
         this.sessionExpiredSubscriber.splice(this.sessionExpiredSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    }
+
+    /**
+     * Unsubscribe from upload dialog
+     */
+    unsubscribeFromUploadDialog() {
+        this.uploadDialogSubscriber = () => {};
     }
 
     /**
@@ -945,6 +968,14 @@ export class SubscriptionManager {
 
     notifyAppReadyParamsChange() {
         this.appReadyParamsSubscriber.apply(undefined, [this.appSettings.appReadyParams])
+    }
+
+    notifyMenuButtonItemsChange(id: string) {
+        this.menuButtonItemsSubscriber.get(id)?.apply(undefined, []);
+    }
+
+    notifyUploadDialog(fileId: string) {
+        this.uploadDialogSubscriber.apply(undefined, [fileId])
     }
 
     /**

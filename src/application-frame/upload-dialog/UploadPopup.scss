@@ -13,11 +13,6 @@
  * the License.
  */
 
-import ParameterRequest from "../comp/ParameterRequest";
-
-/** Interface for OpenScreenRequest */
-interface OpenScreenRequest extends ParameterRequest {
-    className?:string,
-    readAheadLimit?: number
-}
-export default OpenScreenRequest;
+ .upload-popup .p-dialog-content {
+    padding: 0.5rem 1.5rem 2rem 1.5rem;
+ }
