@@ -95,7 +95,7 @@ export function panelReportSize(id: string,
             className,
             propPref ? parsePrefSize(propPref) : adjustedSize,
             parseMaxSize(propMax),
-            calcMin ? calcMin : parseMinSize(propMin),
+            propMin ? parseMinSize(propMin) : calcMin,
             undefined,
             onLoadCallback
         )
@@ -147,7 +147,7 @@ export function panelGetStyle(group: boolean, layoutStyle?: CSSProperties, prefS
  */
 const UIPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -177,7 +177,7 @@ const UIPanel: FC<IPanel> = (baseProps) => {
     const isToolBar = useMemo(() => props.className === COMPONENT_CLASSNAMES.TOOLBAR, [props.className]);
 
     const isOverflowHidden = useMemo(() => {
-        let isHidden = false;
+        let isHidden = true;
         if (props.parent) {
             let parentComp = context.contentStore.getComponentById(props.parent);
             if (parentComp) {
@@ -188,13 +188,13 @@ const UIPanel: FC<IPanel> = (baseProps) => {
                 if (props.layout && props.layout.startsWith("FlowLayout") && props.layout.split(",")[11] === 'false') {
                     return true;
                 }
-                // while (parentComp) {
-                //     if (parentComp.className === COMPONENT_CLASSNAMES.SCROLLPANEL) {
-                //         isHidden = false;
-                //         break;
-                //     }
-                //     parentComp = context.contentStore.getComponentById(parentComp.parent);
-                // }
+                while (parentComp) {
+                    if (parentComp.className === COMPONENT_CLASSNAMES.SCROLLPANEL) {
+                        isHidden = false;
+                        break;
+                    }
+                    parentComp = context.contentStore.getComponentById(parentComp.parent);
+                }
             }
         }
         return isHidden;

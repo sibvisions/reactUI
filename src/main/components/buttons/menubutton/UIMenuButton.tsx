@@ -61,7 +61,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IMenuButton & IExtendableMenuButton>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IMenuButton & IExtendableMenuButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle);
@@ -174,7 +174,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (baseProps) => {
 
                         const req = createDispatchActionRequest();
                         req.componentId = item.name;
-                        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+                        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
                     }
                 });
             });

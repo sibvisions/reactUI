@@ -13,13 +13,14 @@
  * the License.
  */
 
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { showTopBar } from "../../main/components/topbar/TopBar";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import useEventHandler from "../../main/hooks/event-hooks/useEventHandler";
 import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
 import { createAliveRequest } from "../../main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import { translation } from "../../main/util/other-util/Translation";
+import { appContext } from "../../main/contexts/AppProvider";
 
 /**
  * Interface for server-error messages
@@ -40,7 +41,7 @@ export type IServerFailMessage = {
  */
 const ErrorBar:FC = () => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** True, if the error-bar is visible */
     const [visible, setVisible] = useState<boolean>(false);
@@ -139,7 +140,7 @@ const ErrorBar:FC = () => {
             else if (errorProps.retry !== undefined) {
                 alreadySent.current = true;
                 context.subscriptions.emitErrorBarVisible(false);
-                showTopBar(errorProps.retry(), topbar);
+                showTopBar(errorProps.retry(), context.server.topbar);
             }
         }
     }
@@ -159,9 +160,9 @@ const ErrorBar:FC = () => {
             if (errorProps.dontShowRestart) {
                 return errorProps.bodyMessage;
             }
-            return errorProps.bodyMessage + ". <u>Click here!</u> or press Escape to retry!"
+            return errorProps.bodyMessage + ". " + translation.get("Click here! Or press Escape to retry!")
         }
-        return "<u>Click here!</u> or press Escape to retry!"
+        return translation.get("Click here! Or press Escape to retry!") 
     }
     
     return (

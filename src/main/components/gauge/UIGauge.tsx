@@ -60,7 +60,7 @@ const UIGauge: FC<IGauge> = (baseProps) => {
     const wrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IGauge>(baseProps);
+    const [context, [props], layoutStyle,, styleClassNames] = useComponentConstants<IGauge>(baseProps);
 
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;

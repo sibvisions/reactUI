@@ -13,22 +13,22 @@
  * the License.
  */
 
-import React, { CSSProperties, useEffect, useState } from "react";
+import React, { CSSProperties, useContext, useEffect, useState } from "react";
 import { Button } from 'primereact/button';
 import { ConfirmDialogProps } from 'primereact/confirmdialog'
 import { showTopBar } from "../../components/topbar/TopBar";
 import { createCloseFrameRequest, createDispatchActionRequest } from "../../factories/RequestFactory";
 import tinycolor from "tinycolor2";
-import useConstants from "./useConstants";
 import DialogResponse from "../../response/ui/DialogResponse";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { translation } from "../../util/other-util/Translation";
+import { appContext } from "../../contexts/AppProvider";
 
 /** Returns the ConfirmDialog properties and if the ConfirmDialog is visible */
 const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** The properties of the message */
     const [messageProps, setMessageProps] = useState<DialogResponse>();
@@ -91,7 +91,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                     if (compId) {
                         const pressBtnReq = createDispatchActionRequest();
                         pressBtnReq.componentId = compId;
-                        showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+                        showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
                     }
                 }
 
@@ -222,7 +222,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
             const dialogMessage =
                 <>
                     <div className="message-dialog-content">
-                        <span dangerouslySetInnerHTML={{ __html: messageProps.message as string}} />
+                        {messageProps.message?.startsWith("<html>") ? <span dangerouslySetInnerHTML={{ __html: messageProps.message as string}} /> : <>{messageProps.message}</>}
                     </div>
                 </>
 
@@ -240,7 +240,7 @@ const useConfirmDialogProps = ():[boolean, ConfirmDialogProps] => {
                 setVisible(false)
                 const closeFrameReq = createCloseFrameRequest();
                 closeFrameReq.componentId = messageProps.componentId;
-                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
+                showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), context.server.topbar);
             }
 
             setVisible(true);

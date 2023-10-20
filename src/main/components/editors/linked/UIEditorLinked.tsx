@@ -707,7 +707,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
         if (!checkText || props.cellEditor.validationEnabled === false) {
             sendSelectRequest(-1, null);
             if (props.cellEditor.clearColumns) {
-                const valueToSend = {...props.selectedRow.data};
+                const valueToSend = _.pick(props.selectedRow.data, columnNames) as any;
                 delete valueToSend.recordStatus;
                 delete valueToSend["__recordFormats"];
                 if (props.cellEditor.clearColumns) {
@@ -790,7 +790,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 400 new rows
     const handleLazyLoad = (event:any) => {
-        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.allFetched) {
+        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.isAllFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;

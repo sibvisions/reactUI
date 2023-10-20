@@ -180,7 +180,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
  */
 const UIToolBarHelper: FC<IToolBarHelper> = (baseProps) => {
     /** Component constants */
-    const [context,, [props]] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});
+    const [context, [props]] = useComponentConstants<IToolBarHelper>(baseProps, {visibility: 'hidden'});
 
     /** Reports itself to the layout */
     useLayoutEffect(() => {

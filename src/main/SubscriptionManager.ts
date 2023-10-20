@@ -195,6 +195,8 @@ export class SubscriptionManager {
 
     menuButtonItemsSubscriber:Map<string, Function> = new Map<string, Function>();
 
+    uploadDialogSubscriber: Function = () => {};
+
     /** 
      * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
      * call the state updates to reduce the amount of state updates/rerenders
@@ -586,6 +588,10 @@ export class SubscriptionManager {
         this.menuButtonItemsSubscriber.set(key, fn);
     }
 
+    subscribeToUploadDialog(fn: Function) {
+        this.uploadDialogSubscriber = fn;
+    }
+
     /**
      * Unsubscribes the menu from menuChanges
      * @param fn - the function to update the menu-item state
@@ -873,6 +879,13 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribe from upload dialog
+     */
+    unsubscribeFromUploadDialog() {
+        this.uploadDialogSubscriber = () => {};
+    }
+
+    /**
      * Notifies the components which use the useDataProviders hook that their dataProviders changed
      * @param screenName 
      */
@@ -959,6 +972,10 @@ export class SubscriptionManager {
 
     notifyMenuButtonItemsChange(id: string) {
         this.menuButtonItemsSubscriber.get(id)?.apply(undefined, []);
+    }
+
+    notifyUploadDialog(fileId: string) {
+        this.uploadDialogSubscriber.apply(undefined, [fileId])
     }
 
     /**

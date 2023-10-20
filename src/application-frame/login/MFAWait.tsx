@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import tinycolor from "tinycolor2";
 import { ILoginForm } from "./LoginForm";
@@ -21,10 +21,10 @@ import { showTopBar } from "../../main/components/topbar/TopBar";
 import UIGauge, { GAUGE_STYLES } from "../../main/components/gauge/UIGauge";
 import { createCancelLoginRequest } from "../../main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import { translation } from "../../main/util/other-util/Translation";
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
+import { appContext } from "../../main/contexts/AppProvider";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a Code authentication
@@ -32,7 +32,7 @@ import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackgroun
  */
 const MFAWait:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** State of the code field */
     const [code, setCode] = useState<string>("");
@@ -138,7 +138,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
                         label={translation.get("Cancel")} 
                         icon="pi pi-times" 
                         onClick={() => {
-                            showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), topbar);
+                            showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), context.server.topbar);
                             props.changeLoginMode("default")
                         }}
                         disabled={props.loginActive} />

@@ -48,7 +48,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableSelectable>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableSelectable>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current ? rbRef.current.element : undefined);
@@ -106,7 +106,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
             props.onClick(event.originalEvent);
         }
 
-        sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, topbar)
+        sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, context.server.topbar)
     }
 
     return (

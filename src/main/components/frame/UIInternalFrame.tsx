@@ -48,7 +48,7 @@ export interface IInternalFrame extends IWindow {
  */
 const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     /** Component constants */
-    const [context, topbar, [props], layoutStyle,, styleClassNames] = useComponentConstants<IInternalFrame>(baseProps, {visibility: 'hidden'});
+    const [context, [props], layoutStyle,, styleClassNames] = useComponentConstants<IInternalFrame>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);
@@ -121,7 +121,7 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
         boundsReq.x  = boundsObj.x;
         boundsReq.y = boundsObj.y;
         context.server.sendRequest(boundsReq, REQUEST_KEYWORDS.BOUNDS);
-    }, [context.server, topbar])
+    }, [context.server])
 
     // Sets the pack size for a InternalFrame, which is basically the preferred-size of a layout
     const getPreferredFrameSize = (pSize:Dimension) => {

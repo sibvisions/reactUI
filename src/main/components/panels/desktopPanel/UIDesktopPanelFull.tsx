@@ -13,15 +13,13 @@
  * the License.
  */
 
-import React, { createContext, CSSProperties, FC, useCallback, useMemo, useRef, useState } from "react";
-import BaseComponent from "../../../util/types/BaseComponent";
+import React, { createContext, CSSProperties, FC, useCallback, useContext, useMemo, useRef, useState } from "react";
 import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import TabsetPanelImpl from "../tabsetpanel/TabsetPanelImpl";
 import { createCloseFrameRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
 import { panelGetStyle, panelReportSize } from "../panel/UIPanel";
 import useComponents, { ComponentSizes } from "../../../hooks/components-hooks/useComponents";
-import useConstants from "../../../hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
@@ -31,6 +29,7 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/compone
 import Layout from "../../layouts/Layout";
 import { IDesktopPanel } from "./UIDesktopPanel";
 import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
+import { appContext } from "../../../contexts/AppProvider";
 
 // Interface for the opened-frame-context
 interface IOpenedFrameContext {
@@ -57,7 +56,7 @@ interface IDesktopTabPanel extends IDesktopPanel {
  */
 const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants()
+    const context = useContext(appContext);
 
     /** Handles the state of the current selected index */
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -76,7 +75,7 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
                 onTabClose={(i:number) => {
                     const closeReq = createCloseFrameRequest();
                     closeReq.componentId = props.components[i].props.name;
-                    showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), topbar);
+                    showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_FRAME), context.server.topbar);
                 }} />
                 <Layout
                     id={props.id}
@@ -106,7 +105,7 @@ const DesktopTabPanel: FC<IDesktopTabPanel> = (props) => {
  */
 const UIDesktopPanelFull: FC<IDesktopPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IDesktopPanel>(baseProps, {visibility: 'hidden'});
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = baseProps;

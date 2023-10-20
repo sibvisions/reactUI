@@ -15,16 +15,16 @@
 
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import React, { CSSProperties, FC, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useContext, useMemo, useState } from "react";
 import { createCancelLoginRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import { ILoginForm } from "./LoginForm";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import { translation } from "../../main/util/other-util/Translation";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
+import { appContext } from "../../main/contexts/AppProvider";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a TextInput authentication
@@ -32,7 +32,7 @@ import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates"
  */
 const MFAText:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** State of the email field */
     const [code, setCode] = useState<string>("");
@@ -57,7 +57,7 @@ const MFAText:FC<ILoginForm> = (props) => {
             codeReq.password = props.password;
             codeReq.mode = "mFTextInput";
             codeReq.confirmationCode = code;
-            showTopBar(context.server.sendRequest(codeReq, REQUEST_KEYWORDS.LOGIN), topbar)
+            showTopBar(context.server.sendRequest(codeReq, REQUEST_KEYWORDS.LOGIN), context.server.topbar)
         }
     }
 
@@ -94,7 +94,7 @@ const MFAText:FC<ILoginForm> = (props) => {
                         label={translation.get("Cancel")} 
                         icon="pi pi-times" 
                         onClick={() => {
-                            showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), topbar);
+                            showTopBar(context.server.sendRequest(createCancelLoginRequest(), REQUEST_KEYWORDS.CANCEL_LOGIN), context.server.topbar);
                             props.changeLoginMode("default")
                         }}
                         disabled={props.loginActive} />

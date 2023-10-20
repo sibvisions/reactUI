@@ -17,7 +17,7 @@ import { MenuItem } from "primereact/menuitem";
 import { useEffect, useState, useContext } from "react";
 import { MenuItemCustom } from "../../../application-frame/menu/Menu";
 import { appContext } from "../../contexts/AppProvider";
-import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
+import { showTopBar } from "../../components/topbar/TopBar";
 import BaseComponent from "../../util/types/BaseComponent";
 import { createDispatchActionRequest } from "../../factories/RequestFactory";
 import { isFAIcon } from "../event-hooks/useButtonMouseImages";
@@ -37,8 +37,6 @@ import * as _ from "underscore"
 const useMenuItems = (menus?:string[], isCorp?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
     /** Current state of menu items */
     const [menuItems, setMenuItems] = useState<Array<MenuItem>>([]);
     /** The current app-theme e.g. "basti" */
@@ -104,7 +102,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                     () => {
                         const req = createDispatchActionRequest();
                         req.componentId = item.name;
-                        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+                        showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
                     }  
                 : 
                     undefined
@@ -114,7 +112,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
             // If transferType is partial add some more properties which are needed by the menu
             else {
                 const castedMenuItem = menuItem as MenuItemCustom
-                castedMenuItem.command = () => showTopBar(item.action(), topbar);
+                castedMenuItem.command = () => showTopBar(item.action(), context.server.topbar);
                 castedMenuItem.className = concatClassnames(
                     item.className ? item.className : item.componentId.split(':')[0],
                     item.className && item.navigationName  ? item.className + "_" + item.navigationName : "",

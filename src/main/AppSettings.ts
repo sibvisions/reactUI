@@ -235,6 +235,9 @@ export default class AppSettings {
         
         if (appMetaData.applicationName) {
             this.applicationMetaData.applicationName = appMetaData.applicationName;
+            if (this.transferType === "full") {
+                this.#subManager.notifyTabTitleChanged(appMetaData.applicationName);
+            }
         }
 
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {

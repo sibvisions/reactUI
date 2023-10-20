@@ -56,7 +56,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButton & IExtendableButton>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButton & IExtendableButton>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)
@@ -102,7 +102,8 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             clone,
             onLoadCallback
         ),
-        onLoadCallback
+        onLoadCallback,
+        props.text
     );
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
@@ -111,15 +112,15 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
             props.onClick(event)
         }
 
-        if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
-            inputRef.current.click();
-        }
+        // if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
+        //     inputRef.current.click();
+        // }
 
         if (props.eventAction) {
             const req = createDispatchActionRequest();
             req.componentId = props.name;
             req.isUploadButton = props.classNameEventSourceRef === "UploadButton" ? true : undefined
-            showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), topbar);
+            showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
         }
     }
 

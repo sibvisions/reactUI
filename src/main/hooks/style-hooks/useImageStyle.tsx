@@ -26,14 +26,11 @@ import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "../../components/layou
  */
 const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number | undefined, cva: number | undefined, aspectRatio?:boolean) => {
     const imageAlignments = useMemo(() => {
-        const cellHA = cha
-        const cellVA = cva
-
-        let horizontalAlignment = ha || cellHA;
-        let verticalAlignment = va || cellVA;
+        let horizontalAlignment = ha !== undefined ? ha : cha;
+        let verticalAlignment = va !== undefined ? va : cva;
 
         const imgClassNames:string[] = []
-        switch(horizontalAlignment) {
+        switch (horizontalAlignment) {
             case HORIZONTAL_ALIGNMENT.LEFT:
                 imgClassNames.push("image-h-left");
                 break;
@@ -49,7 +46,7 @@ const useImageStyle = (ha: number|undefined, va: number|undefined, cha: number |
             default:
                 imgClassNames.push("image-h-center");
         }
-        switch(verticalAlignment) {
+        switch (verticalAlignment) {
             case VERTICAL_ALIGNMENT.TOP:
                 imgClassNames.push("image-v-top");
                 break;

@@ -13,18 +13,18 @@
  * the License.
  */
 
-import React, { FC, FormEvent, useEffect, useState } from "react";
+import React, { FC, FormEvent, useContext, useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dialog } from 'primereact/dialog';
 import { createChangePasswordRequest, createLoginRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import ILoginCredentials from "../login/ILoginCredentials";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 import BaseResponse from "../../main/response/BaseResponse";
 import RESPONSE_NAMES from "../../main/response/RESPONSE_NAMES";
 import { translation } from "../../main/util/other-util/Translation";
+import { appContext } from "../../main/contexts/AppProvider";
 
 // Interface for the ChangePasswordDialog
 interface IChangePasswordDialog  {
@@ -45,7 +45,7 @@ interface IChangePasswordType extends ILoginCredentials {
  */
 const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** Contains data of the change-password mask */
     const [changePWData, setChangePWData] = useState<IChangePasswordType>({username: props.username, password: props.password || "", newPassword: "", confirmPassword: ""});
@@ -96,7 +96,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 const changeReq = createChangePasswordRequest();
                 changeReq.password = changePWData.password;
                 changeReq.newPassword = changePWData.newPassword;
-                showTopBar(context.server.sendRequest(changeReq, REQUEST_KEYWORDS.CHANGE_PASSWORD), topbar).then((results:BaseResponse[]) => {
+                showTopBar(context.server.sendRequest(changeReq, REQUEST_KEYWORDS.CHANGE_PASSWORD), context.server.topbar).then((results:BaseResponse[]) => {
                     results.forEach(result => {
                         if (result.name === RESPONSE_NAMES.DIALOG) {
                             setVisible(false);
@@ -112,7 +112,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 loginReq.newPassword = changePWData.newPassword;
                 loginReq.mode = context.appSettings.loginMode;
                 loginReq.createAuthKey = false;
-                showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), topbar);
+                showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), context.server.topbar);
                 setChangePWData(prevState => ({...prevState, password: props.password || "", newPassword: "", confirmPassword: ""}));
                 context.subscriptions.emitMenuUpdate();
             }

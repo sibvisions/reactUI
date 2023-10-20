@@ -16,7 +16,7 @@
 import { useContext, useLayoutEffect } from "react";
 import { appContext } from "../../contexts/AppProvider";
 import { createFetchRequest } from "../../factories/RequestFactory";
-import { showTopBar, TopBarContext } from "../../components/topbar/TopBar";
+import { showTopBar } from "../../components/topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 
 /**
@@ -27,9 +27,6 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 const useFetchMissingData = (screenName:string, dataProvider:string) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
 
     // Checks if the dataProvider already exists in the contentstore, if no a fetchrequest is created
     // Then if the dataprovider has been already been pushed into an array, it is not fetched to prevent multiple fetches
@@ -44,7 +41,7 @@ const useFetchMissingData = (screenName:string, dataProvider:string) => {
 
             if (!context.server.missingDataFetches.includes(dataProvider)) {
                 context.server.missingDataFetches.push(dataProvider);
-                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), topbar)
+                showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), context.server.topbar)
             }
         }
     }, [dataProvider]);

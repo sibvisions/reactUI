@@ -32,7 +32,7 @@ import useAddLayoutStyle from "../../../hooks/style-hooks/useAddLayoutStyle";
  */
 const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Component constants */
-    const [context,, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IPanel>(baseProps, {visibility: 'hidden'});
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [, components, componentSizes] = useComponents(baseProps.id, props.className);
@@ -52,6 +52,8 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
     /** Reference if a fixed amount of px (height) should be substracted if scrollbar appears */
     const minusHeight = useRef<boolean>(false);
 
+    const [layoutSize, setLayoutSize] = useState<Dimension|undefined>(undefined)
+
     /** Hook for MouseListener */
     useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
@@ -60,28 +62,49 @@ const UIScrollPanel: FC<IPanel> = (baseProps) => {
         let s:React.CSSProperties = panelGetStyle(false, layoutStyle, prefSize, props.screen_modal_ || props.content_modal_, props.screen_size_, context.transferType);
         minusWidth.current = false;
         minusHeight.current = false;
-        componentSizes?.forEach((size) => {
-            if (s.height !== undefined && (s.height as number) < size.preferredSize.height) {
-                s.height = size.preferredSize.height;
-                (s.width as number) -= 17;
+        if (layoutSize) {
+            if (s.height !== undefined && (s.height as number) < layoutSize.height) {
+                s.height = layoutSize.height;
                 minusWidth.current = true;
             }
-            if (s.width !== undefined && (s.width as number) < size.preferredSize.width) {
-                s.width = size.preferredSize.width;
-                (s.height as number) -= 17;
+
+            if (s.width !== undefined && (s.width as number) < layoutSize.width) {
+                s.width = layoutSize.width;
                 minusHeight.current = true;
             }
-        });
+
+            if (minusWidth.current) {
+                (s.width as number) -= 17;
+            }
+
+            if (minusHeight.current) {
+                (s.height as number) -= 17;
+            }
+        }
+
+        // componentSizes?.forEach((size, str) => {
+        //     if (s.height !== undefined && (s.height as number) < size.preferredSize.height) {
+        //         s.height = size.preferredSize.height;
+        //         (s.width as number) -= 17;
+        //         minusWidth.current = true;
+        //     }
+        //     if (s.width !== undefined && (s.width as number) < size.preferredSize.width) {
+        //         s.width = size.preferredSize.width;
+        //         (s.height as number) -= 17;
+        //         minusHeight.current = true;
+        //     }
+        // });
 
         return s;
 
-    }, [componentSizes, layoutStyle?.width, layoutStyle?.height, props.screen_modal_, props.content_modal_])
+    }, [componentSizes, layoutStyle?.width, layoutStyle?.height, props.screen_modal_, props.content_modal_, layoutSize])
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
      * In panels, this method will be passed to the layouts
      */
     const reportSize = useCallback((prefSize:Dimension, minSize?:Dimension) => {
+        setLayoutSize(prefSize)
         panelReportSize(
             id, 
             "P", 

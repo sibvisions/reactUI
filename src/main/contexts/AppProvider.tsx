@@ -28,7 +28,7 @@ import { createAliveRequest,
          createUIRefreshRequest,
          getClientId } from "../factories/RequestFactory";
 import { ICustomContent } from "../../MiddleMan";
-import { showTopBar, TopBarContext } from "../components/topbar/TopBar";
+import { showTopBar } from "../components/topbar/TopBar";
 import ContentStoreFull from "../contentstore/ContentStoreFull";
 import ServerFull from "../server/ServerFull";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
@@ -151,9 +151,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
     const [sessionExpired, setSessionExpired] = useState<boolean>(false);
 
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
-
     const aliveInterval = useRef<any>();
 
     // useLayoutEffect(() => {
@@ -212,13 +209,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     connectWs();
                     index++
                     if (index <= 5) {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, true, 8, "Server not reachable!", "The server is not reachable, trying again in 5 seconds. Retry: " + index);
+                        contextState.subscriptions.emitErrorBarProperties(false, false, true, 8, translation.get("The server is not reachable") , translation.get("The server is not reachable, trying again in 5 seconds. Retry: ") + index);
                         if (index === 1) {
                             contextState.subscriptions.emitErrorBarVisible(true);
                         }
                     }
                     else {
-                        contextState.subscriptions.emitErrorBarProperties(false, false, false, 8, "Server not reachable!", "The server is not reachable", () => {
+                        contextState.subscriptions.emitErrorBarProperties(false, false, false, 8, translation.get("The server is not reachable"), translation.get("The server is not reachable"), () => {
                             return new Promise<void>((resolve) => {
                                 index = 0;
                                 connectWs().then(() => resolve());
@@ -311,14 +308,14 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                 else if (jscmd.command === "api/reopenScreen") {
                                     const openReq = createOpenScreenRequest();
                                     openReq.className = jscmd.arguments.className;
-                                    showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), topbar);
+                                    showTopBar(contextState.server.sendRequest(openReq, REQUEST_KEYWORDS.REOPEN_SCREEN), contextState.server.topbar);
                                 }
                                 else if (jscmd.command === "dyn:reloadCss") {
                                     contextState.subscriptions.emitAppCssVersion(jscmd.arguments.version);
                                 }
                                 else if (jscmd.command === "api/menu") {
                                     const menuReq = createBaseRequest();
-                                    showTopBar(contextState.server.sendRequest(menuReq, REQUEST_KEYWORDS.MENU), topbar);
+                                    showTopBar(contextState.server.sendRequest(menuReq, REQUEST_KEYWORDS.MENU), contextState.server.topbar);
                                 }
                             }
                             reader.readAsText(e.data);
@@ -365,27 +362,29 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }
             contextState.server.sendRequest(req, (preserve && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
             .then(result => {
-                contextState.appSettings.setAppReadyParam("startup");
-                if (!preserve) {
-                    sessionStorage.setItem("startup", JSON.stringify(result));
-                }
-
-                if (contextState.server.aliveInterval >= 0) {
-                    aliveInterval.current = setInterval(() => {
-                        if ((Math.ceil(Date.now() / 1000) - Math.ceil(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
-                            if (getClientId() !== "ClientIdNotFound") {
-                                contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                if (result !== null) {
+                    contextState.appSettings.setAppReadyParam("startup");
+                    if (!preserve) {
+                        sessionStorage.setItem("startup", JSON.stringify(result));
+                    }
+    
+                    if (contextState.server.aliveInterval >= 0) {
+                        aliveInterval.current = setInterval(() => {
+                            if ((Math.ceil(Date.now() / 1000) - Math.ceil(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
+                                if (getClientId() !== "ClientIdNotFound") {
+                                    contextState.server.sendRequest(createAliveRequest(), REQUEST_KEYWORDS.ALIVE);
+                                }
                             }
-                        }
-                    }, contextState.server.aliveInterval)
-                }
-
-                if (([RESPONSE_NAMES.SESSION_EXPIRED, RESPONSE_NAMES.ERROR] as string[]).indexOf((result[0] as BaseResponse).name) === -1) {
-                    initWS(contextState.server.BASE_URL);
-                }
-                
-                if (props.onStartup) {
-                    props.onStartup();
+                        }, contextState.server.aliveInterval)
+                    }
+    
+                    if (([RESPONSE_NAMES.SESSION_EXPIRED, RESPONSE_NAMES.ERROR] as string[]).indexOf((result[0] as BaseResponse).name) === -1) {
+                        initWS(contextState.server.BASE_URL);
+                    }
+                    
+                    if (props.onStartup) {
+                        props.onStartup();
+                    }
                 }
             })
             .catch(() => {});
@@ -396,11 +395,19 @@ const AppProvider: FC<ICustomContent> = (props) => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app.json').then((r) => r.json())
                 .then((data) => {
+                    if (data.appName) {
+                        startUpRequest.applicationName = data.appName
+                    }
+
+                    if (data.baseUrl) {
+                        baseUrlToSet = data.baseUrl;
+                    }
+
                     if (data.requestTimeout) {
                         timeoutToSet = parseInt(data.requestTimeout);
                     }
 
-                    if (data.searchPath){
+                    if (data.searchPath) {
                         searchPathToSet = data.searchPath;
                     }
 
@@ -452,7 +459,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             startUpRequest.applicationName = v;
                         }
                     });
-                    baseUrlToSet = data.baseUrl;
+
+                    if (data.baseUrl) {
+                        baseUrlToSet = data.baseUrl;
+                    }
 
                     if (data.searchPath) {
                         searchPathToSet = data.searchPath;
@@ -559,26 +569,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 }
                 baseUrlToSet = baseUrl;
                 convertedOptions.delete("baseUrl");
-            }
-            else if (process.env.NODE_ENV === "production") {
-                const splitURLPath = window.location.pathname.split("/");
-
-                if (splitURLPath.length === 4) {
-                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + searchPathToSet;
-                }
-                else {
-                    for (let i = 0; i <= 3; i++) {
-                        splitURLPath.pop();
-                    }
-                    if (splitURLPath.length > 1) {
-
-                        baseUrlToSet = window.location.protocol + "//" + window.location.host + splitURLPath.join("/") + searchPathToSet;
-                    }
-                    else {
-                        baseUrlToSet = window.location.protocol + "//" + window.location.host + searchPathToSet;
-                    }
-                    
-                }
             }
 
             if (convertedOptions.has("username")) {
@@ -825,6 +815,26 @@ const AppProvider: FC<ICustomContent> = (props) => {
             .catch(() => afterConfigFetch())
         }
         else {
+            if (process.env.NODE_ENV === "production") {
+                const splitURLPath = window.location.pathname.split("/");
+
+                if (splitURLPath.length === 4) {
+                    baseUrlToSet = window.location.protocol + "//" + window.location.host + "/" + splitURLPath[1] + searchPathToSet;
+                }
+                else {
+                    for (let i = 0; i <= 3; i++) {
+                        splitURLPath.pop();
+                    }
+                    if (splitURLPath.length > 1) {
+
+                        baseUrlToSet = window.location.protocol + "//" + window.location.host + splitURLPath.join("/") + searchPathToSet;
+                    }
+                    else {
+                        baseUrlToSet = window.location.protocol + "//" + window.location.host + searchPathToSet;
+                    }
+                    
+                }
+            }
             fetchApp().then(() => afterConfigFetch()).catch(() => afterConfigFetch())
         }
     }, [restart])

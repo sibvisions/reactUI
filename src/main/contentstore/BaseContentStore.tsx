@@ -61,7 +61,7 @@ export interface ISelectedRow {
 export interface IDataBook {
     data?: Map<string, any>,
     metaData?: MetaDataResponse,
-    allFetched?: boolean,
+    isAllFetched?: boolean,
     selectedRow?: ISelectedRow,
     sortedColumns?: SortDefinition[],
     readOnly?: boolean,
@@ -230,7 +230,7 @@ export default abstract class BaseContentStore {
             const componentEntries = mergedContent.entries();
             let foundEntry: BaseComponent | undefined;
             let entry = componentEntries.next();
-            while (!entry.done) {
+            while (!entry.done && !foundEntry) {
                 if (entry.value[1].id === componentId) {
                     foundEntry = entry.value[1];
                 }
@@ -402,6 +402,14 @@ export default abstract class BaseContentStore {
         }
     }
 
+    updatePopupProperties(existingComp:IPanel, newComp:IPanel, newProp:string) {
+        const popup = this.getExistingComponent(existingComp.id + "-popup") as IPanel;
+        if (newProp !== "id") {
+            // @ts-ignore
+            popup[newProp] = newComp[newProp];
+        }
+    }
+
     /**
      * Handles adding or removing popups
      * @param existingComp - the previous component before the update
@@ -435,6 +443,7 @@ export default abstract class BaseContentStore {
         }
         else {
             const popup:BaseComponent = {
+                ...newComp,
                 id: newComp.id + "-popup",
                 name: newComp.name + "-popup",
                 className: "PopupWrapper",

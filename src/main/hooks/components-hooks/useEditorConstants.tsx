@@ -31,7 +31,6 @@ import { LengthBasedColumnDescription, NumericColumnDescription } from "../../re
  */
 const useEditorConstants = <T extends IRCCellEditor>(baseProps: T, fb?: CSSProperties): [
     AppContextType,
-    TopBarContextType,
     [T],
     CSSProperties | undefined,
     string,
@@ -41,7 +40,7 @@ const useEditorConstants = <T extends IRCCellEditor>(baseProps: T, fb?: CSSPrope
     string[]
 ] => {
     /** Component constants for contexts, properties and style */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<T>(baseProps, fb);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<T>(baseProps, fb);
 
     /** gets the cellstyle of a cell-editor */
     const cellStyle = useCellEditorStyle(props, compStyle);
@@ -55,6 +54,6 @@ const useEditorConstants = <T extends IRCCellEditor>(baseProps: T, fb?: CSSPrope
     /** The currently selected row */
     const [selectedRow] = useRowSelect(screenName, props.dataRow, props.isCellEditor && props.rowIndex ? props.rowIndex() : undefined);
 
-    return [context, topbar, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle, styleClassNames]
+    return [context, [props], layoutStyle, screenName, columnMetaData, [selectedRow], cellStyle, styleClassNames]
 }
 export default useEditorConstants

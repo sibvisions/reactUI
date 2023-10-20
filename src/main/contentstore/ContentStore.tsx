@@ -148,6 +148,9 @@ export default class ContentStore extends BaseContentStore {
                 if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                     this.updateToolBarProperties(existingComp as IToolBarPanel, newComp as IToolBarPanel, newPropName);
                 }
+                else if (existingComp.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComp as IPanel)) {
+                    this.updatePopupProperties(existingComp as IPanel, newComp as IPanel, newPropName)
+                }
             }
         }
     }
@@ -318,6 +321,10 @@ export default class ContentStore extends BaseContentStore {
             }
         });
 
+        /** Call the update function of the parentSubscribers */
+        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
+        menuButtonNotifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.notifyMenuButtonItemsChange(parentId));
+
         /** If the component already exists and it is subscribed to properties update the state */
         componentsToUpdate.forEach(newComponent => {
             existingComponent = this.getExistingComponent(newComponent.id)
@@ -337,14 +344,20 @@ export default class ContentStore extends BaseContentStore {
                         }
                     }
                 }
+                else if (existingComponent.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComponent as IPanel)) {
+                    const existingPopup = this.flatContent.get(existingComponent.id + "-popup") || this.removedContent.get(existingComponent.id + "-popup");
+                    if (existingPopup) {
+                        const updatePopup = this.subManager.propertiesSubscriber.get(existingPopup.id);
+                        if (updatePopup) {
+                            updatePopup(existingPopup);
+                        }
+                    }
+                }
                 if (updateFunction) {
                     updateFunction(existingComponent);
                 }
             }
         });
-        /** Call the update function of the parentSubscribers */
-        notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
-        menuButtonNotifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.notifyMenuButtonItemsChange(parentId));
     }
 
     /** Resets the contentStore */

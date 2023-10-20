@@ -34,7 +34,7 @@ import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { RenderButtonHTML } from "../../buttons/button/UIButton";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
-import { createSetValuesRequest } from "../../../factories/RequestFactory";
+import { createSelectRowRequest, createSetValuesRequest } from "../../../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { showTopBar } from "../../topbar/TopBar";
 import useMetaData from "../../../hooks/data-hooks/useMetaData";
@@ -163,9 +163,14 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor> = (props
         
         // Timeout of 1 in cell-editor so selectRecord gets called first
         if (props.isCellEditor) {
-            setTimeout(() => {
-                doSendSetValues()
-            }, 1)
+            const selectReq = createSelectRowRequest();
+            selectReq.dataProvider = props.dataRow;
+            selectReq.componentId = props.name;
+            selectReq.rowNumber = props.rowIndex ? props.rowIndex() : undefined;
+            selectReq.selectedColumn = props.columnName;
+            selectReq.filter = props.filter ? props.filter : undefined;
+            showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_ROW), props.context.server.topbar);
+            doSendSetValues()
         }
         else {
             doSendSetValues()

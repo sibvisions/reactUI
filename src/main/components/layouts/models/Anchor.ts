@@ -94,7 +94,7 @@ class Anchor{
     */
     getBorderAnchor = (): Anchor => {
         let borderAnchor: Anchor = this;
-        while (borderAnchor.relatedAnchor){
+        while (borderAnchor.relatedAnchor) {
             borderAnchor = borderAnchor.relatedAnchor
         }
         return borderAnchor
@@ -106,7 +106,7 @@ class Anchor{
 	*/
     getRelativeAnchor = (): Anchor => {
         let start: Anchor = this;
-        while(start && !start.relative && start.relatedAnchor){
+        while(start && !start.relative && start.relatedAnchor) {
             start = start.relatedAnchor;
         }
         return start

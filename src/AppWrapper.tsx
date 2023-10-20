@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useContext, useEffect, useMemo, useRef, useState, createContext } from "react"
-import TopBar, { showTopBar, TopBarContext } from "./main/components/topbar/TopBar";
+import { showTopBar } from "./main/components/topbar/TopBar";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
@@ -48,8 +48,6 @@ export const WSDesignerContext = createContext<IWSDesignerContext>({ isActive: f
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-
-    const topbar = useContext(TopBarContext);
 
     /** History of react-router-dom */
     const history = useHistory();
@@ -152,7 +150,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                 openReq.className = navValue.componentId;
                             }
                             
-                            showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), topbar)
+                            showTopBar(context.server.sendRequest(openReq, REQUEST_KEYWORDS.OPEN_SCREEN), context.server.topbar)
                                 .then((responses: BaseResponse[]) => {
                                     checkAskBefore(prevPathCopy, responses)
                                 });
@@ -174,7 +172,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                     let prevPathCopy = prevLocation.current
                                     const csRequest = createCloseScreenRequest();
                                     csRequest.componentId = comp.name;
-                                    showTopBar(context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN), topbar)
+                                    showTopBar(context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN), context.server.topbar)
                                         .then((responses: BaseResponse[]) => {
                                             if (!responses.length) {
                                                 context.contentStore.closeScreen(comp.id, comp.name, true);
@@ -189,7 +187,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
                         // Open a welcome screen if available or route to home instead of displaying blank page
                         if (context.appSettings.welcomeScreen.name) {
-                            showTopBar(context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen.name), topbar)
+                            showTopBar(context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen.name), context.server.topbar)
                         }
                         else if (pathName === "/") {
                             history.replace("/home")

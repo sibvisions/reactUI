@@ -44,6 +44,17 @@ const WorkScreen: FC = () => {
         return buildWindow(activeScreens)
     }, [activeScreens]);
 
+    /** Check if the opened screens are only popups, if yes show the desktoppanel */
+    const onlyPopupsOpen = useMemo(() => {
+        let onlyPopups = true;
+        activeScreens.forEach(activeScreen => {
+            if (!activeScreen.popup) {
+                onlyPopups = false;
+            }
+        });
+        return onlyPopups
+    }, [activeScreens])
+
     // Subscribes to the active-screens to have the up to date active-screen state
     useLayoutEffect(() => {
         context.subscriptions.subscribeToActiveScreens("workscreen", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
@@ -62,14 +73,26 @@ const WorkScreen: FC = () => {
             context.contentStore.topbarTitle = context.appSettings.applicationMetaData.applicationName;
             context.subscriptions.notifyScreenTitleChanged(context.appSettings.applicationMetaData.applicationName);
         }
-    }, [renderedScreens])
+    }, [renderedScreens]);
+
+
 
     return (
         <ResizeHandler>
-            {renderedScreens.length ? 
-            renderedScreens : context.appSettings.desktopPanel && !context.server.linkOpen ? componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore) : <></>}
+            {activeScreens.length && renderedScreens.length ?
+                onlyPopupsOpen && context.appSettings.desktopPanel && !context.server.linkOpen ?
+                    <>
+                        {renderedScreens}
+                        {componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)}
+                    </>
+                    :
+                    renderedScreens
+                :
+                context.appSettings.desktopPanel && !context.server.linkOpen ?
+                    componentHandler(context.appSettings.desktopPanel as BaseComponent, context.contentStore)
+                    :
+                    <></>}
         </ResizeHandler>
-
     )
 }
 export default WorkScreen

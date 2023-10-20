@@ -48,7 +48,7 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
     const inputRef = useRef<any>(null);
 
     /** Component constants */
-    const [context, topbar, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextField & IExtendableText>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<ITextField & IExtendableText>(baseProps);
 
     /** Current state of the text value */
     const [text, setText] = useState(props.text || "");
@@ -118,7 +118,7 @@ const UIText: FC<ITextField & IExtendableText> = (baseProps) => {
                     }
 
                     if (startedEditing.current) {
-                        sendSetValue(props.name, text, context.server, topbar);
+                        sendSetValue(props.name, text, context.server, context.server.topbar);
                         startedEditing.current = false;
                     }
 

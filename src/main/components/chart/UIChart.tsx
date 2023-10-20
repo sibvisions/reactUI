@@ -36,7 +36,7 @@ import * as _ from 'underscore';
 import { createSelectRowRequest } from "../../factories/RequestFactory";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import MetaDataResponse from "../../response/data/MetaDataResponse";
-import { showTopBar, TopBarContext } from "../topbar/TopBar";
+import { showTopBar } from "../topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
@@ -128,6 +128,8 @@ const colors = [
     'rgba(255, 159, 64, 0.7)'
 ]
 
+let pieColorHelper = 0;
+
 /**
  * Retrieves the color for the given index. 
  * The colors are returned in the order of the colors list and start from the beginning if the end of the list is reached.
@@ -136,9 +138,18 @@ const colors = [
  * @param customColors - A custom list of colors to use for retrieval
  * @returns 
  */
-function getColor(idx: number, opacity = 1, customColors?: string[]) {
+function getColor(idx: number, opacity = 1, customColors?: string[], pie?:boolean) {
     const c = customColors || colors;
-    const cv = c[idx % c.length];
+    const cv = pie ? c[pieColorHelper] : c[idx % c.length];
+
+    if (pie) {
+        if (pieColorHelper === c.length - 1) {
+            pieColorHelper = 0;
+        }
+        else {
+            pieColorHelper++
+        }
+    }
     return opacity < 1 ?  tinycolor(cv).setAlpha(opacity).toRgbString() : cv;
 }
 
@@ -192,7 +203,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     const chartRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants */
-    const [context,, [props], layoutStyle,, styleClassNames] = useComponentConstants<IChart>(baseProps);
+    const [context, [props], layoutStyle,, styleClassNames] = useComponentConstants<IChart>(baseProps);
 
     /** ComponentId of the screen */
     const screenName = context.contentStore.getScreenName(props.id, props.dataBook) as string;
@@ -207,10 +218,7 @@ const UIChart: FC<IChart> = (baseProps) => {
     const {onLoadCallback, id} = baseProps;
 
     /** The metadata for the given databook */
-    const metaData:MetaDataResponse = useMetaData(screenName, props.dataBook) as MetaDataResponse
-
-    /** topbar context to show progress */
-    const topbar = useContext(TopBarContext);
+    const metaData:MetaDataResponse|undefined = useMetaData(screenName, props.dataBook) as MetaDataResponse|undefined
 
     /** Hook for MouseListener */
     useMouseListener(props.name, chartRef.current ? chartRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
@@ -267,7 +275,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                         return labels.indexOf(dataRow[xColumnName])
                     }
                     else {
-                        const foundColumnDefinition = metaData.columns.find(column => column.name === xColumnName);
+                        const foundColumnDefinition = metaData?.columns.find(column => column.name === xColumnName);
                         if (foundColumnDefinition) {
                             if (foundColumnDefinition.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE) {
                                 return new Date(dataRow[xColumnName]);
@@ -284,10 +292,10 @@ const UIChart: FC<IChart> = (baseProps) => {
 
                 const foundIndex = agg.findIndex(xy => xy ? xy.x === lidx : false);
                 if (foundIndex !== -1) {
-                    agg[foundIndex] = { x: lidx, y: (agg[foundIndex] ? agg[foundIndex].y || 0 : 0) + dataRow[name] };
+                    agg[foundIndex] = { x: lidx, y: (agg[foundIndex] ? agg[foundIndex].y || 0 : 0) + parseFloat(dataRow[name]) };
                 }
                 else {
-                    agg[idx] = { x: lidx, y: (agg[idx] ? agg[idx].y || 0 : 0) + dataRow[name] };
+                    agg[idx] = { x: lidx, y: (agg[idx] ? agg[idx].y || 0 : 0) + parseFloat(dataRow[name]) };
                 }
                 xmin = Math.min(xmin, lidx); 
                 xmax = Math.max(xmax, lidx);
@@ -317,12 +325,14 @@ const UIChart: FC<IChart> = (baseProps) => {
             data = data.map(d => d.map(v => {
                 return { x: v.x, y: 100 * v.y / pieSum } 
             }))
-        } else if (percentage) {
+        } 
+        else if (percentage) {
             //convert values to percentages
             data = data.map(d => d.map((v, idx) => {
                 return { x: v.x, y: 100 * v.y / sum[idx].y }
             }))
-        } else {
+        } 
+        else {
             //find the actual minimum and maximum values
             const minReducedArray = data.reduce((agg, d) => {
                 d.forEach((v, idx) => stacked ? 
@@ -448,19 +458,19 @@ const UIChart: FC<IChart> = (baseProps) => {
         const primeChart = {
             //a dataset per y-Axis unless for a pie chart where we only need a single data set
             datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
-                const singleColor = getColor(idx, opacity, colors);
+                const singleColor = getColor(idx, opacity, colors, pie);
                 const axisID = overlapped ? `axis-${idx}` : "axis-0";
 
                 return {
                     ...(horizontal ? { yAxisID: axisID, xAxisID: 'caxis-0' } : { xAxisID: axisID, yAxisID: 'caxis-0' }),
-                    label: yColumnLabels[idx],
-                    data: data[idx],
+                    label: data[idx],
+                    data: pie && data[idx] ? data[idx].map(v => v.y) :  data[idx],
                     ...(!pie ? {parsing: {
                         xAxisKey: horizontal ? 'y' : 'x',
                         yAxisKey: horizontal ? 'x' : 'y'
                     }} : {}),
                     backgroundColor: [CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle) ? 
-                        [...Array(providerData.length).keys()].map((k, idx) => getColor(idx, opacity, colors)) : singleColor,
+                        [...Array(providerData.length).keys()].map((k, idx2) => data[idx] && data[idx][idx2] ? getColor(idx2, opacity, colors, pie) : undefined) : singleColor,
                     borderColor: ![CHART_STYLES.PIE, CHART_STYLES.RING, CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA].includes(chartStyle) ? singleColor : undefined,
                     borderWidth: 1,
                     fill: [CHART_STYLES.AREA, CHART_STYLES.STACKEDAREA, CHART_STYLES.STACKEDPERCENTAREA].includes(chartStyle) ? 'origin' : false,
@@ -523,6 +533,8 @@ const UIChart: FC<IChart> = (baseProps) => {
             text: chartTitle,
         }
 
+        
+
         const preferredSize = layoutStyle?.height && layoutStyle.width ? ({ width: layoutStyle.width, height: layoutStyle.height } as Dimension) : parsePrefSize(props.preferredSize) || parsePrefSize(props.maximumSize) || {width: 1.3, height: 1};
         const aspectRatio = Math.round(preferredSize.width / preferredSize.height);
 
@@ -531,7 +543,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
         const isDateXColumn = () => {
-            return metaData.columns.find(column => column.name === xColumnName)?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE;
+            return metaData?.columns.find(column => column.name === xColumnName)?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE;
         }
 
         const tooltip = {
@@ -542,8 +554,18 @@ const UIChart: FC<IChart> = (baseProps) => {
                     if(pie && !value) {
                         value = raw;
                     }
-                    
-                    return (pie || percentage) ? `${parseFloat(value).toFixed(2).replace('.00', '')}%` : formattedValue;
+
+                    if (pie || percentage) {
+                        if (providerData[context.dataIndex] && providerData[context.dataIndex][xColumnName] !== undefined) {
+                            return `${providerData[context.dataIndex][xColumnName] + ': ' + parseFloat(value).toFixed(2).replace('.00', '')}%`
+                        }
+                        else {
+                            return `${parseFloat(value).toFixed(2).replace('.00', '')}%`
+                        }
+                    }
+                    else {
+                        return formattedValue;
+                    }
                 }
             }
         }
@@ -650,11 +672,11 @@ const UIChart: FC<IChart> = (baseProps) => {
                             selectReq.componentId = props.name;
                             selectReq.dataProvider = props.dataBook;
                             selectReq.filter = {
-                                columnNames: metaData.primaryKeyColumns,
-                                values: Object.values(_.pick(foundData, metaData.primaryKeyColumns))
+                                columnNames: metaData?.primaryKeyColumns || [],
+                                values: Object.values(_.pick(foundData, metaData?.primaryKeyColumns || []))
                             }
                             selectReq.selectedColumn = label
-                            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), topbar);
+                            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), context.server.topbar);
                         }
 
                     }
@@ -668,7 +690,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                 indexAxis: horizontal ? 'y' : 'x',
             }
         }
-    }, [props.chartStyle, providerData, layoutStyle?.width, layoutStyle?.height]);
+    }, [props.chartStyle, providerData, layoutStyle?.width, layoutStyle?.height, metaData]);
 
     /** Fetches the data from the databook if the data isn't available */
     useFetchMissingData(screenName, props.dataBook);

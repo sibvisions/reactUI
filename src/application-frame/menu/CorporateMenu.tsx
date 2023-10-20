@@ -22,12 +22,12 @@ import { IMenu, ProfileMenu } from "./Menu";
 import { showTopBar } from "../../main/components/topbar/TopBar";
 import ContentStore from "../../main/contentstore/ContentStore";
 import { EmbeddedContext } from "../../main/contexts/EmbedProvider";
-import useConstants from "../../main/hooks/components-hooks/useConstants";
 import useMenuItems from "../../main/hooks/data-hooks/useMenuItems";
 import { parseIconData } from "../../main/components/comp-props/ComponentProperties";
 import { BaseMenuButton } from "../../main/response/data/MenuResponse";
 import { DomHandler } from "primereact/utils";
 import useMultipleEventHandler from "../../main/hooks/event-hooks/useMultipleEventHandler";
+import { appContext } from "../../main/contexts/AppProvider";
 
 /**
  * Renders the menu as a topbar and a menubar below, when the application-layout is corporation
@@ -35,7 +35,7 @@ import useMultipleEventHandler from "../../main/hooks/event-hooks/useMultipleEve
  */
 const CorporateMenu:FC<IMenu> = (props) => {
     /** Returns utility variables */
-    const [context, topbar] = useConstants();
+    const context = useContext(appContext);
 
     /** True, if the application is embedded, then don't display the menu */
     const embeddedContext = useContext(EmbeddedContext);
@@ -55,12 +55,12 @@ const CorporateMenu:FC<IMenu> = (props) => {
             const toolbarItem:MenuItem = {
                 label: item.text,
                 icon: iconData.icon,
-                command: () => showTopBar(item.action(), topbar)
+                command: () => showTopBar(item.action(), context.server.topbar)
             }
             tbItems.push(toolbarItem);
         });
         return tbItems
-    }, [topbar])
+    }, [context.server.topbar])
 
     /** State of the toolbar-items */
     const [toolbarItems, setToolbarItems] = useState<Array<MenuItem>>(handleNewToolbarItems((context.contentStore as ContentStore).toolbarItems));
