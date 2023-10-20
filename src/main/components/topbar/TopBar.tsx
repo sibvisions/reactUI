@@ -65,15 +65,22 @@ const TopBar:FC = () => {
 
     const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
 
-    const yellowTimeout = useRef<NodeJS.Timeout|null>(null);
+    const mediumTimeout = useRef<NodeJS.Timeout|null>(null);
 
-    const redTimeout = useRef<NodeJS.Timeout|null>(null);
+    const longTimeout = useRef<NodeJS.Timeout|null>(null);
 
     useEffect(() => {
         context.designerSubscriptions.subscribeToTopbarColor(() => setDesignerTopbarChanged(prevState => !prevState))
 
         return () => context.designerSubscriptions.unsubscribeFromTopbarColor();
     }, [context.designerSubscriptions]);
+
+    const mapBarColors = (v:string, idx:number, a:string[]) => {
+        if (a.length === 1) {
+            return [0, v];
+        }
+        return [idx / (a.length - 1), v];
+    }
 
     useLayoutEffect(() => {
             TopBarProgress.config({
@@ -131,7 +138,7 @@ const TopBar:FC = () => {
     useEffect(() => {
         if (topbarSettings) {
             TopBarProgress.config({
-                barColors: Object.fromEntries((topbarSettings.barColors as string[]).map((v, idx, a) => [idx / (a.length - 1), v])),
+                barColors: Object.fromEntries((topbarSettings.barColors as string[]).map((v, idx, a) => mapBarColors(v, idx, a))),
                 shadowBlur: topbarSettings.shadowBlur,
                 barThickness: topbarSettings.barThickness,
                 shadowColor: topbarSettings.shadowColor
@@ -148,39 +155,51 @@ const TopBar:FC = () => {
 
     useEffect(() => {
         if (show) {
-            let  yellowTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-medium-interval"));
-            if (!isNaN(yellowTimeoutInterval) && yellowTimeoutInterval) {
-                yellowTimeout.current = setTimeout(() => {
+            const colorSettings = getSettingsFromCSSVar({ 
+                mediumColor: { 
+                    cssVar: '--topbar-medium-interval-colors', 
+                    transform: 'csv' 
+                }, 
+                longColor: { 
+                    cssVar: '--topbar-long-interval-colors', 
+                    transform: 'csv' 
+                } 
+            });
+
+            let  mediumTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-medium-interval"));
+            if (!isNaN(mediumTimeoutInterval) && mediumTimeoutInterval && colorSettings.mediumColor) {
+                console.log(Object.fromEntries((colorSettings.mediumColor as string[]).map((v, idx, a) => mapBarColors(v, idx, a))))
+                mediumTimeout.current = setTimeout(() => {
                     TopBarProgress.config({
-                        barColors: {0: "#efff40"},
+                        barColors: Object.fromEntries((colorSettings.mediumColor as string[]).map((v, idx, a) => mapBarColors(v, idx, a))),
                         shadowBlur: topbarSettings.shadowBlur,
                         barThickness: topbarSettings.barThickness,
                         shadowColor: topbarSettings.shadowColor
                     });
-                }, yellowTimeoutInterval);
+                }, mediumTimeoutInterval);
             }
 
-            let  redTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-long-interval"));
-            if (!isNaN(redTimeoutInterval) && redTimeoutInterval) {
-                redTimeout.current = setTimeout(() => {
+            let  longTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-long-interval"));
+            if (!isNaN(longTimeoutInterval) && longTimeoutInterval && colorSettings.longColor) {
+                longTimeout.current = setTimeout(() => {
                     TopBarProgress.config({
-                        barColors: {0: "#d60000"},
+                        barColors: Object.fromEntries((colorSettings.longColor as string[]).map((v, idx, a) => mapBarColors(v, idx, a))),
                         shadowBlur: topbarSettings.shadowBlur,
                         barThickness: topbarSettings.barThickness,
                         shadowColor: topbarSettings.shadowColor
                     });
-                }, redTimeoutInterval);
+                }, longTimeoutInterval);
             }
         }
         else {
-            if (yellowTimeout.current) {
-                clearTimeout(yellowTimeout.current);
-                yellowTimeout.current = null;
+            if (mediumTimeout.current) {
+                clearTimeout(mediumTimeout.current);
+                mediumTimeout.current = null;
             }
 
-            if (redTimeout.current) {
-                clearTimeout(redTimeout.current);
-                redTimeout.current = null;
+            if (longTimeout.current) {
+                clearTimeout(longTimeout.current);
+                longTimeout.current = null;
             }
 
             if (topbarSettings) {
