@@ -23,6 +23,7 @@ interface FetchRequest extends DataProviderRequest {
     fromRow: number | undefined,
     rowCount: number | undefined,
     includeMetaData?: boolean,
-    rootKey?:boolean
+    rootKey?:boolean,
+    reload?: boolean
 }
 export default FetchRequest
