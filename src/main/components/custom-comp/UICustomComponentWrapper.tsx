@@ -78,7 +78,7 @@ const UICustomComponentWrapper: FC<ICustomComponentWrapper> = (baseProps) => {
 
     return (
         <span ref={wrapperRef} id={props.name} style={layoutStyle}>
-            {baseProps.isGlobal ? context.contentStore.addedComponents.get(props.className)!.apply(undefined, [{...props}]) : baseProps.component}
+            {baseProps.isGlobal ? context.contentStore.addedComponents.get(props.classNameEventSourceRef ? props.classNameEventSourceRef : props.className)!.apply(undefined, [{...props}]) : baseProps.component}
         </span>
     )
 }
