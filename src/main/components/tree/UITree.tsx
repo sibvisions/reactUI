@@ -98,7 +98,7 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
     /** Current state of the node objects which are handled by PrimeReact to display in the Tree */
     const [nodes, setNodes] = useState<CustomTreeNode[]>([]);
 
-    const oldNodesLength = useRef<number>(nodes.length)
+    const oldNodesLength = useRef<number|undefined>(undefined)
 
     /** State of the keys of the nodes which are expanded */
     const [expandedKeys, setExpandedKeys] = useState<TreeExpandedKeysType>({});
