@@ -114,7 +114,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     }, [selectedRow]);
 
     useEffect(() => {
-        if (selectedRow.data[props.columnName]) {
+        if (selectedRow && selectedRow.data[props.columnName]) {
             sigRef.current.clear();
             sigRef.current.fromDataURL("data:image/jpeg;base64," + selectedRow.data[props.columnName]);
         }
