@@ -15,6 +15,9 @@
 
 import { createFetchRequest } from "../../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
+import BaseServer from "../../server/BaseServer";
+import Server from "../../server/Server";
+import ServerFull from "../../server/ServerFull";
 
 /**
  * Sends fetch requests, for the groups and points of a map, to the server
@@ -22,12 +25,18 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
  * @param pointDataProvider - the dataprovider of the point databook
  * @param server - server context
  */
-export async function sendMapFetchRequests(groupDataProvider:string, pointDataProvider:string, server:any) {
+export async function sendMapFetchRequests(groupDataProvider:string, pointDataProvider:string, server:BaseServer|Server|ServerFull) {
     /** Builds the fetch request */
     const sendFetchRequest = (dataProvider:string) => {
         return new Promise<void>((resolve) => {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = dataProvider;
+
+            if (!server.contentStore.dataBooks.has(dataProvider)) {
+                server.missingDataFetches.push(dataProvider);
+                fetchReq.includeMetaData = true;
+            }
+
             fetchReq.fromRow = 0;
             server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => resolve());
         })
