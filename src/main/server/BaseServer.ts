@@ -811,6 +811,9 @@ export default abstract class BaseServer {
                 changedProvider.insertEnabled, 
                 changedProvider.updateEnabled, 
                 changedProvider.deleteEnabled, 
+                changedProvider.model_insertEnabled,
+                changedProvider.model_updateEnabled,
+                changedProvider.model_deleteEnabled,
                 changedProvider.readOnly,
                 changedProvider.changedColumns
             );

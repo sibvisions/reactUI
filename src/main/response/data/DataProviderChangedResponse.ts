@@ -29,8 +29,11 @@ export type IChangedColumns = {
 /** Interface for DataProviderChangedResponse */
 interface DataProviderChangedResponse extends BaseResponse{
     dataProvider: string,
+    model_insertEnabled?: boolean,
     insertEnabled?: boolean,
+    model_deleteEnabled?: boolean,
     deleteEnabled?: boolean,
+    model_updateEnabled?: boolean,
     updateEnabled?: boolean,
     readOnly?: boolean,
     reload?: -1 | 0 | 1,
