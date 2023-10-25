@@ -407,10 +407,11 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                     props.isCellEditor ? "open-cell-editor" : undefined,
                     props.focusable === false ? "no-focus-rect" : "",
                     props.borderVisible === false ? "invisible-border" : "",
+                    props.isReadOnly ? "rc-input-readonly" : "",
                     props.styleClassNames
                 )}
                 panelClassName="rc-editor-date-panel"
-                inputClassName={concatClassnames(props.isReadOnly ? "rc-input-readonly" : "", "p-date-input")}
+                inputClassName={concatClassnames("p-date-input")}
                 style={{
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
@@ -479,7 +480,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                     }
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                disabled={props.isReadOnly || hasError}
+                readOnlyInput={props.isReadOnly || hasError}
+                //disabled={props.isReadOnly || hasError}
                 onVisibleChange={event => {
                     setVisible(prevState => !prevState);
                     if (!focused.current) {

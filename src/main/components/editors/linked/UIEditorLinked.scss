@@ -21,6 +21,22 @@
     &:focus-within {
         border-radius: 3px;
     }
+
+    &.rc-input-readonly {
+        opacity: 0.6;
+        &:focus, &:hover, &:focus-within {
+            box-shadow: none !important;
+            border: var(--input-border)
+        }
+
+        > input {
+            &:focus, &:hover {
+                box-shadow: none !important;
+                border: var(--input-border)
+            }
+        }
+    }
+
     /// Unset focus shadow because not the whole editor is focused but only either inputfield or button
     .p-inputtext, .p-button {
         &:focus {

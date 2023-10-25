@@ -24,6 +24,21 @@
         }
     }
 
+    &.rc-input-readonly {
+        opacity: 0.6;
+        &:focus, &:hover, &:focus-within {
+            box-shadow: none !important;
+            border: var(--input-border)
+        }
+
+        > input {
+            &:focus, &:hover {
+                box-shadow: none !important;
+                border: var(--input-border)
+            }
+        }
+    }
+
     &:focus-within {
         outline: 0 none;
         outline-offset: 0;

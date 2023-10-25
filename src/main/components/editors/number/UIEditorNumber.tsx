@@ -487,7 +487,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                             }
                         }
                     }}
-                    disabled={props.isReadOnly}
+                    readOnly={props.isReadOnly}
+                    //disabled={props.isReadOnly}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                     tooltip={props.toolTipText}
                     tooltipOptions={{position: "left"}}
@@ -554,7 +555,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                         startedEditing.current = false;
                     }
                 }}
-                disabled={props.isReadOnly}
+                readOnly={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}
                 tooltipOptions={{position: "left"}}
