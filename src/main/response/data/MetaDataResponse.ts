@@ -44,7 +44,8 @@ export interface ColumnDescription {
     nullable: boolean,
     resizable: boolean,
     sortable: boolean,
-    movable: boolean
+    movable: boolean,
+    forcedStateless: boolean
 }
 // Interface for length-based column-descriptions
 export interface LengthBasedColumnDescription extends ColumnDescription {

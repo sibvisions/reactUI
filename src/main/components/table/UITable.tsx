@@ -983,20 +983,20 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 if (metaData && columnMetaData) {
                     if (columnMetaData?.cellEditor.className && [CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData.cellEditor.className as CELLEDITOR_CLASSNAMES) !== -1) {
                         if (!columnMetaData.readonly 
-                            && !metaData.readOnly 
+                            && ((!metaData.readOnly 
                             && (metaData.model_updateEnabled || rowData.recordStatus === "I")
+                            && props.editable !== false) || columnMetaData.forcedStateless)
                             && props.enabled !== false 
-                            && props.editable !== false
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
                                 return true;
                             }
                     }
                     else {
                         if (!columnMetaData.readonly 
-                            && !metaData.readOnly 
-                            && metaData.updateEnabled 
+                            && ((!metaData.readOnly 
+                            && metaData.updateEnabled
+                            && props.editable !== false) || columnMetaData.forcedStateless) 
                             && props.enabled !== false 
-                            && props.editable !== false
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
                                 return true;
                             }
