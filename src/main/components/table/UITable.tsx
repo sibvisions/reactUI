@@ -988,7 +988,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                             && props.enabled !== false 
                             && props.editable !== false
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
-                                console.log(rowData)
                                 return true;
                             }
                     }

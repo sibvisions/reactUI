@@ -819,6 +819,77 @@ export default abstract class BaseServer {
             );
         }
 
+        if (changedProvider.recordFormat) {
+            const dataBook = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)
+            if (dataBook?.metaData) {
+                const columnNames = dataBook?.metaData.columns.map(col => col.name);
+                const formattedRecords: Record<string, any>[] = [];
+                for (const componentId in changedProvider.recordFormat) {
+                    const entry = changedProvider.recordFormat[componentId];
+                    const styleKeys = ['background', 'foreground', 'font', 'image'];
+                    const format = entry.format.map(f => f ? f.split(';', 4).reduce((agg, v, i) => v ? {...agg, [styleKeys[i]]: v} : agg, {}) : f);
+                    entry.records.forEach((r, index) => {
+                        if (r.length === 1 && r[0] === -1) {
+                            return;
+                        }
+                        formattedRecords[index] = formattedRecords[index] || {};
+                        formattedRecords[index][componentId] = new Map<String, CellFormatting>();
+    
+                        for (let i = 0; i < r.length; i++) {
+                            formattedRecords[index][componentId].set(columnNames[i], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+    
+                            if (i === r.length - 1 && columnNames.length > r.length) {
+                                for (let j = i; j < columnNames.length; j++) {
+                                    formattedRecords[index][componentId].set(columnNames[j], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+                                }
+                            }
+                        }
+                    });
+                }
+
+                if (dataBook.data?.get("current")) {
+                    const dataArray:any[] = Array.from(dataBook.data.get("current"));
+                    if (dataArray.length >= formattedRecords.length) {
+                        formattedRecords.forEach((formattedRecord, i) => {
+                            dataArray[i]["__recordFormat"] = formattedRecord;
+                        });
+                        dataBook.data.set("current", dataArray);
+                    }
+                }
+            }
+
+        }
+
+        if (changedProvider.recordReadOnly) {
+            const dataBook = this.contentStore.getDataBook(screenName, changedProvider.dataProvider);
+            if (dataBook?.metaData) {
+                const columnNames = dataBook?.metaData.columns.map(col => col.name);
+                const readOnlyRecords: Record<string, any>[] = [];
+                changedProvider.recordReadOnly.records.forEach((readOnlyArray, index) => {
+                    readOnlyRecords[index] = new Map<string, number>();
+                    for (let i = 0; i < readOnlyArray.length; i++) {
+                        readOnlyRecords[index].set(columnNames[i], readOnlyArray[i]);
+    
+                        if (i === readOnlyArray.length - 1 && columnNames.length > readOnlyArray.length) {
+                            for (let j = i; j < columnNames.length; j++) {
+                                readOnlyRecords[index].set(columnNames[j], readOnlyArray[readOnlyArray.length - 1]);
+                            }
+                        }
+                    };
+                });
+
+                if (dataBook.data?.get("current")) {
+                    const dataArray:any[] = Array.from(dataBook.data.get("current"));
+                    if (dataArray.length >= readOnlyRecords.length) {
+                        readOnlyRecords.forEach((readOnlyRecord, i) => {
+                            dataArray[i]["__recordReadOnly"] = readOnlyRecord;
+                        });
+                        dataBook.data.set("current", dataArray);
+                    }
+                }
+            }
+        }
+
         // If there is a deletedRow, delete it and notify the screens
         if (changedProvider.deletedRow !== undefined) {
             const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
