@@ -27,7 +27,7 @@ import useAddLayoutStyle from "./useAddLayoutStyle";
  * @param loadCallBack - the size report function
  * @param loadCallBackFunc - the original loadback function received in 'usecomponents'
  */
-const useHandleDesignerUpdate = (designerUpdate:boolean|undefined, ref: any, layoutStyle: CSSProperties|undefined, loadCallBack:Function, loadCallBackFunc:LoadCallBack|undefined, additionalDependency?: any) => {
+const useHandleDesignerUpdate = (designerUpdate:boolean|undefined, ref: any, layoutStyle: CSSProperties|undefined, loadCallBack:Function, loadCallBackFunc:LoadCallBack|undefined, additionalDependency?: any, labelRef?: any) => {
     useLayoutEffect(() => {
         if (ref && designerUpdate !== undefined) {
             const cloneElem = ref.cloneNode(true) as HTMLElement;
@@ -39,6 +39,6 @@ const useHandleDesignerUpdate = (designerUpdate:boolean|undefined, ref: any, lay
         }
     }, [designerUpdate])
 
-    useAddLayoutStyle(ref, layoutStyle, loadCallBackFunc, additionalDependency)
+    useAddLayoutStyle(labelRef ? labelRef : ref, layoutStyle, loadCallBackFunc, additionalDependency)
 }
 export default useHandleDesignerUpdate

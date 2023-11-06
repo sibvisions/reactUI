@@ -30,6 +30,8 @@ import useIsHTMLText from "../../hooks/components-hooks/useIsHTMLText";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import * as _ from "underscore"
 import { IPanel } from "../panels/panel/UIPanel";
+import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
+import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
 
 /**
  * Displays a simple label
@@ -58,6 +60,9 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Subscribes to designer-changes so the components are updated live */
+    const designerUpdate = useDesignerUpdates("label");
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (labelRef.current && onLoadCallback) {
@@ -66,6 +71,25 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
 
+    /** Retriggers the size-measuring and sets the layoutstyle to the component */
+    useHandleDesignerUpdate(
+        designerUpdate,
+        labelRef.current,
+        layoutStyle,
+        (clone: HTMLElement) => sendOnLoadCallback(
+            id,
+            props.className,
+            parsePrefSize(props.preferredSize),
+            parseMaxSize(props.maximumSize),
+            parseMinSize(props.minimumSize),
+            clone,
+            onLoadCallback
+        ),
+        onLoadCallback, 
+        props.text, 
+        wrapRef.current
+    );
+
     // If the lib user extends the label with onChange, call it when the label-text changes.
     useEffect(() => {
         if (props.onChange) {
@@ -73,7 +97,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
         }
     }, [props.text]);
 
-    useAddLayoutStyle(wrapRef.current, layoutStyle, onLoadCallback, props.text);
+    //useAddLayoutStyle(wrapRef.current, layoutStyle, onLoadCallback, props.text);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(
