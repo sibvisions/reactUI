@@ -634,13 +634,13 @@ export default abstract class BaseServer {
         const readOnlyRecords: Record<string, any>[] = [];
         if (fetchData.recordReadOnly) {
             fetchData.recordReadOnly.records.forEach((readOnlyArray, index) => {
-                readOnlyRecords[index] = new Map<string, number>();
+                readOnlyRecords[index + fetchData.from] = new Map<string, number>();
                 for (let i = 0; i < readOnlyArray.length; i++) {
-                    readOnlyRecords[index].set(fetchData.columnNames[i], readOnlyArray[i]);
+                    readOnlyRecords[index + fetchData.from].set(fetchData.columnNames[i], readOnlyArray[i]);
 
                     if (i === readOnlyArray.length - 1 && fetchData.columnNames.length > readOnlyArray.length) {
                         for (let j = i; j < fetchData.columnNames.length; j++) {
-                            readOnlyRecords[index].set(fetchData.columnNames[j], readOnlyArray[readOnlyArray.length - 1]);
+                            readOnlyRecords[index + fetchData.from].set(fetchData.columnNames[j], readOnlyArray[readOnlyArray.length - 1]);
                         }
                     }
                 };
