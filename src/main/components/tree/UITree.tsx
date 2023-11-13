@@ -330,7 +330,9 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             while (path.length()) {
                 const dataBook = getDataBookName(path.length() -1)
                 const dataRow = getDataRow(path, treeData.current.get(path.getParentPath().toString()));
-                const primaryKeys = getMetaData(screenName, dataBook, context.contentStore, undefined)?.primaryKeyColumns || ["ID"];
+                const metaData = getMetaData(screenName, dataBook, context.contentStore) as MetaDataResponse;
+
+                const primaryKeys = metaData ? metaData.primaryKeyColumns ? metaData.primaryKeyColumns : metaData.columns.map(col => col.name) : [];
                 selectedFilters.push({
                     columnNames: primaryKeys,
                     values: primaryKeys.map((pk: string) => dataRow[pk])
