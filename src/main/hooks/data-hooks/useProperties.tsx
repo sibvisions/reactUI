@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import BaseComponent from "../../util/types/BaseComponent";
 import { appContext } from "../../contexts/AppProvider";
 
@@ -22,7 +22,7 @@ import { appContext } from "../../contexts/AppProvider";
  * @param id - the id of the component
  * @param init - the initial properties sent by the server
  */
-const useProperties = <T extends BaseComponent>(id: string, init: T) : [T] => {
+const useProperties = <T extends BaseComponent>(id: string, init: T, isPopup?:boolean) : [T] => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of the properties */
@@ -32,12 +32,19 @@ const useProperties = <T extends BaseComponent>(id: string, init: T) : [T] => {
      * Subscribes to propChange which will set the state of the current properties for the component
      * @returns unsubscribes from propChange
      */
-    useEffect(() => {
-        context.subscriptions.subscribeToPropChange(id, (value: T) => {
-            setProps({...value});
-        });
+    useLayoutEffect(() => {
+        const comp = context.contentStore.getComponentById(id);
+        if (comp && (!comp.parent?.includes('-popup') || isPopup)) {
+            context.subscriptions.subscribeToPropChange(id, (value: T) => {
+                setProps({...value});
+            });
+        }
+
         return() => {
-            context.subscriptions.unsubscribeFromPropChange(id);
+            const comp = context.contentStore.getComponentById(id);
+            if (comp && (!comp.parent?.includes('-popup') || isPopup)) {
+                context.subscriptions.unsubscribeFromPropChange(id);
+            }
         };
     }, [id, context.subscriptions, props]);
 
