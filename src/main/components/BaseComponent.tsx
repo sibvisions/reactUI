@@ -93,6 +93,8 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
                 case COMPONENT_CLASSNAMES.TEXTAREA:
                 case COMPONENT_CLASSNAMES.TEXTFIELD:
                     return "inputfield";
+                case COMPONENT_CLASSNAMES.LABEL:
+                    return "label";
             }
         }
         return "invalid"
