@@ -44,7 +44,8 @@ export interface ColumnDescription {
     nullable: boolean,
     resizable: boolean,
     sortable: boolean,
-    movable: boolean
+    movable: boolean,
+    forcedStateless: boolean
 }
 // Interface for length-based column-descriptions
 export interface LengthBasedColumnDescription extends ColumnDescription {
@@ -65,8 +66,11 @@ interface MetaDataResponse extends BaseResponse {
     columns: Array<LengthBasedColumnDescription|NumericColumnDescription>,
     primaryKeyColumns: Array<string>,
     dataProvider: string,
+    model_deleteEnabled: boolean,
     deleteEnabled: boolean,
+    model_insertEnabled: boolean,
     insertEnabled: boolean,
+    model_updateEnabled: boolean,
     updateEnabled: boolean,
     readOnly: boolean,
     isAllFetched: boolean,

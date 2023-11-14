@@ -75,7 +75,7 @@ const UILabel: FC<IBaseComponent & IExtendableLabel & IComponentConstants> = (pr
         }
     }, [props.text]);
 
-    useAddLayoutStyle(props.className, props.forwardedRef.current, props.layoutStyle, onLoadCallback, props.text);
+    //useAddLayoutStyle(wrapRef.current, layoutStyle, onLoadCallback, props.text);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(

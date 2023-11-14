@@ -19,4 +19,17 @@
         width: inherit;
         height: inherit;
     }
+
+    &.rc-input-readonly {
+        >input {
+            opacity: 0.6;
+            &:enabled {
+                &:focus, &:hover {
+                    box-shadow: none !important;
+                    border: var(--input-border)
+                }
+            }
+        }
+    }
 }
+

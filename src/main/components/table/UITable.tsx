@@ -952,6 +952,33 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const columnMetaData = getColMetaData(colName, metaData?.columns);
             const className = columnMetaData?.cellEditor?.className;
 
+            const getCellIsEditable = (rowData: any) => {
+                if (metaData && columnMetaData) {
+                    if (columnMetaData?.cellEditor.className && [CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData.cellEditor.className as CELLEDITOR_CLASSNAMES) !== -1) {
+                        if (!columnMetaData.readonly 
+                            && ((!metaData.readOnly 
+                            && (metaData.model_updateEnabled || rowData.recordStatus === "I")
+                            && props.editable !== false) || columnMetaData.forcedStateless)
+                            && props.enabled !== false 
+                            && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
+                                return true;
+                            }
+                    }
+                    else {
+                        if (!columnMetaData.readonly 
+                            && ((!metaData.readOnly 
+                            && metaData.updateEnabled
+                            && props.editable !== false) || columnMetaData.forcedStateless) 
+                            && props.enabled !== false 
+                            && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
+                                return true;
+                            }
+                    }
+                } 
+
+                return false;
+            }
+
             return <Column
                 field={colName}
                 header={createColumnHeader(colName, colIndex, columnMetaData?.nullable)}
@@ -965,12 +992,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     '--columnName': colName
                 }}
                 body={(rowData: any|undefined, tableInfo: any) => {
-                    const isEditable = (!columnMetaData?.readonly
-                        && !metaData?.readOnly
-                        && metaData?.updateEnabled
-                        && props.enabled !== false
-                        && props.editable !== false
-                        && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) ? true : false
+                    const isEditable = getCellIsEditable(rowData);
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
                     else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
                         return <CellEditor

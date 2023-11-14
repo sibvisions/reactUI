@@ -1147,8 +1147,23 @@ export default abstract class BaseContentStore {
      * @param insertEnabled - true, if insert is enabled on the dataprovider
      * @param updateEnabled - true, if update is enabled on the dataprovider
      * @param deleteEnabled - true, if delete is enabled on the dataprovider
+     * @param mInsertEnabled - true, if insert is enabled on the model of the dataprovider
+     * @param mUpdateEnabled - true, if update is enabled on the model of the dataprovider
+     * @param mDeleteEnabled - true, if delete is enabled on the model of the dataprovider
+     * @param readOnly - true, if the dataprovider is set to readOnly
+     * @param changedColumns - contains information about changed columns of the dataprovider
      */
-    updateMetaData(screenName: string, dataProvider: string, insertEnabled?: boolean, updateEnabled?: boolean, deleteEnabled?: boolean, readOnly?: boolean, changedColumns?:IChangedColumns[]) {
+    updateMetaData(screenName: string, 
+        dataProvider: string, 
+        insertEnabled?: boolean, 
+        updateEnabled?: boolean, 
+        deleteEnabled?: boolean,
+        mInsertEnabled?: boolean, 
+        mUpdateEnabled?: boolean, 
+        mDeleteEnabled?: boolean,
+        readOnly?: boolean, 
+        changedColumns?:IChangedColumns[]
+    ) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
         const metaData = getMetaData(screenName, dataProvider, this, undefined);
         let changed = false;
@@ -1166,6 +1181,21 @@ export default abstract class BaseContentStore {
 
             if (deleteEnabled !== undefined && metaData.deleteEnabled !== deleteEnabled) {
                 metaData.deleteEnabled = deleteEnabled;
+                changed = true;
+            }
+
+            if (mInsertEnabled !== undefined && metaData.model_insertEnabled !== mInsertEnabled) {
+                metaData.model_insertEnabled = mInsertEnabled;
+                changed = true;
+            }
+
+            if (mUpdateEnabled !== undefined && metaData.model_updateEnabled !== mUpdateEnabled) {
+                metaData.model_updateEnabled = mUpdateEnabled;
+                changed = true;
+            }
+
+            if (mDeleteEnabled !== undefined && metaData.model_deleteEnabled !== mDeleteEnabled) {
+                metaData.model_deleteEnabled = mDeleteEnabled;
                 changed = true;
             }
 

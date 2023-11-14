@@ -168,7 +168,6 @@ const TopBar:FC = () => {
 
             let  mediumTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-medium-interval"));
             if (!isNaN(mediumTimeoutInterval) && mediumTimeoutInterval && colorSettings.mediumColor) {
-                console.log(Object.fromEntries((colorSettings.mediumColor as string[]).map((v, idx, a) => mapBarColors(v, idx, a))))
                 mediumTimeout.current = setTimeout(() => {
                     TopBarProgress.config({
                         barColors: Object.fromEntries((colorSettings.mediumColor as string[]).map((v, idx, a) => mapBarColors(v, idx, a))),

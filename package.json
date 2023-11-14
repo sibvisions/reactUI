@@ -1,7 +1,7 @@
 {
   "name": "@sibvisions/reactui",
   "homepage": ".",
-  "version": "2.2.8",
+  "version": "2.2.9",
   "main": "moduleIndex.js",
   "types": "moduleIndex.d.ts",
   "license": "Apache-2.0 license",
@@ -14,7 +14,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@react-leaflet/core": "^1.0.2",
-    "@sibvisions/reactui-designer": "^1.0.1",
+    "@sibvisions/reactui-designer": "^1.1.4",
     "@types/babel__generator": "^7.6.4",
     "@types/googlemaps": "^3.40.3",
     "@types/jest": "^24.9.1",

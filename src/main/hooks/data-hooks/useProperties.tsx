@@ -22,7 +22,7 @@ import { appContext } from "../../contexts/AppProvider";
  * @param id - the id of the component
  * @param init - the initial properties sent by the server
  */
-const useProperties = <T extends IBaseComponent>(id: string, init: T) : [T] => {
+const useProperties = <T extends IBaseComponent>(id: string, init: T, isPopup?:boolean) : [T] => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     /** Current state of the properties */
@@ -33,11 +33,18 @@ const useProperties = <T extends IBaseComponent>(id: string, init: T) : [T] => {
      * @returns unsubscribes from propChange
      */
     useEffect(() => {
-        context.subscriptions.subscribeToPropChange(id, (value: T) => {
-            setProps({...value});
-        });
+        const comp = context.contentStore.getComponentById(id);
+        if (comp && (!comp.parent?.includes('-popup') || isPopup)) {
+            context.subscriptions.subscribeToPropChange(id, (value: T) => {
+                setProps({...value});
+            });
+        }
+
         return() => {
-            context.subscriptions.unsubscribeFromPropChange(id);
+            const comp = context.contentStore.getComponentById(id);
+            if (comp && (!comp.parent?.includes('-popup') || isPopup)) {
+                context.subscriptions.unsubscribeFromPropChange(id);
+            }
         };
     }, [id, context.subscriptions, props]);
 

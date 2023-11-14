@@ -48,11 +48,13 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
 
     const [props] = useProperties<IPopup>(baseProps.popupId, baseProps);
 
+    const [childProperties] = useProperties<IPanel>(baseProps.id, baseProps, true);
+
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [children, components, componentSizes] = useComponents(props.popupId, props.className);
+    const [, , componentSizes] = useComponents(props.popupId, props.className);
 
     /** Current state of the size of the popup-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
@@ -80,27 +82,29 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (baseProps.onClose) {
             baseProps.onClose();
         }
-        if (children.length) {
-            if ((children[0] as IPanel).screen_modal_) {
+
+        const comp = context.contentStore.getComponentById(baseProps.id);
+        if (comp) {
+            if ((comp as IPanel).screen_modal_) {
                 const csRequest = createCloseScreenRequest();
-                csRequest.componentId = children[0].name;
+                csRequest.componentId = comp.name;
                 context.server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
                     if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                         if (context.transferType !== "full") {
                             context.server.lastClosedWasPopUp = true;
                         }
-                        context.contentStore.closeScreen(children[0].id, children[0].name, true);
+                        context.contentStore.closeScreen(comp.id, comp.name, true);
                     }
                 });
             }
-            else if ((children[0] as IPanel).content_modal_) {
+            else if ((comp as IPanel).content_modal_) {
                 const ccRequest = createCloseContentRequest();
-                ccRequest.componentId = children[0].name;
+                ccRequest.componentId = comp.name;
                 context.server.sendRequest(ccRequest, REQUEST_KEYWORDS.CLOSE_CONTENT).then(res => {
                     if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                         if (context.transferType !== "full") {
                             context.server.lastClosedWasPopUp = true;
-                            (context.server as Server).closeContent({ name: "closeContent", componentId: children[0].name })
+                            (context.server as Server).closeContent({ name: "closeContent", componentId: comp.name })
                         }
     
                         //context.contentStore.closeScreen(props.name, true);
@@ -137,19 +141,22 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
 
     /** Sets the initial size for the popup */
     const handleInitialSize = () => {
-        if (popupRef.current && popupRef.current.contentEl && children.length) {
-            const prefSize = parsePrefSize(children[0].preferredSize);
-            const sizeMap = new Map<string, CSSProperties>();
-            if (prefSize) {
-                sizeMap.set(children[0].id, { height: prefSize.height, width: prefSize.width });
+        if (popupRef.current && popupRef.current.contentEl) {
+            const comp = context.contentStore.getComponentById(baseProps.id);
+            if (comp) {
+                const prefSize = parsePrefSize(comp.preferredSize);
+                const sizeMap = new Map<string, CSSProperties>();
+                if (prefSize) {
+                    sizeMap.set(comp.id, { height: prefSize.height, width: prefSize.width });
+                }
+                else {
+                    let popupSize:Dimension = { height: 0, width: 0 };
+                    sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
+                }
+                
+                setComponentSize(sizeMap);
+                setInitializePopup(true);
             }
-            else {
-                let popupSize:Dimension = { height: 0, width: 0 };
-                sizeMap.set(children[0].id, { height: popupSize.height, width: popupSize.width });
-            }
-            
-            setComponentSize(sizeMap);
-            setInitializePopup(true)
         }
     }
 
@@ -160,31 +167,33 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     const handleAfterInitial = () => {
         const prefSize = parsePrefSize(props.preferredSize);
         const sizeMap = new Map<string, CSSProperties>();
-        if (children.length) {
-            if (componentSizes && componentSizes.has(children[0].id)) {
+        const comp = context.contentStore.getComponentById(baseProps.id);
+        if (comp) {
+            if (componentSizes && componentSizes.has(comp.id)) {
                 if (prefSize) {
-                    sizeMap.set(children[0].id, { height: prefSize.height, width: prefSize.width });
+                    sizeMap.set(comp.id, { height: prefSize.height, width: prefSize.width });
                 }
                 else {
                     let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
-                    const compSize = componentSizes.get(children[0].id);
+                    const compSize = componentSizes.get(comp.id);
                     popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
                     popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
-                    sizeMap.set(children[0].id, { height: popupSize.height, width: popupSize.width });
+                    sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
                 }
                 setComponentSize(sizeMap);
             }
         }
-
+        setInitializePopup(true);
         setInitializeCompSizes(true);
     }
 
     /** When the popup is being resized update the size to resize the panel */
     const handlePopupResize = () => {
-        if (popupRef.current && popupRef.current.contentEl && children.length) {
+        const comp = context.contentStore.getComponentById(baseProps.id);
+        if (popupRef.current && popupRef.current.contentEl && comp) {
             const sizeMap = new Map<string, CSSProperties>();
             const popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth };
-            sizeMap.set(children[0].id, { height: popupSize.height, width: popupSize.width });
+            sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }
     }
@@ -193,7 +202,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     const handleResize = useCallback(_.debounce(handlePopupResize, 50), [handlePopupResize, popupRef.current]);
 
     useEffect(() => {
-        if (!initializePopup) {
+        if (!initializePopup && !componentSizes) {
             handleInitialSize();
         }
         else if (!initializeCompSizes && componentSizes) {
@@ -214,11 +223,11 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 onHide={handleOnHide}
                 baseZIndex={1010}
                 ref={popupRef}
-                onShow={() => handleInitialSize()}
+                //onShow={() => handleInitialSize()}
                 onResize={() => handleResize()}
                 closeOnEscape={false}
                 >
-                {baseProps.render}
+                {React.cloneElement(baseProps.render, childProperties)}
             </Dialog>
         </LayoutContext.Provider>
     )

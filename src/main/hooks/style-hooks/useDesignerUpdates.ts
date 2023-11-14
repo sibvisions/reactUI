@@ -87,6 +87,11 @@ const useDesignerUpdates = (type:string) => {
                 context.designerSubscriptions.subscribeToMenuBarHeight(updateFunc);
                 context.designerSubscriptions.subscribeToFontSize(updateFunc);
                 break;
+            case "label":
+                context.designerSubscriptions.subscribeToInputLRPadding(updateFunc);
+                context.designerSubscriptions.subscribeToInputTBPadding(updateFunc);
+                context.designerSubscriptions.subscribeToFontSize(updateFunc);
+                break;
         }
 
         return () => {
@@ -144,6 +149,11 @@ const useDesignerUpdates = (type:string) => {
                     break;
                 case "menubar":
                     context.designerSubscriptions.unsubscribeFromMenuBarHeight(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
+                    break;
+                case "label":
+                    context.designerSubscriptions.unsubscribeFromInputLRPadding(updateFunc);
+                    context.designerSubscriptions.unsubscribeFromInputTBPadding(updateFunc);
                     context.designerSubscriptions.unsubscribeFromFontSize(updateFunc);
                     break;
             }

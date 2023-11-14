@@ -14,6 +14,7 @@
  */
 
 import { ICellEditor } from "../../components/editors/IEditor"
+import RecordFormat from "../../util/types/RecordFormat"
 import BaseResponse from "../BaseResponse"
 
 // Type for changed-columns
@@ -29,8 +30,11 @@ export type IChangedColumns = {
 /** Interface for DataProviderChangedResponse */
 interface DataProviderChangedResponse extends BaseResponse{
     dataProvider: string,
+    model_insertEnabled?: boolean,
     insertEnabled?: boolean,
+    model_deleteEnabled?: boolean,
     deleteEnabled?: boolean,
+    model_updateEnabled?: boolean,
     updateEnabled?: boolean,
     readOnly?: boolean,
     reload?: -1 | 0 | 1,
@@ -39,7 +43,9 @@ interface DataProviderChangedResponse extends BaseResponse{
     selectedColumn?: string,
     changedValues?: any[],
     changedColumnNames?: string[],
-    changedColumns?: IChangedColumns[]
-    deletedRow?: number
+    changedColumns?: IChangedColumns[],
+    deletedRow?: number,
+    recordFormat?: RecordFormat
+    recordReadOnly?: { records: number[][] }
 }
 export default DataProviderChangedResponse

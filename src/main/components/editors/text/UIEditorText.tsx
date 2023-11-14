@@ -273,7 +273,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout, password ref has a inconsistency */
     useLayoutEffect(() => {
-        if(onLoadCallback && props.forwardedRef.current && fieldType !== FieldTypes.HTML) {
+        if (onLoadCallback && props.forwardedRef.current && fieldType !== FieldTypes.HTML) {
             sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
     },[onLoadCallback, id, props.cellEditor?.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);

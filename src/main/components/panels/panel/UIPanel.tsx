@@ -234,8 +234,10 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
                 id={props.name}
                 style={props.screen_modal_ || props.content_modal_ ? {
                     ...props.layoutStyle,
-                    height: prefSize?.height,
-                    width: prefSize?.width,
+                    height: undefined,
+                    width: undefined,
+                    // height: prefSize?.height,
+                    // width: prefSize?.width,
                     ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } : {})
                 } : {
                     ...props.layoutStyle,
