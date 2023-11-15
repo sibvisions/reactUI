@@ -203,7 +203,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
 
         if (context.appSettings.showUIDesigner !== undefined) {
             speeddialModel.push({
-                label: 'Workscreen-Designer',
+                label: 'UI-Designer',
                 icon: 'fas fa-hammer',
                 command: () => (context.appSettings.showUIDesigner as Function)()
             })
