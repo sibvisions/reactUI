@@ -994,7 +994,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     else {
                         if (!columnMetaData.readonly 
                             && ((!metaData.readOnly 
-                            && metaData.updateEnabled
+                            && (metaData.updateEnabled || rowData.recordStatus === "I")
                             && props.editable !== false) || columnMetaData.forcedStateless) 
                             && props.enabled !== false 
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
