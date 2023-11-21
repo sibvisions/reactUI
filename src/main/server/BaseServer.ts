@@ -893,9 +893,11 @@ export default abstract class BaseServer {
         // If there is a deletedRow, delete it and notify the screens
         if (changedProvider.deletedRow !== undefined) {
             const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
+            const rowToDelete = this.contentStore.getDataRow(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
             this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
             this.subManager.notifyDataChange(screenName, changedProvider.dataProvider);
             this.subManager.notifyScreenDataChange(screenName);
+            this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, [rowToDelete], "", true)
             if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(changedProvider.dataProvider.split('/')[1])) {
                 this.subManager.notifyDataChange(changedProvider.dataProvider.split('/')[1], changedProvider.dataProvider);
                 this.subManager.notifyScreenDataChange(changedProvider.dataProvider.split('/')[1]);
@@ -925,7 +927,7 @@ export default abstract class BaseServer {
                     dataBook!.isAllFetched = undefined;
                 }
 
-                this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider, true);
+                this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = changedProvider.dataProvider;
                 if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {

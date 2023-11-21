@@ -948,11 +948,11 @@ export class SubscriptionManager {
         this.treeSubscriber.get(masterDataBook)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
-    notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string) {
+    notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string, pDelete: boolean) {
         this.treeDataChangedSubscriber.forEach((v, k) => {
             const splitDataBooks = k.split("_");
             if (splitDataBooks.includes(dataBook)) {
-                v();
+                v(dataBook, data, pageKeyHelper, pDelete);
             }
         });
     }

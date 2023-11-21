@@ -1056,7 +1056,7 @@ export default abstract class BaseContentStore {
         this.subManager.notifyDataChange(screenName, dataProvider);
         this.subManager.notifyScreenDataChange(screenName);
         if (notifyTreeData) {
-            this.subManager.notifyTreeDataChanged(dataProvider, notifyTreeData, getPageKey());
+            this.subManager.notifyTreeDataChanged(dataProvider, notifyTreeData, getPageKey(), false);
         }
         
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
@@ -1284,7 +1284,18 @@ export default abstract class BaseContentStore {
         const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
-                (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn};
+                const dataBook = existingMap.get(dataProvider) as IDataBook;
+                let newSelectedRow:ISelectedRow = {dataRow: dataRow, index: index, treePath: treePath ? treePath : dataBook.selectedRow?.treePath, selectedColumn: selectedColumn ? selectedColumn : dataBook.selectedRow?.selectedColumn};
+                // if (dataBook.selectedRow) {
+                //     if (dataBook.selectedRow.treePath && !treePath) {
+                //         newSelectedRow.treePath = dataBook.selectedRow.treePath;
+                //     }
+
+                //     if (dataBook.selectedRow.selectedColumn && !selectedColumn) {
+                //         newSelectedRow.selectedColumn = dataBook.selectedRow.selectedColumn;
+                //     }
+                // }
+                dataBook.selectedRow = newSelectedRow;
             }
             else {
                 // If the compPanel is a popup use the screenName shown in the dataProvider
