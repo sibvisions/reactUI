@@ -35,6 +35,8 @@ const useFetchMissingData = (screenName:string, dataProvider:string) => {
         if (dataProvider && !context.contentStore.getDataBook(screenName, dataProvider)?.data) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = dataProvider;
+            fetchReq.fromRow = 0;
+            fetchReq.rowCount = -1;
             if (!context.contentStore.getDataBook(screenName, dataProvider)?.metaData) {
                 fetchReq.includeMetaData = true;
             }

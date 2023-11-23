@@ -984,7 +984,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     if (columnMetaData?.cellEditor.className && [CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData.cellEditor.className as CELLEDITOR_CLASSNAMES) !== -1) {
                         if (!columnMetaData.readonly 
                             && ((!metaData.readOnly 
-                            && (metaData.model_updateEnabled || rowData.recordStatus === "I")
+                            && (metaData.model_updateEnabled || rowData ? rowData.recordStatus === "I" : true)
                             && props.editable !== false) || columnMetaData.forcedStateless)
                             && props.enabled !== false 
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
@@ -994,7 +994,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     else {
                         if (!columnMetaData.readonly 
                             && ((!metaData.readOnly 
-                            && (metaData.updateEnabled || rowData.recordStatus === "I")
+                            && (metaData.updateEnabled || rowData ? rowData.recordStatus === "I" : true)
                             && props.editable !== false) || columnMetaData.forcedStateless) 
                             && props.enabled !== false 
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
@@ -1382,7 +1382,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
         if (dataBook?.data && !dataBook.isAllFetched && providerData.length < rows) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.dataBook;
-            fetchReq.fromRow = providerData.length - 1;
+            fetchReq.fromRow = providerData.length;
             fetchReq.rowCount = 100;
             showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), context.server.topbar);
         }

@@ -285,6 +285,8 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
                 const pkObjStringified = JSON.stringify(pkObj);
                 if (fetchDataPage && !providedData.get(fetchDataPage).has(pkObjStringified)) {
                     const fetchReq = createFetchRequest();
+                    fetchReq.fromRow = 0;
+                    fetchReq.rowCount = -1;
                     fetchReq.dataProvider = fetchDataPage;
                     fetchReq.filter = filter;
                     await showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
@@ -429,6 +431,8 @@ const UITree: FC<ITree & IExtendableTree> = (baseProps) => {
             const fetchRoot = async () => {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = firstLvlDataBook;
+                fetchReq.fromRow = 0;
+                fetchReq.rowCount = -1;
                 fetchReq.filter = {
                     columnNames: [],
                     values: []

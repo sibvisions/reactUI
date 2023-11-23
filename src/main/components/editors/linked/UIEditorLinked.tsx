@@ -794,7 +794,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor> = (props) => {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;
-            fetchReq.rowCount = 400;
+            fetchReq.rowCount = 100;
             showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar)
             .then(result => {
                 if (props.onLazyLoadFetch && result[0]) {
