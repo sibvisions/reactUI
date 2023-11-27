@@ -50,6 +50,8 @@ export default class ContentStore extends BaseContentStore {
     /** The current logged in user */
     currentUser: UserData = new UserData();
 
+    openMessages: Array<{ id: string, fn: Function }> = [];
+
     /** A cache for the dialog-buttons to know which component-id to send to the server */
     dialogButtons:Array<string> = new Array<string>();
 

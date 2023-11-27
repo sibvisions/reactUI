@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from "./application-frame/screen-management/ui-manager/UIManager";
@@ -23,7 +23,6 @@ import AppWrapper from "./AppWrapper";
 import { appContext } from "./main/contexts/AppProvider";
 import Login from "./application-frame/login/Login";
 import { addCSSDynamically } from "./main/util/html-util/AddCSSDynamically";
-import useConfirmDialogProps from "./main/hooks/components-hooks/useConfirmDialogProps";
 import { Helmet } from "react-helmet";
 import ErrorDialog from "./application-frame/error-dialog/ErrorDialog";
 import UIToast from "./main/components/toast/UIToast";
@@ -49,8 +48,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
     /** The state of the tab-title */
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
-    /** If the confirm-dialog is visible and the message-properties */
-    const [messageVisible, messageProps] = useConfirmDialogProps();
+    const [messageFlag, setMessageFlag] = useState<boolean>(true);
 
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
@@ -67,11 +65,13 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
      */
     useEffect(() => {
         context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
-        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState))
+        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
+        context.subscriptions.subscribeToMessageDialogProps(() => setMessageFlag(prevState => !prevState));
 
         return () => {
             context.subscriptions.unsubscribeFromAppCssVersion();
             context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
+            context.subscriptions.unsubscribeFromMessageDialogProps();
         }
     }, [context.subscriptions]);
 
@@ -96,7 +96,14 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
                 }
             }
         }
-    })
+    });
+
+    const messages = useMemo(() => {
+        if (context.transferType !== "full") {
+            return context.contentStore.openMessages.map(message => message.fn.apply(undefined, []));
+        }
+        return undefined;
+    }, [messageFlag]);
 
     return (
         <>
@@ -105,7 +112,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
             </Helmet>
             <ErrorDialog />
             <UIToast />
-            <ConfirmDialog visible={messageVisible} {...messageProps} />
+            {messages}
             <ErrorBar />
             {context.appReady ?
                 <AppWrapper embedOptions={props.embedOptions}>

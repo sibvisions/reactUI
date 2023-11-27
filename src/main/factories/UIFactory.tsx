@@ -56,6 +56,8 @@ import UITable from "../components/table/UITable";
 import UIGroupPanel from "../components/panels/groupPanel/UIGroupPanel";
 import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
 import UITabsetPanel from "../components/panels/tabsetpanel/UITabsetPanel";
+import DialogResponse from "../response/ui/DialogResponse";
+import UIMessage from "../components/message/UIMessage";
 
 
 /**
@@ -65,6 +67,10 @@ import UITabsetPanel from "../components/panels/tabsetpanel/UITabsetPanel";
  */
 export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props) => {
     return <UICustomComponentWrapper {...props} component={props.component} key={props.id}/>
+}
+
+export const createUIMessage: FC<DialogResponse> = (props) => {
+    return <UIMessage key={props.componentId} {...props} />
 }
 
 /**

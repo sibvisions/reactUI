@@ -756,7 +756,7 @@ class Server extends BaseServer {
         // TODO: change dialogButtons to map with key as componentId of dialog and values buttons
         // then delete the componentId key of closeFrameData
         (this.contentStore as ContentStore).dialogButtons = [];
-        this.subManager.emitCloseFrame();
+        this.subManager.emitCloseFrame(closeFrameData);
     }
 
     // Opens a content by calling the contentstores updatecontent method to add it to the flatcontent and updating the active-screens
