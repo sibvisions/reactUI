@@ -108,10 +108,14 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
                   if (aClone[i] !== bClone[i]) return false;
                 }
                 return true;
-              }
+            }
 
-            if (componentsChildren.current.has(compId)) {
-                return !arraysEqual(componentsChildren.current.get(compId) as string[], Array.from(context.contentStore.getChildren(compId).keys()));
+            if (context.contentStore.componentChildren.get(compId) === undefined || context.contentStore.componentChildren.get(compId)!.size === 0) {
+                return false
+            }
+
+            if (componentsChildren.current.has(compId) && context.contentStore.componentChildren.get(compId)) {
+                return !arraysEqual(componentsChildren.current.get(compId) as string[], Array.from(context.contentStore.componentChildren.get(compId) as Set<string>));
             }
             else {
                 return true;
@@ -144,7 +148,9 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
             //         setPreferredSizes(new Map(preferredSizes));
             //     }
             // }
-            componentsChildren.current.set(compId, Array.from(context.contentStore.getChildren(compId).keys()));
+            if (context.contentStore.componentChildren.get(compId)) {
+                componentsChildren.current.set(compId, Array.from(context.contentStore.componentChildren.get(compId) as Set<string>));
+            }
         }
 
         /** If there are no children set an empty map */

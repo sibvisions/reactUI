@@ -144,21 +144,21 @@ export default class ContentStoreFull extends BaseContentStore {
                     }
                 }
 
-                const removeChildren = (id: string, className: string, isCustom?:boolean) => {
-                    const children = this.getChildren(id, className);
-                    children.forEach(child => {
-                        removeChildren(child.id, child.className);
+                // const removeChildren = (id: string, className: string, isCustom?:boolean) => {
+                //     const children = this.getChildren(id, className);
+                //     children.forEach(child => {
+                //         removeChildren(child.id, child.className);
 
-                        if (isCustom) {
-                            this.replacedContent.delete(newComponent.id);
-                            this.removedCustomComponents.set(child.id, child);
-                        }
-                        else {
-                            this.flatContent.delete(child.id);
-                            this.removedContent.set(child.id, child);
-                        }
-                    });
-                }
+                //         if (isCustom) {
+                //             this.replacedContent.delete(newComponent.id);
+                //             this.removedCustomComponents.set(child.id, child);
+                //         }
+                //         else {
+                //             this.flatContent.delete(child.id);
+                //             this.removedContent.set(child.id, child);
+                //         }
+                //     });
+                // }
 
                 if (newComponent["~remove"]) {
                     if (!isCustom) {

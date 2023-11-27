@@ -154,8 +154,9 @@ class Server extends BaseServer {
         if (comp && comp.visible !== false && comp.invalid !== true) {
             let parent = comp.parent;
             while (parent && !parent.includes("IF")) {
-                if (this.contentStore.getComponentById(parent) && this.contentStore.getComponentById(parent)!.visible !== false) {
-                    parent = this.contentStore.getComponentById(parent)!.parent
+                const parentComp = this.contentStore.getComponentById(parent);
+                if (parentComp && parentComp.visible !== false) {
+                    parent = parentComp.parent
                 }
                 else {
                     return false;
