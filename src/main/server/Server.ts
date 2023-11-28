@@ -762,26 +762,25 @@ class Server extends BaseServer {
 
     // Opens a content by calling the contentstores updatecontent method to add it to the flatcontent and updating the active-screens
     content(contentData:ContentResponse) {
-        let workScreen:IPanel|undefined = contentData.changedComponents[0] as IPanel
         if (contentData.changedComponents && contentData.changedComponents.length) {
-            if (this.contentStore.activeScreens[0]) {
+            this.contentStore.updateContent(contentData.changedComponents, false);
+            let workScreen:IPanel|undefined = contentData.changedComponents[0].name ? contentData.changedComponents[0] as IPanel : this.contentStore.getComponentById(contentData.changedComponents[0].id) as IPanel|undefined;
+            if (workScreen && this.contentStore.activeScreens[0]) {
                 workScreen.contentParentName = this.contentStore.activeScreens[0].name
             }
-            this.contentStore.updateContent(contentData.changedComponents, false);
-        }
-        if (!contentData.update) {
-            if(contentData.changedComponents && contentData.changedComponents.length) {
+
+            if (workScreen && workScreen.content_modal_) {
                 this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+                // if (!contentData.update) {
+                //     if(contentData.changedComponents && contentData.changedComponents.length) {
+                //         this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+                //     }
+                // }
+                // else {
+                //     this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
+                // }
             }
         }
-        // else {
-        //     if (this.contentStore.getComponentById(contentData.changedComponents[0].id)) {
-        //         workScreen = this.contentStore.getComponentById(contentData.changedComponents[0].id) as IPanel;
-        //         if (workScreen.content_modal_) {
-        //             this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
-        //         }
-        //     }
-        // }
     }
 
     // Closes a content
@@ -801,7 +800,7 @@ class Server extends BaseServer {
                 });
             }
 
-            const comp = this.contentStore.getComponentByName(closeContentData.componentId)
+            const comp = this.contentStore.getComponentByName(closeContentData.componentId);
             if (comp) {
                 this.contentStore.updateContent([{ id: comp.id, "~remove": true } as BaseComponent], false)
             }
