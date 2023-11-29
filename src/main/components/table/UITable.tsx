@@ -980,11 +980,11 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             const className = columnMetaData?.cellEditor?.className;
 
             const getCellIsEditable = (rowData: any) => {
-                if (metaData && columnMetaData) {
+                if (rowData && metaData && columnMetaData) {
                     if (columnMetaData?.cellEditor.className && [CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData.cellEditor.className as CELLEDITOR_CLASSNAMES) !== -1) {
                         if (!columnMetaData.readonly 
                             && ((!metaData.readOnly 
-                            && (metaData.model_updateEnabled || rowData ? rowData.recordStatus === "I" : true)
+                            && (metaData.model_updateEnabled || rowData.recordStatus === "I")
                             && props.editable !== false) || columnMetaData.forcedStateless)
                             && props.enabled !== false 
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
@@ -994,7 +994,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                     else {
                         if (!columnMetaData.readonly 
                             && ((!metaData.readOnly 
-                            && (metaData.updateEnabled || rowData ? rowData.recordStatus === "I" : true)
+                            && (metaData.updateEnabled || rowData.recordStatus === "I")
                             && props.editable !== false) || columnMetaData.forcedStateless) 
                             && props.enabled !== false 
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
