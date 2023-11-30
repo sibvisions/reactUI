@@ -29,7 +29,7 @@ import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import IconProps from "../comp-props/IconProps";
 import { getMarkerIcon } from "../../util/component-util/GetMarkerIcon";
-import { sortGroupDataGoogle } from "../../util/component-util/SortGroupData";
+import { getLatAndLngValue, sortGroupDataGoogle } from "../../util/component-util/SortGroupData";
 import { sendSetValues } from "../../util/server-util/SendSetValues";
 import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
 
@@ -139,10 +139,11 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle> = (baseProps) => {
             const map = mapInnerRef.current.map
 
             const latColName = props.latitudeColumnName;
-            const lngColname = props.longitudeColumnName;
+            const lngColName = props.longitudeColumnName;
             providedPointData.forEach((point: any, i: number) => {
                 let iconData: string | IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
-                const marker = new google.maps.Marker({ position: { lat: latColName ? point[latColName] : point.LATITUDE, lng: lngColname ? point[lngColname] : point.LONGITUDE }, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon) });
+                const pointValues = getLatAndLngValue(point, latColName, lngColName);
+                const marker = new google.maps.Marker({ position: { lat: pointValues.lat, lng: pointValues.lng }, icon: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon) });
                 marker.setMap(map);
                 if (i === providedPointData.length - 1) {
                     setSelectedMarker(marker);
