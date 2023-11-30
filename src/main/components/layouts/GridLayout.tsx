@@ -112,6 +112,9 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                 }
             });
 
+            let calcWidth = maxWidth * targetColumns + margins.marginLeft + margins.marginRight + gaps.horizontalGap * (targetColumns - 1);
+            let calcHeight = maxHeight * targetRows + margins.marginTop + margins.marginBottom + gaps.verticalGap * (targetRows - 1);
+
             /** If there is a size set by parent layout use that */
             if (style.width && style.height) {
                 size.width = style.width as number;
@@ -201,9 +204,9 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
             });
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
-            if ((reportSize && !style.width && !style.height) || (size.height !== style.height || size.width !== style.width)) {
+            if ((reportSize && !style.width && !style.height) || (calcHeight !== style.height || calcWidth !== style.width)) {
                 runAfterLayout(() => {
-                    reportSize({height: size.height, width: size.width});
+                    reportSize({height: calcHeight, width: calcWidth});
                 })
                 
             }
