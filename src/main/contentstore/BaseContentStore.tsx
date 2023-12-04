@@ -1011,12 +1011,18 @@ export default abstract class BaseContentStore {
         if (existingMap) {
             const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
-                //const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
-                let existingData = existingProvider.data.get(getPageKey());
+                let existingData;
+                if (!request?.filter) {
+                    existingData = existingProvider.data.get("current");
+                    existingProvider.data.set(getPageKey(), existingData);
+                }
+                else {
+                    existingData = existingProvider.data.get(getPageKey());
+                }
+
                 if (existingData) {
                     if (existingData.length <= from) {
-                        existingData = [...existingData, ...newDataSet];
-                        //existingData.push(...newDataSet);
+                        existingData.push(...newDataSet);
                     } 
                     else {
                         let newDataSetIndex = 0;
@@ -1027,10 +1033,6 @@ export default abstract class BaseContentStore {
                             existingData[i] = newDataSet[newDataSetIndex];
                             newDataSetIndex++;
                         }
-                    }
-                    
-                    if (!request?.filter) {
-                        existingProvider.data.set("current", existingData);
                     }
 
                     notifyTreeData = existingData;
@@ -1403,7 +1405,7 @@ export default abstract class BaseContentStore {
             }
             else {
                 const data = dataBook.data;
-                if (data) {
+                if (data) {  
                     data.delete("current");
                 }
             }

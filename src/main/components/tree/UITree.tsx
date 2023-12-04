@@ -516,16 +516,17 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
 
     const getTreePathFromSelectedRows = () => {
         const treePathArray:number[] = [];
-        selectedRows.forEach((value, key) => {
-            if (value) {
-                if (key === getDataBookName(Number.MAX_SAFE_INTEGER) && isSelfJoined(key)) {
-                    if (value.treePath) {
-                        treePathArray.push(...value.treePath.toArray());
+        props.dataBooks.forEach(databook => {
+            const selectedRow = selectedRows.get(databook);
+            if (selectedRow) {
+                if (databook === getDataBookName(Number.MAX_SAFE_INTEGER) && isSelfJoined(databook)) {
+                    if (selectedRow.treePath) {
+                        treePathArray.push(...selectedRow.treePath.toArray());
                     }
                 }
-                treePathArray.push(value.index);
+                treePathArray.push(selectedRow.index);
             }
-        });
+        })
         return new TreePath(treePathArray.filter(v => v > -1));
     }
 
