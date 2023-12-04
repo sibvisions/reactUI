@@ -265,9 +265,9 @@ export default abstract class BaseContentStore {
         if (child.parent) {
             const children:Array<string> = this.componentChildren.has(child.parent) ? Array.from(this.componentChildren.get(child.parent) as Set<string>) : new Array<string>();
             let component = child;
-            if (this.getExistingComponent(child.id)) {
-                component = this.getExistingComponent(child.id) as BaseComponent;
-            }
+            // if (this.getExistingComponent(child.id)) {
+            //     component = this.getExistingComponent(child.id) as IBaseComponent;
+            // }
             if (child.parent.includes("TBP")) {
                 let string = component.parent;
                 if (component["~additional"]) {
