@@ -1009,7 +1009,6 @@ export default abstract class BaseContentStore {
             const existingProvider = this.getDataBook(screenName, dataProvider);
             if (existingProvider && existingProvider.data) {
                 let existingData;
-                //const existingData = referenceKey ? existingProvider.data.get(referenceKey) : existingProvider.data.get("current");
                 if (!request?.filter) {
                     existingData = existingProvider.data.get("current");
                     existingProvider.data.set(getPageKey(), existingData);
@@ -1020,8 +1019,7 @@ export default abstract class BaseContentStore {
 
                 if (existingData) {
                     if (existingData.length <= from) {
-                        existingData = [...existingData, ...newDataSet];
-                        //existingData.push(...newDataSet);
+                        existingData.push(...newDataSet);
                     } 
                     else {
                         let newDataSetIndex = 0;
@@ -1033,10 +1031,6 @@ export default abstract class BaseContentStore {
                             newDataSetIndex++;
                         }
                     }
-                    
-                    // if (!request?.filter) {
-                    //     existingProvider.data.set("current", existingData);
-                    // }
 
                     notifyTreeData = existingData;
                 }

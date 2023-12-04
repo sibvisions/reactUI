@@ -1445,7 +1445,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 table.styleElement.innerHTML = innerHTML;
             }
         }
-    }, [layoutStyle?.width, estTableWidth, providerData]);    
+    }, [layoutStyle?.width, estTableWidth, providerData]);
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
