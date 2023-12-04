@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useEffect, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {appContext, isDesignerVisible} from "../../contexts/AppProvider";
 import {LayoutContext} from "../../LayoutContext";
 import Dimension from "../../util/types/Dimension";
@@ -42,7 +42,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         reportSize,
         className,
         name
-    } = baseProps
+    } = baseProps;
 
     /** Current state of the calculatedStyle by the GridLayout */
     const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
@@ -58,6 +58,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
     const gaps = useMemo(() => new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6)), [layout]);
     /** GridSize of the layout */
     const gridSize = useMemo(() => new GridSize(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(6, 8)), [layout]);
+
+    const children = useMemo(() => context.contentStore.getChildren(id, className), [context.contentStore.flatContent.size]);
 
     const gridLayoutAssistant = useMemo(() => {
         if (context.designer && isDesignerVisible(context.designer)) {
@@ -106,9 +108,6 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         /** Map which contains component ids as key and positioning and sizing properties as value */
         const sizeMap = new Map<string, CSSProperties>();
 
-
-        const children = context.contentStore.getChildren(id, className);
-
         /** If compSizes is set (every component in this layout reported its preferred size) */
         if (compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
             /** The widest single grid of all components */
@@ -131,20 +130,20 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
                     const prefSize = compSizes.get(component.id)?.preferredSize || {width: 0, height: 0};
 
-                    const width = (prefSize.width + constraints.gridWidth - 1) / constraints.gridWidth;
+                    const width = Math.floor((prefSize.width + constraints.gridWidth - 1) / constraints.gridWidth + constraints.margins.marginLeft + constraints.margins.marginRight);
                     if (width > maxWidth) {
                         maxWidth = width;
                     }
 
-                    const height = (prefSize.height + constraints.gridHeight - 1) / constraints.gridHeight;
+                    const height = Math.floor((prefSize.height + constraints.gridHeight - 1) / constraints.gridHeight + constraints.margins.marginTop + constraints.margins.marginBottom);
                     if (height > maxHeight) {
                         maxHeight = height;
                     }
 
-                    if (constraints.gridX + constraints.gridWidth > targetColumns) {
+                    if (gridSize.columns <= 0 && constraints.gridX + constraints.gridWidth > targetColumns) {
                         targetColumns = constraints.gridX + constraints.gridWidth;
                     }
-                    if (constraints.gridY + constraints.gridHeight > targetRows) {
+                    if (gridSize.rows <= 0 && constraints.gridY + constraints.gridHeight > targetRows) {
                         targetRows = constraints.gridY + constraints.gridHeight;
                     }
 
@@ -158,6 +157,9 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                     //     tallest = heightOneField;
                 }
             });
+
+            let calcWidth = maxWidth * targetColumns + margins.marginLeft + margins.marginRight + gaps.horizontalGap * (targetColumns - 1);
+            let calcHeight = maxHeight * targetRows + margins.marginTop + margins.marginBottom + gaps.verticalGap * (targetRows - 1);
 
             /** If there is a size set by parent layout use that */
             if (style.width && style.height) {
@@ -182,8 +184,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                 const totalWidth = size.width - margins.marginRight - totalGapsWidth;
                 const totalHeight = size.height - margins.marginBottom - totalGapsHeight;
 
-                columnSize = totalWidth / targetColumns;
-                rowSize = totalHeight / targetRows;
+                columnSize = Math.floor(totalWidth / targetColumns);
+                rowSize = Math.floor(totalHeight / targetRows);
 
                 if (isDesignerActive(gridLayoutAssistant) && layoutInfo) {
                     layoutInfo.columnSize = columnSize;
@@ -194,18 +196,18 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 				const heightCalcError = totalHeight - rowSize * targetRows;
 				let xMiddle = 0;
 				if (widthCalcError > 0) {
-					xMiddle = (targetColumns / widthCalcError + 1) / 2;
+					xMiddle = Math.floor((targetColumns / widthCalcError + 1) / 2);
 				}
 				let yMiddle = 0;
 				if (heightCalcError > 0) {
-					yMiddle = (targetRows / heightCalcError + 1) / 2;
+					yMiddle = Math.floor((targetRows / heightCalcError + 1) / 2);
 				}
 
                 xPosition[0] = margins.marginLeft;
                 let corrX = 0;
                 for (let i = 0; i < targetColumns; i++) {
                     xPosition[i + 1] = xPosition[i] + columnSize + gaps.horizontalGap;
-					if (widthCalcError > 0 && corrX * targetColumns / widthCalcError + xMiddle == i) {
+					if (widthCalcError > 0 && Math.floor(corrX * targetColumns / widthCalcError + xMiddle) == i) {
 						xPosition[i + 1]++;
 						corrX++;
 					}
@@ -215,7 +217,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                 let corrY = 0;
                 for (let i = 0; i < targetRows; i++) {
                     yPosition[i + 1] = yPosition[i] + rowSize + gaps.verticalGap;
-					if (heightCalcError > 0 && corrY * targetRows / heightCalcError + yMiddle == i) {
+					if (heightCalcError > 0 && Math.floor(corrY * targetRows / heightCalcError + yMiddle) == i) {
 						yPosition[i + 1]++;
 						corrY++;
 					}
@@ -240,8 +242,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                     const constraints = new CellConstraints(component.constraints);
                     const x = getPosition(xPosition, constraints.gridX, columnSize, gaps.horizontalGap);
                     const y = getPosition(yPosition, constraints.gridY, rowSize, gaps.verticalGap);
-                    const width = getPosition(xPosition, constraints.gridX + constraints.gridWidth, columnSize, gaps.horizontalGap) - x - gaps.horizontalGap;
-                    const height = getPosition(yPosition, constraints.gridY + constraints.gridHeight, rowSize, gaps.verticalGap) - y - gaps.verticalGap;
+                    const width = getPosition(xPosition, constraints.gridX + constraints.gridWidth, columnSize, gaps.horizontalGap) - x - gaps.horizontalGap - constraints.margins.marginRight;
+                    const height = getPosition(yPosition, constraints.gridY + constraints.gridHeight, rowSize, gaps.verticalGap) - y - gaps.verticalGap - constraints.margins.marginBottom;
                     sizeMap.set(component.id, {
                         height: height,
                         width: width,
@@ -253,9 +255,9 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
             });
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
-            if ((reportSize && !style.width && !style.height) || (size.height !== style.height || size.width !== style.width)) {
+            if ((reportSize && !style.width && !style.height) || (calcHeight !== style.height || calcWidth !== style.width)) {
                 runAfterLayout(() => {
-                    reportSize({height: size.height, width: size.width});
+                    reportSize({height: calcHeight, width: calcWidth});
                 })
                 
             }

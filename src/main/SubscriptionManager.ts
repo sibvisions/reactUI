@@ -25,6 +25,8 @@ import ServerFull from "./server/ServerFull";
 import ErrorResponse from "./response/error/ErrorResponse";
 import MessageResponse from "./response/ui/MessageResponse";
 import DialogResponse from "./response/ui/DialogResponse";
+import { createUIMessage } from "./factories/UIFactory";
+import CloseFrameResponse from "./response/ui/CloseFrameResponse";
 
 /** Manages subscriptions and handles the subscriber events */
 export class SubscriptionManager {
@@ -160,9 +162,6 @@ export class SubscriptionManager {
 
     /** A function to update the toast-subscriber */
     toastSubscriber:Function = () => {};
-
-    /** A function to update the close-frame-subscriber */
-    closeFrameSubscriber:Function = () => {};
 
     /** An array of functions to update the active-screen subscriber */
     activeScreenSubscriber = new Map<string, Function>();
@@ -492,14 +491,6 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes the UIToast to close-frame-responses, to change the close-frame state, to close toasts
-     * @param fn - the function to change the clsoe-frame state
-     */
-     subscribeToCloseFrame(fn:Function) {
-        this.closeFrameSubscriber = fn;
-    }
-
-    /**
      * Subscribes to the active-screens, to have the active-screens
      * @param key - key of which component gets added to the subscription
      * @param fn - the function to update the toolbar-items
@@ -789,11 +780,6 @@ export class SubscriptionManager {
         this.toastSubscriber = () => {};
     }
 
-    /** Unsubscribes UIToast from close-frame-responses */
-    unsubscribeFromCloseFrame() {
-        this.closeFrameSubscriber = () => {};
-    }
-
     /**
      * Unsubscribes from active-screens
      */
@@ -948,11 +934,11 @@ export class SubscriptionManager {
         this.treeSubscriber.get(masterDataBook)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
-    notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string) {
+    notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string, pDelete: boolean) {
         this.treeDataChangedSubscriber.forEach((v, k) => {
             const splitDataBooks = k.split("_");
             if (splitDataBooks.includes(dataBook)) {
-                v();
+                v(dataBook, data, pageKeyHelper, pDelete);
             }
         });
     }
@@ -1077,8 +1063,12 @@ export class SubscriptionManager {
     }
 
     /** Tell the close-frame subscribers that a frame has closed */
-    emitCloseFrame() {
-        this.closeFrameSubscriber.apply(undefined, []);
+    emitCloseFrame(closeFrameData: CloseFrameResponse) {
+        const foundIndex = (this.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === closeFrameData.componentId : false);
+        if (foundIndex > -1) {
+            (this.contentStore as ContentStore).openMessages.splice(foundIndex, 1);
+        }
+        this.messageDialogPropsSubscriber.apply(undefined, []);
     }
 
     /** Tell the active-screen subscribers that the active-screens changed */
@@ -1091,7 +1081,14 @@ export class SubscriptionManager {
      * @param dialog - the message-dialog response sent by the server
      */
     emitMessageDialog(dialog:DialogResponse) {
-        this.messageDialogPropsSubscriber.apply(undefined, [dialog])
+        const foundIndex = (this.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === dialog.componentId : false);
+        if (foundIndex > -1) {
+            (this.contentStore as ContentStore).openMessages[foundIndex] = { id: dialog.componentId, fn: () => createUIMessage(dialog)};
+        }
+        else {
+            (this.contentStore as ContentStore).openMessages.push({ id: dialog.componentId, fn: () => createUIMessage(dialog)});
+        }
+        this.messageDialogPropsSubscriber.apply(undefined, [])
     }
 
     /**

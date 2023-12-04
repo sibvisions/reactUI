@@ -76,7 +76,7 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
     /** The selected rows of each databook */
     const selectedRows = useAllRowSelect(screenName, props.dataBooks);
 
-    const [treeDataChanged, setTreeDataChanged] = useState<{ dataBook: string, data: any[]|undefined, pageKey: string }>({ dataBook: "", data: undefined, pageKey: "" });
+    const [treeDataChanged, setTreeDataChanged] = useState<{ dataBook: string, data: any[]|undefined, pageKey: string, delete: boolean }>({ dataBook: "", data: undefined, pageKey: "", delete: false });
 
     /** 
      * A Map of the current state of every node with their respective referenced column, the nodes
@@ -271,6 +271,8 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
                 const pkObjStringified = JSON.stringify(pkObj);
                 if (fetchDataPage && !providedData.get(fetchDataPage).has(pkObjStringified)) {
                     const fetchReq = createFetchRequest();
+                    fetchReq.fromRow = 0;
+                    fetchReq.rowCount = -1;
                     fetchReq.dataProvider = fetchDataPage;
                     fetchReq.filter = filter;
                     await showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
@@ -382,7 +384,7 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
             props.context.subscriptions.subscribeToTreeChange(props.dataBooks[0], updateRebuildTree);
         }
 
-        props.context.subscriptions.subscribeToTreeDataChange(props.dataBooks.join("_"), (dataBook:string, data: any[], pageKeyHelper:string) => setTreeDataChanged({ dataBook: dataBook, data: data, pageKey: pageKeyHelper}))
+        props.context.subscriptions.subscribeToTreeDataChange(props.dataBooks.join("_"), (dataBook:string, data: any[], pageKeyHelper:string, pDelete: boolean) => setTreeDataChanged({ dataBook: dataBook, data: data, pageKey: pageKeyHelper, delete: pDelete}))
         
         return () => {
             if (props.dataBooks && props.dataBooks.length) {
@@ -413,6 +415,8 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
             const fetchRoot = async () => {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = firstLvlDataBook;
+                fetchReq.fromRow = 0;
+                fetchReq.rowCount = -1;
                 fetchReq.filter = {
                     columnNames: [],
                     values: []
@@ -463,14 +467,6 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
             }
 
             fetchRoot().then((res: any) => buildNodes(res))
-
-            //if the first databook is self-joined fetch the root page else fetch build up the tree as usual
-            // if (isSelfJoined(firstLvlDataBook)) {
-            //     fetchSelfJoinedRoot().then((res: any) => buildNodes(res))
-            // }
-            // else {
-            //     buildNodes(providedData?.get(firstLvlDataBook)?.get("current"))
-            // }
         }
     }, [providedData.size]);
 
@@ -486,30 +482,6 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
         async function growTree(){
             const newNodes = [...nodes];
             let tempTreeData = new Map(treeData.current);
-
-            // for (let key of Object.keys(expandedKeys).filter(k => expandedKeys[k])) {
-            //     const path = new TreePath(JSON.parse(key));
-            //     const node = getNode(newNodes, path);
-            //     if (node) {
-            //         if (detectEndNode !== false) {
-            //             //Only fetch if there is another databook underneath
-            //             if (getDataBookName(path.length())) {
-            //                 const dataRowChildren:any[] = providedData.get(getDataBookName(path.length())).get(treeData.current.get(key));
-            //                 if(dataRowChildren) {
-            //                     await Promise.allSettled(dataRowChildren.map((data, i) => 
-            //                         getChildrenForDataRow(data, (node.children ?? [])[i] as CustomTreeNode)
-            //                             .then((res:any) => tempTreeData = new Map([...tempTreeData, ...res.treeMap]))
-            //                     ))
-            //                     .then(() => treeData.current = new Map([...treeData.current, ...tempTreeData]));
-            //                 }
-            //             }
-            //         } else {
-            //             await getChildrenForDataRow(getDataRow(path, tempTreeData.get(path.getParentPath().toString())), node)
-            //                 .then(res => tempTreeData = new Map([...tempTreeData, ...res.treeMap]))
-            //             treeData.current = new Map([...treeData.current, ...tempTreeData])
-            //         }
-            //     }  
-            // }
             
             if(lastExpandedLength.current < Object.keys(expandedKeys).length) {
                 const key = Object.keys(expandedKeys)[Object.keys(expandedKeys).length - 1];
@@ -542,6 +514,21 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
         if(isInitialized) growTree();
     }, [ expandedKeys, isInitialized ]);
 
+    const getTreePathFromSelectedRows = () => {
+        const treePathArray:number[] = [];
+        selectedRows.forEach((value, key) => {
+            if (value) {
+                if (key === getDataBookName(Number.MAX_SAFE_INTEGER) && isSelfJoined(key)) {
+                    if (value.treePath) {
+                        treePathArray.push(...value.treePath.toArray());
+                    }
+                }
+                treePathArray.push(value.index);
+            }
+        });
+        return new TreePath(treePathArray.filter(v => v > -1));
+    }
+
     /**
      * If the selectedRows change, generate the tree selectedKey and expandedKey
      */
@@ -549,12 +536,7 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
         if (props.dataBooks && props.dataBooks.length) {
             const selected = selectedRows.get(props.dataBooks[0]);
             if (selected) {
-                let treePath: TreePath;
-                if (isSelfJoined(props.dataBooks[0])) {
-                    treePath = new TreePath([...(selected.treePath?.toArray() ?? []), selected.index]);
-                } else {
-                    treePath = new TreePath(props.dataBooks.map(db => selectedRows.get(db)?.index ?? -1).filter(v => v > -1));
-                }
+                const treePath: TreePath = getTreePathFromSelectedRows();
                 setSelectedKey(treePath.toString());
                 setExpandedKeys(prevState => {
                     const newState = ({...prevState, ...treePath.toArray().slice(0, -1).reduce((a, n, i, arr) => ({...a, [`[${arr.slice(0, i + 1).join(',')}]`]: true}) , {})});
@@ -565,103 +547,123 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
     }, [selectedRows]);
 
     useEffect(() => {
-        if (treeDataChanged.data && !treeDataChanged.pageKey.includes("noMasterRow")) {
-            const getNodes = (arr: CustomTreeNode[], identifier: string, type: "pageKey"|"key") => {
-                let nodesToReturn:CustomTreeNode[] = [];
-
-                const recurse = (arr: CustomTreeNode[]) => {
-                    for (const node of arr) {
-                        if ((type === "pageKey" && node.pageKeyHelper === identifier) || (type === "key" && node.key === identifier)) {
-                            nodesToReturn.push(node);
-                        }
-
-                        if (node.children) {
-                            recurse(node.children as CustomTreeNode[]);
+        if (treeDataChanged.delete) {
+            const tP = getTreePathFromSelectedRows();
+            const parentNode = getNode(nodes, new TreePath(tP.getParentPath().toArray()));
+            if (parentNode.children) {
+                parentNode.children.splice(parentNode.children.findIndex(childNode => childNode.key === tP.toString()), 1);
+            }
+        }
+        else {
+            if (treeDataChanged.data && !treeDataChanged.pageKey.includes("noMasterRow")) {
+                const getNodes = (arr: CustomTreeNode[], identifier: string, type: "pageKey"|"key") => {
+                    let nodesToReturn:CustomTreeNode[] = [];
+    
+                    const recurse = (arr: CustomTreeNode[]) => {
+                        for (const node of arr) {
+                            if ((type === "pageKey" && node.pageKeyHelper === identifier) || (type === "key" && node.key === identifier)) {
+                                nodesToReturn.push(node);
+                            }
+    
+                            if (node.children) {
+                                recurse(node.children as CustomTreeNode[]);
+                            }
                         }
                     }
+    
+                    recurse(arr);
+                    return nodesToReturn;
                 }
-
-                recurse(arr);
-                return nodesToReturn;
-            }
-
-            const nodesCopy = [...nodes];
-            const baseNodeData = getDataBookName(0) === treeDataChanged.dataBook && props.context.contentStore.getDataBook(screenName, getDataBookName(0))!.rootKey === treeDataChanged.pageKey;
-            const metaData = getMetaData(screenName, treeDataChanged.dataBook, props.context.contentStore) as MetaDataResponse;
-            let parentNodes:CustomTreeNode[] = [];
-            if (!baseNodeData) {
-                if (metaData) {
-                    if (metaData.masterReference) {
-                        let parentNodeKey = "";
-                        parentNodeKey = metaData.masterReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
-                        parentNodes = getNodes(nodesCopy, parentNodeKey, "pageKey");
+    
+                const nodesCopy = [...nodes];
+                const baseNodeData = getDataBookName(0) === treeDataChanged.dataBook && props.context.contentStore.getDataBook(screenName, getDataBookName(0))!.rootKey === treeDataChanged.pageKey;
+                const metaData = getMetaData(screenName, treeDataChanged.dataBook, props.context.contentStore) as MetaDataResponse;
+                let parentNodes:CustomTreeNode[] = [];
+                if (!baseNodeData) {
+                    if (metaData) {
+                        if (metaData.masterReference) {
+                            let parentNodeKey = "";
+                            if (isSelfJoined(treeDataChanged.dataBook)) {
+                                parentNodeKey = metaData.rootReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
+                                parentNodes = getNodes(nodesCopy, parentNodeKey, "pageKey");
+        
+                                if (!parentNodes.length) {
+                                    parentNodeKey = metaData.masterReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
+                                    parentNodes = getNodes(nodesCopy, parentNodeKey, "pageKey");
+                                }
+                            }
+                            else {
+                                parentNodeKey = metaData.masterReference!.referencedDataBook + "_" + treeDataChanged.pageKey;
+                                parentNodes = getNodes(nodesCopy, parentNodeKey, "pageKey");
+                            }
+                        }
+                        else {
+                            console.warn("masterreference for databook: ", treeDataChanged.dataBook + " in tree: " + props.name + "not set!")
+                        }
+    
+                    }
+                }
+    
+                if (!baseNodeData && !parentNodes.length) {
+                    return;
+                }
+    
+                const newNodes:CustomTreeNode[] = [];
+    
+                treeDataChanged.data.forEach((dataRow, index) => {
+                    let isPotentialParent = baseNodeData && getDataBookName(1) !== "";
+                    const createNode = (parentNode: CustomTreeNode|undefined) => {
+                        const parentPath = new TreePath(parentNode ? JSON.parse(parentNode.key as string) : []);
+                        const path = parentPath.getChildPath(index);
+                        const childPkObj:any = {}
+                        if (getDataBookName(path.length())) {
+                            const childDataPage = getDataBookName(path.length());
+                            const childMetaData = getMetaData(screenName, childDataPage, props.context.contentStore, undefined);
+                            const childReference = getReference(childDataPage, childMetaData as MetaDataResponse, path);
+                            const childFilter = getFilterObj(childMetaData as MetaDataResponse, childReference as MetaDataReference, dataRow);
+                            childFilter.columnNames.forEach((key, i) => childPkObj[key] = childFilter.values[i]);
+                        }
+                        isPotentialParent = isPotentialParent || (parentNode !== undefined && getDataBookName(path.length()) !== "");
+                        let newNode:CustomTreeNode = {
+                            key: path.toString(),
+                            label: metaData!.columnView_tree_.length ? dataRow[metaData!.columnView_tree_[0]] : undefined,
+                            leaf: !isPotentialParent,
+                            pageKeyHelper: isPotentialParent ? getDataBookName(parentPath.length()) + "_" + JSON.stringify(childPkObj) : "",
+                            data: dataRow
+                        }
+        
+                        const oldNode = getNode(nodes, path);
+                        if (oldNode) {
+                            newNode = { ...newNode, children: oldNode.children };
+        
+                            if (oldNode.leaf) {
+                                newNode = { ...newNode, leaf: true }
+                            }
+                        }
+                        newNodes.push(newNode);
+                    }
+                    if (parentNodes.length) {
+                        parentNodes.forEach(parentNode => {
+                            createNode(parentNode);
+                        })
                     }
                     else {
-                        console.warn("masterreference for databook: ", treeDataChanged.dataBook + " in tree: " + props.name + "not set!")
-                    }
-
-                }
-            }
-
-            if (!baseNodeData && !parentNodes.length) {
-                return;
-            }
-
-            const newNodes:CustomTreeNode[] = [];
-
-            treeDataChanged.data.forEach((dataRow, index) => {
-                let isPotentialParent = baseNodeData && getDataBookName(1) !== "";
-                const createNode = (parentNode: CustomTreeNode|undefined) => {
-                    const parentPath = new TreePath(parentNode ? JSON.parse(parentNode.key as string) : []);
-                    const path = parentPath.getChildPath(index);
-                    const childPkObj:any = {}
-                    if (getDataBookName(path.length())) {
-                        const childDataPage = getDataBookName(path.length());
-                        const childMetaData = getMetaData(screenName, childDataPage, props.context.contentStore, undefined);
-                        const childReference = getReference(childDataPage, childMetaData as MetaDataResponse, path);
-                        const childFilter = getFilterObj(childMetaData as MetaDataResponse, childReference as MetaDataReference, dataRow);
-                        childFilter.columnNames.forEach((key, i) => childPkObj[key] = childFilter.values[i]);
-                    }
-                    isPotentialParent = isPotentialParent || (parentNode !== undefined && getDataBookName(path.length()) !== "");
-                    let newNode:CustomTreeNode = {
-                        key: path.toString(),
-                        label: metaData!.columnView_tree_.length ? dataRow[metaData!.columnView_tree_[0]] : undefined,
-                        leaf: !isPotentialParent,
-                        pageKeyHelper: isPotentialParent ? getDataBookName(parentPath.length()) + "_" + JSON.stringify(childPkObj) : "",
-                        data: dataRow
+                        createNode(undefined);
                     }
     
-                    const oldNode = getNode(nodes, path);
-                    if (oldNode) {
-                        newNode = { ...newNode, children: oldNode.children };
+                });
     
-                        if (oldNode.leaf) {
-                            newNode = { ...newNode, leaf: true }
-                        }
-                    }
-                    newNodes.push(newNode);
-                }
-                if (parentNodes.length) {
-                    parentNodes.forEach(parentNode => {
-                        createNode(parentNode);
-                    })
+                if (baseNodeData) {
+                    setNodes(newNodes);
                 }
                 else {
-                    createNode(undefined);
+                    if (parentNodes) {
+                        parentNodes.forEach(parentNode => {
+                            parentNode.children = newNodes;
+                        })
+                    }
+                    setNodes(nodesCopy);
                 }
-
-            });
-
-            if (baseNodeData) {
-                setNodes(newNodes);
-            }
-            else {
-                if (parentNodes) {
-                    parentNodes.forEach(parentNode => {
-                        parentNode.children = newNodes;
-                    })
-                }
-                setNodes(nodesCopy);
             }
         }
     }, [treeDataChanged])

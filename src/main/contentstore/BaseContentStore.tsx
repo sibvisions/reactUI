@@ -268,11 +268,11 @@ export default abstract class BaseContentStore {
     addAsChild(child: IBaseComponent) {
         if (child.parent) {
             const children:Array<string> = this.componentChildren.has(child.parent) ? Array.from(this.componentChildren.get(child.parent) as Set<string>) : new Array<string>();
+            let component = child;
+            if (this.getExistingComponent(child.id)) {
+                component = this.getExistingComponent(child.id) as IBaseComponent;
+            }
             if (child.parent.includes("TBP")) {
-                let component = child;
-                if (this.getExistingComponent(child.id)) {
-                    component = this.getExistingComponent(child.id) as IBaseComponent;
-                }
                 let string = component.parent;
                 if (component["~additional"]) {
                     string = component.parent + "-tbMain"
@@ -283,28 +283,39 @@ export default abstract class BaseContentStore {
                 const tbpChildren = this.componentChildren.get(string) || new Set<string>();
                 tbpChildren.add(component.id);
                 this.componentChildren.set(string, tbpChildren);
-                children.push(string);
+                if (component.indexOf !== undefined) {
+                    children.splice(component.indexOf, 0, string);
+                }
+                else {
+                    children.push(string)
+                }
+                
             }
             else {
-                children.push(child.id);
+                if (component.indexOf !== undefined) {
+                    children.splice(component.indexOf, 0, component.id);
+                }
+                else {
+                    children.push(component.id)
+                }
             }
 
-            children.sort((childA, childB) => {
-                const componentA = this.getComponentById(childA);
-                const componentB = this.getComponentById(childB);
-                if (componentA && componentA.indexOf !== undefined && componentB && componentB.indexOf !== undefined) {
-                    if (componentA.indexOf < componentB.indexOf) {
-                        return -1;
-                    }
-                    else if (componentA.indexOf > componentB.indexOf) {
-                        return 1;
-                    }
-                    else {
-                        return 0;
-                    }
-                }
-                return 0;
-            })
+            // children.sort((childA, childB) => {
+            //     const componentA = this.getComponentById(childA);
+            //     const componentB = this.getComponentById(childB);
+            //     if (componentA && componentA.indexOf !== undefined && componentB && componentB.indexOf !== undefined) {
+            //         if (componentA.indexOf < componentB.indexOf) {
+            //             return -1;
+            //         }
+            //         else if (componentA.indexOf > componentB.indexOf) {
+            //             return 1;
+            //         }
+            //         else {
+            //             return 0;
+            //         }
+            //     }
+            //     return 0;
+            // })
             
             this.componentChildren.set(child.parent, new Set(children));
         }
@@ -722,7 +733,7 @@ export default abstract class BaseContentStore {
         while (parent && !parent.includes("IF")) {
             const parentComp = this.getComponentById(parent);
             if (parentComp && parentComp.visible !== false && parentComp.invalid !== true) {
-                parent = this.getComponentById(parent)!.parent;
+                parent = parentComp.parent;
             }
             else {
                 invalid = true;
@@ -1060,7 +1071,7 @@ export default abstract class BaseContentStore {
         this.subManager.notifyDataChange(screenName, dataProvider);
         this.subManager.notifyScreenDataChange(screenName);
         if (notifyTreeData) {
-            this.subManager.notifyTreeDataChanged(dataProvider, notifyTreeData, getPageKey());
+            this.subManager.notifyTreeDataChanged(dataProvider, notifyTreeData, getPageKey(), false);
         }
         
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
@@ -1288,7 +1299,18 @@ export default abstract class BaseContentStore {
         const existingMap = this.getScreenDataproviderMap(screenName);
         if (existingMap) {
             if (existingMap.has(dataProvider)) {
-                (existingMap.get(dataProvider) as IDataBook).selectedRow = {dataRow: dataRow, index: index, treePath: treePath, selectedColumn: selectedColumn};
+                const dataBook = existingMap.get(dataProvider) as IDataBook;
+                let newSelectedRow:ISelectedRow = {dataRow: dataRow, index: index, treePath: treePath ? treePath : dataBook.selectedRow?.treePath, selectedColumn: selectedColumn ? selectedColumn : dataBook.selectedRow?.selectedColumn};
+                // if (dataBook.selectedRow) {
+                //     if (dataBook.selectedRow.treePath && !treePath) {
+                //         newSelectedRow.treePath = dataBook.selectedRow.treePath;
+                //     }
+
+                //     if (dataBook.selectedRow.selectedColumn && !selectedColumn) {
+                //         newSelectedRow.selectedColumn = dataBook.selectedRow.selectedColumn;
+                //     }
+                // }
+                dataBook.selectedRow = newSelectedRow;
             }
             else {
                 // If the compPanel is a popup use the screenName shown in the dataProvider

@@ -38,6 +38,7 @@ export async function sendMapFetchRequests(groupDataProvider:string, pointDataPr
             }
 
             fetchReq.fromRow = 0;
+            fetchReq.rowCount = -1;
             server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => resolve());
         })
     }

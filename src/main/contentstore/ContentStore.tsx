@@ -53,6 +53,8 @@ export default class ContentStore extends BaseContentStore {
     /** The current logged in user */
     currentUser: UserData = new UserData();
 
+    openMessages: Array<{ id: string, fn: Function }> = [];
+
     /** A cache for the dialog-buttons to know which component-id to send to the server */
     dialogButtons:Array<string> = new Array<string>();
 
@@ -123,7 +125,7 @@ export default class ContentStore extends BaseContentStore {
                 let newProp = newComp[newPropName];
                 if (["dataBook", "dataRow"].indexOf(newPropName) !== -1 && existingProp === newProp) {
                     if (existingProp && this.getDataBook(this.server.getScreenName(existingProp as string), existingProp)) {
-                        this.dataBooks.get(this.server.getScreenName(existingProp as string))?.delete(existingProp)
+                        //this.dataBooks.get(this.server.getScreenName(existingProp as string))?.delete(existingProp)
                         const fetchReq = createFetchRequest();
                         fetchReq.dataProvider = existingProp;
                         fetchReq.includeMetaData = true;
@@ -218,21 +220,21 @@ export default class ContentStore extends BaseContentStore {
                     }
                 }
 
-                const removeChildren = (id: string, className: string, isCustom?:boolean) => {
-                    const children = this.getChildren(id, className);
-                    children.forEach(child => {
-                        removeChildren(child.id, child.className);
-                        if (isCustom) {
-                            this.replacedContent.delete(newComponent.id);
-                            this.removedCustomComponents.set(child.id, child);
-                        }
-                        else {
-                            this.flatContent.delete(child.id);
-                            this.removedContent.set(child.id, child);
-                        }
+                // const removeChildren = (id: string, className: string, isCustom?:boolean) => {
+                //     const children = this.getChildren(id, className);
+                //     children.forEach(child => {
+                //         removeChildren(child.id, child.className);
+                //         if (isCustom) {
+                //             this.replacedContent.delete(newComponent.id);
+                //             this.removedCustomComponents.set(child.id, child);
+                //         }
+                //         else {
+                //             this.flatContent.delete(child.id);
+                //             this.removedContent.set(child.id, child);
+                //         }
                         
-                    });
-                }
+                //     });
+                // }
 
                 if (newComponent["~remove"]) {
                     if (!isCustom) {

@@ -28,7 +28,7 @@ import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
-import { sortGroupDataOSM } from "../../util/component-util/SortGroupData";
+import { getLatAndLngValue, sortGroupDataOSM } from "../../util/component-util/SortGroupData";
 import { sendMapFetchRequests } from "../../util/server-util/SendMapFetchRequests";
 import { sendSetValues } from "../../util/server-util/SendSetValues";
 import { sendSaveRequest } from "../../util/server-util/SendSaveRequest";
@@ -259,11 +259,11 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
                 /** Build markers with icon */
                 providedPointData.map((point: any, i: number) => {
                     let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
+                    const pointValues = getLatAndLngValue(point, props.latitudeColumnName, props.longitudeColumnName);
                     return <Marker
                         ref={el => markerRefs.current[i] = el}
                         key={props.id + "-Marker-" + i}
-                        position={[props.latitudeColumnName ? point[props.latitudeColumnName] : point.LATITUDE ? point.LATITUDE : 0,
-                        props.longitudeColumnName ? point[props.longitudeColumnName] : point.LONGITUDE ? point.LONGITUDE : 0]}
+                        position={[pointValues.lat, pointValues.lng]}
                         icon={new L.Icon({
                             iconUrl: context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon),
                             iconAnchor: iconData !== "/com/sibvisions/rad/ui/swing/ext/images/map_defaultmarker.png" ? 

@@ -72,7 +72,7 @@ export default class ContentStoreFull extends BaseContentStore {
                 let newProp = newComp[newPropName];
                 if (["dataBook", "dataRow"].indexOf(newPropName) !== -1 && existingProp === newProp) {
                     if (existingProp && this.getDataBook(this.server.getScreenName(existingProp as string), existingProp)) {
-                        this.dataBooks.get(this.server.getScreenName(existingProp as string))?.delete(existingProp)
+                        //this.dataBooks.get(this.server.getScreenName(existingProp as string))?.delete(existingProp)
                         const fetchReq = createFetchRequest();
                         fetchReq.dataProvider = existingProp;
                         fetchReq.includeMetaData = true;
@@ -151,21 +151,21 @@ export default class ContentStoreFull extends BaseContentStore {
                     }
                 }
 
-                const removeChildren = (id: string, className: string, isCustom?:boolean) => {
-                    const children = this.getChildren(id, className);
-                    children.forEach(child => {
-                        removeChildren(child.id, child.className);
+                // const removeChildren = (id: string, className: string, isCustom?:boolean) => {
+                //     const children = this.getChildren(id, className);
+                //     children.forEach(child => {
+                //         removeChildren(child.id, child.className);
 
-                        if (isCustom) {
-                            this.replacedContent.delete(newComponent.id);
-                            this.removedCustomComponents.set(child.id, child);
-                        }
-                        else {
-                            this.flatContent.delete(child.id);
-                            this.removedContent.set(child.id, child);
-                        }
-                    });
-                }
+                //         if (isCustom) {
+                //             this.replacedContent.delete(newComponent.id);
+                //             this.removedCustomComponents.set(child.id, child);
+                //         }
+                //         else {
+                //             this.flatContent.delete(child.id);
+                //             this.removedContent.set(child.id, child);
+                //         }
+                //     });
+                // }
 
                 if (newComponent["~remove"]) {
                     if (!isCustom) {

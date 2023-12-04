@@ -15,6 +15,15 @@
 
 import { LatLngExpression } from "leaflet";
 
+export function getLatAndLngValue(point: any, latColName: string|undefined, lngColName: string|undefined) {
+    const latValue = latColName ? point[latColName] : point.LATITUDE;
+    const lat:number = typeof latValue === "string" && !isNaN(parseFloat(latValue)) ? parseFloat(latValue) : latValue;
+    const lngValue = lngColName ? point[lngColName] : point.LONGITUDE;
+    const lng:number = typeof lngValue === "string" && !isNaN(parseFloat(lngValue)) ? parseFloat(lngValue) : lngValue;
+
+    return {lat: lat, lng: lng}
+}
+
 /**
  * Returns an array containing the groups sorted with their points for OpenStreetMap
  * @param groupData - the data of the groups sent by the server
@@ -28,16 +37,17 @@ export function sortGroupDataOSM(groupData:any[], gColName:string|undefined, lat
     groupData.forEach((groupPoint:any) => {
         const foundGroup = findGroup(groupArray, gColName, groupPoint);
         if (foundGroup) {
-            const tempPoint:LatLngExpression = [latColName ? groupPoint[latColName] : groupPoint.LATITUDE, lngColName ? groupPoint[lngColName] : groupPoint.LONGITUDE];
+            const pointValues = getLatAndLngValue(groupPoint, latColName, lngColName);
+            const tempPoint:LatLngExpression = [pointValues.lat, pointValues.lng];
             /** Add point to positions array of found group */
             foundGroup.positions.push(tempPoint);
         }
         else {
+            const pointValues = getLatAndLngValue(groupPoint, latColName, lngColName);
             /** If there is no group found create a group with a groupname and an array containing all points and add it to the groupArray */
             const temp:any = {
                 GROUP: gColName ? groupPoint[gColName] : groupPoint.GROUP, 
-                positions: [
-                    [latColName ? groupPoint[latColName] : groupPoint.LATITUDE, lngColName ? groupPoint[lngColName] : groupPoint.LONGITUDE]]
+                positions: [[pointValues.lat, pointValues.lng]]
             };
             groupArray.push(temp);
         }
@@ -58,15 +68,17 @@ export function sortGroupDataGoogle(groupData:any[], gColName:string|undefined, 
     groupData.forEach((groupPoint:any) => {
         const foundGroup = findGroup(groupArray, gColName, groupPoint);
         if (foundGroup) {
-            const tempPoint = {lat: latColName ? groupPoint[latColName] : groupPoint.LATITUDE, lng: lngColName ? groupPoint[lngColName] : groupPoint.LONGITUDE};
+            const pointValues = getLatAndLngValue(groupPoint, latColName, lngColName);
+            const tempPoint = {lat: pointValues.lat, lng: pointValues.lng};
             /** Add point to positions array of found group */
             foundGroup.paths.push(tempPoint);
         }
         else {
+            const pointValues = getLatAndLngValue(groupPoint, latColName, lngColName);
             /** If there is no group found create a group with a groupname and an array containing all points and add it to the groupArray */
             const temp:any = {
                 GROUP: gColName ? groupPoint[gColName] : groupPoint.GROUP,
-                paths: [{lat: latColName ? groupPoint[latColName] : groupPoint.LATITUDE, lng: lngColName ? groupPoint[lngColName] : groupPoint.LONGITUDE}]
+                paths: [{lat: pointValues.lat, lng: pointValues.lng}]
             };
             groupArray.push(temp)
         }

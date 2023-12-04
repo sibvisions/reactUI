@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
@@ -31,9 +31,7 @@ import { addCSSDynamically } from './main/util/html-util/AddCSSDynamically';
 import { Helmet } from 'react-helmet';
 import ErrorDialog from './application-frame/error-dialog/ErrorDialog';
 import UIToast from './main/components/toast/UIToast';
-import { ConfirmDialog } from 'primereact/confirmdialog';
 import ErrorBar from './application-frame/error-bar/ErrorBar';
-import useConfirmDialogProps from './main/hooks/components-hooks/useConfirmDialogProps';
 import UploadDialog from './application-frame/upload-dialog/UploadDialog';
 
 const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unknown>) => void }> = ({ error, resetErrorBoundary }) => {
@@ -101,8 +99,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     /** The state of the tab-title */
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
-    /** If the confirm-dialog is visible and the message-properties */
-    const [messageVisible, messageProps] = useConfirmDialogProps();
+    const [messageFlag, setMessageFlag] = useState<boolean>(true);
 
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
@@ -123,12 +120,14 @@ const ReactUI: FC<ICustomContent> = (props) => {
     useEffect(() => {
         context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
         context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
-        context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle))
+        context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
+        context.subscriptions.subscribeToMessageDialogProps(() => setMessageFlag(prevState => !prevState));
 
         return () => {
             context.subscriptions.unsubscribeFromAppCssVersion();
             context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
             context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
+            context.subscriptions.unsubscribeFromMessageDialogProps();
         }
     }, [context.subscriptions]);
 
@@ -140,6 +139,13 @@ const ReactUI: FC<ICustomContent> = (props) => {
             document.body.classList.remove("is-loading");
         }
     }, [context.appReady]);
+
+    const messages = useMemo(() => {
+        if (context.transferType !== "full") {
+            return context.contentStore.openMessages.map(message => message.fn.apply(undefined, []));
+        }
+        return undefined;
+    }, [messageFlag]);
   
     /** When the app isn't ready, show the loadingscreen, if it is show normal */
     if (context.transferType === "full") {
@@ -150,15 +156,13 @@ const ReactUI: FC<ICustomContent> = (props) => {
                 </Helmet>
                 <ErrorDialog />
                 <UIToast />
-                <ConfirmDialog visible={messageVisible} {...messageProps} />
+                {messages}
                 <ErrorBar />
                 {context.appReady ?
                     <AppWrapper>
-
                         <Switch>
                             <Route path={""} render={() => <UIManagerFull />} />
                         </Switch>
-
                     </AppWrapper>
                     :
                     <LoadingScreen />
@@ -176,7 +180,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
                 <ErrorDialog />
                 <UploadDialog />
                 <UIToast />
-                <ConfirmDialog visible={messageVisible} {...messageProps} />
+                {messages}
                 <ErrorBar />
                 {context.appReady ?
                     <AppWrapper>

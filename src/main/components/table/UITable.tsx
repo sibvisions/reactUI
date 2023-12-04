@@ -953,7 +953,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const className = columnMetaData?.cellEditor?.className;
 
             const getCellIsEditable = (rowData: any) => {
-                if (metaData && columnMetaData) {
+                if (rowData && metaData && columnMetaData) {
                     if (columnMetaData?.cellEditor.className && [CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData.cellEditor.className as CELLEDITOR_CLASSNAMES) !== -1) {
                         if (!columnMetaData.readonly 
                             && ((!metaData.readOnly 
@@ -967,7 +967,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     else {
                         if (!columnMetaData.readonly 
                             && ((!metaData.readOnly 
-                            && metaData.updateEnabled
+                            && (metaData.updateEnabled || rowData.recordStatus === "I")
                             && props.editable !== false) || columnMetaData.forcedStateless) 
                             && props.enabled !== false 
                             && (rowData ? (!rowData.__recordReadOnly || rowData.__recordReadOnly?.get(colName) === 1) : true)) {
@@ -1355,7 +1355,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         if (dataBook?.data && !dataBook.isAllFetched && providerData.length < rows) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.dataBook;
-            fetchReq.fromRow = providerData.length - 1;
+            fetchReq.fromRow = providerData.length;
             fetchReq.rowCount = 100;
             showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar);
         }
