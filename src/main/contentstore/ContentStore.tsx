@@ -296,7 +296,7 @@ export default class ContentStore extends BaseContentStore {
             if (!newComponent["~destroy"]) {
                 // IF check because opening content after closeContent could return IF as parent this would mess up the children structure
                 if (newComponent.parent && !newComponent.parent.startsWith("IF")) {
-                    this.addAsChild(newComponent)
+                    this.addAsChild(newComponent);
                 }
                 else if (existingComponent) {
                     this.addAsChild(existingComponent);
