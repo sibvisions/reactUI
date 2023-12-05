@@ -179,10 +179,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     if (layoutInfo) {
                         layoutInfo.horizontalAnchors = [];
                         layoutInfo.verticalAnchors = [];
+                        layoutInfo.componentIndeces = [];
                         layoutInfo.anchorToColumnMap.clear();
                         layoutInfo.horizontalColumnToAnchorMap.clear();
                         layoutInfo.verticalColumnToAnchorMap.clear();
-                        layoutInfo.componentIndeces = [];
+                        layoutInfo.componentConstraints.clear();
                     }
                 }
 
