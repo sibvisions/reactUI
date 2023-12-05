@@ -58,7 +58,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     const isHTML = useIsHTMLText(props.text);
 
     /** Hook for MouseListener */
-    useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("label");
