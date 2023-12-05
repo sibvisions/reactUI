@@ -53,7 +53,7 @@ const UILabel: FC<IBaseComponent & IExtendableLabel & IComponentConstants> = (pr
     const isHTML = useIsHTMLText(props.text);
 
     /** Hook for MouseListener */
-    useMouseListener(props.name, labelRef.current ? labelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
