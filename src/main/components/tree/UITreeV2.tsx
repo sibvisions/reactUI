@@ -42,7 +42,7 @@ interface CustomTreeNode extends TreeNode {
     subPageKey: string|null,
 }
 
-function toPageKey(filter: SelectFilter) {
+export function toPageKey(filter: SelectFilter) {
     let pageKeyObj:any = {};
     for (let i = 0; i < filter.columnNames.length; i++) {
         pageKeyObj[filter.columnNames[i]] = filter.values[i] !== null ? filter.values[i].toString() : 'null';
@@ -64,7 +64,7 @@ function getNode(nodes: CustomTreeNode[], nodeKey: string) {
     return tempNode
 };
 
-const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
+const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
     /** Reference for the span that is wrapping the tree containing layout information */
     const treeWrapperRef = useRef<HTMLSpanElement>(null);
 
@@ -216,7 +216,6 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
     }
 
     const addPage = (dataProvider: string, pData: any[], pageKey: string|null) => {
-        console.log(dataProvider, pData, pageKey)
         if (!pData) {
             return;
         }
@@ -255,7 +254,7 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
             }
             for (const child of childrenToUnsub) {
                 const nodesReceivingPageArray = nodesReceivingPage.current.get(childDataBook)?.get(child.subPageKey ?? "");
-                if (nodesReceivingPageArray) {
+                if (nodesReceivingPageArray && nodesReceivingPageArray.includes(child.key as string)) {
                     nodesReceivingPageArray.splice(nodesReceivingPageArray.indexOf(child.key as string), 1);
                 }
             }
@@ -336,6 +335,9 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
                             }
                         }
                     }
+                    else {
+                        childFilter = null;
+                    }
                 }
 
                 const isPotentialParent = childDataBook !== null;
@@ -369,8 +371,6 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
                     subPageKey: childFilter ? toPageKey(childFilter) : null
                 };
 
-                console.log('I AM NODE', nodeKey, newNode.subPageKey)
-
                 const parentKey: string = parentNode ? parentNode.key as string : 'null';
 
                 if(!newNodesPerParent.has(parentKey)) {
@@ -380,7 +380,7 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
                     newNodesPerParent.get(parentKey)!.push(newNode);
                 }
 
-                if (props.detectEndNode !== false && !newNode.children?.length && isPotentialParent && (isLevelZeroData || Object.keys(expandedKeysRef.current).includes(parentKey))) {
+                if (props.detectEndNode !== false && childFilter !== null && !newNode.children?.length && isPotentialParent && (isLevelZeroData || Object.keys(expandedKeysRef.current).includes(parentKey))) {
                     const fetchReq = createFetchRequest();
                     fetchReq.dataProvider = childDataBook as string;
                     fetchReq.fromRow = 0;
@@ -393,8 +393,6 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
             }
             while (parentIndex < parentNodes.length);
         });
-
-        console.log(isLevelZeroData)
 
         if (isLevelZeroData) {
             setNodes(newNodesPerParent.entries().next().value[1]);
@@ -491,7 +489,7 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
             let path = new TreePath(JSON.parse(event.value));
             const selectedNode = getNode(nodesRef.current, event.value);
 
-            selectedRowsRef.current.set(selectedNode.dataProvider, { dataRow: selectedNode.data, index: selectedNode.rowIndex, treePath: selectedNode.treePath });
+            selectedRowsRef.current.set(selectedNode.dataProvider, { dataRow: selectedNode.data, index: selectedNode.rowIndex });
             
             if (props.onRowSelect) {
                 if (selectedNode) {
@@ -506,8 +504,7 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
             //filters are build path upwards
             while (path.length()) {
                 const node = getNode(nodesRef.current, path.toString());
-
-                selectedRowsRef.current.set(node.dataProvider, { dataRow: node.data, index: node.rowIndex, treePath: node.treePath });
+                selectedRowsRef.current.set(node.dataProvider, { dataRow: node.data, index: node.rowIndex });
                 selectedFilters.push(node.rowFilter);
                 path = path.getParentPath();
             }
@@ -568,23 +565,6 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
         }
     }
 
-    // useEffect(() => {
-    //     if (!firstSelected.current) {
-    //         if (props.dataBooks && props.dataBooks.length) {
-    //             const selected = selectedRows.get(props.dataBooks[0]);
-    //             if (selected) {
-    //                 const treePath: TreePath = getTreePathFromSelectedRows();
-    //                 setSelectedKey(treePath.toString());
-    //                 setExpandedKeys(prevState => {
-    //                     const newState = ({...prevState, ...treePath.toArray().slice(0, -1).reduce((a, n, i, arr) => ({...a, [`[${arr.slice(0, i + 1).join(',')}]`]: true}) , {})});
-    //                     return newState;
-    //                 });
-    //                 firstSelected.current = true;
-    //             }
-    //         }
-    //     }
-    // }, [selectedRows]);
-
     const getTreePathFromSelectedRows = () => {
         const treePathArray:number[] = [];
         props.dataBooks.forEach(databook => {
@@ -635,4 +615,4 @@ const UITreeNew: FC<ITree & IExtendableTree> = (baseProps) => {
         </span>
     )
 }
-export default UITreeNew
+export default UITreeV2

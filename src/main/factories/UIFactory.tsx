@@ -58,7 +58,7 @@ import UIScrollPanel from "../components/panels/scrollPanel/UIScrollPanel";
 import UITabsetPanel from "../components/panels/tabsetpanel/UITabsetPanel";
 import DialogResponse from "../response/ui/DialogResponse";
 import UIMessage from "../components/message/UIMessage";
-import UITreeNew from "../components/tree/UITreeNew";
+import UITreeV2 from "../components/tree/UITreeV2";
 
 
 /**
@@ -154,7 +154,7 @@ const baseComponentMap = new Map<string, React.ComponentType<any>>()
     : <UIMapOSM {...props} />
 )
 //.set(COMPONENT_CLASSNAMES.TREE, props => <UITree {...props} />)
-.set(COMPONENT_CLASSNAMES.TREE, props => <UITreeNew {...props} />)
+.set(COMPONENT_CLASSNAMES.TREE, props => <UITreeV2 {...props} />)
 .set(COMPONENT_CLASSNAMES.GAUGE, props => <UIGauge {...props} />)
 //.set(COMPONENT_CLASSNAMES.BROWSER, props => <UIBrowser {...props} />)
 .set(COMPONENT_CLASSNAMES.TOOLBAR, props => <UIPanel {...props} />)

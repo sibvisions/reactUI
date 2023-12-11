@@ -45,6 +45,7 @@ import { CellFormatting } from "../components/table/CellEditor";
 import { getMetaData, getPrimaryKeys } from "../util/data-util/GetMetaData";
 import GenericResponse from "../response/ui/GenericResponse";
 import { TopBarContextType, showTopBar } from "../components/topbar/TopBar";
+import { toPageKey } from "../components/tree/UITreeV2";
 
 export enum RequestQueueMode {
     QUEUE = "queue",
@@ -800,6 +801,7 @@ export default abstract class BaseServer {
      */
      processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const screenName = this.getScreenName(changedProvider.dataProvider);
+        const dataBook = this.contentStore.getDataBook(screenName, changedProvider.dataProvider);
 
         // If the crud operations changed, update the metadata
         if (changedProvider.insertEnabled !== undefined 
@@ -822,7 +824,6 @@ export default abstract class BaseServer {
         }
 
         if (changedProvider.recordFormat) {
-            const dataBook = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)
             if (dataBook?.metaData) {
                 const columnNames = dataBook?.metaData.columns.map(col => col.name);
                 const formattedRecords: Record<string, any>[] = [];
@@ -863,7 +864,7 @@ export default abstract class BaseServer {
         }
 
         if (changedProvider.recordReadOnly) {
-            const dataBook = this.contentStore.getDataBook(screenName, changedProvider.dataProvider);
+            
             if (dataBook?.metaData) {
                 const columnNames = dataBook?.metaData.columns.map(col => col.name);
                 const readOnlyRecords: Record<string, any>[] = [];
@@ -899,7 +900,16 @@ export default abstract class BaseServer {
             this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
             this.subManager.notifyDataChange(screenName, changedProvider.dataProvider);
             this.subManager.notifyScreenDataChange(screenName);
-            this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, [rowToDelete], "")
+            if (dataBook?.metaData && dataBook.metaData.masterReference) {
+                const pageKey = toPageKey({ 
+                    columnNames: dataBook.metaData.masterReference.columnNames,
+                    values: dataBook.metaData.masterReference.columnNames.map((colName) => rowToDelete[colName])
+                });
+                const data = dataBook.data?.get(pageKey);
+                this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, data, pageKey)
+            }
+
+            
             if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(changedProvider.dataProvider.split('/')[1])) {
                 this.subManager.notifyDataChange(changedProvider.dataProvider.split('/')[1], changedProvider.dataProvider);
                 this.subManager.notifyScreenDataChange(changedProvider.dataProvider.split('/')[1]);
@@ -925,7 +935,6 @@ export default abstract class BaseServer {
                 }
 
                 if (this.contentStore.getDataBook(screenName, changedProvider.dataProvider)) {
-                    const dataBook = this.contentStore.getDataBook(screenName, changedProvider.dataProvider);
                     dataBook!.isAllFetched = undefined;
                 }
 

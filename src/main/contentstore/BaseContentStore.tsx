@@ -1033,7 +1033,15 @@ export default abstract class BaseContentStore {
                     }
                 }
                 else {
-                    fillDataMap(existingProvider.data, request);
+                    if (!request?.filter) {
+                        existingProvider.data.set("current", newDataSet);
+                        existingData = existingProvider.data.get("current");
+                        existingProvider.data.set(getPageKey(), existingData);
+                    }
+                    else {
+                        existingProvider.data.set(getPageKey(), newDataSet);
+                        existingData = existingProvider.data.get(getPageKey());
+                    }
                 }
 
                 if (isAllFetched && existingData) {
@@ -1046,26 +1054,21 @@ export default abstract class BaseContentStore {
                 }
 
                 if (!request?.filter) {
-                    if (isAllFetched || !existingProvider.data.has(getPageKey())) {
+                    if (isAllFetched || !existingProvider.data.has(getPageKey()) || existingProvider.data.get(getPageKey()) === undefined) {
                         existingProvider.data.set(getPageKey(), existingData);
                     }
                     else {
                         const pageData = existingProvider.data.get(getPageKey());
-                        if (!pageData) {
-                            existingProvider.data.set(getPageKey(), newDataSet);
+                        if (pageData.length <= from) {
+                            pageData.push(...newDataSet);
                         }
                         else {
-                            if (pageData.length <= from) {
-                                pageData.push(...newDataSet);
-                            } 
-                            else {
-                                for(let i = from; i <= to; i++) 
-                                {
-                                    pageData[i] = existingData[i];
-                                }
+                            for (let i = from; i <= to; i++) {
+                                pageData[i] = existingData[i];
                             }
-                            existingProvider.data.set(getPageKey(), pageData);
                         }
+                        
+                        existingProvider.data.set(getPageKey(), pageData);
                     }
                 }
             } 
@@ -1098,6 +1101,9 @@ export default abstract class BaseContentStore {
             } 
         }
 
+        if (dataProvider === "FilterMaster/SelJoiWitRoo-WM/directories#3") {
+            console.log(this.dataBooks.get(screenName)?.get(dataProvider)?.data?.get('current'))
+        }
         this.subManager.notifyDataChange(screenName, dataProvider);
         this.subManager.notifyScreenDataChange(screenName);
         this.subManager.notifyTreeDataChanged(dataProvider, this.dataBooks.get(screenName)?.get(dataProvider)?.data?.get(getPageKey()), getPageKey());
