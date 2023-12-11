@@ -15,6 +15,7 @@
 
 import BaseContentStore from "../../contentstore/BaseContentStore";
 import { FullOrColumn } from "../../hooks/data-hooks/useMetaData";
+import MetaDataResponse from "../../response/data/MetaDataResponse";
 
 /**
  * Returns the metadata of the given dataprovider
@@ -37,4 +38,18 @@ export function getMetaData<T extends string|undefined, U extends "numeric"|unde
         }
     }
     return undefined
+}
+
+export function getPrimaryKeys(metaData: MetaDataResponse|undefined): string[] {
+    if (metaData) {
+        if (metaData.primaryKeyColumns) {
+            return metaData.primaryKeyColumns;
+        }
+        else {
+            return metaData.columns.map(col => col.name);
+        }
+    }
+    else {
+        return [];
+    }
 }

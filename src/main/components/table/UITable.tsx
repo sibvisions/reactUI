@@ -51,6 +51,7 @@ import { ICellEditorLinked } from "../editors/linked/UIEditorLinked";
 import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
 import CellRenderer from "./CellRenderer/CellRenderer";
+import { getPrimaryKeys } from "../../util/data-util/GetMetaData";
 
 
 /** Interface for Table */
@@ -278,19 +279,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
     const sortDefinitionCache = useRef<SortDefinition[]>();
 
     /** The primary keys of a table */
-    const primaryKeys:string[] = useMemo(() => {
-        if (metaData) {
-            if (metaData.primaryKeyColumns) {
-                return metaData.primaryKeyColumns;
-            }
-            else {
-                return metaData.columns.map(col => col.name);
-            }
-        }
-        else {
-            return []
-        }
-    }, [metaData]);
+    const primaryKeys:string[] = useMemo(() => getPrimaryKeys(metaData), [metaData]);
 
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});

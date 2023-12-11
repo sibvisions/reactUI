@@ -42,7 +42,7 @@ import { setDateLocale } from "../util/other-util/GetDateLocale";
 import BaseRequest from "../request/BaseRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
 import { CellFormatting } from "../components/table/CellEditor";
-import { getMetaData } from "../util/data-util/GetMetaData";
+import { getMetaData, getPrimaryKeys } from "../util/data-util/GetMetaData";
 import GenericResponse from "../response/ui/GenericResponse";
 import { TopBarContextType, showTopBar } from "../components/topbar/TopBar";
 
@@ -299,7 +299,7 @@ export default abstract class BaseServer {
                         const data = dataBook.data?.get("current");
                         const metaData = dataBook.metaData;
                         if (data && metaData && request.rowNumber >= 0) {
-                            const primaryKeys = metaData.primaryKeyColumns ? metaData.primaryKeyColumns : metaData.columns.map(col => col.name);
+                            const primaryKeys = getPrimaryKeys(metaData);
                             request.filter = {
                                 columnNames: primaryKeys,
                                 values: primaryKeys.map(pk => data[request.rowNumber][pk])
@@ -774,7 +774,8 @@ export default abstract class BaseServer {
             fetchData.dataProvider, 
             builtData, 
             fetchData.to, 
-            fetchData.from, 
+            fetchData.from,
+            fetchData.isAllFetched,
             fetchData.masterRow,
             fetchData.clear,
             request
@@ -898,7 +899,7 @@ export default abstract class BaseServer {
             this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
             this.subManager.notifyDataChange(screenName, changedProvider.dataProvider);
             this.subManager.notifyScreenDataChange(screenName);
-            this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, [rowToDelete], "", true)
+            this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, [rowToDelete], "")
             if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(changedProvider.dataProvider.split('/')[1])) {
                 this.subManager.notifyDataChange(changedProvider.dataProvider.split('/')[1], changedProvider.dataProvider);
                 this.subManager.notifyScreenDataChange(changedProvider.dataProvider.split('/')[1]);

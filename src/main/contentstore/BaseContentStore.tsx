@@ -953,13 +953,13 @@ export default abstract class BaseContentStore {
         newDataSet: Array<any>, 
         to:number, 
         from:number,
+        isAllFetched?: boolean,
         masterRow?:any[],
         clear?:boolean,
         request?:FetchRequest
     ) {
         const compPanel = this.getComponentByName(screenName) as IPanel;
         const metaData = this.dataBooks.get(screenName)?.get(dataProvider)?.metaData;
-        let notifyTreeData:any = undefined;
 
         const getPageKey = () => {
             let pageKey:string = "";
@@ -974,9 +974,9 @@ export default abstract class BaseContentStore {
                     else {
                         let pageKeyObj:any = {};
                         for (let i = 0; i < metaData.masterReference.columnNames.length; i++) {
-                            if (masterRow[i] !== null && masterRow[i] !== undefined) {
-                                pageKeyObj[metaData.masterReference.columnNames[i]] = masterRow[i].toString();
-                            }
+                            //if (masterRow[i] !== null && masterRow[i] !== undefined) {
+                                pageKeyObj[metaData.masterReference.columnNames[i]] = masterRow[i] !== null ? masterRow[i].toString() : 'null';
+                            //}
                         }
                         pageKey = JSON.stringify(pageKeyObj);
                         
@@ -1011,7 +1011,7 @@ export default abstract class BaseContentStore {
                 let existingData;
                 if (!request?.filter) {
                     existingData = existingProvider.data.get("current");
-                    existingProvider.data.set(getPageKey(), existingData);
+                    //existingProvider.data.set(getPageKey(), existingData);
                 }
                 else {
                     existingData = existingProvider.data.get(getPageKey());
@@ -1031,11 +1031,42 @@ export default abstract class BaseContentStore {
                             newDataSetIndex++;
                         }
                     }
-
-                    notifyTreeData = existingData;
                 }
                 else {
                     fillDataMap(existingProvider.data, request);
+                }
+
+                if (isAllFetched && existingData) {
+                    if (!newDataSet.length) {
+                        (existingData as any[]).splice(0);
+                    }
+                    else {
+                        (existingData as any[]).splice(to + 1);
+                    }
+                }
+
+                if (!request?.filter) {
+                    if (isAllFetched || !existingProvider.data.has(getPageKey())) {
+                        existingProvider.data.set(getPageKey(), existingData);
+                    }
+                    else {
+                        const pageData = existingProvider.data.get(getPageKey());
+                        if (!pageData) {
+                            existingProvider.data.set(getPageKey(), newDataSet);
+                        }
+                        else {
+                            if (pageData.length <= from) {
+                                pageData.push(...newDataSet);
+                            } 
+                            else {
+                                for(let i = from; i <= to; i++) 
+                                {
+                                    pageData[i] = existingData[i];
+                                }
+                            }
+                            existingProvider.data.set(getPageKey(), pageData);
+                        }
+                    }
                 }
             } 
             else {
@@ -1069,9 +1100,7 @@ export default abstract class BaseContentStore {
 
         this.subManager.notifyDataChange(screenName, dataProvider);
         this.subManager.notifyScreenDataChange(screenName);
-        if (notifyTreeData) {
-            this.subManager.notifyTreeDataChanged(dataProvider, notifyTreeData, getPageKey(), false);
-        }
+        this.subManager.notifyTreeDataChanged(dataProvider, this.dataBooks.get(screenName)?.get(dataProvider)?.data?.get(getPageKey()), getPageKey());
         
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.notifyDataChange(dataProvider.split('/')[1], dataProvider);
@@ -1335,7 +1364,9 @@ export default abstract class BaseContentStore {
             }
             this.setDataBook(screenName, dataProvider, sr)
         }
+        //console.log(this.dataBooks.get(screenName)?.get("JVxMobileDemo/Tre-PN/firstLevel#+"))
         this.subManager.emitRowSelect(screenName, dataProvider);
+        this.subManager.notifyTreeSelectionChanged(dataProvider, this.dataBooks.get(screenName)?.get(dataProvider)?.selectedRow)
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {
             this.subManager.emitRowSelect(dataProvider.split('/')[1], dataProvider);
         }

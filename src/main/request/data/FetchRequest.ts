@@ -14,12 +14,13 @@
  */
 
 import DataProviderRequest from "./DataProviderRequest"
+import { SelectFilter } from "./SelectRowRequest"
 
 
 /** Interface for FetchRequest */
 interface FetchRequest extends DataProviderRequest {
     columnNames?: string[],
-    filter?: {columnNames?:any[], values?: any[]},
+    filter?: SelectFilter,
     fromRow: number | undefined,
     rowCount: number | undefined,
     includeMetaData?: boolean,
