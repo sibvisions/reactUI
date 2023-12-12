@@ -198,12 +198,6 @@ export class SubscriptionManager {
 
     uploadDialogSubscriber: Function = () => {};
 
-    /** 
-     * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
-     * call the state updates to reduce the amount of state updates/rerenders
-     */
-    jobQueue:Map<string, any> = new Map();
-
     /**
      * @constructor constructs submanager instance
      * @param store - contentstore instance
@@ -984,7 +978,7 @@ export class SubscriptionManager {
     }
 
     /**
-     * When a new row is selected add the row selection to the jobQueue to avoid multiple state updates
+     * When a new row is selected add the row selection
      * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      */
@@ -993,13 +987,10 @@ export class SubscriptionManager {
         const screenRowSubs = this.screenRowSelectionSubscriber.get(screenName);
         const selectedRow = this.contentStore.getDataBook(screenName, dataProvider)?.selectedRow;
         if(rowSubscriber) {
-            //this.jobQueue.set("rowSelect_" + dataProvider + "_" + screenName, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
-            /// Removed JobQueue because upload didn't work anymore, JobQueue is possibly not needed anymore or when problems with multiple rowSelections occur we need it back
             rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]));
         }
             
         if (screenRowSubs) {
-            //this.jobQueue.set("rowSelectAll", () => screenRowSubs.apply(undefined, []));
             screenRowSubs.apply(undefined, []);
         }
     }

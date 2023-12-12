@@ -792,16 +792,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => {});
                     }
                 });
-                if (preserveOnReload) {
-                    for (let [, value] of contextState.server.subManager.jobQueue.entries()) {
-                        value();
-                    }
-                    contextState.server.subManager.jobQueue.clear();
-                }
-                else {
+                if (!preserveOnReload) {
                     contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
-                }
-                
+                }                
                 sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload);
             } 
             else {

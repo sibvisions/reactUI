@@ -190,13 +190,10 @@ export default abstract class BaseServer {
     abstract endpointMap:Map<string, string>;
 
     /**
-     * Sends a request to the server and handles its response, if there are jobs in the
-     * SubscriptionManagers JobQueue, call them after the response handling is complete.
+     * Sends a request to the server and handles its response.
      * Handles requests in a queue system
      * @param request - the request to send
      * @param endpoint - the endpoint to send the request to
-     * @param fn - a function called after the request is completed
-     * @param job - if false or not set job queue is cleared
      * @param waitForOpenRequests - if true the request result waits until all currently open immediate requests are finished as well
      * @param queueMode - controls how the request is dispatched
      *  - RequestQueueMode.QUEUE: default, requests are sent one after another
@@ -205,8 +202,6 @@ export default abstract class BaseServer {
      sendRequest(
         request: any, 
         endpoint: string, 
-        fn?: Function[], 
-        job?: boolean, 
         waitForOpenRequests?: boolean,
         queueMode: RequestQueueMode = RequestQueueMode.QUEUE,
         handleResponse: boolean = true
@@ -313,7 +308,7 @@ export default abstract class BaseServer {
                 this.timeoutRequest(
                     fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
                     this.timeoutMs, 
-                    () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse), finalEndpoint
+                    () => this.sendRequest(request, endpoint, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse), finalEndpoint
                 )
                     .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                     .then(result => {
@@ -322,22 +317,17 @@ export default abstract class BaseServer {
                                 return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
                             }
                         }
+                        result.forEach((result1:any) => {
+                            if (result1.name === "dal.fetch") {
+                                result1['timestamp'] = Date.now();
+                            }
+                        })
                         return result;
                     }, (err) => Promise.reject(err))
                     .then((results) => handleResponse ? this.responseHandler.bind(this)(results, request) : results, (err) => Promise.reject(err))
                     .then(results => {
                         if (endpoint === REQUEST_KEYWORDS.LOGIN) {
                             this.subManager.emitLoginActive(false);
-                        }
-                        if (fn) {
-                            fn.forEach(func => func.apply(undefined, []))
-                        }
-
-                        if (!job) {
-                            for (let [, value] of this.subManager.jobQueue.entries()) {
-                                value();
-                            }
-                            this.subManager.jobQueue.clear()
                         }
                         return results;
                     })
@@ -353,22 +343,22 @@ export default abstract class BaseServer {
                             }
                             else if (error === "no valid json") {
                                 if (endpoint === REQUEST_KEYWORDS.STARTUP) {
-                                    this.subManager.emitErrorBarProperties(false, false, false, 7, translation.get("Startup failed!"), translation.get("Check if the server is available"), () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
+                                    this.subManager.emitErrorBarProperties(false, false, false, 7, translation.get("Startup failed!"), translation.get("Check if the server is available"), () => this.sendRequest(request, endpoint, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
                                 }
                                 else {
-                                    this.subManager.emitErrorBarProperties(false, false, false, 5, translation.get("Error occured!"), translation.get("Check the console for more info"), () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                                    this.subManager.emitErrorBarProperties(false, false, false, 5, translation.get("Error occured!"), translation.get("Check the console for more info"), () => this.sendRequest(request, endpoint, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                                 }
                             }
                             else {
-                                this.subManager.emitErrorBarProperties(false, false, false, 5,  splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                                this.subManager.emitErrorBarProperties(false, false, false, 5,  splitErr[0], splitErr[1], () => this.sendRequest(request, endpoint, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
                         }
                         else {
                             if (endpoint === REQUEST_KEYWORDS.STARTUP) {
-                                this.subManager.emitErrorBarProperties(false, false, false, 7, translation.get("Startup failed!"), translation.get("Check if the server is available"), () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
+                                this.subManager.emitErrorBarProperties(false, false, false, 7, translation.get("Startup failed!"), translation.get("Check if the server is available"), () => this.sendRequest(request, endpoint, waitForOpenRequests, RequestQueueMode.IMMEDIATE))
                             }
                             else {
-                                this.subManager.emitErrorBarProperties(false, false, false, 5, translation.get("Error occured!"), translation.get("Check the console for more info"), () => this.sendRequest(request, endpoint, fn, job, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
+                                this.subManager.emitErrorBarProperties(false, false, false, 5, translation.get("Error occured!"), translation.get("Check the console for more info"), () => this.sendRequest(request, endpoint, waitForOpenRequests, RequestQueueMode.IMMEDIATE));
                             }
                         }
                         this.subManager.emitErrorBarVisible(true);
@@ -390,8 +380,6 @@ export default abstract class BaseServer {
                     reqFunc: () => this.sendRequest(
                         request,
                         endpoint,
-                        fn,
-                        job,
                         waitForOpenRequests,
                         RequestQueueMode.IMMEDIATE,
                         handleResponse
@@ -946,7 +934,7 @@ export default abstract class BaseServer {
                 if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
                     fetchReq.includeMetaData = true;
                 }
-                showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, [() => this.subManager.notifyTreeChanged(changedProvider.dataProvider)], true)
+                showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
                 .then(() => {
                     this.requestQueue = this.requestQueue.filter(req => !((req.request as DataProviderRequest).dataProvider === changedProvider.dataProvider) || !(req.endpoint === REQUEST_KEYWORDS.SELECT_ROW));
                 }), this.topbar as TopBarContextType) ;

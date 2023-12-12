@@ -676,7 +676,7 @@ const UIChart: FC<IChart> = (baseProps) => {
                                 values: Object.values(_.pick(foundData, metaData?.primaryKeyColumns || []))
                             }
                             selectReq.selectedColumn = label
-                            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, undefined, undefined, true), context.server.topbar);
+                            showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, true), context.server.topbar);
                         }
 
                     }

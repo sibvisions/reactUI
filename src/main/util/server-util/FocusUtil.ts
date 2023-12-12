@@ -38,7 +38,7 @@ export function onFocusGained(name: string, server: Server|ServerFull) {
 export function onFocusLost(componentId: string, server: Server|ServerFull) {
     const focusLostReq = createFocusLostRequest();
     focusLostReq.componentId = componentId;
-    return server.sendRequest(focusLostReq, REQUEST_KEYWORDS.FOCUS_LOST, undefined, undefined, true);
+    return server.sendRequest(focusLostReq, REQUEST_KEYWORDS.FOCUS_LOST, true);
 }
 
 export function handleFocusGained(name: string, className: string, eventFocusGained: boolean|undefined, focusable: boolean|undefined, event:any, focusId:string, context: AppContextType, isCellEditor?: boolean) {
