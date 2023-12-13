@@ -46,7 +46,7 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<BaseComponent & IExtendableLabel>(baseProps);
 
     /** Extracting onLoadCallback and id from baseProps */
-    const {onLoadCallback, id} = baseProps;
+    const {onLoadCallback, id} = props;
 
     /** Alignments for label */
     const lblAlignments = getAlignments(props);
@@ -63,13 +63,22 @@ const UILabel: FC<BaseComponent & IExtendableLabel> = (baseProps) => {
     /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates("label");
 
-    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
+    const initialReport = useRef<boolean>(true);
+
     useEffect(() => {
-        if (labelRef.current && onLoadCallback) {
+        if (labelRef.current && onLoadCallback && !initialReport.current) {
             const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
             debounced()
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, layoutStyle?.width, layoutStyle?.height]);
+    }, [layoutStyle?.width, layoutStyle?.height])
+
+    /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
+    useEffect(() => {
+        if (labelRef.current && onLoadCallback) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
+            initialReport.current = false;
+        }
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text]);
 
     /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(

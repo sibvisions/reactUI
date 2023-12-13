@@ -286,7 +286,7 @@ export default class ContentStore extends BaseContentStore {
             }
 
             if (!newComponent["~destroy"]) {
-                if (existingComponent) {
+                if (existingComponent && !this.isRemovedComponent(existingComponent.id)) {
                     this.addAsChild(existingComponent);
                 }
                 else if (newComponent.parent && !newComponent.parent.startsWith("IF")) {
