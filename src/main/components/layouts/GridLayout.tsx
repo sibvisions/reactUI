@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {appContext, isDesignerVisible} from "../../contexts/AppProvider";
 import {LayoutContext} from "../../LayoutContext";
 import Dimension from "../../util/types/Dimension";
@@ -59,7 +59,9 @@ const GridLayout: FC<ILayout> = (baseProps) => {
     /** GridSize of the layout */
     const gridSize = useMemo(() => new GridSize(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(6, 8)), [layout]);
 
-    const children = useMemo(() => context.contentStore.getChildren(id, className), [context.contentStore.flatContent.size]);
+    const children = context.contentStore.getChildren(id, className);
+
+    const prevSizeMap = useRef<Map<string, CSSProperties>>(new Map<string, CSSProperties>());
 
     const gridLayoutAssistant = useMemo(() => {
         if (context.designer && isDesignerVisible(context.designer)) {
@@ -240,8 +242,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
             children.forEach(component => {
                 if (component.constraints && component.visible !== false) {
                     const constraints = new CellConstraints(component.constraints);
-                    const x = getPosition(xPosition, constraints.gridX, columnSize, gaps.horizontalGap);
-                    const y = getPosition(yPosition, constraints.gridY, rowSize, gaps.verticalGap);
+                    const x = getPosition(xPosition, constraints.gridX, columnSize, gaps.horizontalGap) + constraints.margins.marginLeft;
+                    const y = getPosition(yPosition, constraints.gridY, rowSize, gaps.verticalGap) + constraints.margins.marginTop;
                     const width = getPosition(xPosition, constraints.gridX + constraints.gridWidth, columnSize, gaps.horizontalGap) - x - gaps.horizontalGap - constraints.margins.marginRight;
                     const height = getPosition(yPosition, constraints.gridY + constraints.gridHeight, rowSize, gaps.verticalGap) - y - gaps.verticalGap - constraints.margins.marginBottom;
                     sizeMap.set(component.id, {
@@ -267,10 +269,11 @@ const GridLayout: FC<ILayout> = (baseProps) => {
             }
             /** Set the state of the calculated Style */
             setCalculatedStyle({height: size.height, width: size.width, position: 'relative'});
+            prevSizeMap.current = sizeMap;
+            return sizeMap
         }
-
-        return sizeMap
-    },[layout, compSizes, reportSize, id, style, context.contentStore, components, margins, gaps, gridSize]);
+        return prevSizeMap.current;
+    },[layout, compSizes, reportSize, id, style, context.contentStore]);
 
     useEffect(() => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.gridLayouts.has(name)) {

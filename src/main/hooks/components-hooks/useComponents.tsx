@@ -44,22 +44,24 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
     /** A reference map of which components have already been added */
     const componentsChildren = useRef<Map<string, Array<string>>>(new Map<string, Array<string>>());
 
+    const componentsChanged = useRef<boolean>(false);
+
     
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
-        let componentsChanged = false
         const children = context.contentStore.getChildren(id, className);
 
         // Deletes the components out of tempSizes if they are no longer visible/available
         tempSizes.current.forEach((val, key) => {
             if (!children.has(key)) {
                 tempSizes.current.delete(key)
-                componentsChanged = true;
+                componentsChanged.current = true;
             }
         });
 
         if (componentsChanged) {
             setPreferredSizes(new Map(tempSizes.current));
+            componentsChanged.current = false;
         }
         
         const reactChildrenArray: Array<ReactElement> = [];
@@ -124,19 +126,41 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
 
         /** Callback which gets called by each component in sendOnLoadCallBack */
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
-            const children = context.contentStore.getChildren(id, className);
-            let componentsChanged = false
             tempSizes.current.forEach((val, key) => {
                 if (!children.has(key)) {
                     tempSizes.current.delete(key);
-                    componentsChanged = true;
+                    componentsChanged.current = true;
                 }
             });
             const preferredComp = tempSizes.current.get(compId);
+            const tempSizeBefore = tempSizes.current.size;
             tempSizes.current.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
+            const tempSizeAfter = tempSizes.current.size;
+
+            /**
+             * Allow changing the preferredSizes of panel if all components have reported their size (tempSizes.current.size === children.size) AND
+             * either the size of the component changed OR the children of the child changed OR there have been children removed OR the tempSizes.size 
+             * got updated from children.size - 1 to children.size
+             */
+            const allowPreferredSizeChange = () => {
+                if (context.contentStore.getComponentById(compId)) {
+                    if (tempSizes.current.size === children.size && 
+                        (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) 
+                        || childrenChanged(compId) 
+                        || componentsChanged.current 
+                        || (tempSizeBefore === children.size - 1 && tempSizeAfter === children.size)
+                        )
+                    ) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
-            if(context.contentStore.getComponentById(compId) && (tempSizes.current.size === children.size || id.includes('TP')) && (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId) || componentsChanged)) {
+            if(allowPreferredSizeChange()) {
                 setPreferredSizes(new Map(tempSizes.current));
+                componentsChanged.current = false;
             }
                 
             //Set Preferred Sizes of changed Components
@@ -157,6 +181,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
         /** If there are no children set an empty map */
         if(children.size === 0 && !preferredSizes) {
             setPreferredSizes(new Map<string, ComponentSizes>());
+            componentsChanged.current = false;
         }
 
         /** Create the reactchildren */

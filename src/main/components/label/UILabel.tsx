@@ -18,7 +18,6 @@ import { Tooltip } from 'primereact/tooltip';
 import IBaseComponent from "../../util/types/IBaseComponent";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
 import { getAlignments, translateTextAlign } from "../comp-props/GetAlignments";
-import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 
@@ -26,11 +25,8 @@ import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableLabel } from "../../extend-components/label/ExtendLabel";
 import useIsHTMLText from "../../hooks/components-hooks/useIsHTMLText";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import * as _ from "underscore"
-import { IPanel } from "../panels/panel/UIPanel";
 import { IComponentConstants } from "../BaseComponent";
-import { isDesignerVisible } from "../../contexts/AppProvider";
 
 /**
  * Displays a simple label
@@ -52,21 +48,22 @@ const UILabel: FC<IBaseComponent & IExtendableLabel & IComponentConstants> = (pr
     /** True, if the label contains html */
     const isHTML = useIsHTMLText(props.text);
 
-    /** Hook for MouseListener */
-    useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    const initialReport = useRef<boolean>(true);
+
+    useEffect(() => {
+        if (labelRef.current && onLoadCallback && !initialReport.current) {
+            const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
+            debounced()
+        }
+    }, [props.layoutStyle?.width, props.layoutStyle?.height])
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if (labelRef.current && onLoadCallback) {
-            if (isDesignerVisible(props.context.designer) && props.context.designer?.isDragging && props.name.startsWith("new_")) {
-                sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback)
-            }
-            else {
-                const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
-                debounced()
-            }
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback);
+            initialReport.current = false;
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, props.layoutStyle?.width, props.layoutStyle?.height]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text]);
 
     // If the lib user extends the label with onChange, call it when the label-text changes.
     useEffect(() => {

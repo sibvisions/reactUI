@@ -14,7 +14,7 @@
  */
 
 import AppSettings from "./AppSettings";
-import BaseContentStore from "./contentstore/BaseContentStore";
+import BaseContentStore, { ISelectedRow } from "./contentstore/BaseContentStore";
 import ContentStore from "./contentstore/ContentStore"
 import ContentStoreFull from "./contentstore/ContentStoreFull";
 import { DeviceStatus } from "./response/event/DeviceStatusResponse";
@@ -116,6 +116,8 @@ export class SubscriptionManager {
 
     treeDataChangedSubscriber = new Map<string, Function>();
 
+    treeSelectionChangedSubscriber = new Map<string, Function>();
+
     /** An array of functions to update the menuitem states of its subscribers */
     menuSubscriber = new Array<Function>();
 
@@ -195,12 +197,6 @@ export class SubscriptionManager {
     menuButtonItemsSubscriber:Map<string, Function> = new Map<string, Function>();
 
     uploadDialogSubscriber: Function = () => {};
-
-    /** 
-     * A Map with functions to update the state of components, is used for when you want to wait for the responses to be handled and then
-     * call the state updates to reduce the amount of state updates/rerenders
-     */
-    jobQueue:Map<string, any> = new Map();
 
     /**
      * @constructor constructs submanager instance
@@ -395,8 +391,12 @@ export class SubscriptionManager {
             this.treeSubscriber.set(masterDataBook, new Array<Function>(fn));
     }
 
-    subscribeToTreeDataChange(databookString:string, fn:Function) {
-        this.treeDataChangedSubscriber.set(databookString, fn);
+    subscribeToTreeDataChange(id:string, fn:Function) {
+        this.treeDataChangedSubscriber.set(id, fn);
+    }
+
+    subscribeToTreeSelectionChange(id:string, fn:Function) {
+        this.treeSelectionChangedSubscriber.set(id, fn);
     }
 
     /**
@@ -700,8 +700,12 @@ export class SubscriptionManager {
             subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
     }
 
-    unsubscribeFromTreeDataChange(dataBookString:string) {
-        this.treeDataChangedSubscriber.delete(dataBookString)
+    unsubscribeFromTreeDataChange(id:string) {
+        this.treeDataChangedSubscriber.delete(id);
+    }
+
+    unsubscribeFromTreeSelectionChange(id:string) {
+        this.treeSelectionChangedSubscriber.delete(id);
     }
 
     /**
@@ -934,11 +938,20 @@ export class SubscriptionManager {
         this.treeSubscriber.get(masterDataBook)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
-    notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string, pDelete: boolean) {
+    notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string) {
         this.treeDataChangedSubscriber.forEach((v, k) => {
             const splitDataBooks = k.split("_");
             if (splitDataBooks.includes(dataBook)) {
-                v(dataBook, data, pageKeyHelper, pDelete);
+                v(dataBook, data, pageKeyHelper);
+            }
+        });
+    }
+
+    notifyTreeSelectionChanged(dataBook:string, selectedRow: ISelectedRow|undefined) {
+        this.treeSelectionChangedSubscriber.forEach((v, k) => {
+            const splitDataBooks = k.split("_");
+            if (splitDataBooks.includes(dataBook)) {
+                v(dataBook, selectedRow);
             }
         });
     }
@@ -965,7 +978,7 @@ export class SubscriptionManager {
     }
 
     /**
-     * When a new row is selected add the row selection to the jobQueue to avoid multiple state updates
+     * When a new row is selected add the row selection
      * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      */
@@ -974,13 +987,10 @@ export class SubscriptionManager {
         const screenRowSubs = this.screenRowSelectionSubscriber.get(screenName);
         const selectedRow = this.contentStore.getDataBook(screenName, dataProvider)?.selectedRow;
         if(rowSubscriber) {
-            //this.jobQueue.set("rowSelect_" + dataProvider + "_" + screenName, () => rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow])));
-            /// Removed JobQueue because upload didn't work anymore, JobQueue is possibly not needed anymore or when problems with multiple rowSelections occur we need it back
             rowSubscriber.forEach(subFunction => subFunction.apply(undefined, [selectedRow]));
         }
             
         if (screenRowSubs) {
-            //this.jobQueue.set("rowSelectAll", () => screenRowSubs.apply(undefined, []));
             screenRowSubs.apply(undefined, []);
         }
     }

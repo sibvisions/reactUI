@@ -264,11 +264,11 @@ export default class ContentStoreFull extends BaseContentStore {
             }
 
             if (!newComponent["~destroy"]) {
-                if (newComponent.parent) {
-                    this.addAsChild(newComponent)
-                }
-                else if (existingComponent) {
+                if (existingComponent && !this.isRemovedComponent(existingComponent.id)) {
                     this.addAsChild(existingComponent);
+                }
+                else if (newComponent.parent) {
+                    this.addAsChild(newComponent);
                 }
             }
         });

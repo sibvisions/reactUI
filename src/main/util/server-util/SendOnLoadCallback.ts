@@ -55,15 +55,17 @@ export function checkSizes(prefSize:Dimension, minSize:Dimension|undefined, maxS
  * @param ref - the element of a component
  * @param className - the classname of a component
  */
-function measurePrefWidth(ref:any, className:string) {
-    const arrString:string[] = [COMPONENT_CLASSNAMES.TEXTAREA, COMPONENT_CLASSNAMES.TEXTFIELD, COMPONENT_CLASSNAMES.PASSWORD, CELLEDITOR_CLASSNAMES.TEXT, COMPONENT_CLASSNAMES.SPLITPANEL] as string[];
+function measurePrefWidth(ref: any, className: string) {
+    const arrString: string[] = [COMPONENT_CLASSNAMES.TEXTAREA, COMPONENT_CLASSNAMES.TEXTFIELD, COMPONENT_CLASSNAMES.PASSWORD, CELLEDITOR_CLASSNAMES.TEXT, COMPONENT_CLASSNAMES.SPLITPANEL] as string[];
     if (arrString.indexOf(className) !== -1) {
         return Math.max(ref.offsetWidth, Math.ceil(ref.getBoundingClientRect().width))
     }
     else {
         if (className === COMPONENT_CLASSNAMES.LABEL) {
-            // +1 for labels because getBoundingClientRect has a wrong width for some reason and offsetWidth and scrollWidth cut of the decimals...
-            return Math.max(ref.offsetWidth + 1, ref.scrollWidth + 1, Math.ceil(ref.getBoundingClientRect().width + 1))
+            if (ref && !(ref.parentElement as HTMLElement).classList.contains('rc-label-html')) {
+                // +1 for labels which are not html labels because the text overflow ellipsis (...) could cause the label to be cut off. (HTML labels do not have that)
+                return Math.max(ref.offsetWidth + 1, ref.scrollWidth + 1, Math.ceil(ref.getBoundingClientRect().width) + 1)
+            }
         }
         return Math.max(ref.offsetWidth, ref.scrollWidth, Math.ceil(ref.getBoundingClientRect().width))
     }

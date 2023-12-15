@@ -48,6 +48,7 @@ import { IExtendableTable } from "../../extend-components/table/ExtendTable";
 import { ICellEditorLinked } from "../editors/linked/UIEditorLinked";
 import { IComponentConstants } from "../BaseComponent";
 import CellRenderer from "./CellRenderer/CellRenderer";
+import { getPrimaryKeys } from "../../util/data-util/GetMetaData";
 
 
 /** Interface for Table */
@@ -267,19 +268,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const sortDefinitionCache = useRef<SortDefinition[]>();
 
     /** The primary keys of a table */
-    const primaryKeys:string[] = useMemo(() => {
-        if (metaData) {
-            if (metaData.primaryKeyColumns) {
-                return metaData.primaryKeyColumns;
-            }
-            else {
-                return metaData.columns.map(col => col.name);
-            }
-        }
-        else {
-            return []
-        }
-    }, [metaData]);
+    const primaryKeys:string[] = useMemo(() => getPrimaryKeys(metaData), [metaData]);
 
     /** The selected cell */
     const [selectedCellId, setSelectedCellId] = useState<ISelectedCell>({selectedCellId: "notSet"});
@@ -1420,6 +1409,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         }
     }, [props.layoutStyle?.width, estTableWidth, providerData]);
 
+    if (props.dataBook === "FilterMaster/SelJoiWitRoo-WM/directories#3") {
+        console.log(providerData)
+    }
+    
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
             <div
