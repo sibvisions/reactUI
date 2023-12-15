@@ -37,7 +37,7 @@ import MetaDataResponse, { MetaDataReference } from "../../response/data/MetaDat
 import { IComponentConstants } from "../BaseComponent";
 
 /** Interface for Tree */
-export interface ITree extends IBaseComponent {
+export interface ITree extends IBaseComponent, IComponentConstants {
     dataBooks: string[],
     detectEndNode: boolean
 }

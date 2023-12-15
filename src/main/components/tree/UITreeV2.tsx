@@ -64,18 +64,15 @@ function getNode(nodes: CustomTreeNode[], nodeKey: string) {
     return tempNode
 };
 
-const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
+const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
     /** Reference for the span that is wrapping the tree containing layout information */
     const treeWrapperRef = useRef<HTMLSpanElement>(null);
 
-    /** Component constants */
-    const [context, [props], layoutStyle, , styleClassNames] = useComponentConstants<ITree & IExtendableTree>(baseProps);
-
     /** Extracting onLoadCallback and id from baseProps */
-    const { onLoadCallback, id } = baseProps;
+    const { onLoadCallback, id } = props;
 
     /** Name of the screen */
-    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataBooks && props.dataBooks.length ? props.dataBooks[0] : undefined) as string, [props.dataBooks]);
+    const screenName = useMemo(() => props.context.contentStore.getScreenName(props.id, props.dataBooks && props.dataBooks.length ? props.dataBooks[0] : undefined) as string, [props.dataBooks]);
 
     /** The data pages of the databooks. First key is the dataprovider, second key is the page. */ 
     const data = useRef<Map<string, Map<string|null, any>>>(new Map<string, Map<string|null, any>>());
@@ -99,16 +96,12 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
     /** State of the keys of the nodes which are expanded */
     const expandedKeysRef = useRef<TreeExpandedKeysType>({});
 
-    const lastExpandedLength = useRef<number>(0);
-
     /** State of the key of a single node that is selected */
     const [selectedKey, setSelectedKey] = useState<any>();
 
     const initialized = useRef<boolean>(false);
 
     const focused = useRef<boolean>(false);
-
-    const firstSelected = useRef<boolean>(false);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -133,22 +126,20 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
         nodes
     ]);
 
-    useAddLayoutStyle(treeWrapperRef.current, layoutStyle, onLoadCallback, nodes);
-
     /**
      * Returns true if the given databook is self-joined (references itself in masterReference) false if it isn't
      * @param dataBook - the databook to check
      * @returns true if the given databook is self-joined false if it isn't
      */
     const isSelfJoined = useCallback((dataBook:string) => {
-        const metaData = getMetaData(screenName, dataBook, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, dataBook, props.context.contentStore, undefined);
         if (metaData?.masterReference) {
             return metaData.masterReference.referencedDataBook === dataBook;
         } else {
             return false;
         }
     }, [
-        context.contentStore, 
+        props.context.contentStore, 
         screenName
     ]);
 
@@ -177,15 +168,15 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
      * @returns unsubscribing from TreeChange
      */
     useEffect(() => {
-        context.subscriptions.subscribeToTreeDataChange([props.name, ...props.dataBooks].join("_"), (dataProvider:string, data: any[], pageKeyHelper:string) => onPage(dataProvider, data, pageKeyHelper));
-        context.subscriptions.subscribeToTreeSelectionChange([props.name, ...props.dataBooks].join("_"), (dataProvider: string, selectedRow: ISelectedRow|undefined) => onSelectedRow(dataProvider, selectedRow));
+        props.context.subscriptions.subscribeToTreeDataChange([props.name, ...props.dataBooks].join("_"), (dataProvider:string, data: any[], pageKeyHelper:string) => onPage(dataProvider, data, pageKeyHelper));
+        props.context.subscriptions.subscribeToTreeSelectionChange([props.name, ...props.dataBooks].join("_"), (dataProvider: string, selectedRow: ISelectedRow|undefined) => onSelectedRow(dataProvider, selectedRow));
         
         return () => {
-            context.subscriptions.unsubscribeFromTreeDataChange([props.name, ...props.dataBooks].join("_"));
-            context.subscriptions.unsubscribeFromTreeSelectionChange([props.name, ...props.dataBooks].join("_"));
+            props.context.subscriptions.unsubscribeFromTreeDataChange([props.name, ...props.dataBooks].join("_"));
+            props.context.subscriptions.unsubscribeFromTreeSelectionChange([props.name, ...props.dataBooks].join("_"));
         }
     }, [
-        context.subscriptions, 
+        props.context.subscriptions, 
         props.dataBooks
     ]);
 
@@ -198,7 +189,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
             fetchReq.rowCount = -1;
             fetchReq.filter = { columnNames: [], values: [] };
             fetchReq.rootKey = true;
-            showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), context.server.topbar);
+            showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar);
             initialized.current = true;
         }
     }, []);
@@ -220,7 +211,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
             return;
         }
         const baseDataProvider = getDataBookByLevel(0);
-        const isLevelZeroData = baseDataProvider === dataProvider && context.contentStore.getDataBook(screenName, dataProvider)?.rootKey === pageKey;
+        const isLevelZeroData = baseDataProvider === dataProvider && props.context.contentStore.getDataBook(screenName, dataProvider)?.rootKey === pageKey;
 
         // Get all the nodes that are receiving this page.
         let parentNodes:CustomTreeNode[] = [];
@@ -261,7 +252,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
         }
 
         const newNodesPerParent: Map<string, CustomTreeNode[]> = new Map<string, CustomTreeNode[]>();
-        const metaData = getMetaData(screenName, dataProvider, context.contentStore, undefined);
+        const metaData = getMetaData(screenName, dataProvider, props.context.contentStore, undefined);
         const primaryKeys = getPrimaryKeys(metaData);
 
         const createLabel = (metaData: MetaDataResponse|undefined, dataRow: any, columnDescriptions: ColumnDescription[]|undefined) => {
@@ -315,7 +306,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
 
                 let childFilter;
                 if (childDataBook !== null) {
-                    const childMetaData = getMetaData(screenName, childDataBook, context.contentStore, undefined);
+                    const childMetaData = getMetaData(screenName, childDataBook, props.context.contentStore, undefined);
                     childFilter = createChildFilter(childMetaData!, metaData!, dataRow);
                     const childPageKey = toPageKey(childFilter);
                     // An new row has values with null, so check that we don't accidentally create the same page as our current parent.
@@ -386,7 +377,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
                     fetchReq.fromRow = 0;
                     fetchReq.rowCount = -1;
                     fetchReq.filter = childFilter;
-                    showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), context.server.topbar);
+                    showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar);
                 }
 
                 parentIndex++;
@@ -460,8 +451,8 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
         const dataProvider = getDataBookByLevel(node.treePath.length() - 1);
         const childDataProvider = getDataBookByLevel(node.treePath.length());
         if (dataProvider && childDataProvider) {
-            const metaData = getMetaData(screenName, dataProvider, context.contentStore, undefined);
-            const childMetaData = getMetaData(screenName, childDataProvider, context.contentStore, undefined);
+            const metaData = getMetaData(screenName, dataProvider, props.context.contentStore, undefined);
+            const childMetaData = getMetaData(screenName, childDataProvider, props.context.contentStore, undefined);
             if (data.current.get(dataProvider)!.get(node.pageKey)) {
                 const dataRow = data.current.get(dataProvider)!.get(node.pageKey)[node.rowIndex];
                 if (metaData && childMetaData && dataRow) {
@@ -471,7 +462,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
                     fetchReq.fromRow = 0;
                     fetchReq.rowCount = -1;
                     fetchReq.filter = childFilter;
-                    showTopBar(context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), context.server.topbar);
+                    showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar);
                 }
             }
         }
@@ -532,7 +523,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
             selectReq.componentId = props.name;
             selectReq.dataProvider = selectedDatabooks;
             selectReq.filter = selectedFilters;
-            await showTopBar(context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_TREE), context.server.topbar);
+            await showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_TREE), props.context.server.topbar);
             updateSelection();
         }
     }
@@ -583,19 +574,19 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
 
     return (
         <span
-            ref={treeWrapperRef}
-            style={layoutStyle}
+            ref={props.forwardedRef}
+            style={props.layoutStyle}
             tabIndex={props.tabIndex ? props.tabIndex : 0}
             onFocus={(event) => {
                 if (!focused.current) {
-                    handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, context)
+                    handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)
                     focused.current = true;
                 }
             }}
             onBlur={event => {
                 if (treeWrapperRef.current && !treeWrapperRef.current.contains(event.relatedTarget as Node)) {
                     if (props.eventFocusLost) {
-                        onFocusLost(props.name, context.server);
+                        onFocusLost(props.name, props.context.server);
                     }
                     focused.current = false;
                 }
@@ -604,7 +595,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (baseProps) => {
         >
             <Tree
                 id={props.name}
-                className={concatClassnames("rc-tree", styleClassNames)}
+                className={concatClassnames("rc-tree", props.styleClassNames)}
                 value={nodes}
                 selectionMode="single"
                 selectionKeys={selectedKey}
