@@ -50,6 +50,7 @@ export interface Designer {
     setServer:(server: BaseServer) => void,
     getSelectedComponent:() => SelectedComponent|null
     updateGlassPaneSelectedComponent: (newInnerComponent:IBaseComponent) => void,
+    drawPanelOverlay: () => void,
     setSelectedComponent:(newSelectedComponent:SelectedComponent) => void
     setGlassPaneSelectedComponent: (comp: IBaseComponent) => void,
     updateSelectedComponentInnerComponent: (comp: IBaseComponent) => void,

@@ -126,6 +126,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
 
         /** Callback which gets called by each component in sendOnLoadCallBack */
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
+            const children = context.contentStore.getChildren(id, className);
             tempSizes.current.forEach((val, key) => {
                 if (!children.has(key)) {
                     tempSizes.current.delete(key);
@@ -158,7 +159,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
             }
 
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
-            if(allowPreferredSizeChange()) {
+            if(allowPreferredSizeChange()) { 
                 setPreferredSizes(new Map(tempSizes.current));
                 componentsChanged.current = false;
             }
@@ -243,6 +244,12 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
                     cl.push(nc);
                 }
             });
+
+            if (context.designer?.isVisible) {
+                console.log('REDRAWING')
+                context.designer.drawPanelOverlay();
+            }
+
             setComponents(cl);
         });
 

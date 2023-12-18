@@ -348,25 +348,25 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     if (isRowOrientation) {
                         if (!bFirst && autoWrap && (style.width as number) > 0 && x + size.width > (style.width as number)) {
                             x = 0;
-                            y += (flowLayoutInfo.gridHeight + gaps.verticalGap) * fH / fPH;
+                            y += Math.floor((flowLayoutInfo.gridHeight + gaps.verticalGap) * fH / fPH);
                             
                         }
 
                         if (innerAlignment === VERTICAL_ALIGNMENT.STRETCH) {
                             sizeMap.set(component.id, {
-                                left: (left + x * fW / fPW) + (!bFirst ? toolbarGap : 0),
+                                left: Math.floor((left + x * fW / fPW)) + (!bFirst ? toolbarGap : 0),
                                 top: top + y,
-                                width: size.width * fW / fPW,
-                                height: flowLayoutInfo.gridHeight * fH / fPH,
+                                width: Math.floor(size.width * fW / fPW),
+                                height: Math.floor(flowLayoutInfo.gridHeight * fH / fPH),
                                 position: "absolute"
                             });
                         }
                         else {
                             sizeMap.set(component.id, {
-                                left: (left + x * fW / fPW) + (!bFirst ? toolbarGap : 0),
-                                top: top + y + ((flowLayoutInfo.gridHeight - size.height) * getAlignmentFactor(innerAlignment)) * fH / fPH,
-                                width: size.width * fW / fPW,
-                                height: size.height * fH / fPH,
+                                left: Math.floor((left + x * fW / fPW) + (!bFirst ? toolbarGap : 0)),
+                                top: Math.floor(top + y + ((flowLayoutInfo.gridHeight - size.height) * getAlignmentFactor(innerAlignment)) * fH / fPH),
+                                width: Math.floor(size.width * fW / fPW),
+                                height: Math.floor(size.height * fH / fPH),
                                 position: "absolute"
                             });
                         }
@@ -380,7 +380,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     else {
                         if (!bFirst && autoWrap && (style.height as number) > 0 && y + size.height > (style.height as number)) {
                             y = 0;
-                            x += (flowLayoutInfo.gridWidth + gaps.horizontalGap) * fW / fPW;
+                            x += Math.floor((flowLayoutInfo.gridWidth + gaps.horizontalGap) * fW / fPW);
                         }
                             
                         if (innerAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {
@@ -394,10 +394,10 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         }
                         else {
                             sizeMap.set(component.id, {
-                                left: left + x + ((flowLayoutInfo.gridWidth - size.width) * getAlignmentFactor(innerAlignment)) * fW / fPW,
-                                top: (top + y * fH / fPH) + (!bFirst ? toolbarGap : 0),
-                                width: size.width * fW / fPW,
-                                height: size.height * fH / fPH,
+                                left: Math.floor(left + x + ((flowLayoutInfo.gridWidth - size.width) * getAlignmentFactor(innerAlignment)) * fW / fPW),
+                                top: Math.floor((top + y * fH / fPH) + (!bFirst ? toolbarGap : 0)),
+                                width: Math.floor(size.width * fW / fPW),
+                                height: Math.floor(size.height * fH / fPH),
                                 position: "absolute"
                             });
                         }
@@ -425,17 +425,17 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     height: baseProps.popupSize.height, 
                     width: baseProps.popupSize.width, 
                     position: 'relative', 
-                    left: toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0,
-                    top: toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
+                    left: style?.left || toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0,
+                    top: style?.top || toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
                 });
             }
             else {
                 setCalculatedStyle({ 
-                    height: prefSize.height + margins.marginTop + margins.marginBottom, 
-                    width: prefSize.width + margins.marginLeft + margins.marginRight, 
+                    height: style?.height || prefSize.height + margins.marginTop + margins.marginBottom, 
+                    width: style?.width || prefSize.width + margins.marginLeft + margins.marginRight, 
                     position: 'relative', 
-                    left: toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0, 
-                    top: toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
+                    left: style?.left || toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0, 
+                    top: style?.top || toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
                 });
             }
         }
