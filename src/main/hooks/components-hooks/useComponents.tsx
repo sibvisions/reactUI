@@ -245,11 +245,6 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
                 }
             });
 
-            if (context.designer?.isVisible) {
-                console.log('REDRAWING')
-                context.designer.drawPanelOverlay();
-            }
-
             setComponents(cl);
         });
 
