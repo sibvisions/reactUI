@@ -864,7 +864,6 @@ export default abstract class BaseServer {
         }
 
         if (changedProvider.recordReadOnly) {
-            
             if (dataBook?.metaData) {
                 const columnNames = dataBook?.metaData.columns.map(col => col.name);
                 const readOnlyRecords: Record<string, any>[] = [];
@@ -918,7 +917,7 @@ export default abstract class BaseServer {
 
         // Combine changedColumnNames and changedValues and update the dataprovider-data
         if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
-            const dataRow = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.dataRow;
+            const dataRow = this.contentStore.getData(screenName, changedProvider.dataProvider)[changedProvider.selectedRow]; 
             let changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
             if (dataRow) {
                 changedData = { ...dataRow, ...changedData }
