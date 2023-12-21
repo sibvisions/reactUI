@@ -309,7 +309,7 @@ export default class ContentStore extends BaseContentStore {
                             this.desktopContent.set(newComponent.id, newComponent);
                         }
                         else {
-                            if (this.designer?.isVisible && newComponent.name.startsWith('new_') && newComponent.constraints === "West") {
+                            if (this.designer?.isVisible && newComponent.name.startsWith('new_') && (newComponent.constraints === "West" || newComponent.constraints === null)) {
                                 newComponent.designerNew = true;
                             }
 

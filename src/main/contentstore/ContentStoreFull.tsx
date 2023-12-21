@@ -218,7 +218,7 @@ export default class ContentStoreFull extends BaseContentStore {
                             newComponent.parent = newComponent.parent + "-frame-toolbar";
                         }
 
-                        if (this.designer?.isVisible && newComponent.name.startsWith('new_') && newComponent.constraints === "West") {
+                        if (this.designer?.isVisible && newComponent.name.startsWith('new_') && (newComponent.constraints === "West" || newComponent.constraints === null)) {
                             newComponent.designerNew = true;
                         }
                         
