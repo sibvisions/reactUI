@@ -787,175 +787,175 @@ export default abstract class BaseServer {
      * if reload is a number fetch from the reload value one row
      * @param changedProvider - the dataProviderChangedResponse
      */
-     processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
+    processDataProviderChanged(changedProvider: DataProviderChangedResponse) {
         const screenName = this.getScreenName(changedProvider.dataProvider);
         const dataBook = this.contentStore.getDataBook(screenName, changedProvider.dataProvider);
 
-        // If the crud operations changed, update the metadata
-        if (changedProvider.insertEnabled !== undefined 
-            || changedProvider.updateEnabled !== undefined 
-            || changedProvider.deleteEnabled !== undefined 
-            || changedProvider.readOnly !== undefined
-            || changedProvider.changedColumns !== undefined) {
-            this.contentStore.updateMetaData(
-                screenName, 
-                changedProvider.dataProvider, 
-                changedProvider.insertEnabled, 
-                changedProvider.updateEnabled, 
-                changedProvider.deleteEnabled, 
-                changedProvider.model_insertEnabled,
-                changedProvider.model_updateEnabled,
-                changedProvider.model_deleteEnabled,
-                changedProvider.readOnly,
-                changedProvider.changedColumns
-            );
-        }
+        if (changedProvider.reload !== -1) {
+            // If the crud operations changed, update the metadata
+            if (changedProvider.insertEnabled !== undefined
+                || changedProvider.updateEnabled !== undefined
+                || changedProvider.deleteEnabled !== undefined
+                || changedProvider.readOnly !== undefined
+                || changedProvider.changedColumns !== undefined) {
+                this.contentStore.updateMetaData(
+                    screenName,
+                    changedProvider.dataProvider,
+                    changedProvider.insertEnabled,
+                    changedProvider.updateEnabled,
+                    changedProvider.deleteEnabled,
+                    changedProvider.model_insertEnabled,
+                    changedProvider.model_updateEnabled,
+                    changedProvider.model_deleteEnabled,
+                    changedProvider.readOnly,
+                    changedProvider.changedColumns
+                );
+            }
 
-        if (changedProvider.recordFormat) {
-            if (dataBook?.metaData) {
-                const columnNames = dataBook?.metaData.columns.map(col => col.name);
-                const formattedRecords: Record<string, any>[] = [];
-                for (const componentId in changedProvider.recordFormat) {
-                    const entry = changedProvider.recordFormat[componentId];
-                    const styleKeys = ['background', 'foreground', 'font', 'image'];
-                    const format = entry.format.map(f => f ? f.split(';', 4).reduce((agg, v, i) => v ? {...agg, [styleKeys[i]]: v} : agg, {}) : f);
-                    entry.records.forEach((r, index) => {
-                        if (r.length === 1 && r[0] === -1) {
-                            return;
-                        }
-                        formattedRecords[index] = formattedRecords[index] || {};
-                        formattedRecords[index][componentId] = new Map<String, CellFormatting>();
-    
-                        for (let i = 0; i < r.length; i++) {
-                            formattedRecords[index][componentId].set(columnNames[i], format[Math.max(0, Math.min(r[i], format.length - 1))]);
-    
-                            if (i === r.length - 1 && columnNames.length > r.length) {
-                                for (let j = i; j < columnNames.length; j++) {
-                                    formattedRecords[index][componentId].set(columnNames[j], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+            if (changedProvider.recordFormat) {
+                if (dataBook?.metaData) {
+                    const columnNames = dataBook?.metaData.columns.map(col => col.name);
+                    const formattedRecords: Record<string, any>[] = [];
+                    for (const componentId in changedProvider.recordFormat) {
+                        const entry = changedProvider.recordFormat[componentId];
+                        const styleKeys = ['background', 'foreground', 'font', 'image'];
+                        const format = entry.format.map(f => f ? f.split(';', 4).reduce((agg, v, i) => v ? { ...agg, [styleKeys[i]]: v } : agg, {}) : f);
+                        entry.records.forEach((r, index) => {
+                            if (r.length === 1 && r[0] === -1) {
+                                return;
+                            }
+                            formattedRecords[index] = formattedRecords[index] || {};
+                            formattedRecords[index][componentId] = new Map<String, CellFormatting>();
+
+                            for (let i = 0; i < r.length; i++) {
+                                formattedRecords[index][componentId].set(columnNames[i], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+
+                                if (i === r.length - 1 && columnNames.length > r.length) {
+                                    for (let j = i; j < columnNames.length; j++) {
+                                        formattedRecords[index][componentId].set(columnNames[j], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+                                    }
                                 }
                             }
-                        }
-                    });
-                }
-
-                if (dataBook.data?.get("current")) {
-                    const dataArray:any[] = Array.from(dataBook.data.get("current"));
-                    if (dataArray.length >= formattedRecords.length) {
-                        formattedRecords.forEach((formattedRecord, i) => {
-                            dataArray[i]["__recordFormat"] = formattedRecord;
                         });
-                        dataBook.data.set("current", dataArray);
+                    }
+
+                    if (dataBook.data?.get("current")) {
+                        const dataArray: any[] = Array.from(dataBook.data.get("current"));
+                        if (dataArray.length >= formattedRecords.length) {
+                            formattedRecords.forEach((formattedRecord, i) => {
+                                dataArray[i]["__recordFormat"] = formattedRecord;
+                            });
+                            dataBook.data.set("current", dataArray);
+                        }
                     }
                 }
+
             }
 
-        }
+            if (changedProvider.recordReadOnly) {
+                if (dataBook?.metaData) {
+                    const columnNames = dataBook?.metaData.columns.map(col => col.name);
+                    const readOnlyRecords: Record<string, any>[] = [];
+                    changedProvider.recordReadOnly.records.forEach((readOnlyArray, index) => {
+                        readOnlyRecords[index] = new Map<string, number>();
+                        for (let i = 0; i < readOnlyArray.length; i++) {
+                            readOnlyRecords[index].set(columnNames[i], readOnlyArray[i]);
 
-        if (changedProvider.recordReadOnly) {
-            if (dataBook?.metaData) {
-                const columnNames = dataBook?.metaData.columns.map(col => col.name);
-                const readOnlyRecords: Record<string, any>[] = [];
-                changedProvider.recordReadOnly.records.forEach((readOnlyArray, index) => {
-                    readOnlyRecords[index] = new Map<string, number>();
-                    for (let i = 0; i < readOnlyArray.length; i++) {
-                        readOnlyRecords[index].set(columnNames[i], readOnlyArray[i]);
-    
-                        if (i === readOnlyArray.length - 1 && columnNames.length > readOnlyArray.length) {
-                            for (let j = i; j < columnNames.length; j++) {
-                                readOnlyRecords[index].set(columnNames[j], readOnlyArray[readOnlyArray.length - 1]);
+                            if (i === readOnlyArray.length - 1 && columnNames.length > readOnlyArray.length) {
+                                for (let j = i; j < columnNames.length; j++) {
+                                    readOnlyRecords[index].set(columnNames[j], readOnlyArray[readOnlyArray.length - 1]);
+                                }
                             }
-                        }
-                    };
-                });
+                        };
+                    });
 
-                if (dataBook.data?.get("current")) {
-                    const dataArray:any[] = Array.from(dataBook.data.get("current"));
-                    if (dataArray.length >= readOnlyRecords.length) {
-                        readOnlyRecords.forEach((readOnlyRecord, i) => {
-                            dataArray[i]["__recordReadOnly"] = readOnlyRecord;
-                        });
-                        dataBook.data.set("current", dataArray);
+                    if (dataBook.data?.get("current")) {
+                        const dataArray: any[] = Array.from(dataBook.data.get("current"));
+                        if (dataArray.length >= readOnlyRecords.length) {
+                            readOnlyRecords.forEach((readOnlyRecord, i) => {
+                                dataArray[i]["__recordReadOnly"] = readOnlyRecord;
+                            });
+                            dataBook.data.set("current", dataArray);
+                        }
                     }
                 }
             }
-        }
 
-        // If there is a deletedRow, delete it and notify the screens
-        if (changedProvider.deletedRow !== undefined) {
-            const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
-            const rowToDelete = this.contentStore.getDataRow(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
-            this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
-            this.subManager.notifyDataChange(screenName, changedProvider.dataProvider);
-            this.subManager.notifyScreenDataChange(screenName);
-            if (dataBook?.metaData && dataBook.metaData.masterReference) {
-                const pageKey = toPageKey({ 
-                    columnNames: dataBook.metaData.masterReference.columnNames,
-                    values: dataBook.metaData.masterReference.columnNames.map((colName) => rowToDelete[colName])
-                });
-                const data = dataBook.data?.get(pageKey);
-                this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, data, pageKey)
+            // If there is a deletedRow, delete it and notify the screens
+            if (changedProvider.deletedRow !== undefined) {
+                const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
+                const rowToDelete = this.contentStore.getDataRow(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
+                this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
+                this.subManager.notifyDataChange(screenName, changedProvider.dataProvider);
+                this.subManager.notifyScreenDataChange(screenName);
+                if (dataBook?.metaData && dataBook.metaData.masterReference) {
+                    const pageKey = toPageKey({
+                        columnNames: dataBook.metaData.masterReference.columnNames,
+                        values: dataBook.metaData.masterReference.columnNames.map((colName) => rowToDelete[colName])
+                    });
+                    const data = dataBook.data?.get(pageKey);
+                    this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, data, pageKey)
+                }
+
+
+                if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(changedProvider.dataProvider.split('/')[1])) {
+                    this.subManager.notifyDataChange(changedProvider.dataProvider.split('/')[1], changedProvider.dataProvider);
+                    this.subManager.notifyScreenDataChange(changedProvider.dataProvider.split('/')[1]);
+                }
             }
 
-            
-            if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(changedProvider.dataProvider.split('/')[1])) {
-                this.subManager.notifyDataChange(changedProvider.dataProvider.split('/')[1], changedProvider.dataProvider);
-                this.subManager.notifyScreenDataChange(changedProvider.dataProvider.split('/')[1]);
-            }
-        }
-
-        // Combine changedColumnNames and changedValues and update the dataprovider-data
-        if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
-            const dataRow = this.contentStore.getData(screenName, changedProvider.dataProvider)[changedProvider.selectedRow]; 
-            let changedData:any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
-            if (dataRow) {
-                changedData = { ...dataRow, ...changedData }
-            }
-            this.contentStore.updateDataProviderData(screenName, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
-            const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn
-            this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
-        }
-        // Fetch based on reload
-        //else {
-            if(changedProvider.reload === -1) {
-                if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
-                    this.missingDataFetches.push(changedProvider.dataProvider);
+            // Combine changedColumnNames and changedValues and update the dataprovider-data
+            if (changedProvider.changedColumnNames !== undefined && changedProvider.changedValues !== undefined && changedProvider.selectedRow !== undefined) {
+                const dataRow = this.contentStore.getData(screenName, changedProvider.dataProvider)[changedProvider.selectedRow];
+                let changedData: any = _.object(changedProvider.changedColumnNames, changedProvider.changedValues);
+                if (dataRow) {
+                    changedData = { ...dataRow, ...changedData }
                 }
-
-                if (this.contentStore.getDataBook(screenName, changedProvider.dataProvider)) {
-                    dataBook!.isAllFetched = undefined;
-                }
-
-                this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
-                const fetchReq = createFetchRequest();
-                fetchReq.dataProvider = changedProvider.dataProvider;
-                fetchReq.fromRow = 0;
-                fetchReq.rowCount = -1;
-                if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
-                    fetchReq.includeMetaData = true;
-                }
-                showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
-                .then(() => {
-                    this.requestQueue = this.requestQueue.filter(req => !((req.request as DataProviderRequest).dataProvider === changedProvider.dataProvider) || !(req.endpoint === REQUEST_KEYWORDS.SELECT_ROW));
-                }), this.topbar as TopBarContextType) ;
-            } 
-            else if(changedProvider.reload !== undefined) {
-                if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
-                    this.missingDataFetches.push(changedProvider.dataProvider);
-                }
-                const fetchReq = createFetchRequest();
-                fetchReq.rowCount = 1;
-                fetchReq.fromRow = changedProvider.reload;
-                fetchReq.dataProvider = changedProvider.dataProvider;
-                if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
-                    fetchReq.includeMetaData = true;
-                }
-                showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), this.topbar as TopBarContextType);
-            }
-            else {
-                const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
+                this.contentStore.updateDataProviderData(screenName, changedProvider.dataProvider, [changedData], changedProvider.selectedRow, changedProvider.selectedRow);
+                const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn
                 this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
             }
-        //}
+        }
+        
+        if (changedProvider.reload === -1) {
+            if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
+                this.missingDataFetches.push(changedProvider.dataProvider);
+            }
+
+            if (this.contentStore.getDataBook(screenName, changedProvider.dataProvider)) {
+                dataBook!.isAllFetched = undefined;
+            }
+
+            this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = changedProvider.dataProvider;
+            fetchReq.fromRow = 0;
+            fetchReq.rowCount = -1;
+            if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
+                fetchReq.includeMetaData = true;
+            }
+            showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
+                .then(() => {
+                    this.requestQueue = this.requestQueue.filter(req => !((req.request as DataProviderRequest).dataProvider === changedProvider.dataProvider) || !(req.endpoint === REQUEST_KEYWORDS.SELECT_ROW));
+                }), this.topbar as TopBarContextType);
+        }
+        else if (changedProvider.reload !== undefined) {
+            if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
+                this.missingDataFetches.push(changedProvider.dataProvider);
+            }
+            const fetchReq = createFetchRequest();
+            fetchReq.rowCount = 1;
+            fetchReq.fromRow = changedProvider.reload;
+            fetchReq.dataProvider = changedProvider.dataProvider;
+            if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
+                fetchReq.includeMetaData = true;
+            }
+            showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), this.topbar as TopBarContextType);
+        }
+        else {
+            const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
+            this.processRowSelection(changedProvider.selectedRow, changedProvider.dataProvider, changedProvider.treePath ? new TreePath(changedProvider.treePath) : undefined, changedProvider.selectedColumn ? changedProvider.selectedColumn : selectedColumn);
+        }
     }
 
     /**
