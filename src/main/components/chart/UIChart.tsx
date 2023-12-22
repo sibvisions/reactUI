@@ -266,7 +266,7 @@ const UIChart: FC<IChart> = (baseProps) => {
             //if this is a pie chart and there are multiple y-values 
             //only use the selected row as data or the first one 
             // -> y-values are compared in pie chart
-            return (pie && yColumnNames.length > 1 ? selectedRow ? [selectedRow] : providerData.slice(0, 1) : providerData)
+            return (pie && yColumnNames.length > 1 ? selectedRow ? [selectedRow.data] : providerData.slice(0, 1) : providerData)
             .reduce<{x: number, y: number}[]>((agg, dataRow, idx) => {
                 //get the index of the x-value in the labels
 
@@ -289,8 +289,8 @@ const UIChart: FC<IChart> = (baseProps) => {
                 //use that label index to assign the summed value over all rows at the correct index
                 //so that label & value match up in the rendered chart
                 //agg[lidx] = (agg[lidx] || 0) + dataRow[name];
-
                 const foundIndex = agg.findIndex(xy => xy ? xy.x === lidx : false);
+
                 if (foundIndex !== -1) {
                     agg[foundIndex] = { x: lidx, y: (agg[foundIndex] ? agg[foundIndex].y || 0 : 0) + parseFloat(dataRow[name]) };
                 }
@@ -304,7 +304,7 @@ const UIChart: FC<IChart> = (baseProps) => {
         })
 
         //generate the sum of all y-values
-        const sum = data.reduce((agg, d) => {
+        const sum = data.reduce((agg, d) => {  
             d.forEach((v, idx) => agg[idx] = {x: v.x, y: (agg[idx] ? agg[idx].y || 0 : 0) + v.y})
             return agg;
         }, []);
@@ -460,10 +460,10 @@ const UIChart: FC<IChart> = (baseProps) => {
             datasets: (pie ? ['X'] : yColumnNames).map((name, idx) => {
                 const singleColor = getColor(idx, opacity, colors, pie);
                 const axisID = overlapped ? `axis-${idx}` : "axis-0";
-
+                
                 return {
                     ...(horizontal ? { yAxisID: axisID, xAxisID: 'caxis-0' } : { xAxisID: axisID, yAxisID: 'caxis-0' }),
-                    label: data[idx],
+                    label: yColumnLabels[idx],
                     data: pie && data[idx] ? data[idx].map(v => v.y) :  data[idx],
                     ...(!pie ? {parsing: {
                         xAxisKey: horizontal ? 'y' : 'x',
@@ -533,11 +533,6 @@ const UIChart: FC<IChart> = (baseProps) => {
             text: chartTitle,
         }
 
-        
-
-        const preferredSize = layoutStyle?.height && layoutStyle.width ? ({ width: layoutStyle.width, height: layoutStyle.height } as Dimension) : parsePrefSize(props.preferredSize) || parsePrefSize(props.maximumSize) || {width: 1.3, height: 1};
-        const aspectRatio = Math.round(preferredSize.width / preferredSize.height);
-
         const rows = providerData.map(dataRow => dataRow[xColumnName]);
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
@@ -572,7 +567,7 @@ const UIChart: FC<IChart> = (baseProps) => {
 
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
-                aspectRatio,
+                maintainAspectRatio: false,
                 plugins: {
                     title,
                     tooltip,
@@ -653,10 +648,10 @@ const UIChart: FC<IChart> = (baseProps) => {
                     },
                 },
                 locale: getGlobalLocale(),
-                aspectRatio,
                 labels: {
                     usePointStyle: true,
                 },
+                maintainAspectRatio: false,
                 onClick: (e:any) => {
                     var elementArr = e.chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
                     if (elementArr.length) {
@@ -714,9 +709,10 @@ const UIChart: FC<IChart> = (baseProps) => {
     useAddLayoutStyle(chartRef.current, layoutStyle, onLoadCallback);
 
     return (
-        <span ref={chartRef} className={concatClassnames("rc-chart", styleClassNames)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
+        <span ref={chartRef} className={concatClassnames("rc-chart-wrapper", styleClassNames)} style={layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
             <Chart
                 id={props.name}
+                className="rc-chart"
                 type={chartType}
                 data={chartData}
                 options={options}

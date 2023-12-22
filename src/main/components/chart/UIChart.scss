@@ -35,8 +35,13 @@
         rectRounded;
 }
 
-.rc-chart {
+.rc-chart-wrapper {
     &.f_standard_border {
         border: var(--input-border-width) solid var(--input-border-color);
+    }
+
+    .rc-chart {
+        height: 100%;
+        width: 100%;
     }
 }
