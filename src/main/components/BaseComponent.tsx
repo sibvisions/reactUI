@@ -27,6 +27,7 @@ import { parseMaxSize, parseMinSize, parsePrefSize } from "../util/component-uti
 import useDesignerUpdates from "../hooks/style-hooks/useDesignerUpdates";
 import { IEditor } from "./editors/IEditor";
 import CELLEDITOR_CLASSNAMES from "./editors/CELLEDITOR_CLASSNAMES";
+import { ICellEditorDate } from "./editors/date/UIEditorDate";
 
 interface BaseComponentRender {
     //baseComponentRender: Function
@@ -121,6 +122,16 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
         return undefined
     }
 
+    const getAdditionalDependency = () => {
+        if ([COMPONENT_CLASSNAMES.LABEL, COMPONENT_CLASSNAMES.BUTTON].indexOf(props.className as COMPONENT_CLASSNAMES) !== -1) {
+            return props.text;
+        }
+        else if (props.className === COMPONENT_CLASSNAMES.EDITOR && (props as IEditor).cellEditor?.className === CELLEDITOR_CLASSNAMES.DATE) {
+            return ((props as IEditor).cellEditor as ICellEditorDate).dateFormat
+        }
+        return undefined;
+    }
+
     /** Retriggers the size-measuring and sets the layoutstyle to the component */
     useHandleDesignerUpdate(
         props.className,
@@ -137,7 +148,7 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
             props.onLoadCallback
         ),
         props.onLoadCallback,
-        [COMPONENT_CLASSNAMES.LABEL, COMPONENT_CLASSNAMES.BUTTON].indexOf(props.className as COMPONENT_CLASSNAMES) !== -1 ? props.text : undefined
+        getAdditionalDependency()
     );
 
     const childrenWithProps = React.Children.map(baseProps.children, (child: any) => {
