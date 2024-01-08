@@ -205,7 +205,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 onLoadCallback
             )
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.cellEditor.dateFormat]);
 
     // When the cell-editor is opened focus the input and forward the pressed key when opening, on unmount save the date-input if the screen is still opened
     useEffect(() => {

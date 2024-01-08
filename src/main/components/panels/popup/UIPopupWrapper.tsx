@@ -65,7 +65,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** True, if the first popup size initialization has completed. */
     const [initializePopup, setInitializePopup] = useState<boolean>(false);
 
-    const [initializeCompSizes, setInitializeCompSizes] = useState<boolean>(false);
+    //const [initializeCompSizes, setInitializeCompSizes] = useState<boolean>(false);
 
     /** Subscribes the resize-handler to the theme */
     useEffect(() => {
@@ -181,10 +181,10 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                     sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
                 }
                 setComponentSize(sizeMap);
+                //setInitializeCompSizes(true);
             }
         }
         setInitializePopup(true);
-        setInitializeCompSizes(true);
     }
 
     /** When the popup is being resized update the size to resize the panel */
@@ -205,7 +205,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (!initializePopup && !componentSizes) {
             handleInitialSize();
         }
-        else if (!initializeCompSizes && componentSizes) {
+        else if (componentSizes) {
             handleAfterInitial();
         }
     }, [componentSizes]);
