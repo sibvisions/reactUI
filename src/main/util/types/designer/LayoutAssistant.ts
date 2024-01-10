@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { Designer } from "../../../../MiddleMan";
+import { Designer, SelectedComponent } from "../../../../MiddleMan";
 import Anchor, { ORIENTATION } from "../../../components/layouts/models/Anchor";
 import Constraints from "../../../components/layouts/models/Constraints";
 import BaseContentStore from "../../../contentstore/BaseContentStore";
@@ -54,9 +54,6 @@ type ConstraintNames = {
     constraintRight: string
 }
 
-/** Type for a selectedComponent */
-type SelectedComponent = { component: IBaseComponent, element: HTMLElement, preferredSize: Dimension };
-
 /** Interface for DraggableComponent */
 export interface DraggableComponent { 
     component: IBaseComponent, 
@@ -66,7 +63,7 @@ export interface DraggableComponent {
 
 /** Interface for DraggablePanel */
 export interface DraggablePanel extends DraggableComponent { 
-    layoutAssistant: BorderLayoutAssistant | FormLayoutAssistant | FlowLayoutAssistant | GridLayoutAssistant | NullLayoutAssistant | null,
+    layoutAssistant: LayoutAssistant | null,
     layoutType: LAYOUTS
 }
 
@@ -84,7 +81,7 @@ export type GhostComponentType = {
 
 export type ResizeDelta = { deltaX: number, deltaY:number }|number|null
 
-interface LayoutAssistant {
+export interface LayoutAssistant {
     layoutInfo: FormLayoutInformation | BorderLayoutInformation | FlowLayoutInformation | GridLayoutInformation | NullLayoutInformation,
     handleResizeDragStart:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null) => void,
     handleMoveDragStart(component:IBaseComponent, element: HTMLElement, handleSelectedComponentChange: (newComponent: IBaseComponent, newElement: HTMLElement, size: Dimension) => void): void

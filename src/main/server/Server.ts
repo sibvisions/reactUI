@@ -53,6 +53,7 @@ import DispatchActionRequest from "../request/events/DispatchActionRequest";
 import { DesignerComponentGroup } from "../util/types/designer/DesignerComponents";
 import { isDesignerVisible } from "../contexts/AppProvider";
 import DesignerComponentsResponse from "../response/designer/DesignerComponentsResponse";
+import newCreatedComponentResponse from "../response/designer/NewCreatedComponentResponse";
 
 /** Enum for server request endpoints */
 enum REQUEST_ENDPOINTS {
@@ -270,6 +271,7 @@ class Server extends BaseServer {
         .set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
         .set(RESPONSE_NAMES.BAD_CLIENT, this.badClient.bind(this))
         .set(RESPONSE_NAMES.DESIGNER_COMPONENTS, this.designerComponents.bind(this))
+        .set(RESPONSE_NAMES.NEW_CREATED_COMPONENT, this.newCreatedComponent.bind(this))
 
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
@@ -828,6 +830,26 @@ class Server extends BaseServer {
             designerComponentsData.designerComponents.forEach(componentGroup => {
                 this.contentStore.designer!.designerComponentMap.set(componentGroup.text, componentGroup);
             });
+        }
+    }
+
+    newCreatedComponent(newCreatedComponentData: newCreatedComponentResponse) {
+        if (this.contentStore.designer && isDesignerVisible(this.contentStore.designer)) {
+            const designer = this.contentStore.designer;
+            const createdComponent = this.contentStore.getComponentById(newCreatedComponentData.componentId);
+            if (createdComponent && designer.selectedComponent) {
+                const parentComp =  this.contentStore.getComponentById(createdComponent.parent);
+                const createdElement = document.getElementById(createdComponent.name)
+                if (parentComp && createdElement) {
+                    const parentLayoutAssistent = designer.getLayoutAssistant(parentComp.name, designer.getLayoutTypeByName(parentComp.name));
+                    designer.setSelectedComponent({
+                        ...designer.selectedComponent, 
+                        component: createdComponent, 
+                        layoutAssistant: parentLayoutAssistent,
+                        element: createdElement
+                    });
+                }
+            }
         }
     }
 

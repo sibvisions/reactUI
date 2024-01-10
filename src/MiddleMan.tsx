@@ -27,11 +27,16 @@ import IBaseComponent from './main/util/types/IBaseComponent';
 import BaseContentStore from './main/contentstore/BaseContentStore';
 import BaseServer from './main/server/BaseServer';
 import { BorderLayoutInformation, FlowLayoutInformation, FormLayoutInformation, GridLayoutInformation, LAYOUTS, NullLayoutInformation } from './main/util/types/designer/LayoutInformation';
-import { BorderLayoutAssistant, Coordinates, DraggableComponent, DraggablePanel, FlowLayoutAssistant, FormLayoutAssistant, GridLayoutAssistant, NullLayoutAssistant } from './main/util/types/designer/LayoutAssistant';
+import { BorderLayoutAssistant, Coordinates, DraggableComponent, DraggablePanel, FlowLayoutAssistant, FormLayoutAssistant, GridLayoutAssistant, LayoutAssistant, NullLayoutAssistant } from './main/util/types/designer/LayoutAssistant';
 import { ISplit } from './main/components/panels/split/UISplitPanel';
 import { DesignerComponentGroup } from './main/util/types/designer/DesignerComponents';
 
-type SelectedComponent = { component: IBaseComponent, element: HTMLElement, preferredSize: Dimension };
+export type SelectedComponent = { 
+    component: IBaseComponent, 
+    element: HTMLElement, 
+    preferredSize: Dimension,
+    layoutAssistant: LayoutAssistant | null
+};
 
 export interface Designer {
     contentStore: BaseContentStore|undefined;
@@ -49,11 +54,8 @@ export interface Designer {
     setContentStore:(store: BaseContentStore) => void
     setServer:(server: BaseServer) => void,
     getSelectedComponent:() => SelectedComponent|null
-    updateGlassPaneSelectedComponent: (newInnerComponent:IBaseComponent) => void,
     drawPanelOverlay: () => void,
-    setSelectedComponent:(newSelectedComponent:SelectedComponent) => void
-    setGlassPaneSelectedComponent: (comp: IBaseComponent) => void,
-    updateSelectedComponentInnerComponent: (comp: IBaseComponent) => void,
+    setSelectedComponent:(newSelectedComponent: SelectedComponent, isNewComponent?: boolean) => void
     getLayoutTypeByElement: (element:HTMLElement) => LAYOUTS,
     getLayoutTypeByName: (name: string) => LAYOUTS,
     getLayoutAssistant:(name: string, layoutType: LAYOUTS) => BorderLayoutAssistant|FormLayoutAssistant|FlowLayoutAssistant|GridLayoutAssistant|NullLayoutAssistant|null,

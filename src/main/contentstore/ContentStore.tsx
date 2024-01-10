@@ -151,7 +151,7 @@ export default class ContentStore extends BaseContentStore {
                 existingComp[newPropName] = newComp[newPropName];
 
                 if (this.designer && this.designer.selectedComponent?.component.id === existingComp.id) {
-                    this.designer.updateSelectedComponentInnerComponent(existingComp);
+                    this.designer.setSelectedComponent({...this.designer.selectedComponent, component: existingComp});
                 }
 
                 if (existingComp.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
@@ -318,8 +318,7 @@ export default class ContentStore extends BaseContentStore {
                     }
 
                     if (this.designer && this.designer.selectedComponent && this.designer.selectedComponent.component.name === newComponent.name) {
-                        this.designer.selectedComponent.component = newComponent;
-                        this.designer.setGlassPaneSelectedComponent(newComponent)
+                        this.designer.setSelectedComponent({...this.designer.selectedComponent, component: newComponent});
                     }
                 }
                 else {

@@ -43,6 +43,7 @@ enum RESPONSE_NAMES {
     CLOSE_CONTENT="closeContent",
     UI="UI",
     BAD_CLIENT="badClient",
-    DESIGNER_COMPONENTS="designerComponents"
+    DESIGNER_COMPONENTS="designerComponents",
+    NEW_CREATED_COMPONENT="newCreatedComponent"
 }
 export default RESPONSE_NAMES
