@@ -17,7 +17,7 @@ import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, 
 import {appContext, isDesignerVisible} from "../../contexts/AppProvider";
 import {LayoutContext} from "../../LayoutContext";
 import Dimension from "../../util/types/Dimension";
-import { ILayout, isDesignerActive } from "./Layout";
+import { ILayout, clearDesignerLayoutInfo, isDesignerActive } from "./Layout";
 import CellConstraints from "./models/CellConstraints";
 import Gaps from "./models/Gaps";
 import GridSize from "./models/GridSize";
@@ -112,6 +112,8 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
         if (compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
+            clearDesignerLayoutInfo(gridLayoutAssistant, LAYOUTS.GRIDLAYOUT);
+            
             /** The widest single grid of all components */
             let maxWidth = 0;
             /** The tallest single grid of all components */

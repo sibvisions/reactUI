@@ -16,7 +16,7 @@
 import React, { CSSProperties, FC, useContext, useEffect, useMemo, useState } from "react";
 import { LayoutContext } from "../../LayoutContext"
 import { appContext, isDesignerVisible } from "../../contexts/AppProvider";
-import { ILayout, isDesignerActive } from "./Layout";
+import { ILayout, clearDesignerLayoutInfo, isDesignerActive } from "./Layout";
 import Gaps from "./models/Gaps";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
@@ -120,9 +120,8 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
 
         /** If compSizes is set (every component in this layout reported its sizes) */
         if(compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
-            if (isDesignerActive(borderLayoutAssistant) && layoutInfo) {
-                layoutInfo.componentConstraints.clear();
-            }
+            clearDesignerLayoutInfo(borderLayoutAssistant, LAYOUTS.BORDERLAYOUT);
+
             /** Preferred Sizes for BorderLayout areas */
             const prefConstraintSizes: BorderLayoutComponents = {
                 center: {height: 0, width: 0},

@@ -18,7 +18,7 @@ import { appContext, isDesignerVisible } from "../../contexts/AppProvider";
 import { LayoutContext } from "../../LayoutContext";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { getMinimumSize, getPreferredSize } from "../../util/component-util/SizeUtil";
-import { ILayout, isDesignerActive } from "./Layout";
+import { ILayout, clearDesignerLayoutInfo, isDesignerActive } from "./Layout";
 import { ComponentSizes } from "../../hooks/components-hooks/useComponents";
 import Constraints from "./models/Constraints";
 import Margins from "./models/Margins";
@@ -175,22 +175,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
             /** Fills the Anchors- and Constraints map */
             const setAnchorsAndConstraints = () => {
-                const clearLayoutInfo = () => {
-                    if (layoutInfo) {
-                        layoutInfo.horizontalAnchors = [];
-                        layoutInfo.verticalAnchors = [];
-                        layoutInfo.componentIndeces = [];
-                        layoutInfo.anchorToColumnMap.clear();
-                        layoutInfo.horizontalColumnToAnchorMap.clear();
-                        layoutInfo.verticalColumnToAnchorMap.clear();
-                        layoutInfo.componentConstraints.clear();
-                    }
-                }
-
                 anchors.clear(); componentConstraints.clear();
-                if (isDesignerActive(formLayoutAssistant)) {
-                    clearLayoutInfo();
-                }
+                clearDesignerLayoutInfo(formLayoutAssistant, LAYOUTS.FORMLAYOUT);
                 /** Parse layout info and fill Anchors-Map */
                 const splitAnchors: Array<string> = layoutData.split(";");
                 splitAnchors.forEach(anchorData => {

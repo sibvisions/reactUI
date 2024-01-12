@@ -20,7 +20,7 @@ import Margins from "./models/Margins";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayout";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
-import { ILayout, isDesignerActive } from "./Layout";
+import { ILayout, clearDesignerLayoutInfo, isDesignerActive } from "./Layout";
 import Gaps from "./models/Gaps";
 import { ORIENTATION } from "./models/Anchor";
 import { HORIZONTAL_ALIGNMENT, VERTICAL_ALIGNMENT } from "./models/ALIGNMENT";
@@ -146,6 +146,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
         }
 
+
+
         /**
          * Checks if the bar is first toolbar
          * @param id - the id of the toolbar
@@ -173,6 +175,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
         if(compSizes && childrenSorted.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
+            clearDesignerLayoutInfo(flowLayoutAssistant, LAYOUTS.FLOWLAYOUT);
+
             /**
 	         * Gets the factor for an alignment value. The factor will be used
 	         * to align the components in the layout.

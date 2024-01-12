@@ -21,7 +21,8 @@ import FlowLayout from "./FlowLayout";
 import FormLayout from "./FormLayout";
 import GridLayout from "./GridLayout";
 import NullLayout from "./NullLayout";
-import { BorderLayoutAssistant, FlowLayoutAssistant, FormLayoutAssistant, GridLayoutAssistant, NullLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
+import { BorderLayoutAssistant, FlowLayoutAssistant, FormLayoutAssistant, GridLayoutAssistant, LayoutAssistant, NullLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
+import { BorderLayoutInformation, FlowLayoutInformation, FormLayoutInformation, GridLayoutInformation, LAYOUTS } from "../../util/types/designer/LayoutInformation";
 
 /**
  * General information for layouts:
@@ -52,8 +53,23 @@ export interface ILayout {
     hasBorder?:boolean
 }
 
-export function isDesignerActive(layoutAssistant:FormLayoutAssistant|BorderLayoutAssistant|FlowLayoutAssistant|GridLayoutAssistant|NullLayoutAssistant|null) {
+export function isDesignerActive(layoutAssistant:LayoutAssistant|null) {
     return layoutAssistant !== null;
+}
+
+export function clearDesignerLayoutInfo(layoutAssistant: LayoutAssistant|null, layoutType: LAYOUTS) {
+    if (layoutAssistant && isDesignerActive(layoutAssistant) && layoutAssistant.layoutInfo) {
+        layoutAssistant.layoutInfo.componentConstraints.clear();
+        layoutAssistant.layoutInfo.componentIndeces = [];
+        if (layoutType === LAYOUTS.FORMLAYOUT) {
+            const castedLayoutInfo = layoutAssistant.layoutInfo as FormLayoutInformation;
+            castedLayoutInfo.horizontalAnchors = [];
+            castedLayoutInfo.verticalAnchors = [];
+            castedLayoutInfo.anchorToColumnMap.clear();
+            castedLayoutInfo.horizontalColumnToAnchorMap.clear();
+            castedLayoutInfo.verticalColumnToAnchorMap.clear();
+        }
+    }
 }
 
 /**
