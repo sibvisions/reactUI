@@ -68,6 +68,7 @@ export function clearDesignerLayoutInfo(layoutAssistant: LayoutAssistant|null, l
             castedLayoutInfo.anchorToColumnMap.clear();
             castedLayoutInfo.horizontalColumnToAnchorMap.clear();
             castedLayoutInfo.verticalColumnToAnchorMap.clear();
+            castedLayoutInfo.advancedLabelPosition = null;
         }
     }
 }

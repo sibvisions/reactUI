@@ -87,6 +87,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     componentSizes: compSizes,
                     calculatedSize: null,
                     isAdvancedFormLayout: false,
+                    advancedLabelPosition: null,
                     anchors: new Map<string, Anchor>(),
                     layoutType: LAYOUTS.FORMLAYOUT
                 });
@@ -207,7 +208,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         }
 
                         if ((pAnchor.name === "r0" || pAnchor.name === "b0") && pAnchor.position === 0 && !pAnchor.autoSize) {
-                            formLayoutAssistant!.setIsAdvancedFormLayout(true)
+                            formLayoutAssistant!.setIsAdvancedFormLayout(true);
+                            layoutInfo.advancedLabelPosition = pAnchor.name === "r0" ? "left" : "top";
                         }
                     });
 

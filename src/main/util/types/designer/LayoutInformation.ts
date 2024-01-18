@@ -69,6 +69,7 @@ export interface FormLayoutInformation extends LayoutInformation {
     verticalColumnToAnchorMap: Map<string, AnchorPair>,
     componentIndeces: string[]
     isAdvancedFormLayout: boolean,
+    advancedLabelPosition: "top"|"left"|null,
     anchors: Map<string, Anchor>
 }
 
