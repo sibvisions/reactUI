@@ -68,7 +68,9 @@ export interface Designer {
     createFormLayoutAssistant:(layoutInfo: FormLayoutInformation) => void,
     createFlowLayoutAssistant:(layoutInfo: FlowLayoutInformation) => void,
     createGridLayoutAssistant:(layoutInfo: GridLayoutInformation) => void,
-    createNullLayoutAssistant:(layoutInfo: NullLayoutInformation) => void
+    createNullLayoutAssistant:(layoutInfo: NullLayoutInformation) => void,
+    getLayoutAssistentOfChild:(id: string) => BorderLayoutAssistant | FormLayoutAssistant | FlowLayoutAssistant | GridLayoutAssistant | NullLayoutAssistant | null,
+    updateOriginalConstraints:(changedComponents: IBaseComponent[]) => void,
     mouseIsInComponent:(position:Coordinates, element: HTMLElement) => boolean,
     isSecondSplit:(position:Coordinates, splitPanelComp:ISplit, splitPanelElem:HTMLElement, firstPanel: HTMLElement, secondPanel: HTMLElement) => boolean,
     getComponentByMousePosition:(mouseCoords: Coordinates, layout: boolean) => DraggableComponent|DraggablePanel|null,

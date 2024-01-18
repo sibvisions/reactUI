@@ -419,6 +419,9 @@ class Server extends BaseServer {
             const openScreen = () => {
                 if (genericData.changedComponents && genericData.changedComponents.length) {
                     this.contentStore.updateContent(genericData.changedComponents, false);
+                    if (this.contentStore.designer?.isVisible) {
+                        this.contentStore.designer.updateOriginalConstraints(genericData.changedComponents);
+                    }
                 }
                 if (!genericData.update) {
                     let workScreen:IPanel|undefined
