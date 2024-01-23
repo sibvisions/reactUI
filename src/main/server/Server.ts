@@ -637,7 +637,7 @@ class Server extends BaseServer {
             splitURL = showData.url.substring(showData.url.lastIndexOf('"')).split(';');
         }
         else {
-            let splitURL = showData.url.split(';')
+            splitURL = showData.url.split(';')
             a.href = splitURL[0];
         }
         a.setAttribute('target', splitURL[2]);
