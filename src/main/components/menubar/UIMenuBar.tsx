@@ -14,12 +14,10 @@
  */
 
 import { Menubar } from "primereact/menubar";
-import { DomHandler } from "primereact/utils";
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import useComponents from "../../hooks/components-hooks/useComponents";
 import useMenuItems from "../../hooks/data-hooks/useMenuItems";
 import useProperties from "../../hooks/data-hooks/useProperties";
-import useMultipleEventHandler from "../../hooks/event-hooks/useMultipleEventHandler";
 import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 
@@ -70,18 +68,6 @@ const UIMenuBar: FC<any> = (baseProps) => {
             baseProps.sizeCallback({ height: menuRef.current.offsetHeight, width: menuRef.current.offsetWidth});
         }
     }, [menuItems, designerUpdate]);
-
-    //@ts-ignore Event handling for sub-submenus, to absolutely position them next to their parent submenu
-    useMultipleEventHandler(DomHandler.find(document.getElementById(baseProps.parent + "-frame"), ".is-submenu").length ? 
-    //@ts-ignore
-    DomHandler.find(document.getElementById(baseProps.parent + "-frame"), ".is-submenu") : undefined, "mouseover",
-    (event:any) => {
-        const menuItem = event.currentTarget
-        const submenuWrapper = menuItem.querySelector(".wrapper");
-        const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
-        submenuWrapper.style.top = menuItemPos.top + 'px';
-        submenuWrapper.style.left = menuItemPos.left + Math.round(menuItem.offsetWidth) + 'px'
-    });
 
     return (
         <div ref={menuRef} className={props.style} id={props.name}>

@@ -13,13 +13,13 @@
  * the License.
  */
 
-import { TreeExpandedKeysType, TreeSelectionParams } from "primereact/tree";
+import { TreeExpandedKeysType, TreeSelectionEvent } from "primereact/tree";
 import React, { FC } from "react";
 
 // Interface for extendable-tree
 export interface IExtendableTree {
     onTreeChange?(expandedKeys: TreeExpandedKeysType): void
-    onRowSelect?(e: {originalEvent: TreeSelectionParams, selectedRow: any}): void
+    onRowSelect?(e: {originalEvent: TreeSelectionEvent, selectedRow: any}): void
 
 }
 

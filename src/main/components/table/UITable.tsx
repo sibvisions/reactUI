@@ -13,16 +13,15 @@
  * the License.
  */
 
-import React, { createContext, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import React, { createContext, CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Column } from "primereact/column";
-import { DataTable, DataTableColumnResizeEndParams, DataTableSelectionChangeParams } from "primereact/datatable";
+import { DataTable, DataTableCellSelection, DataTableColumnResizeEndEvent, DataTableSelectionCellChangeEvent } from "primereact/datatable";
 import _ from "underscore";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest, createWidthRequest } from "../../factories/RequestFactory";
 import { showTopBar } from "../topbar/TopBar";
 import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import { IToolBarPanel } from "../panels/toolbarPanel/UIToolBarPanel";
-import { VirtualScrollerLazyParams } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
 import { LengthBasedColumnDescription, NumericColumnDescription } from "../../response/data/MetaDataResponse";
@@ -49,6 +48,7 @@ import { ICellEditorLinked } from "../editors/linked/UIEditorLinked";
 import { IComponentConstants } from "../BaseComponent";
 import CellRenderer from "./CellRenderer/CellRenderer";
 import { getPrimaryKeys } from "../../util/data-util/GetMetaData";
+import { VirtualScrollerChangeEvent } from "primereact/virtualscroller";
 
 
 /** Interface for Table */
@@ -172,7 +172,7 @@ function isVisible(ele:HTMLElement, container:HTMLElement, cell:any, rowHeight:n
  */
 const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props) => {
     /** Reference for the Table */
-    const tableRef = useRef<DataTable>(null);
+    const tableRef = useRef<DataTable<any>>(null);
 
     /** Name of the screen */
     const screenName = useMemo(() => props.context.contentStore.getScreenName(props.id, props.dataBook) as string, [props.context.contentStore, props.id, props.dataBook]);
@@ -203,9 +203,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
      const getNumberOfRowsPerPage = useCallback(() => {
         let headerHeight = 40;
-        const table = tableRef.current as any;
-        if (table && table.table) {
-            headerHeight = table.table.querySelector('.p-datatable-thead').offsetHeight;
+        if (tableRef.current) {
+            const tableHead = tableRef.current.getTable().querySelector('.p-datatable-thead') as HTMLElement;
+            if (tableHead) {
+                headerHeight = tableHead.offsetHeight;
+            }
         }
 
         return Math.floor((props.layoutStyle?.height as number - headerHeight) / tableRowHeight)
@@ -262,7 +264,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** True, if virtualscrolling is loading */
     const [listLoading, setListLoading] = useState(false);
 
-    const rowSelectionHelper = useRef<{data: any, selectedColumn: string, index: number, filter: any, event: DataTableSelectionChangeParams}>()
+    const rowSelectionHelper = useRef<{data: any, selectedColumn: string, index: number, filter: any, event: DataTableSelectionCellChangeEvent<any>}>()
 
     // Cache for the sort-definitions
     const sortDefinitionCache = useRef<SortDefinition[]>();
@@ -286,10 +288,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const clickedResizer = useRef<boolean>(false);
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
+
     /** Hook for MouseListener */
     useMouseListener(
         props.name, 
-        tableRef.current ? (tableRef.current as any).el.querySelector(".p-datatable-tbody") : undefined, 
+        tableRef.current ? tableRef.current.getTable().querySelector(".p-datatable-tbody") as HTMLElement : undefined, 
         props.eventMouseClicked, 
         props.eventMousePressed, 
         props.eventMouseReleased,
@@ -381,15 +384,18 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     }
 
     /** Creates and returns the selectedCell object */
-    const selectedCell = useMemo(() => {
+    const selectedCell:DataTableCellSelection<any>|null = useMemo(() => {
         if (selectedRow && selectedRow.data && columnOrder) {
             if (selectedRow.selectedColumn) {
-                const newCell = {
+                const newCell:DataTableCellSelection<any> = {
                     cellIndex: columnOrder.findIndex(column => column === selectedRow.selectedColumn),
                     field: selectedRow.selectedColumn,
                     rowData: selectedRow.data,
                     rowIndex: selectedRow.index,
-                    value: selectedRow.data[selectedRow.selectedColumn]
+                    value: selectedRow.data[selectedRow.selectedColumn],
+                    selected: true,
+                    column: new Column({}),
+                    props: {}
                 }
                 setSelectedCellId({selectedCellId: props.id + "-" + newCell.rowIndex!.toString() + "-" + newCell.cellIndex.toString()});
                 if (selectedRow && (lastSelectedRowIndex.current !== selectedRow.index || lastSelectedRowIndex.current === undefined)) {
@@ -402,7 +408,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 sendSelectRequest(columnOrder[0], undefined, 0);
             }
         }
-        return undefined
+        return null
     }, [selectedRow, columnOrder]);
 
     /** The estimated table width */
@@ -447,7 +453,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
-        if(props.forwardedRef.current){
+        if(props.forwardedRef.current) {
             if(onLoadCallback) {
                 if (props.preferredSize) {
                     sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), undefined, onLoadCallback)
@@ -479,7 +485,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 }  
             }    
         }
-    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, providerData]);
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, providerData, props.forwardedRef.current]);
 
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
@@ -582,18 +588,21 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
         if (tableRef.current) {
-            //@ts-ignore
-            const colResizers = tableRef.current.el.getElementsByClassName("p-column-resizer");
-            for (const colResizer of colResizers) {
-                if (!colResizer.parentElement.classList.contains("cell-not-resizable") && colResizer.style.display === "none") {
-                    colResizer.style.setProperty("display", "block");
-                }
-                if (colResizer.parentElement.classList.contains("cell-not-resizable")) {
-                    colResizer.style.setProperty("display", "none");
+            const colResizers = tableRef.current.getTable().getElementsByClassName("p-column-resizer") as HTMLCollectionOf<HTMLElement>;
+            if (colResizers.length) {
+                for (const colResizer of colResizers) {
+                    if (colResizer.parentElement) {
+                        if (!colResizer.parentElement.classList.contains("cell-not-resizable") && colResizer.style.display === "none") {
+                            colResizer.style.setProperty("display", "block");
+                        }
+                        if (colResizer.parentElement.classList.contains("cell-not-resizable")) {
+                            colResizer.style.setProperty("display", "none");
+                        }
+                    }
                 }
             }
         }
-    },[metaData])
+    }, [metaData])
 
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => {
@@ -979,7 +988,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     textOverflow: 'Ellipsis',
                     display: props.tableHeaderVisible === false ? 'none' : undefined,
                     '--columnName': colName
-                }}
+                } as CSSProperties}
                 body={(rowData: any|undefined, tableInfo: any) => {
                     const isEditable = getCellIsEditable(rowData);
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
@@ -1049,7 +1058,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         )
                     }
                 }}
-                style={{ whiteSpace: 'nowrap', '--colName': colName }}
+                style={{ whiteSpace: 'nowrap', '--colName': colName } as CSSProperties}
                 bodyClassName={concatClassnames(
                     className,
                     !columnMetaData?.resizable ? "cell-not-resizable" : "",
@@ -1071,7 +1080,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     // When a row is selected send a selectRow request to the server
     // If the lib user extends the Table with onRowSelect, call it when a new row is selected.
-    const handleRowSelection = (event: DataTableSelectionChangeParams) => {
+    const handleRowSelection = (event: any) => {
         if (event.value && event.originalEvent.type === 'click') {
             let filter:SelectFilter|undefined = undefined
             filter = {
@@ -1089,7 +1098,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      * If the lib user extends the Table with onLazyLoadFetch, call it when the table fetches.
      * @param event - the scroll event
      */
-    const handleLazyLoad = useCallback((e: VirtualScrollerLazyParams) => {
+    const handleLazyLoad = useCallback((e: VirtualScrollerChangeEvent) => {
         let {first, last} = e;
         if(typeof first === "number" && typeof last === "number" && firstRowIndex.current !== first) {
             if (firstRowIndex.current !== first) {
@@ -1126,7 +1135,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      *  If the lib user extends the Table with onColResizeEnd, call it when the column-resizing ends.
      *  @param e - the event
      */
-    const handleColResizeEnd = (e:DataTableColumnResizeEndParams) => {
+    const handleColResizeEnd = (e:DataTableColumnResizeEndEvent) => {
         if (tableRef.current) {
             const widthReq = createWidthRequest();
             let newColumnWidth = e.element.offsetWidth - e.delta;
@@ -1408,10 +1417,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
         }
     }, [props.layoutStyle?.width, estTableWidth, providerData]);
-
-    if (props.dataBook === "FilterMaster/SelJoiWitRoo-WM/directories#3") {
-        console.log(providerData)
-    }
     
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
@@ -1492,7 +1497,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     onColumnResizeEnd={handleColResizeEnd}
                     onColReorder={handleColReorder}
                     onSort={(event) => handleSort(event.sortField)}
-                    rowClassName={(data) => {
+                    rowClassName={(data:any) => {
                         let cn: any = {}
                         if (selectedRow && selectedRow.data === data && props.showSelection !== false) {
                             cn["p-highlight"] = true;

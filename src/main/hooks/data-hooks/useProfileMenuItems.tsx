@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useState, useContext, useCallback } from "react";
-import { MenuItem, MenuItemCommandParams } from "primereact/menuitem";
+import { MenuItem, MenuItemCommandEvent } from "primereact/menuitem";
 import { appContext } from "../../contexts/AppProvider";
 import { createAboutRequest, createLogoutRequest } from "../../factories/RequestFactory";
 import { showTopBar } from "../../components/topbar/TopBar";
@@ -63,7 +63,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
                 {
                     label: translation.get("Change password"),
                     icon: "pi pi-lock-open",
-                    command(e: MenuItemCommandParams) {
+                    command() {
                         context.subscriptions.emitChangePasswordVisible()
                     }
                 }
@@ -74,7 +74,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             profileMenuItems.push({
                 label: translation.get("Restart"),
                 icon: "pi pi-refresh",
-                command(e: MenuItemCommandParams) {
+                command() {
                     const startupRequestCache = sessionStorage.getItem("startup");
                     if (startupRequestCache) {
                         const parsedCache = (JSON.parse(startupRequestCache) as Array<any>)

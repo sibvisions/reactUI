@@ -20,7 +20,8 @@ export const EmbeddedContext = createContext<{ [key:string]:any }|undefined>({})
 
 // Interface for EmbedContext
 interface IEmbedContext {
-    embedOptions?:{ [key:string]:any }
+    embedOptions?:{ [key:string]:any },
+    children?: React.ReactNode
 }
 
 /** This component provides an embeddedcontext to know if the app is embedded */

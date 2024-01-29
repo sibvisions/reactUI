@@ -35,7 +35,7 @@ import { ActiveScreen } from "../../../main/contentstore/BaseContentStore";
 
 // Interface for UIManager
 export interface IUIManagerProps {
-    customAppWrapper?: React.ComponentType,
+    customAppWrapper?: React.ComponentType<any>,
 }
 
 /**

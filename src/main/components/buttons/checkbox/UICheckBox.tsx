@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
-import { Checkbox, CheckboxChangeParams } from 'primereact/checkbox';
+import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IButtonSelectable } from "../IButton";
@@ -55,9 +55,8 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
     
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const btnRef = props.forwardedRef.current;
-        if (btnRef) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), btnRef, onLoadCallback);
+        if (props.forwardedRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.compStyle, props.designerUpdate]);
 
@@ -69,7 +68,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
     }, [props.selected])
 
     // If lib-user extends Checkbox with onClick, call it when the Checkbox has been clicked
-    const onClick = (event:CheckboxChangeParams) => {
+    const onClick = (event:CheckboxChangeEvent) => {
         if (props.onClick) {
             props.onClick(event.originalEvent);
         }
@@ -108,7 +107,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
                     ref={cbRef}
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
-                    checked={props.selected}
+                    checked={props.selected ? props.selected : false}
                     onChange={onClick}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}

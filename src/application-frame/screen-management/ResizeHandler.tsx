@@ -30,7 +30,7 @@ import { concatClassnames } from "../../main/util/string-util/ConcatClassnames";
  * This component handles the screen-size it measures the first container so the panels below can be calculated
  * @param props - contains the children
  */
-const ResizeHandler:FC = (props) => {
+const ResizeHandler:FC<any> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 

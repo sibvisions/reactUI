@@ -29,7 +29,6 @@ import { useRunAfterLayout } from "../../hooks/components-hooks/useRunAfterLayou
 import COMPONENT_CLASSNAMES from "../COMPONENT_CLASSNAMES";
 import Anchor from "./models/Anchor";
 import { LAYOUTS } from "../../util/types/designer/LayoutInformation";
-import { setComponentIndeces } from "../../util/designer-util/setComponentIndeces";
 import { FormLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
 import { quickSort } from "../../util/other-util/QuickSort";
 
@@ -479,48 +478,6 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     });
                 } while (autoSizeCount > 0 && autoSizeCount < 100000)
 
-                /** AutoSize calculations */
-                // for(let autoSizeCount = 1; autoSizeCount > 0 && autoSizeCount < 100000;) {
-                //     children.forEach(component => {
-                //         if(component.visible !== false) {
-                //             const constraint = componentConstraints.get(component.id);
-                //             const preferredSizeObj = compSizes.get(component.id)?.preferredSize;
-                //             if(constraint && preferredSizeObj) {
-                //                 calculateAutoSize(constraint.topAnchor, constraint.bottomAnchor, preferredSizeObj.height as number, autoSizeCount);
-                //                 calculateAutoSize(constraint.leftAnchor, constraint.rightAnchor, preferredSizeObj.width as number, autoSizeCount);
-                //             }
-                //         }
-                //     });
-                //     autoSizeCount = 100000;
-
-                //     /** Finish AutoSize */
-                //     children.forEach(component => {
-                //         const constraints = componentConstraints.get(component.id)
-                //         if(constraints){
-                //             let count: number
-                //             /** 
-                //              * Finish AutoSize calculation for each constraint count is the autosize anchors left.
-                //              * Leaves loop when there are no unfinished autosize anchors left
-                //              */
-                //             count = finishAutoSizeCalculation(constraints.leftAnchor, constraints.rightAnchor);
-                //             if (count > 0 && count < autoSizeCount) {
-                //                 autoSizeCount = count;
-                //             }
-                //             count = finishAutoSizeCalculation(constraints.rightAnchor, constraints.leftAnchor);
-                //             if (count > 0 && count < autoSizeCount) {
-                //                 autoSizeCount = count;
-                //             }
-                //             count = finishAutoSizeCalculation(constraints.topAnchor, constraints.bottomAnchor);
-                //             if (count > 0 && count < autoSizeCount) {
-                //                 autoSizeCount = count;
-                //             }
-                //             count = finishAutoSizeCalculation(constraints.bottomAnchor, constraints.topAnchor);
-                //             if (count > 0 && count < autoSizeCount) {
-                //                 autoSizeCount = count;
-                //             }
-                //         }
-                //     });
-                // }
                 let leftWidth = 0;
                 let rightWidth = 0;
                 let topHeight = 0;

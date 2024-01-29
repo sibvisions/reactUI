@@ -22,7 +22,8 @@ export interface IResizeContext {
     login?:boolean,
     menuCollapsed?:boolean,
     mobileStandard?:boolean,
-    setMobileStandard?: Function
+    setMobileStandard?: Function,
+    children?: React.ReactNode
 }
 
 // Creates a resize-context which contains various properties for the resizehandler

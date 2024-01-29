@@ -54,7 +54,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
         if(onLoadCallback && props.forwardedRef.current){
             sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
 
     return (
         <InputTextarea 

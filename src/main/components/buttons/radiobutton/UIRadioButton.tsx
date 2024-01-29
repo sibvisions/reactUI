@@ -14,7 +14,7 @@
  */
 
 import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
-import { RadioButton, RadioButtonChangeParams } from 'primereact/radiobutton';
+import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
 import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IButtonSelectable } from "../IButton";
@@ -54,9 +54,8 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (props) => 
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = props.forwardedRef.current;
-        if (wrapperRef) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
+        if (props.forwardedRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.compStyle, props.designerUpdate]);
 
@@ -68,7 +67,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (props) => 
     }, [props.selected])
 
     //If lib-user extends Radiobutton with onClick, call it when the Radiobutton is clicked
-    const onClick = (event:RadioButtonChangeParams) => {
+    const onClick = (event:RadioButtonChangeEvent) => {
         if (props.onClick) {
             props.onClick(event.originalEvent);
         }

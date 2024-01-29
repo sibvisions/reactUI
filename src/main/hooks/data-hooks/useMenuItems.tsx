@@ -14,7 +14,7 @@
  */
 
 import { MenuItem } from "primereact/menuitem";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, CSSProperties } from "react";
 import { MenuItemCustom } from "../../../application-frame/menu/Menu";
 import { appContext } from "../../contexts/AppProvider";
 import { showTopBar } from "../../components/topbar/TopBar";
@@ -90,7 +90,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                     '--iconHeight': `${iconData.size?.height}px`,
                     '--iconColor': iconData.color,
                     '--iconImage': `url(${context.server.RESOURCE_URL + iconData.icon})`,
-                } : {})},
+                } : {}) as CSSProperties},
                 disabled: item.enabled === false,
                 separator: item.className === "Separator" ? true : false,
             }

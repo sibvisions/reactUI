@@ -31,6 +31,7 @@ import { ICellEditorDate } from "./editors/date/UIEditorDate";
 
 interface BaseComponentRender {
     //baseComponentRender: Function
+    children?: React.ReactNode
 }
 
 export interface IComponentConstants {

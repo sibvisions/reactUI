@@ -15,7 +15,6 @@
 
 /* global google */
 import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { GMap } from 'primereact/gmap';
 import tinycolor from 'tinycolor2';
 import { showTopBar } from "../topbar/TopBar";
 import { createFetchRequest } from "../../factories/RequestFactory";
@@ -34,6 +33,7 @@ import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableMapGoogle } from "../../extend-components/maps/ExtendMapGoogle";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { IComponentConstants } from "../BaseComponent";
+import { GMap } from "./GMap";
 
 /**
  * This component displays a map view with Google Maps

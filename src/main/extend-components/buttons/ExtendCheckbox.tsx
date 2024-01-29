@@ -17,7 +17,7 @@ import React, { FC, SyntheticEvent } from "react";
 
 // Interface for extendable-checkbox
 export interface IExtendableSelectable {
-    onClick?(e: SyntheticEvent): void
+    onClick?(e: SyntheticEvent|undefined): void
     onChange?(checked: boolean): void;
 }
 

@@ -197,6 +197,7 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
     // else just create the standard component
     if (contentStore.addedComponents.has(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className)) {
         Comp = contentStore.addedComponents.get(baseComponent.classNameEventSourceRef ? baseComponent.classNameEventSourceRef : baseComponent.className) as Function;
+        //@ts-ignore
         return createCustomComponentWrapper({...baseComponent, component: <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>, isGlobal: true})
     }
     else {
@@ -209,8 +210,10 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
         
         if (Comp) {
             if (contentStore.appSettings.transferType !== "full") {
+                //@ts-ignore
                 return maybePopup(<BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp key={baseComponent.id} /></BaseComponent>);
             }
+            //@ts-ignore
             return <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp key={baseComponent.id} /></BaseComponent>;
         }
         else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
@@ -220,31 +223,4 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
             return <></>;
         }
     }
-
-    // if (contentStore.addedComponents.has(baseComponent.className)) {
-    //     Comp = contentStore.addedComponents.get(baseComponent.className) as Function;
-    //     return createCustomComponentWrapper({...baseComponent, component: <Comp />, isGlobal: true})
-    // }
-    // else if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER) {
-    //     Comp = contentStore.addedComponents.get(baseComponent.classNameEventSourceRef as string);
-    //     if (Comp) {
-    //         return createCustomComponentWrapper({...baseComponent, component: <Comp {...baseComponent} />, isGlobal: false})
-    //     }
-    //     else {
-    //         return <Dummy {...baseComponent} key={baseComponent.id} />
-    //     }
-    // }
-    // else {
-    //     Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.className) : componentsMap.get(baseComponent.className);
-
-    //     if (Comp) {
-    //         return <Comp {...baseComponent} key={baseComponent.id} />;
-    //     }
-    //     else if (baseComponent.className !== COMPONENT_CLASSNAMES.MENUBAR) {
-    //         return <Dummy {...baseComponent} key={baseComponent.id} />
-    //     }
-    //     else {
-    //         return <></>;
-    //     }
-    // }
 }

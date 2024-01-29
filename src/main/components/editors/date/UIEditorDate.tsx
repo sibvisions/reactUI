@@ -57,21 +57,21 @@ export interface IEditorDate extends IRCCellEditor {
 
 // Supported date-time formats
 const dateTimeFormats = [
-    "dd.MM.yyyy HH:mm", 
-    "dd-MM-yyyy HH:mm", 
-    "dd/MM/yyyy HH:mm", 
-    "dd.MMMMM.yy HH:mm", 
-    "dd-MMMMM-yyyy HH:mm", 
+    "dd.MM.yyyy HH:mm",
+    "dd-MM-yyyy HH:mm",
+    "dd/MM/yyyy HH:mm",
+    "dd.MMMMM.yy HH:mm",
+    "dd-MMMMM-yyyy HH:mm",
     "dd/MMMM/yyyyy HH:mm",
 ]
 
 // Supported date formats
 const dateFormats = [
-    "dd.MM.yyyy", 
-    "dd-MM-yyyy", 
-    "dd/MM/yyyy", 
-    "dd.MMMMM.yy", 
-    "dd-MMMMM-yyyy", 
+    "dd.MM.yyyy",
+    "dd-MM-yyyy",
+    "dd/MM/yyyy",
+    "dd.MMMMM.yy",
+    "dd-MMMMM-yyyy",
     "dd/MMMM/yyyyy"
 ]
 
@@ -84,7 +84,7 @@ const parseMultiple = (
 ) => {
     let result;
     for (let i = 0; i < formatString.length; i++) {
-        if(!formatString[i]) continue;
+        if (!formatString[i]) continue;
         result = parse(dateString, formatString[i], referenceDate, options);
         if (isValid(result)) { break; }
     }
@@ -98,7 +98,7 @@ const parseMultiple = (
  */
 const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants> = (props) => {
     /** Reference for the calendar element */
-    const calendar = useRef<CustomCalendar>(null);
+    const calendar = useRef<Calendar>(null);
 
     /** Reference for calendar input element */
     const calendarInput = useRef<HTMLInputElement>(null);
@@ -117,7 +117,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
      * Returns true, if the given date is a valid date
      * @param inputDate - the date to be checked
      */
-    const isValidDate = (inputDate:any) => {
+    const isValidDate = (inputDate: any) => {
         return inputDate instanceof Date && !isNaN(inputDate.getTime());
     }
 
@@ -128,7 +128,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     const [hasError, setHasError] = useState<boolean>(false);
 
     /** Converts the selectedValue to the correct Timezone */
-    const convertToTimeZone = useCallback((viewDate:boolean) => {
+    const convertToTimeZone = useCallback((viewDate: boolean) => {
         if (props.selectedRow && props.selectedRow.data[props.columnName] && isValidDate(new Date(props.selectedRow.data[props.columnName]))) {
             if (hasError) {
                 setHasError(false)
@@ -143,9 +143,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
         }
         else if (props.selectedRow && props.selectedRow.data[props.columnName] && !isValidDate(new Date(props.selectedRow.data[props.columnName])) && !hasError) {
             setHasError(true)
-        } 
+        }
         return undefined
-        
+
     }, [props.selectedRow, props.columnName, locale, timeZone, hasError])
 
     /** The current datevalue */
@@ -163,7 +163,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     const hasChanged = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from props */
-    const {onLoadCallback, id} = props;
+    const { onLoadCallback, id } = props;
 
     /** Current state of dateFormat for PrimeReact Calendar */
     const dateFormat = props.cellEditor.dateFormat;
@@ -190,7 +190,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [props.designerUpdate]);
 
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, calendarInput.current as HTMLElement|undefined, props.context);
+    useRequestFocus(id, props.requestFocus, calendarInput.current as HTMLElement | undefined, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -198,14 +198,14 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             sendOnLoadCallback(
                 id,
                 props.cellEditor.className,
-                parsePrefSize(props.preferredSize), 
-                parseMaxSize(props.maximumSize), 
-                parseMinSize(props.minimumSize), 
-                props.forwardedRef.current, 
+                parsePrefSize(props.preferredSize),
+                parseMaxSize(props.maximumSize),
+                parseMinSize(props.minimumSize),
+                props.forwardedRef.current,
                 onLoadCallback
             )
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.cellEditor.dateFormat]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.cellEditor.dateFormat]);
 
     // When the cell-editor is opened focus the input and forward the pressed key when opening, on unmount save the date-input if the screen is still opened
     useEffect(() => {
@@ -217,14 +217,14 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     calendarInput.current.value = props.passedKey
                 }
             }
-        },0);
+        }, 0);
 
         return () => {
             if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && props.isCellEditor && startedEditing.current) {
                 handleDateInput();
             }
         }
-    },[])
+    }, [])
 
     // If the editor is readonly, disable the button to open the datepicker
     useEffect(() => {
@@ -246,8 +246,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     useEffect(() => {
         setDateValue(convertToTimeZone(false));
         setViewDate(convertToTimeZone(true));
-        
-    },[props.selectedRow]);
+
+    }, [props.selectedRow]);
 
     // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
@@ -269,14 +269,14 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
      * to send the date to the server and remove PrimeReact time if necassary
      */
     const handleDateInput = () => {
-        let inputDate:Date = new Date();
+        let inputDate: Date = new Date();
         //@ts-ignore
         const emptyValue = calendarInput.current.value === "";
 
         if (showTime) {
             //@ts-ignore
             inputDate = parseMultiple(calendarInput.current.value, [
-                props.cellEditor.dateFormat || '', 
+                props.cellEditor.dateFormat || '',
                 ...dateTimeFormats,
                 ...dateFormats
             ], new Date(), { locale: locale });
@@ -284,13 +284,13 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
         else {
             //@ts-ignore
             inputDate = parseMultiple(calendarInput.current.value, [
-                props.cellEditor.dateFormat || '', 
+                props.cellEditor.dateFormat || '',
                 ...dateFormats
             ], new Date(), { locale: locale });
         }
 
-        let dateToSend:Date|null = inputDate;
-        
+        let dateToSend: Date | null = inputDate;
+
         if (isValidDate(inputDate)) {
             setDateValue(inputDate);
             dateToSend = toDate(formatInTimeZone(inputDate, Intl.DateTimeFormat().resolvedOptions().timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }), { timeZone: timeZone });
@@ -303,76 +303,76 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             dateToSend = props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : null;
             setDateValue(convertToTimeZone(false));
         }
-        
+
         sendSetValues(
             props.dataRow,
             props.name,
             props.columnName,
             props.columnName,
             isValidDate(dateToSend) ? (dateToSend as Date).getTime() : null,
-            props.context.server, 
+            props.context.server,
             props.topbar,
             props.rowNumber);
         startedEditing.current = false;
     }
 
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
-    useMultipleEventHandler(calendar.current && calendarInput.current ? 
+    useMultipleEventHandler(calendar.current && calendarInput.current ?
         //@ts-ignore
-        [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event:KeyboardEvent) => {
-        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab', 'Escape'].indexOf(event.key) === -1 && !startedEditing.current) {
-            startedEditing.current = true;
-        }
-        event.stopPropagation();
+        [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event: KeyboardEvent) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab', 'Escape'].indexOf(event.key) === -1 && !startedEditing.current) {
+                startedEditing.current = true;
+            }
+            event.stopPropagation();
 
-        if (props.onInput) {
-            props.onInput(event as KeyboardEvent)
-        }
+            if (props.onInput) {
+                props.onInput(event as KeyboardEvent)
+            }
 
-        if (event.key === "Enter") {
-            handleDateInput();
-            alreadySaved.current = true;
-            handleEnterKey(event, event.target, props.name, props.stopCellEditing);
-            if (calendar.current) {
-                setVisible(false);
-                if ((event.target as HTMLElement).tagName === "BUTTON") {
-                    if (props.eventFocusLost) {
-                        onFocusLost(props.name, props.context.server);
+            if (event.key === "Enter") {
+                handleDateInput();
+                alreadySaved.current = true;
+                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+                if (calendar.current) {
+                    setVisible(false);
+                    if ((event.target as HTMLElement).tagName === "BUTTON") {
+                        if (props.eventFocusLost) {
+                            onFocusLost(props.name, props.context.server);
+                        }
                     }
                 }
             }
-        }
-        else if (event.key === "Tab") {
-            handleDateInput();
-            alreadySaved.current = true;
-            if (props.isCellEditor && props.stopCellEditing) {
+            else if (event.key === "Tab") {
+                handleDateInput();
+                alreadySaved.current = true;
+                if (props.isCellEditor && props.stopCellEditing) {
+                    props.stopCellEditing(event);
+                }
+                else if (calendar.current) {
+                    setVisible(false);
+                    if ((event.target as HTMLElement).tagName === "BUTTON") {
+                        if (props.eventFocusLost) {
+                            onFocusLost(props.name, props.context.server);
+                        }
+                    }
+                }
+            }
+            else if (event.key === "Escape" && props.isCellEditor && props.stopCellEditing) {
                 props.stopCellEditing(event);
             }
-            else if (calendar.current) {
-                setVisible(false);
-                if ((event.target as HTMLElement).tagName === "BUTTON") {
-                    if (props.eventFocusLost) {
-                        onFocusLost(props.name, props.context.server);
-                    }
-                }
-            }
-        }
-        else if (event.key === "Escape" && props.isCellEditor && props.stopCellEditing) {
-            props.stopCellEditing(event);
-        }
-    });
+        });
 
     return (
-        <span 
+        <span
             ref={props.forwardedRef}
             id={!props.isCellEditor ? props.name : undefined}
-            aria-label={props.ariaLabel} 
-            {...usePopupMenu(props)} 
-            aria-expanded={visible} 
+            aria-label={props.ariaLabel}
+            {...usePopupMenu(props)}
+            aria-expanded={visible}
             style={{
                 ...props.layoutStyle
             } as CSSProperties}>
-            <CustomCalendar
+            <Calendar
                 ref={calendar}
                 inputRef={calendarInput}
                 className={concatClassnames(
@@ -390,7 +390,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 style={{
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
-                }}
+                } as CSSProperties}
                 monthNavigator
                 yearNavigator
                 yearRange="1900:2030"
@@ -402,10 +402,10 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 hourFormat={props.cellEditor.isAmPmEditor ? "12" : "24"}
                 showIcon
                 showOnFocus={false}
-                inputStyle={{ 
-                    ...textAlignment, 
+                inputStyle={{
+                    ...textAlignment,
                     ...props.cellStyle,
-                    borderRight: "none" 
+                    borderRight: "none"
                 }}
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
                 appendTo={document.body}
@@ -413,7 +413,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     //@ts-ignore
                     setDateValue(event.value ? event.value : null);
                     hasChanged.current = true;
-                    
+
                     if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
                         (calendar.current as any).hideOverlay();
                     }
@@ -473,33 +473,29 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 viewDate={viewDate}
                 onViewDateChange={(e) => setViewDate(e.value)}
                 placeholder={props.cellEditor_placeholder_}
-            />
+                formatDateTime={(date: Date) => {
+                    let formattedValue = "";
+                    if (date) {
+                        formattedValue = dateFormat ? format(date, dateFormat, { locale: locale ? getDateLocale(locale) : getGlobalLocale() }) : formatISO(date);
+                    }
+
+                    return formattedValue;
+                }}
+                parseDateTime={(text: string) => {
+                    let date = parseMultiple(text, [dateFormat || '', ...dateFormats], new Date(), { locale: locale ? getDateLocale(locale) : getGlobalLocale() }) || new Date();
+
+                    if (timeOnly) {
+                        date = new Date();
+                        date.setHours(date.getHours());
+                        date.setMinutes(date.getMinutes());
+                        date.setSeconds(date.getSeconds());
+                    } else if (!showTime) {
+                        date = startOfDay(date);
+                    }
+                    return date;
+                }} />
         </span>
 
     )
 }
 export default UIEditorDate
-
-class CustomCalendar extends Calendar {
-    formatDateTime(date: Date) {
-        let formattedValue = null;
-        if (date) {
-            formattedValue = this.props.dateFormat ? format(date, this.props.dateFormat, { locale: this.props.locale ? getDateLocale(this.props.locale) : getGlobalLocale() }) : formatISO(date);
-        }
-
-        return formattedValue;
-    }
-    parseDateTime(text: string) {
-        let date = parseMultiple(text, [this.props.dateFormat || '', ...dateFormats], new Date(), { locale: this.props.locale ? getDateLocale(this.props.locale) : getGlobalLocale() }) || new Date();
-
-        if (this.props.timeOnly) {
-            date = new Date();
-            date.setHours(date.getHours());
-            date.setMinutes(date.getMinutes());
-            date.setSeconds(date.getSeconds());
-        } else if (!this.props.showTime) {
-            date = startOfDay(date);
-        }
-        return date;
-    }
-}

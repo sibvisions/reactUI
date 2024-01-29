@@ -588,14 +588,9 @@ body {
 
         .p-menubar-root-list {
             >.p-menuitem, >.p-menuitem.p-menuitem-active  {
-                > .p-menuitem-link:not(.p-disabled) {
+                > .p-menuitem-content {
                     background: var(--profile-background);
                     color: var(--profile-text-color);
-    
-                    .p-menuitem-text, .p-submenu-icon {
-                        color: var(--profile-text-color);
-                    }
-    
                     &:hover {
                         background: var(--profile-hover-background);
                         color: var(--profile-text-color);
@@ -603,7 +598,14 @@ body {
                             color: var(--profile-text-color);
                         }
                     }
+
+                    > .p-menuitem-link:not(.p-disabled) {
+                        .p-menuitem-text, .p-submenu-icon {
+                            color: var(--profile-text-color);
+                        }
+                    }
                 }
+
     
                 > .p-submenu-list {
                     background: var(--profile-submenu-background);
@@ -755,19 +757,21 @@ body {
     
     .p-menubar-root-list {
         >.p-menuitem, >.p-menuitem.p-menuitem-active  {
-            > .p-menuitem-link:not(.p-disabled) {
+            > .p-menuitem-content {
                 background: var(--menubar-background);
                 color: var(--menubar-text-color);
 
-                .p-menuitem-text, .p-submenu-icon, .p-menuitem-icon:not(.profile-image-null) {
-                    color: var(--menubar-text-color);
-                }
-
-                &:hover {
-                    background: var(--menubar-hover-background);
-                    color: var(--menubar-text-color);
+                > .p-menuitem-link:not(.p-disabled) {
                     .p-menuitem-text, .p-submenu-icon, .p-menuitem-icon:not(.profile-image-null) {
                         color: var(--menubar-text-color);
+                    }
+    
+                    &:hover {
+                        background: var(--menubar-hover-background);
+                        color: var(--menubar-text-color);
+                        .p-menuitem-text, .p-submenu-icon, .p-menuitem-icon:not(.profile-image-null) {
+                            color: var(--menubar-text-color);
+                        }
                     }
                 }
             }
@@ -828,7 +832,7 @@ body {
 /// *----------Components----------*
 
 /// Button
-.p-button {
+.p-button:not(.p-speeddial-button) {
     border-radius: var(--button-border-radius);
 }
 

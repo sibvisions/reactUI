@@ -140,7 +140,7 @@ body {
 .basti_mobile .std-menu .profile-menu {
   height: var(--std-profile-height);
 }
-.basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+.basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content > .p-menuitem-link {
   height: var(--std-profile-height);
   padding: var(--std-profile-padding);
 }
@@ -415,10 +415,10 @@ body {
     width: var(--std-profile-submenu-width-small);
     left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-small));
   }
-  .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+  .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content > .p-menuitem-link {
     height: var(--corp-profile-width-small);
   }
-  .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
+  .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content > .p-menuitem-link:not(.p-disabled), .basti_mobile .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content > .p-menuitem-link.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
     width: var(--corp-profile-width-small);
   }
   .basti_mobile .std-menu .profile-image, .basti_mobile .std-menu .profile-image-null {

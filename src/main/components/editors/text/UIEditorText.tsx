@@ -276,7 +276,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
         if (onLoadCallback && props.forwardedRef.current && fieldType !== FieldTypes.HTML) {
             sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
-    },[onLoadCallback, id, props.cellEditor?.contentType, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[onLoadCallback, id, props.cellEditor?.contentType, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {

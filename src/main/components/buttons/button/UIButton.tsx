@@ -67,20 +67,16 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (buttonRef.current && props.forwardedRef.current) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), buttonRef.current, onLoadCallback);
+        if (props.forwardedRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
-    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, props.designerUpdate]);
+    }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, props.designerUpdate, props.forwardedRef.current]);
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = (event:any) => {
         if (props.onClick) {
             props.onClick(event)
         }
-
-        // if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
-        //     inputRef.current.click();
-        // }
 
         if (props.eventAction) {
             const req = createDispatchActionRequest();
@@ -202,7 +198,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
             )
         }
     }
-
+    
     return (
         <span id={props.name} ref={props.forwardedRef} style={props.layoutStyle}>
             {getElementToRender()}

@@ -16,22 +16,21 @@
 import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ITree } from "./UITree";
 import { IExtendableTree } from "../../extend-components/tree/ExtendTree";
-import useComponentConstants from "../../hooks/components-hooks/useComponentConstants";
 import { getMetaData, getPrimaryKeys } from "../../util/data-util/GetMetaData";
-import { REQUEST_KEYWORDS, createFetchRequest, createSelectTreeRequest, useAllDataProviderData, useAllRowSelect } from "../../../moduleIndex";
-import TreeNode from "primereact/treenode";
+import { TreeNode } from "primereact/treenode";
 import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
-import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import { showTopBar } from "../topbar/TopBar";
 import TreePath from "../../model/TreePath";
 import MetaDataResponse, { ColumnDescription } from "../../response/data/MetaDataResponse";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
 import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
-import { Tree, TreeExpandedKeysType, TreeSelectionParams } from "primereact/tree";
+import { Tree, TreeExpandedKeysType, TreeSelectionEvent } from "primereact/tree";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { ISelectedRow } from "../../contentstore/BaseContentStore";
+import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
+import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 
 interface CustomTreeNode extends TreeNode {
     pageKey: string|null,
@@ -473,7 +472,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
      * If the lib user extends the Tree with onRowSelect, call it when a row is selected.
      * @param event 
      */
-    const handleRowSelection = async (event:TreeSelectionParams) => {
+    const handleRowSelection = async (event:TreeSelectionEvent) => {
         if (event.value && typeof event.value === "string") {
             const selectedFilters:Array<SelectFilter|null> = []
             const selectedDatabooks = [...props.dataBooks];

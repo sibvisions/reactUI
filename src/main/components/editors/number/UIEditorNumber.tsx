@@ -382,11 +382,11 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
     // TODO: It should be possible to remove this double inputnumber implementation
     return (
-        (!props.isCellEditor) ?
             <span id={props.name} aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
                     ref={props.forwardedRef}
                     layoutstyle-wrapper={props.name}
+                    /*@ts-ignore*/
                     inputRef={numberInput}
                     className={numberClassNames}
                     useGrouping={useGrouping}
@@ -466,72 +466,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                     placeholder={props.cellEditor_placeholder_}
                 />
             </span>
-            :
-            <InputNumber
-                ref={props.forwardedRef}
-                inputRef={numberInput}
-                className={numberClassNames}
-                useGrouping={useGrouping}
-                locale={props.context.appSettings.locale}
-                prefix={prefix}
-                suffix={suffix}
-                //tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
-                minFractionDigits={writeScaleDigits.minScale}
-                maxFractionDigits={writeScaleDigits.maxScale}
-                //value={(typeof value === 'string' && value !== "-") ? parseNumber(value) : value as number | null | undefined}
-                value={value as unknown as number}
-                style={props.layoutStyle}
-                inputStyle={{ 
-                    ...textAlignment, 
-                    //background: !isSysColor(editorBackground) ? editorBackground.background : undefined
-                }}
-                //inputClassName={isSysColor(editorBackground) ? editorBackground.name : undefined}
-                onChange={(event:any) => {
-                    startedEditing.current = true;
-                    //@ts-ignore
-                    if (event.value === "-") {
-                        if (props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
-                            setValue(event.value);
-                        }
-                    }
-                    else if (event.value !== null) {
-                        if (numberInput.current) {
-                            let stringCopy = numberInput.current.value.slice();
-                            stringCopy = stringCopy.replace(prefix, "").replace(suffix, "");
-                            setValue(new bigDecimal(replaceGroupAndDecimal(stringCopy, numberSeperators)).getValue())
-                        }
-                        //setValue(event.value.toString());
-                    }
-                    else {
-                        setValue(null)
-                    }
-                    
-
-                    if (props.savingImmediate) {
-                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, props.topbar, props.rowNumber);
-                    }
-                }}
-                onBlur={() => {
-                    if (startedEditing.current) {
-                        sendSetValues(
-                            props.dataRow, 
-                            props.name, 
-                            props.columnName, 
-                            props.columnName, 
-                            value !== null && value !== undefined ? value : null,
-                            props.context.server, 
-                            props.topbar, 
-                            props.rowNumber
-                        );
-                        startedEditing.current = false;
-                    }
-                }}
-                readOnly={props.isReadOnly}
-                autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
-                tooltip={props.toolTipText}
-                tooltipOptions={{position: "left"}}
-                placeholder={props.cellEditor_placeholder_}
-            />
     )
 }
 export default UIEditorNumber

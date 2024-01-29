@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 
 /**
  * This hook returns a new value every 10 pixels when the menu collapses or expands to trigger a resize event on the layout to
@@ -28,6 +28,8 @@ const useResponsiveBreakpoints = (elRef:HTMLElement, breakPoints:number[], menuC
 
     const [initialise, setInitialise] = useState(false);
 
+    const testRef = useRef<any>(null);
+
     useEffect(() => {
         if (elRef !== null && !initialise) {
             setInitialise(true)
@@ -35,6 +37,7 @@ const useResponsiveBreakpoints = (elRef:HTMLElement, breakPoints:number[], menuC
     }, [elRef]);
 
     const observer = useMemo(() => {
+        clearTimeout(testRef.current);
         /** Returns the nearest break point */
         const findBreakPoint = (width:number):number => {
             if (elRef && elRef.classList.contains("collapsed")) {
@@ -47,10 +50,11 @@ const useResponsiveBreakpoints = (elRef:HTMLElement, breakPoints:number[], menuC
         }
 
         return new ResizeObserver(entries => {
-            /** Get the current width */
-            const {width} = entries[0].contentRect;
-            setBreakSize(findBreakPoint(width+1))
-            
+            testRef.current = setTimeout(() => {
+                /** Get the current width */
+                const { width } = entries[0].contentRect;
+                setBreakSize(findBreakPoint(width + 1))
+            }, 100)
         })
     },[initialise])
 

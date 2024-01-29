@@ -64,7 +64,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
             componentsChanged.current = false;
         }
         
-        const reactChildrenArray: Array<ReactElement> = [];
+        const reactChildrenArray: Array<any> = [];
 
         /**
          * This function gets called when onLoadcallback of a component is called, if all components of a parents are loaded,

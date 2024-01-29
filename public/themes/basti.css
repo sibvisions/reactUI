@@ -138,7 +138,7 @@ body {
 .basti .std-menu .profile-menu {
   height: var(--std-profile-height);
 }
-.basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+.basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content > .p-menuitem-link {
   height: var(--std-profile-height);
   padding: var(--std-profile-padding);
 }
@@ -356,7 +356,7 @@ body {
     width: var(--std-profile-submenu-width-small);
     left: calc(var(--std-profile-width-small) - var(--std-profile-submenu-width-small));
   }
-  .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled), .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-link:not(.p-disabled) {
+  .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content > .p-menuitem-link:not(.p-disabled), .basti .std-menu .profile-menu .p-menubar .p-menubar-root-list.p-menuitem-active > .p-menuitem-content > .p-menuitem-link:not(.p-disabled) {
     width: var(--std-profile-width-small);
   }
   .basti .corp-menu .profile-menu .p-menubar .p-menubar-root-list .p-submenu-list {

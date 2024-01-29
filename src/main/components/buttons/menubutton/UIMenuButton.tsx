@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SplitButton } from "primereact/splitbutton";
 import tinycolor from 'tinycolor2';
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
@@ -64,8 +64,24 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
 
     const [itemsChangedFlag, setItemsChangedFlag] = useState<boolean>(false);
 
+    const getDefaultButton = (): HTMLElement|undefined => {
+        const defaultButton = buttonRef.current?.getElement().querySelector(".p-splitbutton-defaultbutton");
+        if (defaultButton) {
+            return defaultButton;
+        }
+        return undefined;
+    }
+
+    const getMenuButton = (): HTMLElement|undefined => {
+        const menuButton = buttonRef.current?.getElement().querySelector(".p-splitbutton-menubutton");
+        if (menuButton) {
+            return menuButton;
+        }
+        return undefined;
+    }
+
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.defaultButton : undefined, props.context);
+    useRequestFocus(id, props.requestFocus, getDefaultButton() ? getDefaultButton() : undefined, props.context);
 
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
@@ -73,15 +89,28 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     /** Adding HTML-text to button manually */
     useLayoutEffect(() => {
         if (buttonRef.current) {
-            if (isHTML) {
-                if (buttonRef.current.defaultButton.classList.contains('p-button-icon-only')) {
-                    buttonRef.current.defaultButton.classList.remove('p-button-icon-only');
+            const defaultButton = getDefaultButton();
+            if (defaultButton) {
+                if (isHTML) {
+                    if (defaultButton.classList.contains('p-button-icon-only')) {
+                        defaultButton.classList.remove('p-button-icon-only');
+                    }
+
+                    if (defaultButton.querySelector('.p-button-label')) {
+                        if (props.text) {
+                            defaultButton.querySelector('.p-button-label')!.innerHTML = props.text;
+                        }
+                        else {
+                            defaultButton.querySelector('.p-button-label')!.innerHTML = "";
+                        }
+                    }
+
+                    
                 }
-                buttonRef.current.defaultButton.querySelector('.p-button-label').innerHTML = props.text;
-            }
-            else {
-                if (!buttonRef.current.defaultButton.classList.contains('p-button-icon-only') && !props.text) {
-                    buttonRef.current.defaultButton.classList.add('p-button-icon-only');
+                else {
+                    if (!defaultButton.classList.contains('p-button-icon-only') && !props.text) {
+                        defaultButton.classList.add('p-button-icon-only');
+                    }
                 }
             }
         }
@@ -89,9 +118,8 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = props.forwardedRef.current;
-        if (wrapperRef) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
+        if (props.forwardedRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, isHTML]);
 
@@ -103,10 +131,12 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     }, [props.context.subscriptions, props.popupMenu])
 
     useLayoutEffect(() => {
+        const defaultButton = getDefaultButton();
+        const menuButton = getMenuButton();
         //TODO: Maybe it'll be possible to change the tabindex of the menubutton without dom manipulation in PrimeReact
-        if (buttonRef.current) {
-            buttonRef.current.defaultButton.setAttribute("aria-haspopup", true);
-            (buttonRef.current.container.querySelector(".p-splitbutton-menubutton") as HTMLElement).setAttribute("tabindex", "-1");
+        if (defaultButton && menuButton) {
+            defaultButton.setAttribute("aria-haspopup", "true");
+            menuButton.setAttribute("tabindex", "-1");
         }
     }, [])
 
@@ -133,7 +163,6 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                             </a>
                         )
                     } : undefined,
-                    color: iconProps.color,
                     /** When a menubuttonitem is clicked send a pressButtonRequest to the server */
                     command: (event) => {
                         if (props.onMenuItemClick) {
@@ -155,7 +184,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
 
     // Focus handling, so that always the entire button is focused and not only one of the parts of the button
     useEventHandler(
-        props.forwardedRef.current ? buttonRef.current.defaultButton : undefined,
+        props.forwardedRef.current && getDefaultButton() ? getDefaultButton() : undefined,
         "click",
         (event) => {
             (event.target as HTMLElement).focus();
@@ -216,11 +245,10 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                         '--iconImage': `url(${props.context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
                         '--iconTextGap': `${props.imageTextGap || 4}px`,
                     } : {})
-                }}
+                } as CSSProperties}
                 label={!isHTML ? props.text : undefined}
                 icon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 disabled={isCompDisabled(props)}
-                //tabIndex={-1}
                 model={items}
                 onClick={(e) => {
                     if (props.defaultMenuItem && items?.length) {

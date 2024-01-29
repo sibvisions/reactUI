@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PanelMenu } from 'primereact/panelmenu';
 import { Menubar } from 'primereact/menubar';
 import { useHistory } from "react-router";
@@ -171,7 +171,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
             {menuOptions.userSettings && <div className="profile-menu">
                 <Menubar
                     className="profile-menubar"
-                    style={(context.contentStore as ContentStore).currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${(context.contentStore as ContentStore).currentUser.profileImage})` } : {}}
+                    style={(context.contentStore as ContentStore).currentUser.profileImage ? { "--profileImage": `url(data:image/jpeg;base64,${(context.contentStore as ContentStore).currentUser.profileImage})` } as CSSProperties : {}}
                     model={profileMenu} />
             </div>}
         </>
@@ -315,13 +315,18 @@ const Menu: FC<IMenu> = (props) => {
                         foundMenuItem = m
                     }
                 });
-    
-                if (foundMenuItem && !panelMenu.current?.state.activeItem) {
-                    panelMenu.current?.setState({ activeItem: foundMenuItem });
+                if (Object.keys(foundMenuItem).length) {
+                    foundMenuItem.expanded = true;
                 }
-                else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
-                    panelMenu.current?.setState({ activeItem: foundMenuItem });
-                }
+
+                // TODO there seems to be a new property for panelmenu "expandedKeys" which is not available yet but will be in the future
+                // https://github.com/primefaces/primereact/blob/master/components/doc/panelmenu/controlleddoc.js
+                // if (foundMenuItem && !panelMenu.current?.state.activeItem) {
+                //     panelMenu.current?.setState({ activeItem: foundMenuItem });
+                // }
+                // else if ((foundMenuItem && panelMenu.current?.state.activeItem) && foundMenuItem.label && foundMenuItem.label !== panelMenu.current.state.activeItem.label) {
+                //     panelMenu.current?.setState({ activeItem: foundMenuItem });
+                // }
                 //panelMenu.current?.setState({ activeItem: foundMenuItem });
             }
         }

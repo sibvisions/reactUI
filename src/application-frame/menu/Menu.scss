@@ -204,18 +204,24 @@
         .p-panelmenu-header {
             > a {
                 padding: 1rem 1rem 1rem 10px;
-
-                //Positioning of menu-arrow
-                .p-panelmenu-icon {
-                    position: absolute;
-                    margin-right: 0;
-                }
             }
-            .p-panelmenu-header-link {
+
+            .p-panelmenu-header-content {
                 border: none;
-                /// When text is longer don't break
-                .p-menuitem-text {
-                    white-space: nowrap;
+
+                .p-panelmenu-header-link {
+                    .p-submenu-icon {
+                        order: 1;
+                        position: absolute;
+                        margin-right: 0;
+                        right: 1rem;
+                    }
+
+                    /// When text is longer don't break
+                    .p-menuitem-text {
+                        order: 0;
+                        white-space: nowrap;
+                    }
                 }
             }
         }
@@ -320,24 +326,27 @@
                     position: absolute;
                 }
                 >.p-menuitem {
-                    >.p-menuitem-link {
-                        padding: 0 !important;
-                        width: unset;
-                        .p-menuitem-icon {
-                            margin-right: 0;
+                    >.p-menuitem-content {
+                        >.p-menuitem-link {
+                            padding: 0 !important;
+                            width: unset;
+                            .p-menuitem-icon {
+                                margin-right: 0;
+                            }
+                            .p-menuitem-text, .p-submenu-icon {
+                                opacity: 0;
+                                max-width: 0px;
+                                margin-left: 0;
+                                transition: max-width 0.5s, opacity 0.5s ease-out;
+                            }
                         }
-                        .p-menuitem-text, .p-submenu-icon {
-                            opacity: 0;
-                            max-width: 0px;
-                            margin-left: 0;
-                            transition: max-width 0.5s, opacity 0.5s ease-out;
+
+                        >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
+                            padding: 0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
                         }
-                    }
-                    >.p-menuitem-link:not(.p-disabled), &.p-menuitem-active >.p-menuitem-link:not(.p-disabled) {
-                        padding: 0;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
                     }
                 }
             }

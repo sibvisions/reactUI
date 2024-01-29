@@ -280,7 +280,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
     }, [props.layoutStyle?.width, props.layoutStyle?.height, frameStyle, positionFlag, bounds]);
 
     // Called on resize, sends a bounds-request to the server and sets the new framestyle
-    const doResize = useCallback((e, dir, ref) => {
+    const doResize = useCallback((e:Event, dir:any, ref: HTMLElement) => {
         const styleCopy:CSSProperties = {...frameStyle};
         //height - 35 because of header + border + padding, width - 8 because of padding + border. Minus because insets have to be taken away for layout
         styleCopy.height = ref.offsetHeight - 35;

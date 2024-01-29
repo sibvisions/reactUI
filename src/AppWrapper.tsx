@@ -13,29 +13,30 @@
  * the License.
  */
 
-import React, { FC, useContext, useEffect, useMemo, useRef, useState, createContext } from "react"
+import React, { FC, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { useHistory } from "react-router-dom";
+import { SpeedDial } from "primereact/speeddial";
+import { Tooltip } from "primereact/tooltip";
+import { ReactUIDesigner } from "@sibvisions/reactui-designer";
 import { showTopBar } from "./main/components/topbar/TopBar";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
-import { useHistory } from "react-router-dom";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
 import { appContext, isDesignerVisible } from "./main/contexts/AppProvider";
-import { createCloseScreenRequest, createOpenScreenRequest, getClientId } from "./main/factories/RequestFactory";
+import { createCloseScreenRequest, createOpenScreenRequest } from "./main/factories/RequestFactory";
 import REQUEST_KEYWORDS from "./main/request/REQUEST_KEYWORDS";
 import { IPanel } from "./main/components/panels/panel/UIPanel";
-import { SpeedDial } from "primereact/speeddial";
-import { ReactUIDesigner } from "@sibvisions/reactui-designer";
 import { isCorporation } from "./main/util/server-util/IsCorporation";
 import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
-import { Tooltip } from "primereact/tooltip";
 import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
 import ErrorResponse from "./main/response/error/ErrorResponse";
 
 interface IAppWrapper {
-    embedOptions?: { [key: string]: any }
-    theme?: string
-    colorScheme?: string
-    design?: string
+    embedOptions?: { [key: string]: any },
+    theme?: string,
+    colorScheme?: string,
+    design?: string,
+    children?: React.ReactNode
 }
 
 const AppWrapper: FC<IAppWrapper> = (props) => {

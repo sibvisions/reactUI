@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { createContext, FC, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { createContext, FC, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import Server from "../server/Server";
 import ContentStore from "../contentstore/ContentStore";

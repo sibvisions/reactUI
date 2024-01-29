@@ -92,7 +92,8 @@ export interface ICustomContent {
     colorScheme?: string
     design?:string
     designer?: Designer,
-    enableDesigner?: Function
+    enableDesigner?: Function,
+    children?: React.ReactNode
 }
 
 /**

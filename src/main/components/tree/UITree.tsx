@@ -15,13 +15,13 @@
 
 /** React imports */
 import React, { FC, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Tree, TreeExpandedKeysType, TreeSelectionParams } from 'primereact/tree';
+import { Tree, TreeExpandedKeysType, TreeSelectionEvent } from 'primereact/tree';
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { createFetchRequest, createSelectTreeRequest } from "../../factories/RequestFactory";
 import TreePath from "../../model/TreePath";
 import { showTopBar } from "../topbar/TopBar";
 import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
-import TreeNode from "primereact/treenode";
+import { TreeNode } from "primereact/treenode";
 import useAllDataProviderData from "../../hooks/data-hooks/useAllDataProviderData";
 import useAllRowSelect from "../../hooks/data-hooks/useAllRowSelect";
 import { getMetaData } from "../../util/data-util/GetMetaData";
@@ -304,7 +304,7 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
      * If the lib user extends the Tree with onRowSelect, call it when a row is selected.
      * @param event 
      */
-    const handleRowSelection = (event:TreeSelectionParams) => {
+    const handleRowSelection = (event:TreeSelectionEvent) => {
         if (event.value && typeof event.value === "string") {
             const selectedFilters:Array<SelectFilter|null> = []
             const selectedDatabooks = props.dataBooks;

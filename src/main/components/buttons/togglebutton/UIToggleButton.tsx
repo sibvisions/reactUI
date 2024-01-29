@@ -13,8 +13,8 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ToggleButton, ToggleButtonChangeParams, ToggleButtonIconPositionType } from 'primereact/togglebutton';
+import React, { CSSProperties, FC, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton';
 import tinycolor from 'tinycolor2';
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
@@ -44,16 +44,16 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
     const [checked, setChecked] = useState<boolean|undefined>(props.selected)
 
     /** Style properties for the button */
-    const btnStyle = useButtonStyling(props, props.layoutStyle, props.compStyle, buttonRef.current ? buttonRef.current.container : undefined)
+    const btnStyle = useButtonStyling(props, props.layoutStyle, props.compStyle, buttonRef.current ? buttonRef.current.getElement() : undefined)
 
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = props;
 
     /** Hook to display mouseOverImages and mousePressedImage */
-    useButtonMouseImages(btnStyle.iconProps, btnStyle.pressedIconProps, btnStyle.mouseOverIconProps, buttonRef.current ? buttonRef.current.container : undefined);
+    useButtonMouseImages(btnStyle.iconProps, btnStyle.pressedIconProps, btnStyle.mouseOverIconProps, buttonRef.current ? buttonRef.current.getElement() : undefined);
 
     /** Handles the requestFocus property */
-    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.container : undefined, props.context);
+    useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.getElement() : undefined, props.context);
 
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
@@ -62,14 +62,14 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
     useLayoutEffect(() => {
         if (buttonRef.current) {
             if (isHTML) {
-                if (buttonRef.current.container.classList.contains('p-button-icon-only')) {
-                    buttonRef.current.container.classList.remove('p-button-icon-only');
+                if (buttonRef.current.getElement().classList.contains('p-button-icon-only')) {
+                    buttonRef.current.getElement().classList.remove('p-button-icon-only');
                 }
-                buttonRef.current.container.querySelector('.p-button-label').innerHTML = props.text;
+                buttonRef.current.getElement().querySelector('.p-button-label').innerHTML = props.text;
             }
             else {
-                if (!buttonRef.current.container.classList.contains('p-button-icon-only') && !props.text) {
-                    buttonRef.current.container.classList.add('p-button-icon-only');
+                if (!buttonRef.current.getElement().classList.contains('p-button-icon-only') && !props.text) {
+                    buttonRef.current.getElement().classList.add('p-button-icon-only');
                 }
             }
         }
@@ -77,9 +77,8 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        const wrapperRef = props.forwardedRef.current;
-        if (wrapperRef) {
-            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), wrapperRef, onLoadCallback);
+        if (props.forwardedRef.current) {
+            sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, isHTML, props.designerUpdate]);
 
@@ -93,7 +92,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
     }, [props.selected, props.onChange])
 
     /** When the ToggleButton is pressed, send a pressButtonRequest to the server */
-    const handleOnChange = (event:ToggleButtonChangeParams) => {
+    const handleOnChange = (event:ToggleButtonChangeEvent) => {
         if (props.onClick) {
             props.onClick(event.originalEvent);
         }
@@ -144,12 +143,12 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
                         '--iconTextGap': `${props.imageTextGap || 4}px`,
                         '--iconCenterGap': `${btnStyle.iconCenterGap}px`
                     } : {})
-                }}
+                } as CSSProperties}
                 onLabel={!isHTML ? props.text : undefined}
                 offLabel={!isHTML ? props.text : undefined}
                 offIcon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 onIcon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
-                iconPos={btnStyle.iconPos as ToggleButtonIconPositionType}
+                iconPos={btnStyle.iconPos}
                 tabIndex={btnStyle.tabIndex}
                 checked={checked}
                 onChange={handleOnChange}

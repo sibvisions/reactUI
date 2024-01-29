@@ -378,6 +378,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, linkedInput.current, props.context);
 
+    const getDropDownButton = (): HTMLButtonElement|undefined => {
+        if (linkedRef.current) {
+            return linkedRef.current.getElement().querySelector("button");
+        }
+        return undefined
+    }
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if(onLoadCallback && props.forwardedRef.current) {
@@ -393,9 +400,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     /** disable dropdownbutton tabIndex */
     useEffect(() => {
-        const autoRef: any = linkedRef.current
-        if (autoRef) {
-            autoRef.dropdownButton.tabIndex = -1;
+        const dropDownButton = getDropDownButton();
+        if (dropDownButton) {
+            dropDownButton.tabIndex = -1;
         }
 
         if (props.isCellEditor && props.passedKey) {
@@ -412,16 +419,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     // Disable the dropdown-button if the editor is set to readonly
     useEffect(() => {
-        const autoRef: any = linkedRef.current
-        if (autoRef) {
+        const dropdownButton = getDropDownButton();
+        if (dropdownButton) {
             if (props.isReadOnly) {
-                if (!autoRef.dropdownButton.disabled) {
-                    autoRef.dropdownButton.disabled = true;
+                if (!dropdownButton.disabled) {
+                    dropdownButton.disabled = true;
                 }
                 
             }
-            else if (autoRef.dropdownButton.disabled) {
-                autoRef.dropdownButton.disabled = false;
+            else if (dropdownButton.disabled) {
+                dropdownButton.disabled = false;
             }
         }
     }, [props.isReadOnly])
@@ -777,7 +784,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }
 
     // Creates an item-template when linked-overlay is displayed as table
-    const itemTemplate = useCallback((d:any[], index) => {
+    const itemTemplate = useCallback((d:any[], index: number) => {
         if (props.cellEditor.displayReferencedColumnName) {
             return providedData[index][props.cellEditor.displayReferencedColumnName];
         }
@@ -836,7 +843,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }, [providedData, metaData, tableOptions]);
 
     // Creates a header for the table when linked-overlay is in table-mode
-    const groupedItemTemplate = useCallback(d => {
+    const groupedItemTemplate = useCallback((d:any) => {
         return (d.label as string[]).map((d, i) => <div key={i}>{metaDataReferenced?.columns[i]?.label ?? props.columnMetaData?.label ?? d}</div>)
     }, [props.columnMetaData, providedData, metaDataReferenced]);
 
@@ -876,7 +883,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     height: 'inherit',
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
-                }}
+                } as CSSProperties}
                 inputRef={linkedInput}
                 autoFocus={props.autoFocus ? true : props.isCellEditor ? true : false}
                 appendTo={document.body}

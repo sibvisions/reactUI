@@ -13,17 +13,17 @@
  * the License.
  */
 
-import { DataTableColumnResizeEndParams, DataTableSelectionChangeParams } from "primereact/datatable";
 import React, { FC } from "react";
 import { SortDefinition } from "../../request/data/SortRequest";
+import { DataTableColumnResizeEndEvent, DataTableSelectionCellChangeEvent } from "primereact/datatable";
 
 // Interface for extendable-table
 export interface IExtendableTable {
     onSort?(sortDefinition: SortDefinition[]| undefined): void
     onColOrderChange?(colOrder: string[]): void
-    onColResizeEnd?(e: DataTableColumnResizeEndParams): void
+    onColResizeEnd?(e: DataTableColumnResizeEndEvent): void
     onLazyLoadFetch?(records: any[]):void
-    onRowSelect?(e: {originalEvent: DataTableSelectionChangeParams, selectedRow: any}): void
+    onRowSelect?(e: {originalEvent: DataTableSelectionCellChangeEvent<any>, selectedRow: any}): void
 }
 
 // This component is an empty substitute for the component UITable

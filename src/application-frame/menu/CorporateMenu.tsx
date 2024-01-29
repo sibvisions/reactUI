@@ -25,8 +25,6 @@ import { EmbeddedContext } from "../../main/contexts/EmbedProvider";
 import useMenuItems from "../../main/hooks/data-hooks/useMenuItems";
 import { parseIconData } from "../../main/components/comp-props/ComponentProperties";
 import { BaseMenuButton } from "../../main/response/data/MenuResponse";
-import { DomHandler } from "primereact/utils";
-import useMultipleEventHandler from "../../main/hooks/event-hooks/useMultipleEventHandler";
 import { appContext } from "../../main/contexts/AppProvider";
 
 /**
@@ -48,14 +46,14 @@ const CorporateMenu:FC<IMenu> = (props) => {
      * Is called when the server sends toolbar-data
      * @param toolbarItems - An array of toolbar-items sent by the server.
      */
-    const handleNewToolbarItems = useCallback((toolbarItems: Array<MenuItem>) => {
+    const handleNewToolbarItems = useCallback((toolbarItems: Array<BaseMenuButton>) => {
         const tbItems = new Array<MenuItem>();
         toolbarItems.forEach(item => {
             const iconData = parseIconData(undefined, item.image)
             const toolbarItem:MenuItem = {
                 label: item.text,
                 icon: iconData.icon,
-                command: () => showTopBar(item.action(), context.server.topbar)
+                command: () => item.action ? showTopBar(item.action(), context.server.topbar) : undefined
             }
             tbItems.push(toolbarItem);
         });
@@ -94,18 +92,6 @@ const CorporateMenu:FC<IMenu> = (props) => {
 
         return () => context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
     }, [context.subscriptions]);
-
-    //@ts-ignore Event handling for sub-submenus, to absolutely position them next to their parent submenu
-    useMultipleEventHandler(DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu").length ? 
-    //@ts-ignore
-    DomHandler.find(document.getElementsByClassName("corp-menu-menubar")[0], ".is-submenu") : undefined, "mouseover",
-    (event:any) => {
-        const menuItem = event.currentTarget
-        const submenuWrapper = menuItem.querySelector(".wrapper");
-        const menuItemPos = { top: menuItem.offsetTop, left: menuItem.offsetLeft };
-        submenuWrapper.style.top = menuItemPos.top + 'px';
-        submenuWrapper.style.left = menuItemPos.left + Math.round(menuItem.offsetWidth) + 'px'
-    });
 
     return (
         <>

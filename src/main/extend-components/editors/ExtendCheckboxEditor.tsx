@@ -17,7 +17,7 @@ import React, { FC, SyntheticEvent } from "react";
 
 // Interface for extendable-checkbox-cell-editor
 export interface IExtendableCheckboxEditor {
-    onClick?(e: SyntheticEvent): void
+    onClick?(e: SyntheticEvent|undefined): void
     onChange?(e: {
         value: string | number | boolean | undefined,
         selectedValue: string | number | boolean | undefined,

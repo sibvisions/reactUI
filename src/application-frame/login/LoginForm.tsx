@@ -123,7 +123,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                     inputId="rememberMe"
                                     className="remember-me-cbx"
                                     checked={rememberMe}
-                                    onChange={(event) => setRememberMe(prevState => event.checked)} />
+                                    onChange={(event) => event.checked !== undefined ? setRememberMe(event.checked) : undefined} />
                                 <label htmlFor="rememberMe" className="p-checkbox-label">{translation.get("Remember me?")}</label>
                             </div>}
                             {context.appSettings.applicationMetaData.lostPasswordEnabled &&
