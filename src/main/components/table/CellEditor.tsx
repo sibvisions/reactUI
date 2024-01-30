@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import _ from "underscore";
 import useMetaData from "../../hooks/data-hooks/useMetaData";
 import useEventHandler from "../../hooks/event-hooks/useEventHandler";
@@ -139,6 +139,8 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
 
+    const forwardedRef = useRef<any>(null);
+
     /** Reference which contains the pressed key for input editors */
     const passRef = useRef<string>("")
 
@@ -263,7 +265,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     return (
         (edit && props.isEditable) ?
             <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
-                {displayEditor(columnMetaData, { ...props, isReadOnly: !props.isEditable }, stopCellEditing, passRef.current)}
+                {displayEditor(columnMetaData, { ...props, isReadOnly: !props.isEditable, context: context, forwardedRef: forwardedRef }, stopCellEditing, passRef.current)}
             </div> : <CellRenderer
                 name={props.name}
                 screenName={props.screenName}

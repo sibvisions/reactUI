@@ -29,11 +29,8 @@ import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
-import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import { IExtendableDateEditor } from "../../../extend-components/editors/ExtendDateEditor";
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
-import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
-import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import { formatInTimeZone, toDate } from 'date-fns-tz'
 import { IComponentConstants } from "../../BaseComponent";
 
@@ -229,15 +226,16 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     // If the editor is readonly, disable the button to open the datepicker
     useEffect(() => {
         if (calendar.current) {
-            //@ts-ignore
-            const btnElem = calendar.current.container.querySelector("button");
-            if (props.isReadOnly || hasError) {
-                if (!btnElem.disabled) {
-                    btnElem.disabled = true;
+            const btnElem = calendar.current.getElement().querySelector("button");
+            if (btnElem) {
+                if (props.isReadOnly || hasError) {
+                    if (!btnElem.disabled) {
+                        btnElem.disabled = true;
+                    }
                 }
-            }
-            else if (btnElem.disabled && !hasError) {
-                btnElem.disabled = false;
+                else if (btnElem.disabled && !hasError) {
+                    btnElem.disabled = false;
+                }
             }
         }
     }, [props.isReadOnly])
@@ -317,9 +315,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     }
 
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
-    useMultipleEventHandler(calendar.current && calendarInput.current ?
-        //@ts-ignore
-        [calendarInput.current, calendar.current.container.querySelector("button")] : undefined, "keydown", (event: KeyboardEvent) => {
+    useMultipleEventHandler(calendar.current && calendarInput.current && calendar.current.getElement().querySelector("button") ?
+        [calendarInput.current, calendar.current.getElement().querySelector("button")!] : undefined, "keydown", (event: KeyboardEvent) => {
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab', 'Escape'].indexOf(event.key) === -1 && !startedEditing.current) {
                 startedEditing.current = true;
             }
@@ -415,7 +412,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     hasChanged.current = true;
 
                     if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
-                        (calendar.current as any).hideOverlay();
+                        calendar.current?.hide();
                     }
 
                     if (calendarInput.current) {
@@ -439,7 +436,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
 
                     // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
                     //@ts-ignore
-                    if (!visible && !calendar.current.container.contains(event.relatedTarget)) {
+                    if (!visible && !calendar.current?.getElement().contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server);
                         }
@@ -455,7 +452,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 readOnlyInput={props.isReadOnly || hasError}
                 //disabled={props.isReadOnly || hasError}
+                onMonthChange={() => console.log('month change')}
                 onVisibleChange={event => {
+                    console.log(visible, event);
                     setVisible(prevState => !prevState);
                     if (!focused.current) {
                         handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
@@ -476,13 +475,12 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 formatDateTime={(date: Date) => {
                     let formattedValue = "";
                     if (date) {
-                        formattedValue = dateFormat ? format(date, dateFormat, { locale: locale ? getDateLocale(locale) : getGlobalLocale() }) : formatISO(date);
+                        formattedValue = dateFormat ? format(date, dateFormat, { locale: locale ? locale : getGlobalLocale() }) : formatISO(date);
                     }
-
                     return formattedValue;
                 }}
                 parseDateTime={(text: string) => {
-                    let date = parseMultiple(text, [dateFormat || '', ...dateFormats], new Date(), { locale: locale ? getDateLocale(locale) : getGlobalLocale() }) || new Date();
+                    let date = parseMultiple(text, [dateFormat || '', ...dateFormats], new Date(), { locale: locale ? locale : getGlobalLocale() }) || new Date();
 
                     if (timeOnly) {
                         date = new Date();

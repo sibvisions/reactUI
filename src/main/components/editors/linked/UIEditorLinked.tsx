@@ -284,7 +284,7 @@ export function getDisplayValue(value:any, referencedObject: any, linkReference:
  */
 const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentConstants> = (props) => {
     /** Reference for the LinkedCellEditor element */
-    const linkedRef = useRef<any>(null);
+    const linkedRef = useRef<AutoComplete>(null);
 
     /** Reference for the LinkedCellEditor input element */
     const linkedInput = useRef<any>(null);
@@ -378,11 +378,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, linkedInput.current, props.context);
 
-    const getDropDownButton = (): HTMLButtonElement|undefined => {
+    const getDropDownButton = (): HTMLButtonElement|null => {
         if (linkedRef.current) {
             return linkedRef.current.getElement().querySelector("button");
         }
-        return undefined
+        return null;
     }
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -530,7 +530,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         setTimeout(() => {
             if(linkedRef.current && props.cellEditor.autoOpenPopup && (props.cellEditor.preferredEditorMode === 1 && props.isCellEditor)) {
                 sendFilter("");
-                (linkedRef.current as any).showOverlay();
+                linkedRef.current.show()
             }
         }, 33)
 
@@ -549,7 +549,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
      */
     useEventHandler(linkedInput.current || undefined, "keydown", (event) => {
         if((event as KeyboardEvent).key === "Enter" && !document.querySelector('.p-autocomplete-item.p-highlight')) {
-            (linkedRef.current as any).hideOverlay();
+            linkedRef.current?.hide();
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
         }
         else if (props.isCellEditor && props.stopCellEditing) {
@@ -941,16 +941,15 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
                         // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
                         if (dropDownElem) {
-                            if (!linkedRef.current.container.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
+                            if (!linkedRef.current?.getElement().contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
                                 if (props.eventFocusLost) {
                                     onFocusLost(props.name, props.context.server);
                                 }
                                 focused.current = false;
-                                //(linkedRef.current as any).hideOverlay();
                             }
                             
                         }
-                        else if (!linkedRef.current.container.contains(event.relatedTarget)) {
+                        else if (!linkedRef.current?.getElement().contains(event.relatedTarget)) {
                             if (props.eventFocusLost) {
                                 onFocusLost(props.name, props.context.server);
                             }

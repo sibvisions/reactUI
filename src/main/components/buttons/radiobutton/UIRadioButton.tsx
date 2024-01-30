@@ -71,7 +71,6 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (props) => 
         if (props.onClick) {
             props.onClick(event.originalEvent);
         }
-
         sendSetValue(props.name, props.selected === undefined ? true : !props.selected, props.context.server, props.topbar)
     }
 
@@ -106,8 +105,8 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (props) => 
                     ref={rbRef}
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
-                    checked={props.selected}
-                    onChange={onClick}
+                    checked={props.selected === undefined ? false : props.selected}
+                    onClick={onClick}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
                     disabled={isCompDisabled(props)}

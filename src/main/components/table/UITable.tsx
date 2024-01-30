@@ -346,11 +346,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const scrollToSelectedCell = (cell:any, isNext:boolean) => {
         setTimeout(() => {
             if (tableRef.current) {
-                //@ts-ignore
-                const table = tableRef.current.el
+                const table = tableRef.current.getElement();
                 const selectedElem = DomHandler.findSingle(table, 'tbody > tr.p-highlight td.p-highlight');
                 const container = DomHandler.findSingle(table, !virtualEnabled ? '.p-datatable-wrapper' : '.p-virtualscroller');
-                const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table')
+                const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table');
 
                 if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
                     const moveDirections = isVisible(selectedElem, container, cell, tableRowHeight);
@@ -518,68 +517,68 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 }
             }
             setTimeout(() => {
-                const table = tableRef.current as any;
-                //@ts-ignore
-                const currentTable:HTMLTableElement = tableRef?.current?.table;
-                if (currentTable) {
-                    const theader = currentTable.querySelectorAll('th');
-                    const trows = currentTable.querySelectorAll('tbody > tr');
-
-                    table.destroyStyleElement();
-
-                    /** First set width of headers for columns then rows */
-                    for (let i = 0; i < theader.length; i++) {
-                        theader[i].style.removeProperty('width')
-                        const newCellWidth = { widthPreSet: false, width: 0 }
-                        const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
-                        const columnMetaData = getColMetaData(colName, metaData?.columns);
-                        if (columnMetaData?.width) {
-                            newCellWidth.width = columnMetaData.width;
-                            newCellWidth.widthPreSet = true;
-                            theader[i].setAttribute('column-width-set', "true");
-                        }
-                        else {
-                            const title = theader[i].querySelector('.p-column-title > span');
-                            const splitPadding = window.getComputedStyle(document.documentElement).getPropertyValue('--table-header-padding').split(" ");
-                            let padding = 16;
-                            if (splitPadding[splitPadding.length > 1 ? 1 : 0].includes("rem")) {
-                                const rem = splitPadding[1].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("r"));
-                                padding = convertRemToPixels(parseFloat(rem)) * 2;
+                if (tableRef.current) {
+                    const currentTable = tableRef.current.getTable();
+                    if (currentTable) {
+                        const theader = currentTable.querySelectorAll('th');
+                        const trows = currentTable.querySelectorAll('tbody > tr');
+    
+                        //table.destroyStyleElement();
+    
+                        /** First set width of headers for columns then rows */
+                        for (let i = 0; i < theader.length; i++) {
+                            theader[i].style.removeProperty('width')
+                            const newCellWidth = { widthPreSet: false, width: 0 }
+                            const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
+                            const columnMetaData = getColMetaData(colName, metaData?.columns);
+                            if (columnMetaData?.width) {
+                                newCellWidth.width = columnMetaData.width;
+                                newCellWidth.widthPreSet = true;
+                                theader[i].setAttribute('column-width-set', "true");
                             }
                             else {
-                                padding = parseFloat(splitPadding[splitPadding.length > 1 ? 1 : 0].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("p"))) * 2;
+                                const title = theader[i].querySelector('.p-column-title > span');
+                                const splitPadding = window.getComputedStyle(document.documentElement).getPropertyValue('--table-header-padding').split(" ");
+                                let padding = 16;
+                                if (splitPadding[splitPadding.length > 1 ? 1 : 0].includes("rem")) {
+                                    const rem = splitPadding[1].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("r"));
+                                    padding = convertRemToPixels(parseFloat(rem)) * 2;
+                                }
+                                else {
+                                    padding = parseFloat(splitPadding[splitPadding.length > 1 ? 1 : 0].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("p"))) * 2;
+                                }
+                                newCellWidth.width = title ? (Math.max((title as HTMLElement).offsetWidth, Math.ceil(title.getBoundingClientRect().width)) + padding) : 0;
                             }
-                            newCellWidth.width = title ? (Math.max((title as HTMLElement).offsetWidth, Math.ceil(title.getBoundingClientRect().width)) + padding) : 0;
+                            cellDataWidthList.push(newCellWidth);
                         }
-                        cellDataWidthList.push(newCellWidth);
-                    }
-                    // adding "read-size" sets the table to table-layout auto and the td's to display inline block to correctly measure the width
-                    (tableRef.current as any).el.classList.add("read-size");
-                    for (let i = 0; i < Math.min(trows.length, 10); i++) {
-                        goThroughCellData(trows, i);
-                    }
-                    (tableRef.current as any).el.classList.remove("read-size");
-
-                    let tempWidth: number = 0;
-                    cellDataWidthList.forEach(cellDataWidth => {
-                        tempWidth += cellDataWidth.width
-                    });
-
-                    /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
-                    for (let i = 0; i < theader.length; i++) {
-                        let w = cellDataWidthList[i].width as any;
-                        if (props.autoResize === false) {
-                            w = `${w}px`;
-                        } else {
-                            w = `${100 * w / tempWidth}%`;
+                        // adding "read-size" sets the table to table-layout auto and the td's to display inline block to correctly measure the width
+                        tableRef.current.getElement().classList.add("read-size");
+                        for (let i = 0; i < Math.min(trows.length, 10); i++) {
+                            goThroughCellData(trows, i);
                         }
-                        theader[i].style.setProperty('width', w);
+                        tableRef.current.getElement().classList.remove("read-size");
+    
+                        let tempWidth: number = 0;
+                        cellDataWidthList.forEach(cellDataWidth => {
+                            tempWidth += cellDataWidth.width
+                        });
+    
+                        /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
+                        for (let i = 0; i < theader.length; i++) {
+                            let w = cellDataWidthList[i].width as any;
+                            if (props.autoResize === false) {
+                                w = `${w}px`;
+                            } else {
+                                w = `${100 * w / tempWidth}%`;
+                            }
+                            theader[i].style.setProperty('width', w);
+                        }
+                        /** set EstTableWidth for size reporting */
+                        setEstTableWidth(tempWidth);
                     }
-                    /** set EstTableWidth for size reporting */
-                    setEstTableWidth(tempWidth);
-                }
-                else {
-                    setEstTableWidth(0);
+                    else {
+                        setEstTableWidth(0);
+                    }
                 }
             }, 0);
         }
@@ -632,8 +631,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 props.onSort(sortDefinitions);
             }
 
-            const table = tableRef.current as any;
-            const allTableColumns = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+            const table = tableRef.current;
+            const allTableColumns = DomHandler.find(table.getTable(), '.p-datatable-thead > tr > th');
             if (sortDefinitions && sortDefinitions.length) {
                 sortDefinitions.forEach(sort => {
                     const el = allTableColumns.find(col => col.classList.contains(sort.columnName));
@@ -1145,59 +1144,59 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 props.onColResizeEnd(e);
             }
 
-            const table = tableRef.current as any;
-            const container = table.el;
+            const table = tableRef.current;
+            const container = table.getElement();
 
             //container.querySelector('.p-resizable-column[style*="pointer-events"]').style.removeProperty('pointer-events')
-            if (props.autoResize === false) {
-                //reverse prime fit sizing                
-                let nextColumn = e.element.nextElementSibling as HTMLElement | undefined;
-                let nextColumnWidth = nextColumn ? nextColumn.offsetWidth + e.delta : e.delta;
+            // if (props.autoResize === false) {
+            //     //reverse prime fit sizing                
+            //     let nextColumn = e.element.nextElementSibling as HTMLElement | undefined;
+            //     let nextColumnWidth = nextColumn ? nextColumn.offsetWidth + e.delta : e.delta;
 
-                if (newColumnWidth > 15 && nextColumnWidth > 15) {
-                    table.resizeTableCells(newColumnWidth, nextColumnWidth);
-                }
+            //     if (newColumnWidth > 15 && nextColumnWidth > 15) {
+            //         table.resizeTableCells(newColumnWidth, nextColumnWidth);
+            //     }
                 
-                newColumnWidth = e.element.offsetWidth + (nextColumn ? e.delta : 0);
+            //     newColumnWidth = e.element.offsetWidth + (nextColumn ? e.delta : 0);
 
-                //custom sizing based on primes original column sizing code
-                let widths:number[] = [];
-                let colIndex = DomHandler.index(table.resizeColumnElement);
-                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
-                headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
+            //     //custom sizing based on primes original column sizing code
+            //     let widths:number[] = [];
+            //     let colIndex = DomHandler.index(table.resizeColumnElement);
+            //     let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+            //     headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
         
-                table.destroyStyleElement();
-                table.createStyleElement();
+            //     table.destroyStyleElement();
+            //     table.createStyleElement();
         
-                let innerHTML = '';
-                const dp = Math.round(e.delta / (widths.length - colIndex - 1));
-                const dpr = e.delta - dp * (widths.length - colIndex - 2);
-                const totalWidth = widths.reduce((agg, w) => agg + w, 0);
-                widths.forEach((width, index) => {
-                    let colWidth = index === colIndex 
-                        ? newColumnWidth 
-                        : (index > colIndex) 
-                            ? width - (index === widths.length - 1 ? dpr : dp) 
-                            : width;
+            //     let innerHTML = '';
+            //     const dp = Math.round(e.delta / (widths.length - colIndex - 1));
+            //     const dpr = e.delta - dp * (widths.length - colIndex - 2);
+            //     const totalWidth = widths.reduce((agg, w) => agg + w, 0);
+            //     widths.forEach((width, index) => {
+            //         let colWidth = index === colIndex 
+            //             ? newColumnWidth 
+            //             : (index > colIndex) 
+            //                 ? width - (index === widths.length - 1 ? dpr : dp) 
+            //                 : width;
 
-                    let style = table.props.scrollable 
-                        ? `flex: 0 0 ${colWidth}px !important; max-width: ${colWidth}px` 
-                        : `width: ${colWidth}px !important`;
+            //         let style = table.props.scrollable 
+            //             ? `flex: 0 0 ${colWidth}px !important; max-width: ${colWidth}px` 
+            //             : `width: ${colWidth}px !important`;
                     
-                    innerHTML += `
-                        .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-                        .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-                        .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
-                            ${style}
-                        }
-                    `
-                });
-                table.styleElement.innerHTML = innerHTML;
-                widthReq.width = newColumnWidth;
-            }
-            else {
-                widthReq.width = e.element.offsetWidth;
-            }
+            //         innerHTML += `
+            //             .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+            //             .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+            //             .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+            //                 ${style}
+            //             }
+            //         `
+            //     });
+            //     table.styleElement.innerHTML = innerHTML;
+            //     widthReq.width = newColumnWidth;
+            // }
+            // else {
+            //     widthReq.width = e.element.offsetWidth;
+            // }
             showTopBar(props.context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), props.topbar);
         }
     }
@@ -1220,7 +1219,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             if (from && to) {
                 colWidthCSS = colWidthCSS.replace(fromRegex, from[1] +   to[2] + from[3]);
                 colWidthCSS = colWidthCSS.replace(toRegex,     to[1] + from[2] +   to[3]);
-                (tableRef.current as any).styleElement.innerHTML = colWidthCSS;
+                //tableRef.current.styleElement.innerHTML = colWidthCSS;
             }
         }
 
@@ -1335,8 +1334,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** Column-resize handler */
     useMultipleEventHandler(
         tableRef.current ?
-            //@ts-ignore
-            DomHandler.find(tableRef.current.el, "th .p-column-resizer")
+            DomHandler.find(tableRef.current.getElement(), "th .p-column-resizer")
             : undefined,
         'mousedown',
         (elem:any) => {
@@ -1359,64 +1357,64 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         }
     }, [providerData])
 
-    useEffect(() => {
-        //this will force the table to refresh its internal visible item count
-        //setItemSize(tableRowHeight + Math.random() / 1E10);
+    // useEffect(() => {
+    //     //this will force the table to refresh its internal visible item count
+    //     //setItemSize(tableRowHeight + Math.random() / 1E10);
 
-        if (tableRef.current) {
-            const table = tableRef.current as any;
-            //resize columns
-            if(props.autoResize === false) {
-                let presetColumnWidths = 0;
-                const idxToSkip:string[] = []
-                let innerHTML = '';
-                let widths:number[] = [];
-                let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
-                headers.forEach((header, index) => {
-                    const width = header.style.getPropertyValue('width') || DomHandler.getOuterWidth(header, false);
-                    if (header.getAttribute("column-width-set")) {
-                        let style = table.props.scrollable
-                            ? `flex: 0 0 ${width} !important; max-width: ${width}`
-                            : `width: ${width} !important`;
-                        presetColumnWidths += parseFloat(width);
-                        innerHTML += 
-                        `
-                            .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-                            .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-                            .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
-                                ${style}
-                            }
-                        `
-                        idxToSkip.push(index.toString());
-                    }
-                    widths.push(parseFloat(width))
-                });
-                const totalWidth = widths.reduce((agg, w) => agg + w, 0) - presetColumnWidths;
-                const tableWidth = table.table.offsetWidth - presetColumnWidths;
+    //     if (tableRef.current) {
+    //         const table = tableRef.current
+    //         //resize columns
+    //         if(props.autoResize === false) {
+    //             let presetColumnWidths = 0;
+    //             const idxToSkip:string[] = []
+    //             let innerHTML = '';
+    //             let widths:number[] = [];
+    //             let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
+    //             headers.forEach((header, index) => {
+    //                 const width = header.style.getPropertyValue('width') || DomHandler.getOuterWidth(header, false);
+    //                 if (header.getAttribute("column-width-set")) {
+    //                     let style = table.props.scrollable
+    //                         ? `flex: 0 0 ${width} !important; max-width: ${width}`
+    //                         : `width: ${width} !important`;
+    //                     presetColumnWidths += parseFloat(width);
+    //                     innerHTML += 
+    //                     `
+    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+    //                             ${style}
+    //                         }
+    //                     `
+    //                     idxToSkip.push(index.toString());
+    //                 }
+    //                 widths.push(parseFloat(width))
+    //             });
+    //             const totalWidth = widths.reduce((agg, w) => agg + w, 0) - presetColumnWidths;
+    //             const tableWidth = table.table.offsetWidth - presetColumnWidths;
 
-                table.destroyStyleElement();
-                table.createStyleElement();
+    //             table.destroyStyleElement();
+    //             table.createStyleElement();
                 
-                widths.forEach((width, index) => {
-                    if (!idxToSkip.includes(index.toString())) {
-                        let colWidth = (width / totalWidth) * tableWidth;
-                        let style = table.props.scrollable 
-                            ? `flex: 0 0 ${colWidth}px !important; max-width: ${colWidth}px` 
-                            : `width: ${colWidth}px !important`;
+    //             widths.forEach((width, index) => {
+    //                 if (!idxToSkip.includes(index.toString())) {
+    //                     let colWidth = (width / totalWidth) * tableWidth;
+    //                     let style = table.props.scrollable 
+    //                         ? `flex: 0 0 ${colWidth}px !important; max-width: ${colWidth}px` 
+    //                         : `width: ${colWidth}px !important`;
                         
-                        innerHTML += `
-                            .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-                            .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-                            .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
-                                ${style}
-                            }
-                        `
-                    }
-                });
-                table.styleElement.innerHTML = innerHTML;
-            }
-        }
-    }, [props.layoutStyle?.width, estTableWidth, providerData]);
+    //                     innerHTML += `
+    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
+    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
+    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
+    //                             ${style}
+    //                         }
+    //                     `
+    //                 }
+    //             });
+    //             table.styleElement.innerHTML = innerHTML;
+    //         }
+    //     }
+    // }, [props.layoutStyle?.width, estTableWidth, providerData]);
     
     return (
         <SelectedCellContext.Provider value={selectedCellId}>

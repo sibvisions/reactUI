@@ -183,7 +183,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
             props.borderVisible === false ? "invisible-border" : "",
             props.styleClassNames
         )
-    }, [props.columnMetaData?.nullable]);
+    }, [props.columnMetaData?.nullable, props.isReadOnly, props.isCellEditor, props.focusable, props.borderVisible, props.styleClassNames]);
 
 
 
@@ -229,10 +229,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && props.forwardedRef.current) {
-            //@ts-ignore
-            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current.element, onLoadCallback)
+            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current.getInput(), onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {

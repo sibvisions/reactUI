@@ -108,7 +108,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected ? props.selected : false}
-                    onChange={onClick}
+                    onClick={onClick}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
                     disabled={isCompDisabled(props)}

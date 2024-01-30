@@ -56,7 +56,6 @@ const ErrorDialog:FC = () => {
 
     // Builds the error-causes as items to show in the Listbox 
     const errorItems = useMemo(() => {
-        
         if (errorProps && errorProps.exceptions) {
             return [{
                 label: translation.get("Cause(s) of failure") as string,
@@ -124,7 +123,8 @@ const ErrorDialog:FC = () => {
                         className="rc-button error-dialog-footer-button"
                         style={{
                             '--background': btnBgd,
-                            '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
+                            '--hoverBackground': tinycolor(btnBgd).darken(5).toString(),
+                            marginRight: "8px"
                         } as CSSProperties}
                         label={translation.get("Details")}
                         onClick={() => {

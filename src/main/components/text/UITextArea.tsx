@@ -47,7 +47,9 @@ const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
 
-    useRequestFocus(id, props.requestFocus, props.forwardedRef.current, props.context);
+    const inputRef = useRef<any>(null);
+
+    useRequestFocus(id, props.requestFocus, inputRef.current, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -57,56 +59,58 @@ const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
 
     return (
-        <InputTextarea 
-            ref={props.forwardedRef} 
-            id={props.name}
-            className={concatClassnames(
-                "rc-input", 
-                props.focusable === false ? 
-                "no-focus-rect" : "",
-                isCompDisabled(props) ? "rc-input-readonly" : "",
-                props.styleClassNames
-            )}
-            value={text||""}
-            style={{...props.layoutStyle, ...props.compStyle, resize: 'none'}} 
-            onChange={event => {
-                startedEditing.current = true;
-                if (props.onChange) {
-                    props.onChange({ originalEvent: event, value: event.currentTarget.value });
-                }
-
-                setText(event.currentTarget.value)
-            }} 
-            onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
-            onBlur={(event) => {
-                if (!isCompDisabled(props)) {
-                    if (props.onBlur) {
-                        props.onBlur(event);
+        <span ref={props.forwardedRef} id={props.name} style={props.layoutStyle}>
+            <InputTextarea 
+                ref={inputRef}
+                className={concatClassnames(
+                    "rc-input", 
+                    props.focusable === false ? 
+                    "no-focus-rect" : "",
+                    isCompDisabled(props) ? "rc-input-readonly" : "",
+                    props.styleClassNames
+                )}
+                value={text||""}
+                style={{ ...props.compStyle, resize: 'none', width: "100%", height: "100%" }} 
+                onChange={event => {
+                    startedEditing.current = true;
+                    if (props.onChange) {
+                        props.onChange({ originalEvent: event, value: event.currentTarget.value });
                     }
 
-                    if (startedEditing.current) {
-                        sendSetValue(props.name, text, props.context.server, props.topbar);
-                        startedEditing.current = false;
-                    }
+                    setText(event.currentTarget.value)
+                }} 
+                onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
+                onBlur={(event) => {
+                    if (!isCompDisabled(props)) {
+                        if (props.onBlur) {
+                            props.onBlur(event);
+                        }
 
-    
-                    if (props.eventFocusLost) {
-                        onFocusLost(props.name, props.context.server)
+                        if (startedEditing.current) {
+                            sendSetValue(props.name, text, props.context.server, props.topbar);
+                            startedEditing.current = false;
+                        }
+
+        
+                        if (props.eventFocusLost) {
+                            onFocusLost(props.name, props.context.server)
+                        }
                     }
-                }
-            }}
-            tooltip={props.toolTipText}
-            tooltipOptions={{ position: "left" }}
-            {...usePopupMenu(props)}
-            cols={props.columns !== undefined && props.columns >= 0 ? props.columns : 18}
-            rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5}
-            onKeyDown={(e) => {
-                if (e.key === "Enter" && e.shiftKey) {
-                    handleEnterKey(e, e.target, props.name);
-                }
-            }}
-            disabled={isCompDisabled(props)}
-            tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
+                }}
+                tooltip={props.toolTipText}
+                tooltipOptions={{ position: "left" }}
+                {...usePopupMenu(props)}
+                cols={props.columns !== undefined && props.columns >= 0 ? props.columns : 18}
+                rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.shiftKey) {
+                        handleEnterKey(e, e.target, props.name);
+                    }
+                }}
+                disabled={isCompDisabled(props)}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
+        </span>
+
     )
 }
 export default UITextArea

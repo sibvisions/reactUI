@@ -1,59 +1,5 @@
 /*global google*/
-import React, {CSSProperties, Component, FC, forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react';
-import PropTypes from 'prop-types';
-
-// export class GMap extends Component {
-
-//     static defaultProps = {
-//         options: null,
-//         overlays: null,
-//         style: null,
-//         className: null,
-//         onMapReady: null,
-//         onMapClick: null,
-//         onMapDragEnd: null,
-//         onZoomChanged: null,
-//         onOverlayDragStart: null,
-//         onOverlayDrag: null,
-//         onOverlayDragEnd: null,
-//         onOverlayClick: null
-//     }
-
-//     static propTypes = {
-//         options: PropTypes.object,
-//         overlays: PropTypes.array,
-//         style: PropTypes.object,
-//         className: PropTypes.string,
-//         onMapReady: PropTypes.func,
-//         onMapClick: PropTypes.func,
-//         onMapDragEnd: PropTypes.func,
-//         onZoomChanged: PropTypes.func,
-//         onOverlayDragStart: PropTypes.func,
-//         onOverlayDrag: PropTypes.func,
-//         onOverlayDragEnd: PropTypes.func,
-//         onOverlayClick: PropTypes.func
-//     };
-    
-//     componentDidUpdate(prevProps, prevState, snapshot) {
-//         if(prevProps.overlays !== this.props.overlays) {
-//             if(prevProps.overlays) {
-//                 for(let overlay of prevProps.overlays) {
-//                     google.maps.event.clearInstanceListeners(overlay);
-//                     overlay.setMap(null);
-//                 }
-//             }
-            
-//             this.initOverlays(this.props.overlays);
-//         }
-//     }
-    
-//     render() {
-//         return (
-//             <div ref={(el) => this.container = el} style={this.props.style} className={this.props.className}></div>
-//         );
-//     }
-// }
-
+import React, {CSSProperties, forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react';
 interface IGMap {
     options: any,
     overlays?: any[],
@@ -69,6 +15,12 @@ interface IGMap {
     onOverlayClick?: Function,
     ref: any
 }
+
+/**
+ * In version 9.0.0-rc.1 PrimeReact decided to remove their "GMap" component, as "it is a wrapper and does not add significant value to the library"
+ * https://github.com/primefaces/primereact/issues/4038
+ * They didn't say about which library they put a wrapper. They just said, to use their wrapper from an old version if you want to use it.
+ */
 
 export const GMap: React.ForwardRefExoticComponent<IGMap> = forwardRef((props, ref) => {
     const map = useRef<any>();

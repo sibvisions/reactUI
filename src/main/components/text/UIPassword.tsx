@@ -42,7 +42,9 @@ const UIPassword: FC<ITextField & IExtendableText> = (props) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
 
-    useRequestFocus(id, props.requestFocus, props.forwardedRef.current, props.context);
+    const inputRef = useRef<any>(null);
+
+    useRequestFocus(id, props.requestFocus, inputRef.current, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -52,50 +54,52 @@ const UIPassword: FC<ITextField & IExtendableText> = (props) => {
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
 
     return (
-        <Password
-            inputRef={props.forwardedRef}
-            id={props.name}
-            className={concatClassnames(
-                "rc-input", 
-                props.focusable === false ? "no-focus-rect" : "",
-                isCompDisabled(props) ? "rc-input-readonly" : "",
-                props.styleClassNames
-            )}
-            value={pwValue||""} 
-            feedback={false} 
-            style={{...props.layoutStyle, ...props.compStyle}} 
-            onChange={event => {
-                startedEditing.current = true;
-                if (props.onChange) {
-                    props.onChange({ originalEvent: event, value: event.currentTarget.value });
-                }
-                
-                setPwValue(event.currentTarget.value)
-            }} 
-            onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
-            onBlur={(event) => {
-                if (!isCompDisabled(props)) {
-                    if (props.onBlur) {
-                        props.onBlur(event);
+        <span ref={props.forwardedRef} id={props.name} style={props.layoutStyle}>
+            <Password
+                ref={inputRef}
+                className={concatClassnames(
+                    "rc-input", 
+                    props.focusable === false ? "no-focus-rect" : "",
+                    isCompDisabled(props) ? "rc-input-readonly" : "",
+                    props.styleClassNames
+                )}
+                value={pwValue||""} 
+                feedback={false} 
+                style={{ ...props.compStyle, width: "100%", height: "100%" }} 
+                onChange={event => {
+                    startedEditing.current = true;
+                    if (props.onChange) {
+                        props.onChange({ originalEvent: event, value: event.currentTarget.value });
                     }
+                    
+                    setPwValue(event.currentTarget.value)
+                }} 
+                onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
+                onBlur={(event) => {
+                    if (!isCompDisabled(props)) {
+                        if (props.onBlur) {
+                            props.onBlur(event);
+                        }
 
-                    if (startedEditing.current) {
-                        sendSetValue(props.name, pwValue, props.context.server, props.topbar);
-                        startedEditing.current = false;
+                        if (startedEditing.current) {
+                            sendSetValue(props.name, pwValue, props.context.server, props.topbar);
+                            startedEditing.current = false;
+                        }
+        
+                        if (props.eventFocusLost) {
+                            onFocusLost(props.name, props.context.server)
+                        }
                     }
-    
-                    if (props.eventFocusLost) {
-                        onFocusLost(props.name, props.context.server)
-                    }
-                }
-            }}
-            tooltip={props.toolTipText}
-            tooltipOptions={{ position: "left" }}
-            {...usePopupMenu(props)}
-            size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
-            onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
-            disabled={isCompDisabled(props)}
-            tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
+                }}
+                tooltip={props.toolTipText}
+                tooltipOptions={{ position: "left" }}
+                {...usePopupMenu(props)}
+                size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
+                onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
+                disabled={isCompDisabled(props)}
+                tabIndex={getTabIndex(props.focusable, props.tabIndex)} />
+        </span>
+
     )
 }
 export default UIPassword

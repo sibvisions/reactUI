@@ -43,6 +43,10 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
     /** Reference for the map element */
     const mapInnerRef = useRef(null);
 
+    const markersRef = useRef<google.maps.Marker[]>([]);
+
+    const groupsRef = useRef<google.maps.Polygon[]>([]);
+
     /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
 
@@ -121,8 +125,12 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
     // Creates the markers based on the providedPointData and sets the selected-marker for the last marker.
     useEffect(() => {
         if (mapInnerRef.current && providedPointData) {
-            //@ts-ignore
-            const map = mapInnerRef.current.map
+            const map = mapInnerRef.current
+
+            markersRef.current.forEach(marker => {
+                marker.setMap(null);
+            });
+            markersRef.current = [];
 
             const latColName = props.latitudeColumnName;
             const lngColName = props.longitudeColumnName;
@@ -130,29 +138,35 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
                 let iconData: string | IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                 const pointValues = getLatAndLngValue(point, latColName, lngColName);
                 const marker = new google.maps.Marker({ position: { lat: pointValues.lat, lng: pointValues.lng }, icon: props.context.server.RESOURCE_URL + (typeof iconData === "string" ? iconData as string : (iconData as IconProps).icon) });
+                markersRef.current.push(marker);
                 marker.setMap(map);
                 if (i === providedPointData.length - 1) {
                     setSelectedMarker(marker);
                 }
             })
         }
-    }, [providedPointData, mapReady]);
+    }, [providedPointData, mapReady, mapInnerRef.current]);
 
     // Creates google maps polygons based on the groupdatas
     useEffect(() => {
         if (mapInnerRef.current && providedGroupData) {
-            //@ts-ignore
-            const map = mapInnerRef.current.map
+            const map = mapInnerRef.current
+
+            groupsRef.current.forEach(group => {
+                group.setMap(null);
+            });
+            groupsRef.current = [];
 
             const groupData = sortGroupDataGoogle(providedGroupData, props.groupColumnName, props.latitudeColumnName, props.longitudeColumnName);
             if (groupData.length) {
                 groupData.forEach((group) => {
                     const polygon = new google.maps.Polygon({ paths: group.paths, strokeColor: polyColors.strokeColor, fillColor: polyColors.fillColor });
+                    groupsRef.current.push(polygon);
                     polygon.setMap(map)
                 });
             }
         }
-    }, [providedGroupData, mapReady]);
+    }, [providedGroupData, mapReady, mapInnerRef.current]);
 
     /** 
      *  At start set center to selectedMarker position
@@ -160,8 +174,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
      */
     useEffect(() => {
         if (mapInnerRef.current) {
-            //@ts-ignore
-            const map = mapInnerRef.current.map
+            const map = mapInnerRef.current as any
             if (selectedMarker) {
                 if (!props.center) {
                     map.panTo({lat: selectedMarker.getPosition()?.lat(), lng: selectedMarker.getPosition()?.lng()});
@@ -172,16 +185,15 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
                 }
             }
         }
-    }, []);
+    }, [mapInnerRef.current]);
 
     // pans to the centerposition, initially or when the centerposition changes
     useEffect(() => {
         if (centerPosition && mapInnerRef.current) {
-            //@ts-ignore
-            const map = mapInnerRef.current.map
+            const map = mapInnerRef.current as any
             map.panTo({lat: centerPosition.latitude, lng: centerPosition.longitude})
         }
-    }, [centerPosition])
+    }, [centerPosition, mapInnerRef.current])
 
     // If the lib user extends the Map with onSelectedMarkerChanged, call it when the selected-marker changes.
     useEffect(() => {
@@ -197,7 +209,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
     useEffect(() => {
         if (mapInnerRef.current) {
             //@ts-ignore
-            const map = mapInnerRef.current.map
+            const map = mapInnerRef.current as any
 
             // If selectedMarker is set and pointSelectionEnabled and not locked on center, send a setValues with marker position and a saveRequest to the server
             // If the lib user extends the Icon with onClick, call it when the Map is clicked.
@@ -262,7 +274,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
         }
     },[selectedMarker, props.context.server, props.latitudeColumnName, props.longitudeColumnName,
        props.name, props.pointSelectionEnabled, props.pointSelectionLockedOnCenter,
-       props.pointsDataBook, props.onClick, props.onDrag, props.onDragEnd, props.onZoomChanged]
+       props.pointsDataBook, props.onClick, props.onDrag, props.onDragEnd, props.onZoomChanged, mapInnerRef.current]
     );
 
     /** If the map is not ready, return just a div width set size so it can report its size and initialize */

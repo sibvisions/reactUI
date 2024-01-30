@@ -196,7 +196,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                 trueValue={props.cellEditor.selectedValue}
                 falseValue={props.cellEditor.deselectedValue}
                 checked={checked}
-                onChange={(event) => {
+                onClick={(event) => {
                     if (props.onClick) {
                         props.onClick(event.originalEvent);
                     }
