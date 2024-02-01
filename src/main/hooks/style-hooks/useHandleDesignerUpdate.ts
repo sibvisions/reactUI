@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { CSSProperties, useLayoutEffect, useMemo } from "react";
+import { CSSProperties, useLayoutEffect } from "react";
 import { removeLayoutStyle } from "../../util/component-util/RemoveLayoutStyle";
 import LoadCallBack from "../../util/types/LoadCallBack";
 import useAddLayoutStyle from "./useAddLayoutStyle";

@@ -345,6 +345,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     const showTable = false;
 
+    const filterInProcess = useRef<boolean>(false);
+
+    const callHandleInputCallback = useRef<boolean>(false);
+
     /** True, if the dropdown should be displayed as table */
     const tableOptions = useMemo(() => {
         if (!showTable && isDisplayRefColNameOrConcat) {
@@ -498,7 +502,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
      * When the input changes, send a filter request to the server
      * @param event - Event that gets fired on inputchange
      */
-    const sendFilter = useCallback(async (value:any) => {
+    const sendFilter = useCallback(async (value:any, query?:boolean) => {
         const refDataBookInfo = props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook);
         props.context.contentStore.clearDataFromProvider(props.screenName, props.cellEditor.linkReference.referencedDataBook||"")
         const filterReq = createFilterRequest();
@@ -517,13 +521,22 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         if (props.onFilter) {
             props.onFilter(value);
         }
+
+        if (!filterInProcess.current && !query) {
+            filterInProcess.current = true;
+        }
         
         await props.context.server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => {
             if (!initialFilter) {
                 setInitialFilter(true);
             }
+
+            if (callHandleInputCallback.current) {
+                handleInput();
+            }
+            filterInProcess.current = false;
         });
-    }, [props.context.contentStore, props.context.server, props.cellEditor, props.name, props.cellEditor.linkReference.referencedDataBook]);
+    }, [props.context.contentStore, props.context.server, props.cellEditor, props.name, props.cellEditor.linkReference.referencedDataBook, callHandleInputCallback.current, filterInProcess.current]);
 
     // If autoOpenPopup is true and preferredEditorMode is 1 (singleclick) and it is a table-cell-editor, open the overlay directly and send an empty filter
     useEffect(() => {
@@ -656,7 +669,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         /** Returns the values, of the databook, that match the input of the user */
         // check if providedData has entries of text
         let foundData = 
-            providedData.filter((data: any, i:number) => {
+            providedData.filter((data: any) => {
                 if (isDisplayRefColNameOrConcat) {
                     const extractedData = getExtractedObject(data, refColNames);
                     if (getDisplayValue(data, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow)) {
@@ -912,11 +925,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 readOnly={props.isReadOnly}
                 //disabled={props.isReadOnly}
                 dropdown
-                completeMethod={event => sendFilter(event.query)}
+                completeMethod={event => sendFilter(event.query, true)}
                 suggestions={buildSuggestions(providedData)}
                 value={text}
                 onChange={event => {
                     startedEditing.current = true;
+                    sendFilter(event.value)
                     if (isDisplayRefColNameOrConcat && Array.isArray(event.target.value)) {
                         setText(getDisplayValue(event.target.value, unpackValue(event.target.value), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
                     }
@@ -935,9 +949,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         if (props.onBlur) {
                             props.onBlur(event);
                         }
+
                         if (startedEditing.current) {
-                            handleInput();
+                            if (!filterInProcess.current) {
+                                handleInput();
+                            }
+                            else {
+                                callHandleInputCallback.current = true;
+                            }
                         }
+
                         const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
                         // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
                         if (dropDownElem) {

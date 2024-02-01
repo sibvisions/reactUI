@@ -154,6 +154,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     /** The month/year which is currently displayed */
     const [viewDate, setViewDate] = useState<any>(convertToTimeZone(true));
 
+    /** Is being set true when the viewDate is changed, used because the overlay is closing when pressing the month arrow buttons */
+    const viewDateChanged = useRef<boolean>(false);
+
     /** True, if the user has changed the value */
     const startedEditing = useRef<boolean>(false);
 
@@ -252,7 +255,13 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
         if (props.onChange) {
             props.onChange(props.selectedRow && props.selectedRow.data[props.columnName] && isValidDate(new Date(props.selectedRow.data[props.columnName])) ? new Date(props.selectedRow.data[props.columnName]) : undefined)
         }
-    }, [props.selectedRow, props.onChange])
+    }, [props.selectedRow, props.onChange]);
+
+    useEffect(() => {
+        if (viewDateChanged.current) {
+            viewDateChanged.current = false;
+        }
+    }, [viewDate])
 
     // Checks if the time has changed to hide the overlay if the date has been selected directly
     const timeChanged = (newDate: Date, oldDate: Date) => {
@@ -435,7 +444,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     }
 
                     // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
-                    //@ts-ignore
                     if (!visible && !calendar.current?.getElement().contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server);
@@ -452,10 +460,11 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 readOnlyInput={props.isReadOnly || hasError}
                 //disabled={props.isReadOnly || hasError}
-                onMonthChange={() => console.log('month change')}
                 onVisibleChange={event => {
-                    console.log(visible, event);
-                    setVisible(prevState => !prevState);
+                    if (!viewDateChanged.current) {
+                        setVisible(prevState => !prevState);
+                    }
+                    
                     if (!focused.current) {
                         handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
                         focused.current = true;
@@ -470,7 +479,10 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}
                 viewDate={viewDate}
-                onViewDateChange={(e) => setViewDate(e.value)}
+                onViewDateChange={(e) => {
+                    viewDateChanged.current = true;
+                    setViewDate(e.value)
+                }}
                 placeholder={props.cellEditor_placeholder_}
                 formatDateTime={(date: Date) => {
                     let formattedValue = "";

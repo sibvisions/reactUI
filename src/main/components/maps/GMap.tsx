@@ -1,5 +1,5 @@
 /*global google*/
-import React, {CSSProperties, forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react';
+import React, {CSSProperties, forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState} from 'react';
 interface IGMap {
     options: any,
     overlays?: any[],
@@ -13,7 +13,8 @@ interface IGMap {
     onOverlayDrag?: Function,
     onOverlayDragEnd?: Function,
     onOverlayClick?: Function,
-    ref: any
+    ref: any,
+    setMapReady: any
 }
 
 /**
@@ -26,6 +27,10 @@ export const GMap: React.ForwardRefExoticComponent<IGMap> = forwardRef((props, r
     const map = useRef<any>();
     const container = useRef<HTMLDivElement>(null);
     const [overlays, setOverlays] = useState<any>();
+
+    useImperativeHandle(ref, () => {
+        return map.current;
+    })
 
     const initMap = () => {
         if (container.current) {
@@ -100,11 +105,12 @@ export const GMap: React.ForwardRefExoticComponent<IGMap> = forwardRef((props, r
         return map.current;
     }
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         initMap();
+        props.setMapReady()
     }, []);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if(overlays !== props.overlays) {
             if(overlays) {
                 for(let overlay of overlays) {
@@ -116,10 +122,6 @@ export const GMap: React.ForwardRefExoticComponent<IGMap> = forwardRef((props, r
             initOverlays(props.overlays);
         }
     }, [props.overlays]);
-
-    useImperativeHandle(ref, () => {
-        return map.current;
-    })
 
     return <div ref={container} style={props.style} className={props.className}></div>
 })

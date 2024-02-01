@@ -175,7 +175,7 @@ export const InputNumber = React.memo(
                     let _formattedValue = formatter.format(value);
 
                     if (value.endsWith(".")) {
-                        _formattedValue = formattedValue + numberSeperators.decimal;
+                        _formattedValue = _formattedValue + numberSeperators.decimal;
                     }
 
                     if (props.prefix) {

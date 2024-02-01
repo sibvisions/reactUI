@@ -64,9 +64,6 @@ function getNode(nodes: CustomTreeNode[], nodeKey: string) {
 };
 
 const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
-    /** Reference for the span that is wrapping the tree containing layout information */
-    const treeWrapperRef = useRef<HTMLSpanElement>(null);
-
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = props;
 
@@ -104,14 +101,14 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
-        if (treeWrapperRef.current) {
+        if (props.forwardedRef.current) {
             sendOnLoadCallback(
                 id, 
                 props.className, 
                 parsePrefSize(props.preferredSize), 
                 parseMaxSize(props.maximumSize), 
                 parseMinSize(props.minimumSize), 
-                treeWrapperRef.current, 
+                props.forwardedRef.current, 
                 onLoadCallback
             )
         }
@@ -122,8 +119,18 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
         props.maximumSize, 
         props.minimumSize,
         props.className,
-        nodes
+        nodes,
+        props.forwardedRef.current
     ]);
+
+    useLayoutEffect(() => {
+        if (props.forwardedRef.current && onLoadCallback) {
+            props.forwardedRef.current.style.setProperty("top", props.layoutStyle?.top !== undefined ? `${props.layoutStyle.top}px`: null)
+            props.forwardedRef.current.style.setProperty("left", props.layoutStyle?.left !== undefined ? `${props.layoutStyle.left}px`: null);
+            props.forwardedRef.current.style.setProperty("width", props.layoutStyle?.width !== undefined ? `${props.layoutStyle.width}px`: null);
+            props.forwardedRef.current.style.setProperty("height", props.layoutStyle?.height !== undefined ? `${props.layoutStyle.height}px`: null);
+        }
+    }, [props.layoutStyle, props.forwardedRef, nodes])
 
     /**
      * Returns true if the given databook is self-joined (references itself in masterReference) false if it isn't
@@ -571,10 +578,13 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
         return new TreePath(treePathArray.filter(v => v > -1));
     }
 
+    console.log(props.layoutStyle)
+
     return (
         <span
             ref={props.forwardedRef}
             style={props.layoutStyle}
+            id={props.name}
             tabIndex={props.tabIndex ? props.tabIndex : 0}
             onFocus={(event) => {
                 if (!focused.current) {
@@ -583,7 +593,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
                 }
             }}
             onBlur={event => {
-                if (treeWrapperRef.current && !treeWrapperRef.current.contains(event.relatedTarget as Node)) {
+                if (props.forwardedRef.current && !props.forwardedRef.current.contains(event.relatedTarget as Node)) {
                     if (props.eventFocusLost) {
                         onFocusLost(props.name, props.context.server);
                     }
@@ -593,7 +603,6 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
             {...usePopupMenu(props)}
         >
             <Tree
-                id={props.name}
                 className={concatClassnames("rc-tree", props.styleClassNames)}
                 value={nodes}
                 selectionMode="single"

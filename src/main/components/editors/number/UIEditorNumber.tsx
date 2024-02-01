@@ -330,7 +330,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
             let eValue = event.target.value;
 
             const getDecimalValue = () => {
-                if (event.key !== "Backspace" && event.key !== "-") {
+                if (event.key !== "Backspace" && event.key !== "-" && event.key !== numberSeperators.decimal) {
                     eValue = eValue.replaceAll(numberSeperators.group, "").replaceAll(prefix, "").replaceAll(suffix, "");
                     if (event.key === "-") {
                         if (eValue.indexOf(numberSeperators.decimal) !== -1) {
@@ -349,7 +349,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                         }
                     }
                 }
-                return parseInt(eValue + event.key);
+                return parseInt(eValue);
             }
 
             const isExceedingDecimalLength = () => {

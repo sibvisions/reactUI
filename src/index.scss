@@ -103,6 +103,10 @@ body {
     &.is-loading {
         overflow: hidden;
     }
+    
+    > iframe { 
+        display: none 
+    }
 }
 
 /// Image in this file because image won't be displayed

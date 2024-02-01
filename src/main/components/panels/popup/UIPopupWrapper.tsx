@@ -60,7 +60,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
 
     /** Reference for the popup component */
-    const popupRef = useRef<any>(null)
+    const popupRef = useRef<Dialog>(null)
 
     /** True, if the first popup size initialization has completed. */
     const [initializePopup, setInitializePopup] = useState<boolean>(false);
@@ -141,7 +141,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
 
     /** Sets the initial size for the popup */
     const handleInitialSize = () => {
-        if (popupRef.current && popupRef.current.contentEl) {
+        if (popupRef.current && popupRef.current.getContent()) {
             const comp = context.contentStore.getComponentById(baseProps.id);
             if (comp) {
                 const prefSize = parsePrefSize(comp.preferredSize);
@@ -168,16 +168,16 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         const prefSize = parsePrefSize(props.preferredSize);
         const sizeMap = new Map<string, CSSProperties>();
         const comp = context.contentStore.getComponentById(baseProps.id);
-        if (comp) {
+        if (comp && popupRef.current) {
             if (componentSizes && componentSizes.has(comp.id)) {
                 if (prefSize) {
                     sizeMap.set(comp.id, { height: prefSize.height, width: prefSize.width });
                 }
                 else {
-                    let popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth }
+                    let popupSize:Dimension = { height: popupRef.current.getContent().offsetHeight, width: popupRef.current.getContent().offsetWidth }
                     const compSize = componentSizes.get(comp.id);
-                    popupSize.height = popupRef.current.contentEl.offsetHeight > compSize!.preferredSize.height ? popupRef.current.contentEl.offsetHeight : compSize!.preferredSize.height;
-                    popupSize.width = popupRef.current.contentEl.offsetWidth > compSize!.preferredSize.width ? popupRef.current.contentEl.offsetWidth : compSize!.preferredSize.width;
+                    popupSize.height = popupRef.current.getContent().offsetHeight > compSize!.preferredSize.height ? popupRef.current.getContent().offsetHeight : compSize!.preferredSize.height;
+                    popupSize.width = popupRef.current.getContent().offsetWidth > compSize!.preferredSize.width ? popupRef.current.getContent().offsetWidth : compSize!.preferredSize.width;
                     sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
                 }
                 setComponentSize(sizeMap);
@@ -190,9 +190,9 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** When the popup is being resized update the size to resize the panel */
     const handlePopupResize = () => {
         const comp = context.contentStore.getComponentById(baseProps.id);
-        if (popupRef.current && popupRef.current.contentEl && comp) {
+        if (popupRef.current && popupRef.current.getContent() && comp) {
             const sizeMap = new Map<string, CSSProperties>();
-            const popupSize:Dimension = { height: popupRef.current.contentEl.offsetHeight, width: popupRef.current.contentEl.offsetWidth };
+            const popupSize:Dimension = { height: popupRef.current.getContent().offsetHeight, width: popupRef.current.getContent().offsetWidth };
             sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }

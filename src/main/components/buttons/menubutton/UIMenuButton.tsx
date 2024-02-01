@@ -51,7 +51,7 @@ interface IMenuButtonItem extends MenuItem {
  */
 const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     /** Reference for the button element */
-    const buttonRef = useRef<any>(null);
+    const buttonRef = useRef<SplitButton>(null);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, props.layoutStyle, props.compStyle);
@@ -67,7 +67,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     const getDefaultButton = (): HTMLElement|undefined => {
         const defaultButton = buttonRef.current?.getElement().querySelector(".p-splitbutton-defaultbutton");
         if (defaultButton) {
-            return defaultButton;
+            return defaultButton as HTMLElement;
         }
         return undefined;
     }
@@ -75,7 +75,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     const getMenuButton = (): HTMLElement|undefined => {
         const menuButton = buttonRef.current?.getElement().querySelector(".p-splitbutton-menubutton");
         if (menuButton) {
-            return menuButton;
+            return menuButton as HTMLElement;
         }
         return undefined;
     }
@@ -251,14 +251,34 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                 disabled={isCompDisabled(props)}
                 model={items}
                 onClick={(e) => {
+                    console.log(props.defaultMenuItem)
                     if (props.defaultMenuItem && items?.length) {
                         const foundItem = items.find(item => item.id === props.defaultMenuItem);
+                        console.log(foundItem)
                         if (foundItem && foundItem.command) {
                             foundItem.command({ item: foundItem, originalEvent: e })
                         }
                     }
                     else {
-                        buttonRef.current.show()
+                        console.log(getMenuButton())
+                        getMenuButton()?.click()
+                        //buttonRef.current?.show()
+                    }
+                }}
+                onShow={() => {
+                    const btnElem = buttonRef.current?.getElement();
+                    const wrapperElem = btnElem?.parentElement;
+                    if (btnElem && wrapperElem) {
+                        setTimeout(() => {
+                            const overlayElem = document.getElementById(btnElem.id + "_overlay");
+                            console.log(overlayElem, btnElem.id + "_overlay")
+                            if (overlayElem) {
+                                const rect = wrapperElem.getBoundingClientRect();
+                                console.log(rect)
+                                overlayElem.style.left = `${rect.left}px`;
+                                overlayElem.style.width = `${rect.width}px`;
+                            }
+                        }, 0);
                     }
                 }}
                 tooltip={props.toolTipText}

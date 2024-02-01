@@ -59,8 +59,15 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
+    const getBooleanValueFromValue = (value: any) => {
+        if (value === props.cellEditor.selectedValue) {
+            return true;
+        }
+        return false;
+    }
+
     /** Current state of wether the CheckBox is currently checked or not */
-    const [checked, setChecked] = useState(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
+    const [checked, setChecked] = useState(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName]) : false);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -91,7 +98,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
 
     // Sets the checked value based on the selectedRow data
     useEffect(() => {
-        setChecked(props.selectedRow ? props.selectedRow.data[props.columnName] : undefined);
+        setChecked(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName]) : false);
     }, [props.selectedRow]);
 
     // If the lib user extends the CheckboxCellEditor with onChange, call it when slectedRow changes.
@@ -114,7 +121,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                 props.columnName,
                 props.columnName,
                 // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
-                (checked !== props.cellEditor.selectedValue || !checked) ? 
+                (!checked) ? 
                     props.cellEditor.selectedValue !== undefined ? 
                         props.cellEditor.selectedValue 
                     : 

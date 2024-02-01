@@ -48,6 +48,9 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
     const groupsRef = useRef<google.maps.Polygon[]>([]);
 
     /** The state if the map is loaded and ready */
+    const [mapInit, setMapInit] = useState<boolean>(false);
+
+    /** The state if the map is loaded and ready */
     const [mapReady, setMapReady] = useState<boolean>(false);
 
     /** The marker used for the point Selection.*/
@@ -100,9 +103,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
 
     /** Call the loadGoogleMaps function pass function to set Map ready and API key sent by server */
     useEffect(() => {
-        loadGoogleMaps(() => {
-            setMapReady(true);
-        }, props.apiKey as string);
+        loadGoogleMaps(() => setMapInit(true), props.apiKey as string);
     },[props.apiKey]);
 
     // Fetches the point and the group databook
@@ -278,11 +279,16 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
     );
 
     /** If the map is not ready, return just a div width set size so it can report its size and initialize */
-    if (mapReady === false)
+    if (mapInit === false)
         return <div ref={props.forwardedRef} id={props.name} style={{width: '100px', height: '100px'}}/>
     return (
         <div ref={props.forwardedRef} className="rc-map-wrapper" {...popupMenu} id={props.name} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>
-            <GMap ref={mapInnerRef} className={concatClassnames(props.styleClassNames)} options={options} style={{height: props.layoutStyle?.height, width: props.layoutStyle?.width}} />
+            <GMap 
+                ref={mapInnerRef} 
+                className={concatClassnames(props.styleClassNames)} 
+                options={options} 
+                style={{height: props.layoutStyle?.height, width: props.layoutStyle?.width}}
+                setMapReady={() => setMapReady(true)} />
         </div>
     )
 }
