@@ -1884,19 +1884,21 @@ body {
 
         .p-menubar-root-list {
             >.p-menuitem, >.p-menuitem.p-menuitem-active  {
-                > .p-menuitem-link:not(.p-disabled) {
+                > .p-menuitem-content {
                     background: var(--frame-menubar-background);
                     color: var(--frame-menubar-text-color);
-    
-                    .p-menuitem-text, .p-submenu-icon {
-                        color: var(--frame-menubar-text-color);
-                    }
-    
-                    &:hover {
-                        background: var(--frame-menubar-hover-background);
-                        color: var(--frame-menubar-text-color);
+
+                    > .p-menuitem-link:not(.p-disabled) {
                         .p-menuitem-text, .p-submenu-icon {
                             color: var(--frame-menubar-text-color);
+                        }
+        
+                        &:hover {
+                            background: var(--frame-menubar-hover-background);
+                            color: var(--frame-menubar-text-color);
+                            .p-menuitem-text, .p-submenu-icon {
+                                color: var(--frame-menubar-text-color);
+                            }
                         }
                     }
                 }
