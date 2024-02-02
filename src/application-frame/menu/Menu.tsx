@@ -211,7 +211,7 @@ const Menu: FC<IMenu> = (props) => {
     const foldMenuOnCollapse = useMemo(() => context.appSettings.menuOptions.foldMenuOnCollapse, [context.appSettings.menuOptions]);
 
     /** State of the active-screens */
-    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);    
+    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);  
 
     /** get menu items */
     const menuItems = useMenuItems();
@@ -298,24 +298,33 @@ const Menu: FC<IMenu> = (props) => {
                 }
             }
         }
-    }, [context.contentStore, context.subscriptions, deviceStatus])
+    }, [context.contentStore, context.subscriptions, deviceStatus]);
+
+    const findSelectedMenuItem = (items: MenuItem[]):MenuItem|null => {
+        let foundMenuItem:MenuItem|null = null;
+        if (items) {
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].items) {
+                    foundMenuItem = findSelectedMenuItem(items[i].items as MenuItem[]);
+                }
+                else if ((items[i] as MenuItemCustom).screenClassName === selectedMenuItem) {
+                    return items[i];
+                }
+
+                if (foundMenuItem) {
+                    break;
+                }
+            }
+        }
+        return foundMenuItem;
+    }
 
     // Extends the panel-menu based on the selected menu-item
     useEffect(() => {
         if (props.menuOptions.menuBar) {
             if (menuItems) {
-                let foundMenuItem:MenuItem = {}
-                menuItems.forEach(m => {
-                    if (m.items) {
-                        if ((m.items as MenuItem[]).find((item) => (item as MenuItemCustom).screenClassName === selectedMenuItem)) {
-                            foundMenuItem = m
-                        }
-                    }
-                    else if ((m as MenuItemCustom).screenClassName === selectedMenuItem) {
-                        foundMenuItem = m
-                    }
-                });
-                if (Object.keys(foundMenuItem).length) {
+                const foundMenuItem:MenuItem|null = findSelectedMenuItem(menuItems);
+                if (foundMenuItem) {
                     foundMenuItem.expanded = true;
                 }
 
@@ -335,15 +344,23 @@ const Menu: FC<IMenu> = (props) => {
 
     //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
     useEffect(() => {
-        setTimeout(() => {
+        //setTimeout(() => {
             if (props.menuOptions.menuBar) {
-                Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
-                const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
-                if (menuElem) {
-                    menuElem.classList.add("p-menuitem--active");
-                } 
+                if (menuItems) {
+                    Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
+                    const foundMenuItem:MenuItem|null = findSelectedMenuItem(menuItems);
+                    if (foundMenuItem) {
+                        console.log(foundMenuItem)
+                        foundMenuItem.className = "p-menuitem--active"
+                    }
+                }
+                
+                // const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+                // if (menuElem) {
+                //     menuElem.classList.add("p-menuitem--active");
+                // } 
             }
-        }, 0)
+        //}, 0)
 
     }, [selectedMenuItem])
 

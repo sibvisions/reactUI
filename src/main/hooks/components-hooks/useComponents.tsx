@@ -145,7 +145,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
              */
             const allowPreferredSizeChange = () => {
                 if (context.contentStore.getComponentById(compId)) {
-                    if (tempSizes.current.size === children.size && 
+                    if ((tempSizes.current.size === children.size || id.includes('TP')) && 
                         (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) 
                         || childrenChanged(compId) 
                         || componentsChanged.current 
@@ -157,7 +157,6 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
                 }
                 return false;
             }
-
             /** If all components are loaded or it is a tabsetpanel and the size changed, set the sizes */
             if(allowPreferredSizeChange()) { 
                 setPreferredSizes(new Map(tempSizes.current));

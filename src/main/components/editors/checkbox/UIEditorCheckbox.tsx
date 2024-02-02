@@ -110,7 +110,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                 deselectedValue: props.cellEditor.deselectedValue 
             });
         }
-    }, [props.selectedRow, props.onChange])
+    }, [props.selectedRow, props.onChange]);
 
     // Sends a setValues Request to the server when the checkbox is clicked
     const handleOnChange = () => {
@@ -200,8 +200,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
             <Checkbox
                 inputId={id}
                 ref={cbRef}
-                trueValue={props.cellEditor.selectedValue}
-                falseValue={props.cellEditor.deselectedValue}
                 checked={checked}
                 onClick={(event) => {
                     if (props.onClick) {
