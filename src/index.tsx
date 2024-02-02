@@ -13,17 +13,17 @@
  * the License.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom/client";
 import '@sibvisions/reactui-designer/main.css';
 import './index.scss';
 //import '@sibvisions/visionx/dist/main.css';
 import MiddleMan from './MiddleMan';
 
 /** Rendering the application */
-export default ReactDOM.render(
-  // <React.StrictMode>
-  <MiddleMan/>,
-  // </React.StrictMode>,
-  document.getElementById('root')
-)
+const root = ReactDOM.createRoot(document.getElementById("root") as Element);
+export default root.render(
+  //<React.StrictMode>
+    <MiddleMan />
+  //</React.StrictMode>
+);

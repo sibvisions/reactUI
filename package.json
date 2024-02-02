@@ -111,8 +111,8 @@
     "not op_mini all"
   ],
   "peerDependencies": {
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/leaflet": "^1.5.19",
@@ -121,8 +121,8 @@
     "@types/resize-observer-browser": "^0.1.4",
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "webpack": "^5.76.0",
     "webpack-cli": "^4.10.0"
