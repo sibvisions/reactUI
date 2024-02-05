@@ -42,7 +42,8 @@ import RESPONSE_NAMES from "../../main/response/RESPONSE_NAMES";
 /** Extends the PrimeReact MenuItem with componentId */
 export interface MenuItemCustom extends MenuItem {
     componentId:string
-    screenClassName:string
+    screenClassName:string,
+    secondIdentifier: string
 }
 
 /** Interface for menu */
@@ -56,6 +57,32 @@ export interface IMenu extends IForwardRef {
 interface IProfileMenu {
     showButtons?: boolean,
     visibleButtons?: VisibleButtons,
+}
+
+export function findSelectedMenuItem(items: MenuItem[], selectedMenuItem: string):MenuItem|null {
+    let foundMenuItem:MenuItem|null = null;
+    if (items) {
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].items) {
+                foundMenuItem = findSelectedMenuItem(items[i].items as MenuItem[], selectedMenuItem);
+            }
+            else {
+                if ((items[i] as MenuItemCustom).screenClassName === selectedMenuItem) {
+                    return items[i];
+                }
+                else if (selectedMenuItem.includes("____")) {
+                    if ((items[i] as MenuItemCustom).secondIdentifier === selectedMenuItem) {
+                        return items[i]
+                    }
+                }
+            }  
+
+            if (foundMenuItem !== null) {
+                break;
+            }
+        }
+    }
+    return foundMenuItem;
 }
 
 /**
@@ -247,7 +274,7 @@ const Menu: FC<IMenu> = (props) => {
                                 else {
                                     const foundItem = foundItems.find(foundItem => foundItem.navigationName === activeScreens[i].navigationName);
                                     if (foundItem && foundItem.className && foundItem.navigationName) {
-                                        foundMenuItem = foundItem.className + "_" + foundItem.navigationName
+                                        foundMenuItem = foundItem.className + "____" + foundItem.navigationName
                                     }
                                 }
                             }
@@ -300,30 +327,11 @@ const Menu: FC<IMenu> = (props) => {
         }
     }, [context.contentStore, context.subscriptions, deviceStatus]);
 
-    const findSelectedMenuItem = (items: MenuItem[]):MenuItem|null => {
-        let foundMenuItem:MenuItem|null = null;
-        if (items) {
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].items) {
-                    foundMenuItem = findSelectedMenuItem(items[i].items as MenuItem[]);
-                }
-                else if ((items[i] as MenuItemCustom).screenClassName === selectedMenuItem) {
-                    return items[i];
-                }
-
-                if (foundMenuItem) {
-                    break;
-                }
-            }
-        }
-        return foundMenuItem;
-    }
-
     // Extends the panel-menu based on the selected menu-item
     useEffect(() => {
         if (props.menuOptions.menuBar) {
             if (menuItems) {
-                const foundMenuItem:MenuItem|null = findSelectedMenuItem(menuItems);
+                const foundMenuItem:MenuItem|null = findSelectedMenuItem(menuItems, selectedMenuItem);
                 if (foundMenuItem) {
                     foundMenuItem.expanded = true;
                 }
@@ -341,28 +349,6 @@ const Menu: FC<IMenu> = (props) => {
         }
 
     }, [selectedMenuItem, menuItems])
-
-    //First delete every p-menuitem--active className and then add it to the selected menu-item when the active item changes.
-    useEffect(() => {
-        //setTimeout(() => {
-            if (props.menuOptions.menuBar) {
-                if (menuItems) {
-                    Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
-                    const foundMenuItem:MenuItem|null = findSelectedMenuItem(menuItems);
-                    if (foundMenuItem) {
-                        console.log(foundMenuItem)
-                        foundMenuItem.className = "p-menuitem--active"
-                    }
-                }
-                
-                // const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
-                // if (menuElem) {
-                //     menuElem.classList.add("p-menuitem--active");
-                // } 
-            }
-        //}, 0)
-
-    }, [selectedMenuItem])
 
     /**
      * Adds eventlisteners for mouse hovering and mouse leaving. When the menu is collapsed and the mouse is hovered,

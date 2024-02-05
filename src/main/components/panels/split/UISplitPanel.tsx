@@ -124,15 +124,13 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel & IComponentConstants> = (
      * @param secondSize  - the size of the "second" component
      */
     const handleResize = (firstSize: Dimension, secondSize: Dimension) => {
-        if (firstChild !== undefined && secondChild !== undefined) {
+        const firstComponent = children.find(child => child.constraints === "FIRST_COMPONENT");
+        const secondComponent = children.find(child => child.constraints === "SECOND_COMPONENT");
+        if (firstComponent !== undefined && secondComponent !== undefined) {
             /** Map which contains component ids as key and positioning and sizing properties as value */
             const sizeMap = new Map<string, CSSProperties>();
-            /** Cast children to get props */
-            const firstProps = (firstChild as ChildWithProps);
-            const secondProps = (secondChild as ChildWithProps);
-    
-            sizeMap.set(firstProps.props.id, firstSize);
-            sizeMap.set(secondProps.props.id, secondSize);
+            sizeMap.set(firstComponent.id, firstSize);
+            sizeMap.set(secondComponent.id, secondSize);
     
             setComponentSizes(sizeMap);
         }

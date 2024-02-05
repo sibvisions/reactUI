@@ -46,7 +46,9 @@ export interface ICellRenderer {
     setEdit?: (value: React.SetStateAction<boolean>) => void,
     decreaseCallback?: Function|undefined,
     isEditable: boolean,
-    addReadOnlyClass: boolean
+    addReadOnlyClass: boolean,
+    cellClickEvent: string,
+    setCellClickEvent: (cellId: string) => void
 }
 
 const CellRenderer: FC<ICellRenderer> = (props) => {
@@ -166,7 +168,14 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
                 props.setEdit!(true);
             })
         }
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (cellContext.selectedCellId === props.cellClickEvent && cellContext.selectedCellId === props.cellId) {
+            handleClickEvent();
+            props.setCellClickEvent("");
+        }
+    }, [cellContext.selectedCellId]);
 
     return (
         <div
@@ -174,9 +183,12 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
             style={cellStyles.cellStyle}
             className={cellStyles.cellClassNames.join(' ')}
             onMouseUp={(e) => {
-                if (props.isEditable && cellContext.selectedCellId === props.cellId) {
-                    if ((columnMetaData?.cellEditor.preferredEditorMode === 1 && e.detail === 1) || (columnMetaData?.cellEditor.preferredEditorMode !== 1 && e.detail === 2)) {
+                if (props.isEditable && ((columnMetaData?.cellEditor.preferredEditorMode === 1 && e.detail === 1) || (columnMetaData?.cellEditor.preferredEditorMode !== 1 && e.detail === 2))) {
+                    if (cellContext.selectedCellId === props.cellId) {
                         handleClickEvent();
+                    }
+                    else {
+                        props.setCellClickEvent(props.cellId);
                     }
                 }
             }}>

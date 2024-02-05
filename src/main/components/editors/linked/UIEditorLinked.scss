@@ -95,10 +95,14 @@
             display: table-row;
             padding: 0;
 
-            & > * {
+            & > div {
                 display: table-cell;
                 vertical-align: middle;
                 padding: 0.5rem 1rem;
+            }
+
+            .p-ink {
+                display: none;
             }
         }
 
@@ -106,10 +110,14 @@
             display: table-row;
             padding: 0;
 
-            & > * {
+            & > div {
                 display: table-cell;
                 vertical-align: middle;
                 padding: 0.5rem 1rem;
+            }
+
+            .p-ink {
+                display: none;
             }
         }
     }

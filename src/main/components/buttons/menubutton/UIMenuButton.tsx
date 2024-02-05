@@ -251,16 +251,13 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                 disabled={isCompDisabled(props)}
                 model={items}
                 onClick={(e) => {
-                    console.log(props.defaultMenuItem)
                     if (props.defaultMenuItem && items?.length) {
                         const foundItem = items.find(item => item.id === props.defaultMenuItem);
-                        console.log(foundItem)
                         if (foundItem && foundItem.command) {
                             foundItem.command({ item: foundItem, originalEvent: e })
                         }
                     }
                     else {
-                        console.log(getMenuButton())
                         getMenuButton()?.click()
                         //buttonRef.current?.show()
                     }
@@ -271,10 +268,8 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                     if (btnElem && wrapperElem) {
                         setTimeout(() => {
                             const overlayElem = document.getElementById(btnElem.id + "_overlay");
-                            console.log(overlayElem, btnElem.id + "_overlay")
                             if (overlayElem) {
                                 const rect = wrapperElem.getBoundingClientRect();
-                                console.log(rect)
                                 overlayElem.style.left = `${rect.left}px`;
                                 overlayElem.style.width = `${rect.width}px`;
                             }

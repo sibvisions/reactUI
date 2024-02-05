@@ -229,9 +229,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (onLoadCallback && props.forwardedRef.current) {
-            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current.getInput(), onLoadCallback)
+            sendOnLoadCallback(id, props.cellEditor.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
         }
-    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
+    },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
@@ -381,9 +381,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
     // TODO: It should be possible to remove this double inputnumber implementation
     return (
-            <span id={props.name} aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
+            <span ref={props.forwardedRef} id={props.name} aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber
-                    ref={props.forwardedRef}
                     layoutstyle-wrapper={props.name}
                     /*@ts-ignore*/
                     inputRef={numberInput}

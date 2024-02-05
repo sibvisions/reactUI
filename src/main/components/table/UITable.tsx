@@ -289,6 +289,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
 
+    const cellClickEvent = useRef<string>("");
+
     /** Hook for MouseListener */
     useMouseListener(
         props.name, 
@@ -1034,6 +1036,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                             }
                             tableIsSelecting={tableIsSelecting}
                             addReadOnlyClass={columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
+                            cellClickEvent={cellClickEvent.current}
+                            setCellClickEvent={(cellId: string) => cellClickEvent.current = cellId}
                         />
                     }
                     else {
@@ -1053,7 +1057,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                                 rowNumber={tableInfo.rowIndex}
                                 cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                                 isHTML={typeof rowData[colName] === "string" && (rowData[colName] as string).includes("<html>")}
-                                addReadOnlyClass={columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0} />
+                                addReadOnlyClass={columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
+                                cellClickEvent={cellClickEvent.current}
+                                setCellClickEvent={(cellId: string) => cellClickEvent.current = cellId} />
                         )
                     }
                 }}
@@ -1474,12 +1480,18 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         getNavTableClassName(props.parent),
                         props.styleClassNames
                     )}
-                    value={virtualEnabled ? virtualRows : providerData}
+                    /**
+                     * the virtualEnabled and props.layoutStyle.height check is a workaround because in PrimeReact 10.3.3 there seems to be an issue with
+                     * dynamic scrollheight and existing records, so now if there is no layoutstyle height set, I'm not giving any records to the table
+                     * so the table's scrolling will be correct.
+                     */ 
+                    value={virtualEnabled ? props.layoutStyle?.height ? virtualRows : [] : providerData}
                     selection={selectedCell}
                     selectionMode="single"
                     cellSelection
-                    scrollHeight={props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined}
-                    scrollable={virtualEnabled}
+                    scrollHeight="flex"
+                    //scrollHeight={props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined}
+                    scrollable={props.layoutStyle?.height && virtualEnabled ? true : false}
                     virtualScrollerOptions={ virtualEnabled ? { 
                         itemSize, 
                         lazy: true,

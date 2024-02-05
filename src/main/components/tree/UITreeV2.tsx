@@ -578,8 +578,6 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
         return new TreePath(treePathArray.filter(v => v > -1));
     }
 
-    console.log(props.layoutStyle)
-
     return (
         <span
             ref={props.forwardedRef}

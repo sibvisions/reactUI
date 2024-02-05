@@ -99,7 +99,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     /** The state of the tab-title */
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
-    const [messageFlag, setMessageFlag] = useState<boolean>(true);
+    const [messageFlag, setMessageFlag] = useState<number>(0);
 
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
@@ -121,7 +121,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
         context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
         context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
         context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
-        context.subscriptions.subscribeToMessageDialogProps(() => setMessageFlag(prevState => !prevState));
+        context.subscriptions.subscribeToMessageDialogProps(() => setMessageFlag(Math.random()));
 
         return () => {
             context.subscriptions.unsubscribeFromAppCssVersion();

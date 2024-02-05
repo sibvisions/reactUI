@@ -777,6 +777,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 suggestions.push(suggestion);
             });
         }
+
+        if(props.cellEditor.columnView?.columnCount > 1) {
+            return [{
+                label: props.cellEditor.columnView.columnNames,
+                items: suggestions
+            }]
+        }
+
         return suggestions
     }
 
@@ -989,8 +997,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 tooltipOptions={{ position: "left" }}
                 itemTemplate={itemTemplate}
                 {...(tableOptions ? {
-                    //optionGroupLabel: "label",
-                    //optionGroupChildren: "items",
+                    optionGroupLabel: "label",
+                    optionGroupChildren: "items",
                     optionGroupTemplate: groupedItemTemplate
                 } : {})}
                 placeholder={props.cellEditor_placeholder_}

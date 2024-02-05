@@ -693,7 +693,6 @@ class Server extends BaseServer {
         if (dialogData.notOkComponentId) {
             (this.contentStore as ContentStore).dialogButtons.push(dialogData.notOkComponentId);
         }
-
         this.subManager.emitMessageDialog(dialogData);
     }
  
