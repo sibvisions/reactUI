@@ -778,7 +778,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             });
         }
 
-        if(props.cellEditor.columnView?.columnCount > 1) {
+        if (props.cellEditor.columnView?.columnCount > 1 && tableOptions) {
             return [{
                 label: props.cellEditor.columnView.columnNames,
                 items: suggestions

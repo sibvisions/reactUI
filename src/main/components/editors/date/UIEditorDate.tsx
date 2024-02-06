@@ -258,9 +258,11 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     }, [props.selectedRow, props.onChange]);
 
     useEffect(() => {
-        if (viewDateChanged.current) {
-            viewDateChanged.current = false;
-        }
+        setTimeout(() => {
+            if (viewDateChanged.current) {
+                viewDateChanged.current = false;
+            }
+        }, 0)
     }, [viewDate])
 
     // Checks if the time has changed to hide the overlay if the date has been selected directly
@@ -310,6 +312,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             dateToSend = props.selectedRow && props.selectedRow.data[props.columnName] ? new Date(props.selectedRow.data[props.columnName]) : null;
             setDateValue(convertToTimeZone(false));
         }
+
+        hasChanged.current = false;
 
         sendSetValues(
             props.dataRow,
@@ -485,6 +489,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 }}
                 placeholder={props.cellEditor_placeholder_}
                 formatDateTime={(date: Date) => {
+                    if (hasChanged.current && calendarInput.current?.value) {
+                        return calendarInput.current?.value
+                    }
                     let formattedValue = "";
                     if (date) {
                         formattedValue = dateFormat ? format(date, dateFormat, { locale: locale ? locale : getGlobalLocale() }) : formatISO(date);

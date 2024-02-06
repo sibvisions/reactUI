@@ -139,7 +139,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                     <>
                         <Button
                             className="rc-button"
-                            icon="fas fa-times"
+                            icon="fas fa-edit"
                             style={{
                                 '--background': btnBgd,
                                 '--hoverBackground': tinycolor(btnBgd).darken(5).toString()

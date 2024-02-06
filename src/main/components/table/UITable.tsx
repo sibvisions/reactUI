@@ -486,7 +486,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 }  
             }    
         }
-    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, providerData, props.forwardedRef.current]);
+    }, [id, onLoadCallback, props.preferredSize, props.maximumSize, props.minimumSize, estTableWidth, props.tableHeaderVisible, providerData, props.forwardedRef.current, props.layoutStyle?.width]);
 
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
