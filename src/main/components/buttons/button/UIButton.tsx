@@ -32,6 +32,7 @@ import { IExtendableButton } from "../../../extend-components/buttons/ExtendButt
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
 
+// If the Buttons text contains HTML, render it in a span, because the button on its own isn't able to render HTML.
 export const RenderButtonHTML: FC<{ text:string }> = (props) => {
     return (
         <span className="button-html-label" dangerouslySetInnerHTML={{ __html: props.text as string }} />
@@ -46,6 +47,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
+    /** Reference for the input element, if the button is an upload button */
     const inputRef = useRef<HTMLInputElement>(null);
 
     /** Style properties for the button */
@@ -63,6 +65,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
 
+    /** Potential popup menu of a button */
     const popupMenu = usePopupMenu(props);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -74,6 +77,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = (event:any) => {
+        // ReactUI as lib, execute given event
         if (props.onClick) {
             props.onClick(event)
         }
@@ -86,6 +90,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
         }
     }
 
+    /** Returns the correct Button element to render, hyperlink, "normal" button, uploadbutton */
     const getElementToRender = () => {
         const btnProps = {
             ref: buttonRef,
@@ -116,6 +121,8 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
                 }
             }
         }
+
+        // If there is an url in props, render a hyperlink button
         if (props.url) {
             return (
                 <span className="hyperlink-wrapper">
@@ -177,6 +184,7 @@ const UIButton: FC<IButton & IExtendableButton> = (props) => {
                         {isHTML && props.text && <RenderButtonHTML text={props.text} />}
                     </Button>
                     {props.classNameEventSourceRef === "UploadButton" &&
+                        // render an additional invisible input element to open the file dialog and upload files
                         <input
                             id={props.name + "-upload"}
                             type="file"

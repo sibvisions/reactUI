@@ -19,7 +19,7 @@ import { Menubar } from 'primereact/menubar';
 import { useHistory } from "react-router";
 import { Button } from "primereact/button";
 import { MenuItem } from "primereact/menuitem";
-import { appContext } from "../../main/contexts/AppProvider";
+import { AppContextType, appContext } from "../../main/contexts/AppProvider";
 import { IForwardRef } from "../../main/IForwardRef";
 import { createCloseScreenRequest, createReloadRequest, createRollbackRequest, createSaveRequest } from "../../main/factories/RequestFactory";
 import { showTopBar } from "../../main/components/topbar/TopBar";
@@ -59,19 +59,73 @@ interface IProfileMenu {
     visibleButtons?: VisibleButtons,
 }
 
-export function findSelectedMenuItem(items: MenuItem[], selectedMenuItem: string):MenuItem|null {
+/**
+ * Returns the id of the selected menuitem based on the activescreens
+ * @param activeScreens - the currently active screens
+ * @param context - the app context
+ */
+export function getSelectedMenuItemId(activeScreens: ActiveScreen[], context: AppContextType) {
+    let foundMenuItem: string = "";
+    if (activeScreens.length) {
+        if (context.transferType === "partial") {
+            // Go through the activescreens from the back and check if the active-screen has a menu-item if yes make it the selected-item
+            for (let i = activeScreens.length - 1; i >= 0; i--) {
+                if (foundMenuItem) {
+                    break;
+                }
+                else {
+                    context.contentStore.menuItems.forEach(items => {
+                        if (items.length) {
+                            const foundItems = items.filter(item => item.className === activeScreens[i].className);
+                            if (foundItems.length === 1) {
+                                if (foundItems[0].className) {
+                                    foundMenuItem = foundItems[0].className
+                                }
+                            }
+                            else {
+                                // find the correct item by the navigationname because if there are multiple screens with the same classname
+                                // the navigationname is also used to identify the correct menuitem
+                                const foundItem = foundItems.find(foundItem => foundItem.navigationName === activeScreens[i].navigationName);
+                                if (foundItem && foundItem.className && foundItem.navigationName) {
+                                    foundMenuItem = foundItem.className + "____" + foundItem.navigationName
+                                }
+                            }
+                        }
+                    })
+                }
+            }
+        }
+
+        // If there was no menu-item found through the loop, just take the last active-screen
+        if (!foundMenuItem) {
+            foundMenuItem = activeScreens.slice(-1).pop()!.className as string
+        }
+    }
+
+    return foundMenuItem
+}
+
+/**
+ * Recursively searches the menuitems for the selected menuitem. Returns the menuItem or null if not found
+ * @param items - the menuitems
+ * @param selectedMenuItem - the identifier string of the selected menuitem
+ */
+export function getSelectedMenuItem(items: MenuItem[], selectedId: string):MenuItem|null {
     let foundMenuItem:MenuItem|null = null;
     if (items) {
         for (let i = 0; i < items.length; i++) {
+            // If the item has subitems recursively search for the selected menuitem
             if (items[i].items) {
-                foundMenuItem = findSelectedMenuItem(items[i].items as MenuItem[], selectedMenuItem);
+                foundMenuItem = getSelectedMenuItem(items[i].items as MenuItem[], selectedId);
             }
             else {
-                if ((items[i] as MenuItemCustom).screenClassName === selectedMenuItem) {
+                // There are cases where multiple menuItems have the same screenClassName, if that is the case, the selected menuitem identifier
+                // will include the classname and the navigationname concatinated with "____"
+                if ((items[i] as MenuItemCustom).screenClassName === selectedId) {
                     return items[i];
                 }
-                else if (selectedMenuItem.includes("____")) {
-                    if ((items[i] as MenuItemCustom).secondIdentifier === selectedMenuItem) {
+                else if (selectedId.includes("____")) {
+                    if ((items[i] as MenuItemCustom).secondIdentifier === selectedId) {
                         return items[i]
                     }
                 }
@@ -102,9 +156,6 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
     /** The profile-menu options */
     const profileMenu = useProfileMenuItems(menuOptions.logout, menuOptions.userRestart);
 
-    /** History of react-router-dom */
-    const history = useHistory();
-
     // Subscribes to the menu-visibility and the visible-buttons displayed in the profile-menu
     useEffect(() => {
         context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
@@ -133,6 +184,8 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                         return closeReq;
                     }
 
+                    // If there are inactive screens (new screen gets opened and old screen is not closed by the server), 
+                    // close all inactive screens and remove them from the list.
                     if (context.contentStore.inactiveScreens.length) {
                         context.contentStore.inactiveScreens.forEach(inactiveScreen => {
                             const closeReq = getCloseScreenRequest(inactiveScreen);
@@ -147,7 +200,6 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     // If a screen is opened, close it, and redirect to home
                     if (context.contentStore.activeScreens.length) {
                         context.server.homeButtonPressed = true;
-                        //context.subscriptions.emitSelectedMenuItem("");
 
                         if (!context.contentStore.customScreens.has(context.contentStore.activeScreens[0].name)) {
                             const screenName = context.contentStore.activeScreens[0].name;
@@ -156,7 +208,6 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                             showTopBar(context.server.sendRequest(closeReq, REQUEST_KEYWORDS.CLOSE_SCREEN), context.server.topbar).then((res) => {
                                 // If response is empty or there is no error close the current screen and open home
                                 if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
-                                    context.contentStore.inactiveScreens = context.contentStore.inactiveScreens.filter(inactiveScreen => inactiveScreen !== screenName);
                                     (context.server as Server).lastClosedWasPopUp = false;
                                     context.contentStore.closeScreen(screenId, screenName, false);
                                     // If there is a homeScreen don't route to home
@@ -247,50 +298,11 @@ const Menu: FC<IMenu> = (props) => {
     useLayoutEffect(() => {
         context.subscriptions.subscribeToActiveScreens("menu", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 
-        return () => {
-            context.subscriptions.unsubscribeFromActiveScreens("menu");
-        }
+        return () => context.subscriptions.unsubscribeFromActiveScreens("menu")
     },[context.subscriptions])
 
-    // The current selected menu-item based on the active-screen
-    const selectedMenuItem = useMemo(() => {
-        let foundMenuItem: string = "";
-        if (activeScreens.length) {
-            if (context.transferType === "partial") {
-                // Go through the activescreens from the back and check if the active-screen has a menu-item if yes make it the selected-item
-                for (let i = activeScreens.length - 1; i >= 0; i--) {
-                    if (foundMenuItem) {
-                        break;
-                    }
-                    else {
-                        context.contentStore.menuItems.forEach(items => {
-                            if (items.length) {
-                                const foundItems = items.filter(item => item.className === activeScreens[i].className);
-                                if (foundItems.length === 1) {
-                                    if (foundItems[0].className) {
-                                        foundMenuItem = foundItems[0].className
-                                    }
-                                }
-                                else {
-                                    const foundItem = foundItems.find(foundItem => foundItem.navigationName === activeScreens[i].navigationName);
-                                    if (foundItem && foundItem.className && foundItem.navigationName) {
-                                        foundMenuItem = foundItem.className + "____" + foundItem.navigationName
-                                    }
-                                }
-                            }
-                        })
-                    }
-                }
-            }
-
-            // If there was no menu-item found through the loop, just take the last active-screen
-            if (!foundMenuItem) {
-                foundMenuItem = activeScreens.slice(-1).pop()!.className as string
-            }
-        }
-
-        return foundMenuItem
-    }, [activeScreens])
+    /** The current selected menu-item's id based on the active-screen */ 
+    const selectedMenuItemId = useMemo(() => getSelectedMenuItemId(activeScreens, context), [activeScreens])
 
     /**
      * Triggers a click on an opened menu panel to close it, 
@@ -331,7 +343,7 @@ const Menu: FC<IMenu> = (props) => {
     useEffect(() => {
         if (props.menuOptions.menuBar) {
             if (menuItems) {
-                const foundMenuItem:MenuItem|null = findSelectedMenuItem(menuItems, selectedMenuItem);
+                const foundMenuItem:MenuItem|null = getSelectedMenuItem(menuItems, selectedMenuItemId);
                 if (foundMenuItem) {
                     foundMenuItem.expanded = true;
                 }
@@ -348,7 +360,7 @@ const Menu: FC<IMenu> = (props) => {
             }
         }
 
-    }, [selectedMenuItem, menuItems])
+    }, [selectedMenuItemId, menuItems])
 
     /**
      * Adds eventlisteners for mouse hovering and mouse leaving. When the menu is collapsed and the mouse is hovered,
@@ -405,8 +417,8 @@ const Menu: FC<IMenu> = (props) => {
     /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
         if (props.menuOptions.menuBar) {
-            if ((event as any).propertyName === "max-height" && selectedMenuItem) {
-                const menuElem = document.getElementsByClassName(selectedMenuItem)[0];
+            if ((event as any).propertyName === "max-height" && selectedMenuItemId) {
+                const menuElem = document.getElementsByClassName(selectedMenuItemId)[0];
                 if (menuElem && !menuElem.classList.contains("p-menuitem--active")) {
                     menuElem.classList.add("p-menuitem--active")
                 }
@@ -415,10 +427,13 @@ const Menu: FC<IMenu> = (props) => {
     });
 
     /** 
-     * Handles the click on the menu-toggler. It closes a currently opened panel and switches
-     * menuModeAuto which means, if true the menu will collapse/expand based on window size if
-     * false the menu will be locked in its position.
-     * It also notifies the contentstore that the menu has been collapsed
+     * Handles the click on the menu-toggler. It closes a currently opened panel
+     * 
+     * switches menuModeAuto which means, if true the menu will collapse/expand based on window size if
+     * false the menu will be locked in its position. Because if we expanded the menu once,
+     * we don't want it to collapse again when the window size changes.
+     * 
+     * It also notifies the submanager that the menu has been collapsed
      */
     const handleToggleClick = () => {
         if (props.menuOptions.menuBar) {
@@ -436,6 +451,7 @@ const Menu: FC<IMenu> = (props) => {
                 <div className={concatClassnames(
                     "std-menu",
                     menuCollapsed ? " menu-collapsed" : "",
+                    // if "no-mini" don't show the menu in "mini-mode"
                     props.showMenuMini ? "" : "no-mini"
                 )}>
                     <div className={"menu-header"}>

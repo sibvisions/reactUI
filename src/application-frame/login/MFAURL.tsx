@@ -35,6 +35,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
     /** Returns utility variables */
     const context = useContext(appContext);
 
+    /** Reference for the gauge component */
     const gaugeRef = useRef<any>();
 
     /** State of the link object */
@@ -86,7 +87,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
-    // Subscribes to the link object and timeout sent by the server. And starts the MFA timer
+    // Subscribes to the MFAURL parameters. And starts the MFA timer
     useLayoutEffect(() => {
         context.subscriptions.subscribeToMFAURL("url-comp", (pLink: string | MFAURLType, timeout: number, timeoutReset?:boolean) => {
             if (typeof link === "object") {

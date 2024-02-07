@@ -23,6 +23,7 @@ export interface IScreenContext {
     screen?: ReactElement;
 }
 
+// Create a ScreenContext so a ScreenWrapper can later consume that context to have the current screen.
 export const ScreenContext = createContext<IScreenContext>({});
 
 /** Displays either ScreenWrappers set by the user or the workscreen */
@@ -42,7 +43,10 @@ const ScreenManager:FC = () => {
     /** Workscreen */
     const screen = <WorkScreen />;
 
-    /** If there is a screen-wrapper for this screen, check if there is a global and global should be shown, if true show global if false don't */
+    /** 
+     * If there is a screen-wrapper for this screen, check if there is a global and global should be shown, if true show global if false don't.
+     * The content is being passed as value, so a dev who is setting a screen-wrapper can put the screen anywhere they want.
+     */
     if (screenWrappers.has(screenId)) {
         const screenWrapper = screenWrappers.get(screenId)
         if (screenWrappers.has('global') && screenWrapper?.options.global){

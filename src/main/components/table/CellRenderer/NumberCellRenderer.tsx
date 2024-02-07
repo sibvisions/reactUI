@@ -19,7 +19,6 @@ import { NumericColumnDescription } from "../../../response/data/MetaDataRespons
 import { formatNumber, getGrouping } from "../../../util/component-util/NumberProperties";
 import { getNumberValueAsString, getPrefix, getSuffix, ICellEditorNumber } from "../../editors/number/UIEditorNumber";
 import { ICellRender } from "../CellEditor";
-import bigDecimal from "js-big-decimal";
 
 /**
  * Renders the number-cell when the column is a number-cell

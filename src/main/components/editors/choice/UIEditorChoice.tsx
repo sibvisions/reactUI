@@ -86,16 +86,13 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
         }
     }, [props.cellFormatting])
 
-    /**
-     * Returns an object of the allowed values as key and the corresponding image as value
-     */
+    /** Returns an object of the allowed values as key and the corresponding image as value */
     const validImages = useMemo(() => {
         let mergedValImg: any
         /**
          * Returns a merged object of two arrays keys for the object are taken from the first array values form the second
          * @param keys - the array which should represent the keys of the merged object
          * @param values - the array which should represent the values of the merged object
-         * @returns merged object of two arrays
          */
         const mergeObject = (keys: Array<string | boolean>, values: Array<string>) => {
             let mergedObj: any = {};

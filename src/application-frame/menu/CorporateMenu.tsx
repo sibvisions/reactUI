@@ -83,9 +83,8 @@ const CorporateMenu:FC<IMenu> = (props) => {
     }, [menuItems])
 
     /** 
-     * The corporate-menu subscribes to the screen name and app-settings, so everytime these properties change the state
-     * will get updated.
-     *  @returns unsubscribing from the screen name on unmounting
+     * The corporate-menu subscribes to the toolbaritems
+     *  @returns unsubscribe on unmounting
      */
     useEffect(() => {
         context.subscriptions.subscribeToToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));

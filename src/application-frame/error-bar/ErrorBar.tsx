@@ -52,6 +52,16 @@ const ErrorBar:FC = () => {
     /** True, if a request has already been sent, to prevent multiple requests being sent when spamming "esc" or click */
     const alreadySent = useRef<boolean>(false);
 
+    /**
+     * Sets the state of the error properties, but only if the new priority is higher than the old error priority
+     * @param header - the header message of the error
+     * @param body - the body message of the error
+     * @param sessionExp - true, if the session has expired
+     * @param priority - the priority of the error, a higher priority error gets shown instead of a smaller priority one
+     * @param gone - true, if the application is gone
+     * @param retry - a function (mostly a server call), to retry when pressing space or clicking the bar
+     * @param dontShowRestart - true, if the retry function should never be called
+     */
     const setErrorPropsState = useCallback((
         header: string,
         body: string,
@@ -102,6 +112,7 @@ const ErrorBar:FC = () => {
         }
     }, [errorProps])
 
+    // If visible changes to false, change the priority of this error to 0, so a new error can come
     useEffect(() => {
         if (!visible) {
             setErrorProps(prevState => ({...prevState, priority: 0}));
@@ -112,19 +123,10 @@ const ErrorBar:FC = () => {
      * Restarts the app when the session expires
      */
     const handleRestart = () => {
-        // if (context.transferType !== "full") {
-        //     history.push("/login");
-        // }
         context.server.isExiting = true;
         context.server.timeoutRequest(fetch(context.server.BASE_URL + context.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), context.server.buildReqOpts(createAliveRequest())), context.server.timeoutMs);
         sessionStorage.clear();
         window.location.reload();
-        // context.appSettings.setAppReadyParamFalse();
-        // context.subscriptions.emitAppReady(false);
-        // context.subscriptions.emitRestart();
-        // context.contentStore.reset();
-        // sessionStorage.clear();
-        // context.subscriptions.emitSessionExpiredChanged(false);
     }
 
     /**

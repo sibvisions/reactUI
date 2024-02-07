@@ -106,6 +106,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
         }
     }, [props.selectedRow, props.onChange]);
     
+    /** Returns the correct way to display the image, either base64 encoded or via resource url, if there is no valid data use the defaultImageName if there is one else return undefined */
     const getImageSource = () => {
         if (props.selectedRow && props.selectedRow.data[props.columnName] && !props.selectedRow.data[props.columnName].includes("FontAwesome")) {
             if (props.columnMetaData) {

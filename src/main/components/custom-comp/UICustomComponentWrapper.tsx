@@ -27,7 +27,7 @@ export interface ICustomComponentWrapper extends IBaseComponent {
 }
 
 /**
- * This component wraps a custom-component which is passed when a developer using reactUI as library, so that
+ * This component wraps a custom-component which is passed when a developer is using reactUI as library, so that
  * the necassary methods like onLoadCallback don't have to be implemented by the developer.
  * @param baseProps - Initial properties sent by the server for this component
  */

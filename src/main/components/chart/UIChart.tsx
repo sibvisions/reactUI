@@ -117,6 +117,7 @@ function getPointStyle(idx: number, points?: string[]) {
     return p[idx % p.length];
 }
 
+/** Available default colors for charts */
 const colors = [
     'rgba(255, 99, 132, 0.7)',
     'rgba(54, 162, 235, 0.7)',
@@ -126,6 +127,7 @@ const colors = [
     'rgba(255, 159, 64, 0.7)'
 ]
 
+/** A helper to reuse colors */
 let pieColorHelper = 0;
 
 /**
@@ -134,7 +136,6 @@ let pieColorHelper = 0;
  * @param idx - The index to get the color for
  * @param opacity - The opacity of the color
  * @param customColors - A custom list of colors to use for retrieval
- * @returns 
  */
 function getColor(idx: number, opacity = 1, customColors?: string[], pie?:boolean) {
     const c = customColors || colors;
@@ -170,10 +171,10 @@ function someNaN(values:any[]) {
  */
 function getLabels(values:any[], translation?: Map<string,string>, onlyIfNaN: boolean = false) {
     if (values.length) {
-        if(someNaN(values)) {
+        if (someNaN(values)) {
             //if one of the labels is not a number return a list of the unique label values
             const labels = [...(new Set(values))];
-            if(translation) {
+            if (translation) {
                 return labels.map(l => translation.get(l) || l)
             } else {
                 return labels;
@@ -212,7 +213,7 @@ const UIChart: FC<IChart> = (props) => {
     /** The metadata for the given databook */
     const metaData:MetaDataResponse|undefined = useMetaData(screenName, props.dataBook) as MetaDataResponse|undefined
 
-    /** process the providerData to geta usable data list as well as the min & max values */
+    /** process the providerData to get usable data list as well as the min & max values */
     const [data, min, max, xmin, xmax] = useMemo(() => {
         let { yColumnNames, xColumnName, chartStyle } = props;
         yColumnNames = yColumnNames || [];
@@ -258,7 +259,6 @@ const UIChart: FC<IChart> = (props) => {
             return (pie && yColumnNames.length > 1 ? selectedRow ? [selectedRow.data] : providerData.slice(0, 1) : providerData)
             .reduce<{x: number, y: number}[]>((agg, dataRow, idx) => {
                 //get the index of the x-value in the labels
-
                 const getLIDX = () => {
                     if (labels) {
                         return labels.indexOf(dataRow[xColumnName])
@@ -526,6 +526,7 @@ const UIChart: FC<IChart> = (props) => {
         const labels = pie && yColumnLabels.length > 1 ? yColumnLabels : getLabels(rows, translation);
         const hasStringLabels = someNaN(providerData.map(dataRow => dataRow[xColumnName]));
 
+        // Returns true, if the x-axis column is a date column
         const isDateXColumn = () => {
             return metaData?.columns.find(column => column.name === xColumnName)?.cellEditor.className === CELLEDITOR_CLASSNAMES.DATE;
         }
@@ -566,6 +567,7 @@ const UIChart: FC<IChart> = (props) => {
                 },
             }
         } else {
+            // Returns the type of the axis
             const getAxisType = () => {
                 if (isDateXColumn()) {
                     return "time";
@@ -575,6 +577,7 @@ const UIChart: FC<IChart> = (props) => {
                 }
                 return "linear";
             }
+
             let axes:any[] = (overlapped ? yColumnNames : ["x"]).map((v, idx) => ({
                 id: `axis-${idx}`,
                 axis: horizontal ? 'y' : 'x',

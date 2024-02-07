@@ -28,6 +28,7 @@ import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS"
 import { showTopBar } from "../../topbar/TopBar"
 import useDeviceStatus from "../../../hooks/event-hooks/useDeviceStatus"
 
+/** Interface for the signature pad */
 export interface ISignaturPad extends IBaseComponent {
     dataRow:string,
     columnName:string,
@@ -35,6 +36,7 @@ export interface ISignaturPad extends IBaseComponent {
     saveLock?:boolean
 }
 
+/** Enum for the current editing status of the signature pad */
 enum EDITLOCK_STATUS {
     LOCK = 0,
     LOCK_DELETE = 1,
@@ -51,16 +53,22 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     /** Component constants */
     const [context, [props], layoutStyle,,styleClassNames] = useComponentConstants<ISignaturPad>(baseProps);
 
-    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow]) 
+    /** The current screenname the signature pad is in */
+    const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow]);
 
+    /** The currently selected row of the databook */
     const [selectedRow] = useRowSelect(screenName, props.dataRow);
 
+    /** Reference of the signature pad component */
     const sigRef = useRef<any>(null);
 
+    /** True, if the signature pad is locked */
     const [saveLocked, setSaveLocked] = useState<boolean>(props.saveLock && selectedRow && selectedRow.data[props.columnName])
 
+    /** True, if it is possible to lock the editing */
     const editLockEnabled = useMemo(() => props.editLock !== false, [props.editLock]);
 
+    /** The current status of editing of the signature pad */
     const [editStatus, setEditStatus] = useState<EDITLOCK_STATUS>(saveLocked ? EDITLOCK_STATUS.NO_BUTTONS : (editLockEnabled ? EDITLOCK_STATUS.LOCK : EDITLOCK_STATUS.EDITING));
 
     /** Subscribes to designer-changes so the components are updated live */
@@ -72,14 +80,20 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     /** The button background based on the color-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
+    /** The devicestatus of the application */
     const deviceStatus = useDeviceStatus(true);
 
-    const resizedataURL = (datas:string, wantedWidth:number, wantedHeight:number) => {
+    /**
+     * Resizes the data of the signature pad to the given width and height
+     * @param datas - the data string of the signature pad
+     * @param wantedWidth - the wanted width
+     * @param wantedHeight - the wanted height
+     */
+    const resizedataURL = (datas: string, wantedWidth: number, wantedHeight: number) => {
         return new Promise<string>((resolve) => {
-        var img = document.createElement('img');
+            var img = document.createElement('img');
 
-        img.onload = function()
-            {        
+            img.onload = function () {
                 var canvas = document.createElement('canvas');
                 var ctx = canvas.getContext('2d');
 
@@ -94,10 +108,14 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                 resolve(dataURI)
             };
 
-        img.src = datas;
+            img.src = datas;
         })
     }
 
+    /** 
+     * set the image of the signature pad to the given data
+     * if there is none set save lock to false and edit status to lock so it can be edited later
+     */ 
     useEffect(() => {
         if (sigRef.current) {
             if (selectedRow) {
@@ -113,6 +131,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
         }
     }, [selectedRow]);
 
+    // Readd the image when devicestatus changes
     useEffect(() => {
         if (selectedRow && selectedRow.data[props.columnName]) {
             sigRef.current.clear();
@@ -120,6 +139,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
         }
     }, [deviceStatus])
 
+    /** Create the different footer buttons based on the editing status */
     const getFooterButtons = useCallback(() => {
         switch (editStatus) {
             case EDITLOCK_STATUS.NO_BUTTONS: return
@@ -247,6 +267,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                 }}
                 onBegin={() => {
                     if (sigRef.current) {
+                        //add classname to remove the footerbuttons
                         sigRef.current.getCanvas().parentElement.classList.add('sigpad-drawing');
                     }
                 }}

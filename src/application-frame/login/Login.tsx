@@ -106,6 +106,7 @@ const Login: FC = () => {
     /** State of the login-data entered */
     const [loginData, setLoginData] = useState<ILoginCredentials>({ username: "", password: "" });
 
+    /** True, if there is currently a login request active */
     const [loginReqActive, setLoginReqActive] = useState<boolean>(false);
 
     /** Some stock parameters for a custom mfa-wait component */
@@ -114,6 +115,7 @@ const Login: FC = () => {
     /** Some stock parameters for a custom mfa-url component */
     const [urlParams, setUrlParams] = useState<IMFAUrl>({ link: { width: 500, height: 300, url: "", target: "_self" }, timeout: 300000, timeoutReset: undefined });
     
+    // Subscribes to MFA properties and active login requests
     useEffect(() => {
         context.subscriptions.subscribeToMFAWait("login", (code:string, timeout:number, timeoutReset?:boolean) => setWaitParams({ code: code, timeout: timeout, timeoutReset: timeoutReset }));
         context.subscriptions.subscribeToMFAURL("login", (pLink: string | MFAURLType, timeout: number, timeoutReset?:boolean) => setUrlParams({ link: pLink, timeout: timeout, timeoutReset: timeoutReset }));
@@ -151,6 +153,10 @@ const Login: FC = () => {
 
     // Renders the correct login-form and passes a function to change the login-mode and to change login-data
     const getCorrectLoginForm = () => {
+        /**
+         * Sets the login mode to the given mode.
+         * @param mode - the login mode to be set
+         */
         const modeFunc = (mode: LoginMode) => setLoginMode(mode);
 
         // Callback to update the state of username and password
@@ -177,8 +183,8 @@ const Login: FC = () => {
                 loginReq = { ...options, ...loginReq };
             }
 
-            context.subscriptions.emitLoginChanged(undefined, undefined);
-            showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), context.server.topbar)
+            context.subscriptions.emitLoginChanged();
+            showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), context.server.topbar);
         }
 
         /**
@@ -219,6 +225,7 @@ const Login: FC = () => {
             showTopBar(context.server.sendRequest(resetReq, REQUEST_KEYWORDS.RESET_PASSWORD), context.server.topbar)
         }
 
+        /** An object which holds custom login views from other devs if reactui is used as lib */
         let customLoginView: {
             default: ((props: ICustomDefaultLogin) => ReactElement) | undefined,
             reset: ((props: ICustomResetLogin) => ReactElement) | undefined,
@@ -227,10 +234,12 @@ const Login: FC = () => {
             mfaUrl: ((props: ICustomMFAUrl) => ReactElement) | undefined
         } | undefined = undefined;
 
-        if (context.appSettings.transferType !== "full" && (context.contentStore as ContentStore).customLoginView.default !== undefined) {
+        // Fill customLoginView if there are any set
+        if (context.appSettings.transferType !== "full" && Object.values((context.contentStore as ContentStore).customLoginView).some(val => val !== undefined)) {
             customLoginView = (context.contentStore as ContentStore).customLoginView;
         }
 
+        // Either use the customLoginView or the basic reactui's ones
         switch (loginMode) {
             case LOGINMODES.DEFAULT: default:
                 if (customLoginView?.default) {

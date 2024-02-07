@@ -34,6 +34,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
     /** Returns utility variables */
     const context = useContext(appContext);
 
+    /** Reference for the gauge component */
     const gaugeRef = useRef<any>();
 
     /** State of the code field */
@@ -60,7 +61,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
     /** Ref for the interval */
     const intervalId = useRef<any>(null);
 
-    // Subscribes to the code and the timeout. And starts the timer
+    // Subscribes to the MFAWait properties. And starts the timer
     useLayoutEffect(() => {
         context.subscriptions.subscribeToMFAWait("wait-comp", (code:string, timeout:number, timeoutReset?:boolean) => {
             setCode(code);

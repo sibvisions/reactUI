@@ -79,26 +79,35 @@ function isEditor(props:IEditor|IBaseComponent): props is IEditor {
  */
 export function getAlignments(props: IEditor|IBaseComponent):Alignments {
     if (isEditor(props)) {
-        if (props.cellEditor_horizontalAlignment_ !== undefined && props.cellEditor_verticalAlignment_ !== undefined)
+        if (props.cellEditor_horizontalAlignment_ !== undefined && props.cellEditor_verticalAlignment_ !== undefined) {
             return translateAlignments(props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_);
-        else if (props.cellEditor_horizontalAlignment_ !== undefined && props.cellEditor!.verticalAlignment !== undefined)
+        }
+        else if (props.cellEditor_horizontalAlignment_ !== undefined && props.cellEditor!.verticalAlignment !== undefined) {
             return translateAlignments(props.cellEditor_horizontalAlignment_, props.cellEditor!.verticalAlignment);
-        else if (props.cellEditor_verticalAlignment_ !== undefined && props.cellEditor!.horizontalAlignment !== undefined)
+        }
+        else if (props.cellEditor_verticalAlignment_ !== undefined && props.cellEditor!.horizontalAlignment !== undefined) {
             return translateAlignments(props.cellEditor!.horizontalAlignment, props.cellEditor_verticalAlignment_);
-        else if (props.cellEditor!.horizontalAlignment !== undefined && props.cellEditor!.verticalAlignment !== undefined)
+        }   
+        else if (props.cellEditor!.horizontalAlignment !== undefined && props.cellEditor!.verticalAlignment !== undefined) {
             return translateAlignments(props.cellEditor!.horizontalAlignment, props.cellEditor!.verticalAlignment);
-        else
+        }
+        else {
             return translateAlignments(undefined, undefined);
+        }
     }
     else {
-        if (props.horizontalAlignment !== undefined && props.verticalAlignment !== undefined)
+        if (props.horizontalAlignment !== undefined && props.verticalAlignment !== undefined) {
             return translateAlignments(props.horizontalAlignment, props.verticalAlignment);
-        else if (props.horizontalAlignment !== undefined) 
+        }
+        else if (props.horizontalAlignment !== undefined) {
             return translateAlignments(props.horizontalAlignment, undefined);
-        else if (props.verticalAlignment !== undefined)
+        }
+        else if (props.verticalAlignment !== undefined) {
             return translateAlignments(undefined, props.verticalAlignment);
-        else
+        }
+        else {
             return translateAlignments(undefined, undefined);
+        }
     }
 }
 

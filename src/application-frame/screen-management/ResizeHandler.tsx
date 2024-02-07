@@ -18,7 +18,6 @@ import _ from "underscore";
 import { appContext } from "../../main/contexts/AppProvider";
 import { createDeviceStatusRequest } from "../../main/factories/RequestFactory";
 import { LayoutContext } from "../../main/LayoutContext";
-import { isCorporation } from "../../main/util/server-util/IsCorporation";
 import { ResizeContext } from "../../main/contexts/ResizeProvider";
 import ChildWithProps from "../../main/util/types/ChildWithProps";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
@@ -38,7 +37,7 @@ const ResizeHandler:FC<any> = (props) => {
     const resizeContext = useContext(ResizeContext);
 
     /** Reference for the screen-container */
-    const sizeRef = useRef<any>(null);
+    const sizeRef = useRef<HTMLDivElement>(null);
 
     /** Current state of the size of the screen-container*/
     const [componentSize, setComponentSize] = useState(new Map<string, CSSProperties>());
@@ -70,27 +69,28 @@ const ResizeHandler:FC<any> = (props) => {
          * Returns the height of the desktop-panel
          * @param login - True, if the app is currently on login 
          */
-        const getDesktopHeight = (login?:boolean) => {
-            let height = 0;
-            if (sizeRef.current) {
-                if (login) {
-                    height = (document.querySelector(".login-container-with-desktop") as HTMLElement).offsetHeight;
-                }
-                else {
-                    const reactUIHeight = (document.querySelector(".reactUI") as HTMLElement).offsetHeight
-                    let minusHeight = 0;
-                    if (isCorporation(appLayout, appTheme) && document.querySelector(".corp-menu-topbar")) {
-                        minusHeight = (document.querySelector(".corp-menu-topbar") as HTMLElement).offsetHeight
-                        height = reactUIHeight - minusHeight;
-                    }
-                    else {
-                        minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue((appTheme === "basti_mobile" && window.innerWidth <= 530) ? "--std-header-mini-height" : "--std-header-height"))
-                        height = reactUIHeight - minusHeight;
-                    }
-                }
-            }
-            return height;
-        }
+        // const getDesktopHeight = (login?:boolean) => {
+        //     let height = 0;
+        //     if (sizeRef.current) {
+        //         if (login) {
+        //             height = (document.querySelector(".login-container-with-desktop") as HTMLElement).offsetHeight;
+        //         }
+        //         else {
+        //             const reactUIHeight = (document.querySelector(".reactUI") as HTMLElement).offsetHeight
+        //             let minusHeight = 0;
+        //             if (isCorporation(appLayout, appTheme) && document.querySelector(".corp-menu-topbar")) {
+        //                 // The c
+        //                 minusHeight = (document.querySelector(".corp-menu-topbar") as HTMLElement).offsetHeight
+        //                 height = reactUIHeight - minusHeight;
+        //             }
+        //             else {
+        //                 minusHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue((appTheme === "basti_mobile" && window.innerWidth <= 530) ? "--std-header-mini-height" : "--std-header-height"))
+        //                 height = reactUIHeight - minusHeight;
+        //             }
+        //         }
+        //     }
+        //     return height;
+        // }
 
         /** When the window width is 530px or smaller and the applayout is corp, change the applayout to standard, while the window width is <= 530px */
         if (appLayout === "corporation" && resizeContext.setMobileStandard) {
@@ -114,13 +114,13 @@ const ResizeHandler:FC<any> = (props) => {
             });
             // If the component doesn't have a parent eg. mobilelauncher use the save the height and width as root
             sizeMap.set("root", { width: width, height: height });
-            if (context.appSettings.desktopPanel) {
-                let desktopHeight = getDesktopHeight(resizeContext.login);
-                if ((resizeContext.login && sizeRef.current.classList.contains("login-container-with-desktop")) || sizeRef.current.parentElement.classList.contains("desktop-panel-enabled")) {
-                    sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight })
+            if (context.appSettings.desktopPanel && sizeRef.current) {
+                //let desktopHeight = getDesktopHeight(resizeContext.login);
+                if ((resizeContext.login && sizeRef.current.classList.contains("login-container-with-desktop")) || sizeRef.current.parentElement?.classList.contains("desktop-panel-enabled")) {
+                    //sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: desktopHeight });
+                    sizeMap.set(context.appSettings.desktopPanel.id, { width: width, height: height })
                 }
             }
-            //TODO: maybe fetch ids via screenId instead of relying on the children 
             setComponentSize(sizeMap);
         }
     }, [props.children, designerUpdate, context.designer?.isVisible]);
@@ -134,7 +134,7 @@ const ResizeHandler:FC<any> = (props) => {
         deviceStatusReq.screenHeight = window.innerHeight;
         deviceStatusReq.screenWidth = window.innerWidth;
         context.server.sendRequest(deviceStatusReq, REQUEST_KEYWORDS.DEVICE_STATUS);
-    },150);
+    }, 150);
 
     /** Resizing when screens or menuSize changes, menuSize changes every 10 pixel resizing every 10 pixel for a smooth transition */
     useLayoutEffect(() => {
@@ -150,7 +150,7 @@ const ResizeHandler:FC<any> = (props) => {
         const resizeTimer = _.debounce(() => {
             if (currSizeRef)
                 currSizeRef.classList.remove("transition-disable-overflow")
-        },150);
+        }, 150);
         const resizeListenerCall = () => {
             if (currSizeRef)
                 currSizeRef.classList.add("transition-disable-overflow");
@@ -166,13 +166,13 @@ const ResizeHandler:FC<any> = (props) => {
 
         }
     // eslint-disable-next-line
-    },[doResize]);
+    }, [doResize]);
 
     /** When the collapse value changes, add menu-transition */
     useLayoutEffect(() => {
         if (sizeRef.current) {
             sizeRef.current.classList.add('transition-disable-overflow');
-            sizeRef.current.parentElement.classList.add("menu-transition")
+            sizeRef.current.parentElement?.classList.add("menu-transition")
         }
     }, [resizeContext.menuCollapsed])
 
@@ -181,8 +181,10 @@ const ResizeHandler:FC<any> = (props) => {
         if (document.getElementsByClassName('menu-panelmenu-wrapper')[0].contains(event.srcElement) && sizeRef.current) {
             if (event.propertyName === "width") {
                 setTimeout(() => {
-                    sizeRef.current.classList.remove('transition-disable-overflow');
-                    sizeRef.current.parentElement.classList.remove("menu-transition")
+                    if (sizeRef.current) {
+                        sizeRef.current.classList.remove('transition-disable-overflow');
+                        sizeRef.current.parentElement?.classList.remove("menu-transition")
+                    }
                 }, 0)
                 handleResize();
             }

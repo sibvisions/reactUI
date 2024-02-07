@@ -72,7 +72,7 @@ const dateFormats = [
     "dd/MMMM/yyyyy"
 ]
 
-// Parses a date-string through multiple formats
+// Parses a date-string through multiple formats and returns the result if it is valid
 const parseMultiple = (
     dateString: string,
     formatString: string[],
@@ -130,6 +130,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             if (hasError) {
                 setHasError(false)
             }
+            // formatInTimeZone returns a string so we need to call toDate again to parse it into a date
             return toDate(formatInTimeZone(new Date(props.selectedRow.data[props.columnName]), timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }));
         }
         else if (viewDate) {
@@ -145,22 +146,23 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
 
     }, [props.selectedRow, props.columnName, locale, timeZone, hasError])
 
-    /** The current datevalue */
+    /** The current date value */
     const [dateValue, setDateValue] = useState<any>(convertToTimeZone(false));
 
     /** True, if the overlaypanel is visible */
     const [visible, setVisible] = useState<boolean>(false);
 
-    /** The month/year which is currently displayed */
+    /** The month/year which is currently displayed in the panel */
     const [viewDate, setViewDate] = useState<any>(convertToTimeZone(true));
 
     /** Is being set true when the viewDate is changed, used because the overlay is closing when pressing the month arrow buttons */
     const viewDateChanged = useRef<boolean>(false);
 
-    /** True, if the user has changed the value */
+    /** True, if the user has changed the value via keyboard */
     const startedEditing = useRef<boolean>(false);
 
-    const hasChanged = useRef<boolean>(false);
+    /** True, if the user has changed the value */
+    const isChanging = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from props */
     const { onLoadCallback, id } = props;
@@ -213,7 +215,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             if (calendarInput.current && props.isCellEditor) {
                 calendarInput.current?.focus()
                 if (props.passedKey) {
-                    //TODO: Value changing isn't very good here but setting the state is not possible because the state needs to be a date...
                     calendarInput.current.value = props.passedKey
                 }
             }
@@ -247,7 +248,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     useEffect(() => {
         setDateValue(convertToTimeZone(false));
         setViewDate(convertToTimeZone(true));
-
     }, [props.selectedRow]);
 
     // If the lib user extends the DateCellEditor with onChange, call it when slectedRow changes.
@@ -257,6 +257,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
         }
     }, [props.selectedRow, props.onChange]);
 
+    // Set viewDateChange to false when the viewDate state is done updating
     useEffect(() => {
         setTimeout(() => {
             if (viewDateChanged.current) {
@@ -300,6 +301,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
 
         let dateToSend: Date | null = inputDate;
 
+        // If the entered date is valid, then format it, set it as date to send to the server and state to display.
+        // Not valid check if empty -> null, else restore the old date
         if (isValidDate(inputDate)) {
             setDateValue(inputDate);
             dateToSend = toDate(formatInTimeZone(inputDate, Intl.DateTimeFormat().resolvedOptions().timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }), { timeZone: timeZone });
@@ -313,8 +316,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             setDateValue(convertToTimeZone(false));
         }
 
-        hasChanged.current = false;
-
         sendSetValues(
             props.dataRow,
             props.name,
@@ -324,6 +325,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             props.context.server,
             props.topbar,
             props.rowNumber);
+        isChanging.current = false;
         startedEditing.current = false;
     }
 
@@ -422,7 +424,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 onChange={event => {
                     //@ts-ignore
                     setDateValue(event.value ? event.value : null);
-                    hasChanged.current = true;
+                    isChanging.current = true;
 
                     if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
                         calendar.current?.hide();
@@ -456,15 +458,16 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     }
                 }}
                 onHide={() => {
-                    if (hasChanged.current) {
+                    if (isChanging.current) {
                         handleDateInput();
-                        hasChanged.current = false;
+                        isChanging.current = false;
                     }
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 readOnlyInput={props.isReadOnly || hasError}
                 //disabled={props.isReadOnly || hasError}
                 onVisibleChange={event => {
+                    // If the viewDate has changed do NOT change visibility
                     if (!viewDateChanged.current) {
                         setVisible(prevState => !prevState);
                     }
@@ -489,7 +492,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 }}
                 placeholder={props.cellEditor_placeholder_}
                 formatDateTime={(date: Date) => {
-                    if (hasChanged.current && calendarInput.current?.value) {
+                    // if the user is currently editing and has not "submitted" do NOT format the date
+                    if (isChanging.current && calendarInput.current?.value) {
                         return calendarInput.current?.value
                     }
                     let formattedValue = "";

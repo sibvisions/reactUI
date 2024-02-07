@@ -46,9 +46,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
     /** The button background-color, taken from the "primary-color" variable of the css-scheme */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
 
-    /**
-     * Sends a reset-password-request to the server, if a email is entered.
-     */
+    /** Sends a reset-password-request to the server, if an email is entered. */
      const sendResetPassword = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!email) {

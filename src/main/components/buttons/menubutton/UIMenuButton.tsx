@@ -62,8 +62,10 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
     /** Current state of the menuitems */
     const [items, setItems] = useState<Array<MenuItem>>();
 
+    /** A state flag which changes, when the menuitems of a menubutton change to rebuild the menu */
     const [itemsChangedFlag, setItemsChangedFlag] = useState<boolean>(false);
 
+    /** Returns the default button element (left button) of a menubutton */
     const getDefaultButton = (): HTMLElement|undefined => {
         const defaultButton = buttonRef.current?.getElement().querySelector(".p-splitbutton-defaultbutton");
         if (defaultButton) {
@@ -72,6 +74,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
         return undefined;
     }
 
+    /** Returns the menu button element (right button with arrow) of a menubutton */
     const getMenuButton = (): HTMLElement|undefined => {
         const menuButton = buttonRef.current?.getElement().querySelector(".p-splitbutton-menubutton");
         if (menuButton) {
@@ -114,7 +117,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                 }
             }
         }
-    }, [isHTML])
+    }, [isHTML]);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -123,13 +126,14 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
         }
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, isHTML]);
 
+    // subscribes to the menubuttons items and change the state to trigger rebuilding of the menu
     useEffect(() => {
-        props.context.subscriptions.unsubscribeFromMenuButtonItems(props.popupMenu);
-        props.context.subscriptions.subscribeToMenuButtonItems(props.popupMenu, () => setItemsChangedFlag(prevState => !prevState))
+        props.context.subscriptions.subscribeToMenuButtonItems(props.popupMenu, () => setItemsChangedFlag(prevState => !prevState));
 
         return () => props.context.subscriptions.unsubscribeFromMenuButtonItems(props.popupMenu);
     }, [props.context.subscriptions, props.popupMenu])
 
+    // aria and set tabindex of right button to -1 so when the menubutton is being focused and tab is being pressed, the right button doesn't gain focus
     useLayoutEffect(() => {
         const defaultButton = getDefaultButton();
         const menuButton = getMenuButton();
@@ -138,7 +142,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
             defaultButton.setAttribute("aria-haspopup", "true");
             menuButton.setAttribute("tabindex", "-1");
         }
-    }, [])
+    }, []);
 
     /** Builds the menuitems and sets the state */
     useEffect(() => {
@@ -258,11 +262,13 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                         }
                     }
                     else {
-                        getMenuButton()?.click()
-                        //buttonRef.current?.show()
+                        // When the defaultbutton is being pressed, we also need to click the right button so the menu opens
+                        getMenuButton()?.click();
                     }
                 }}
                 onShow={() => {
+                    // When the popupmenu is being shown, we need to adjust the position and width, because the menu would open at a different position and with a different width
+                    // With this, the menu will be starting at the same left position as the button, and is as wide as the button
                     const btnElem = buttonRef.current?.getElement();
                     const wrapperElem = btnElem?.parentElement;
                     if (btnElem && wrapperElem) {

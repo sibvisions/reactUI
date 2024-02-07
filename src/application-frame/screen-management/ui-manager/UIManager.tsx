@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Menu from "../../menu/Menu";
 import { appContext, isDesignerVisible } from "../../../main/contexts/AppProvider";
 import ScreenManager from "../ScreenManager";
@@ -64,9 +64,6 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
-    /** ComponentId of Screen extracted by useParams hook */
-    const { screenName } = useParams<any>();
-
     /** The current state of device-status */
     const deviceStatus = useDeviceStatus();
 
@@ -97,18 +94,19 @@ const UIManager: FC<IUIManagerProps> = (props) => {
         return dataArray;
     }
 
-    /** Current state of menu size */
+    /** Current menu size, uses this hook, so it increases/decreases in steps for a transition, max breakpoint is the menu-width min breakpoint is the collapsed width */
     const menuSize = useResponsiveBreakpoints(menuRef.current, 
     getMenuSizeArray(parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-width')),
     menuMini ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--std-menu-collapsed-width')) : 0), menuCollapsed);
 
-    useEffect(() => {
+    // In case this component is reached without login, clear the session storage and reload the location
+    useLayoutEffect(() => {
         const user = (context.contentStore as ContentStore).currentUser;
         if (!user.displayName) {
             sessionStorage.clear();
             window.location.reload();
         }
-    }, [])
+    }, []);
 
     // Subscribes to the menu-visibility and theme
     useEffect(() => {
@@ -126,59 +124,58 @@ const UIManager: FC<IUIManagerProps> = (props) => {
     const CustomWrapper = props.customAppWrapper;
 
     return (
-        ((context.contentStore as ContentStore).currentUser.displayName) ? 
-            (CustomWrapper) ?
-            <div
-                className={concatClassnames(
-                    "reactUI",
-                    isCorporation(appLayout, appTheme) ? "corporation" : "",
-                    appTheme
-                )}>
-                <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.name} password="" />
-                <CustomWrapper>
-                    <div id="reactUI-main" className="main">
-                        <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize}>
-                            <ScreenManager />
-                        </ResizeProvider>
-                    </div>
-                </CustomWrapper>
-            </div>
-            : <div className={concatClassnames(
+        // If there is a custom wrapper set by a dev using reactui as lib, use it
+        (CustomWrapper) ?
+        <div
+            className={concatClassnames(
                 "reactUI",
                 isCorporation(appLayout, appTheme) ? "corporation" : "",
                 appTheme
-            )} >
-                <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
-                {!isDesignerVisible(context.designer) ? 
-                    isCorporation(appLayout, appTheme) ?
-                        <CorporateMenu
-                            screenTitle={screenTitle}
-                            menuOptions={menuOptions} />
-                        :
-                        <Menu
-                            screenTitle={screenTitle}
-                            forwardedRef={menuRef}
-                            showMenuMini={menuMini}
-                            menuOptions={menuOptions} />
-                        :
-                        undefined
-                    }
-                <div id="reactUI-main" className={concatClassnames(
-                    "main",
-                    !isDesignerVisible(context.designer) ? (isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu") : "",
-                    !isDesignerVisible(context.designer) && ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus as DeviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
-                    menuMini ? "" : "screen-no-mini",
-                    menuOptions.toolBar ? "toolbar-visible" : "",
-                    (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) || isDesignerVisible(context.designer) ? "menu-not-visible" : "",
-                    (!activeScreens.length || activeScreens[0].popup) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
-                )}>
-                    <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active: boolean) => setMobileStandard(active)}>
+            )}>
+            <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.name} password="" />
+            <CustomWrapper>
+                <div id="reactUI-main" className="main">
+                    <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize}>
                         <ScreenManager />
                     </ResizeProvider>
                 </div>
+            </CustomWrapper>
+        </div>
+        : <div className={concatClassnames(
+            "reactUI",
+            isCorporation(appLayout, appTheme) ? "corporation" : "",
+            appTheme
+        )} >
+            <ChangePasswordDialog loggedIn username={(context.contentStore as ContentStore).currentUser.userName} password="" />
+            {!isDesignerVisible(context.designer) ? 
+                isCorporation(appLayout, appTheme) ?
+                    <CorporateMenu
+                        screenTitle={screenTitle}
+                        menuOptions={menuOptions} />
+                    :
+                    <Menu
+                        screenTitle={screenTitle}
+                        forwardedRef={menuRef}
+                        showMenuMini={menuMini}
+                        menuOptions={menuOptions} />
+                    :
+                    undefined
+                }
+            <div id="reactUI-main" className={concatClassnames(
+                "main",
+                !isDesignerVisible(context.designer) ? (isCorporation(appLayout, appTheme) ? "main--with-corp-menu" : "main--with-s-menu") : "",
+                !isDesignerVisible(context.designer) && ((menuCollapsed || (["Small", "Mini"].indexOf(deviceStatus as DeviceStatus) !== -1 && context.appSettings.menuOverlaying)) && (appLayout === "standard" || appLayout === undefined || (appLayout === "corporation" && window.innerWidth <= 530))) ? " screen-expanded" : "",
+                menuMini ? "" : "screen-no-mini",
+                menuOptions.toolBar ? "toolbar-visible" : "",
+                (!menuOptions.menuBar || !menuOptions.toolBar) || (embeddedContext && !embeddedContext.showMenu) || isDesignerVisible(context.designer) ? "menu-not-visible" : "",
+                // Add className to render the desktoppanel, if there are no screens opened or only popups
+                (!activeScreens.length || activeScreens[0].popup) && context.appSettings.desktopPanel ? "desktop-panel-enabled" : "",
+            )}>
+                <ResizeProvider login={false} menuRef={menuRef} menuSize={menuSize} menuCollapsed={menuCollapsed} mobileStandard={mobileStandard} setMobileStandard={(active: boolean) => setMobileStandard(active)}>
+                    <ScreenManager />
+                </ResizeProvider>
             </div>
-            :
-            <></>
+        </div>
     )
 }
 export default UIManager

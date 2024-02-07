@@ -58,12 +58,14 @@ interface LinkReference extends ReferencedColumnNames {
     dataToDisplayMap?: Map<string, string>
 }
 
+// Type for AdditionalConditions
 type AdditionalConditionsType = {
     conditions?: AdditionalConditionType[],
     condition?: AdditionalConditionType,
     type: string
 }
 
+// Type for a single additionalcondition
 type AdditionalConditionType = {
     columnName: string,
     dataRow: string | undefined,
@@ -323,6 +325,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         return props.cellEditor.linkReference;
     }, [cellEditorMetaData, props.cellEditor.linkReference])
 
+    /** A flag, which changes when the displaymap of the metadata changes */
     const [displayMapChanged, setDisplayMapChanged] = useState<boolean>(false);
 
     /** Current state of text value of input element */
@@ -343,10 +346,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     /** Button background */
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [props.designerUpdate]);
 
+    /** True, if a table should always been shown */
     const showTable = false;
 
+    /** True, if there is currently a filter being processed */
     const filterInProcess = useRef<boolean>(false);
 
+    /** Remember to call handleInput */
     const callHandleInputCallback = useRef<boolean>(false);
 
     /** True, if the dropdown should be displayed as table */
@@ -382,6 +388,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, linkedInput.current, props.context);
 
+    /** Returns the element of the dropdownbutton or null */
     const getDropDownButton = (): HTMLButtonElement|null => {
         if (linkedRef.current) {
             return linkedRef.current.getElement().querySelector("button");
@@ -396,6 +403,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize]);
 
+    // Subscribes to displaymap change
     useEffect(() => {
         props.context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
 
@@ -454,6 +462,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             props.context.contentStore, props.name);
     }, [props.selectedRow])
 
+    // Add this editor as referencedCellEditor to it's referencedDatabook to update the displaymap
     useEffect(() => {
         if (cellEditorMetaData) {
             if (!cellEditorMetaData.linkReference) {
@@ -477,7 +486,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }, [props.selectedRow, props.onChange, cellEditorMetaData])
 
     /**
-     * Either returns the unpacked value out of an array based on the columnView which should be shown in the input , or just returns the value if there is no array
+     * Incase of no displayReferencedColumn or concatMask, return the correct value to display
+     * else create an object of the referencedColumnNames as keys and their values
      * @param value - the selected value of the linked-cell-editor
      */
     const unpackValue = (value: string | string[]) => {
@@ -501,6 +511,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     /**
      * When the input changes, send a filter request to the server
      * @param event - Event that gets fired on inputchange
+     * @param query - True, if the sendFilter is being called by querying
      */
     const sendFilter = useCallback(async (value:any, query?:boolean) => {
         const refDataBookInfo = props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook);
@@ -522,6 +533,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             props.onFilter(value);
         }
 
+        // Only set filterInProcess if not querying = keyboard inputs!
         if (!filterInProcess.current && !query) {
             filterInProcess.current = true;
         }
@@ -592,14 +604,18 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_ROW), props.topbar);
     }
 
+    /** Returns the correct columnNames */
     const getColumnNames = () => {
         let columnNamesToReturn: string[] = []
+        // If there are no columnNames set and only 1 referencedColumnName, use that one as columnName
         if (linkReference.columnNames.length === 0 && linkReference.referencedColumnNames.length === 1) {
             columnNamesToReturn.push(props.columnName);
         }
         else {
             columnNamesToReturn = [...linkReference.columnNames];
         }
+
+        // add additionalClearColumns
         if (props.cellEditor.additionalClearColumns) {
             columnNamesToReturn = [...columnNamesToReturn, ...props.cellEditor.additionalClearColumns];
         }
@@ -607,6 +623,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         return columnNamesToReturn
     }
 
+    /**
+     * Add the additionalClearColumns to the value which is being sent to the server
+     * @param valueToSend 
+     */
     const addAdditionalColumnToValue = (valueToSend: any) => {
         if (props.cellEditor.additionalClearColumns) {
             props.cellEditor.additionalClearColumns.forEach(addClearCol => {
@@ -629,10 +649,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             columnNames: primaryKeys,
             values: primaryKeys.map(pk => primaryObj[pk])
         };
-        // Set text, send selectrequest and setvalues if values are being found
+        
+        // fill the inputObj incase some values are missing
         if (colNames.length > 1) {
             if (colNames.length > Object.values(inputObj).length) {
-                let tempValues = Object.values(inputObj)
+                let tempValues = Object.values(inputObj);
                 for (let i = tempValues.length; i < refColNames.length; i++) {
                     tempValues[i] = (inputObj as any)[refColNames[i]]
                 }
@@ -640,10 +661,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             }
         }
 
+        // If there are more than one columnName to send, send the array, else take the value of the displayReferencedColumnName or the bound columnName
         const valueToSend = colNames.length > 1 ? inputObj : props.cellEditor.displayReferencedColumnName ? inputObj[refColNames[0]] : inputObj[refColNames[index]];
 
         addAdditionalColumnToValue(valueToSend);
-
+        // Set text, send selectrequest and setvalues if values are being found
         setText(getDisplayValue(value, inputObj, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
         sendSelectRequest(value["__index"], filter);
         sendSetValues(props.dataRow, props.name, columnNames, props.columnName, valueToSend, props.context.server, props.topbar, -1)
@@ -667,7 +689,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
 
         /** Returns the values, of the databook, that match the input of the user */
-        // check if providedData has entries of text
+        // check if providedData has entries of the entered text
         let foundData = 
             providedData.filter((data: any) => {
                 if (isDisplayRefColNameOrConcat) {
@@ -745,7 +767,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
             addAdditionalColumnToValue(extractedData);
 
-            let tempValues = Object.values(extractedData)
+            let tempValues = Object.values(extractedData);
+            // fill the tempValues incase some values are missing
             if (colNames.length > 1) {
                 if (colNames.length > tempValues.length) {
                     for (let i = tempValues.length; i < linkReference.referencedColumnNames.length; i++) {
@@ -778,6 +801,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             });
         }
 
+        // If the columnView should display a table with more than one column, return the label and items to build the table
         if (props.cellEditor.columnView?.columnCount > 1 && tableOptions) {
             return [{
                 label: props.cellEditor.columnView.columnNames,
@@ -788,7 +812,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         return suggestions
     }
 
-    // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 400 new rows
+    // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 100 new rows
     const handleLazyLoad = (event:any) => {
         if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.isAllFetched) {
             const fetchReq = createFetchRequest();
@@ -868,6 +892,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         return (d.label as string[]).map((d, i) => <div key={i}>{metaDataReferenced?.columns[i]?.label ?? props.columnMetaData?.label ?? d}</div>)
     }, [props.columnMetaData, providedData, metaDataReferenced]);
 
+    // Returns the scrollheight
     const getScrollHeight = () => {
         if (tableOptions) {
             if (props.cellEditor.tableHeaderVisible === false) {
@@ -884,6 +909,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
     }
 
+    // focus the input field when entering keys
     useEventHandler(linkedInput.current && props.isCellEditor ? linkedInput.current : undefined, "keydown", () => {
         setTimeout(() => linkedInput.current.focus(), 0);
     })
@@ -963,6 +989,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                                 handleInput();
                             }
                             else {
+                                // if a filter is in process wait for it and then call handleInput
                                 callHandleInputCallback.current = true;
                             }
                         }

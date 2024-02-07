@@ -40,9 +40,6 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
-    /** True, if the togglebutton is selected */
-    const [checked, setChecked] = useState<boolean|undefined>(props.selected)
-
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, props.layoutStyle, props.compStyle, buttonRef.current ? buttonRef.current.getElement() : undefined)
 
@@ -73,7 +70,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
                 }
             }
         }
-    }, [isHTML, checked])
+    }, [isHTML, props.selected])
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -84,8 +81,6 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
 
     //If lib-user extends Togglebutton with onChange, call it when selected changes
     useEffect(() => {
-        setChecked(props.selected)
-        
         if (props.onChange) {
             props.onChange(props.selected);
         }
@@ -93,6 +88,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
 
     /** When the ToggleButton is pressed, send a pressButtonRequest to the server */
     const handleOnChange = (event:ToggleButtonChangeEvent) => {
+        // if lib user extends onClick, call when clicking
         if (props.onClick) {
             props.onClick(event.originalEvent);
         }
@@ -150,7 +146,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
                 onIcon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnStyle.iconPos}
                 tabIndex={btnStyle.tabIndex}
-                checked={checked}
+                checked={props.selected === undefined ? false : props.selected}
                 onChange={handleOnChange}
                 onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}

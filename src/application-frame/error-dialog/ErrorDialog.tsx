@@ -56,17 +56,11 @@ const ErrorDialog:FC = () => {
 
     // Builds the error-causes as items to show in the Listbox 
     const errorItems = useMemo(() => {
-        if (errorProps && errorProps.exceptions) {
-            return [{
-                label: translation.get("Cause(s) of failure") as string,
-                items: errorProps.exceptions.map(ex => {
-                    return { label: ex.message, exception: ex.exception }
-                })
-            }]
-        }
         return [{
             label: translation.get("Cause(s) of failure") as string,
-            items: []
+            items: errorProps && errorProps.exceptions ? errorProps.exceptions.map(ex => {
+                return { label: ex.message, exception: ex.exception }
+            }) : []
         }]
     }, [errorProps]);
 
@@ -102,7 +96,7 @@ const ErrorDialog:FC = () => {
         }
     }, [errorItems])
 
-    // Set visibility to false and send a close frame request to the server
+    /** Set visibility to false and send a close frame request to the server */ 
     const handleOnHide = () => {
         setVisible(false);
         setShowDetails(false);
@@ -113,7 +107,7 @@ const ErrorDialog:FC = () => {
         }
     }    
 
-    // Build footer based on showDetails
+    /** Build footer based on showDetails */ 
     const errorFooter = useCallback(() => {
         return (
             <div className="error-dialog-footer">

@@ -15,7 +15,7 @@
 
 import { MenuItem } from "primereact/menuitem";
 import { useEffect, useState, useContext, CSSProperties, useMemo } from "react";
-import { MenuItemCustom, findSelectedMenuItem } from "../../../application-frame/menu/Menu";
+import { MenuItemCustom, getSelectedMenuItem, getSelectedMenuItemId } from "../../../application-frame/menu/Menu";
 import { appContext } from "../../contexts/AppProvider";
 import { showTopBar } from "../../components/topbar/TopBar";
 import IBaseComponent from "../../util/types/IBaseComponent";
@@ -265,55 +265,18 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
     }, [context.subscriptions, menus, appTheme]);
 
     // The current selected menu-item based on the active-screen
-    const selectedMenuItem = useMemo(() => {
-        let foundMenuItem: string = "";
-        if (activeScreens.length) {
-            if (context.transferType === "partial") {
-                // Go through the activescreens from the back and check if the active-screen has a menu-item if yes make it the selected-item
-                for (let i = activeScreens.length - 1; i >= 0; i--) {
-                    if (foundMenuItem) {
-                        break;
-                    }
-                    else {
-                        context.contentStore.menuItems.forEach(items => {
-                            if (items.length) {
-                                const foundItems = items.filter(item => item.className === activeScreens[i].className);
-                                if (foundItems.length === 1) {
-                                    if (foundItems[0].className) {
-                                        foundMenuItem = foundItems[0].className
-                                    }
-                                }
-                                else {
-                                    const foundItem = foundItems.find(foundItem => foundItem.navigationName === activeScreens[i].navigationName);
-                                    if (foundItem && foundItem.className && foundItem.navigationName) {
-                                        foundMenuItem = foundItem.className + "____" + foundItem.navigationName
-                                    }
-                                }
-                            }
-                        })
-                    }
-                }
-            }
-
-            // If there was no menu-item found through the loop, just take the last active-screen
-            if (!foundMenuItem) {
-                foundMenuItem = activeScreens.slice(-1).pop()!.className as string
-            }
-        }
-
-        return foundMenuItem
-    }, [activeScreens]);
+    const selectedMenuItemId = useMemo(() => getSelectedMenuItemId(activeScreens, context), [activeScreens]);
 
     useEffect(() => {
         if (menuItems.length) {
             Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
-            const foundMenuItem:MenuItem|null = findSelectedMenuItem(menuItems, selectedMenuItem);
+            const foundMenuItem:MenuItem|null = getSelectedMenuItem(menuItems, selectedMenuItemId);
             if (foundMenuItem) {
                 foundMenuItem.className = concatClassnames(foundMenuItem.className, "p-menuitem--active");
             }
             setMenuItems([...menuItems])
         }
-    }, [selectedMenuItem])
+    }, [selectedMenuItemId])
 
     return menuItems;
 }

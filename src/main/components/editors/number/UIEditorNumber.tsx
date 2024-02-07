@@ -62,7 +62,16 @@ export function getNumberSeparators(locale: string) {
     return { decimal: parts.find(part => part.type === 'decimal')!.value, group: parts.find(part => part.type === 'group')!.value};
 }
 
+/**
+ * Returns the prefix of a value
+ * @param numberFormat - the numberformat
+ * @param data - the entered data
+ * @param isNumberRenderer - true, if this is called by the cellrenderer
+ * @param locale - the locale
+ * @param useGrouping - true, if the number value should be grouped
+ */
 export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boolean, locale: string, useGrouping: boolean) {
+    // add leading zeros
     if (numberFormat.startsWith('0') || numberFormat.startsWith('#')) {
         return getPrimePrefix(numberFormat, data, locale, useGrouping);
     }
@@ -71,6 +80,7 @@ export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boole
         const index0 = numberFormat.indexOf('0');
         const indexPeriod = numberFormat.indexOf('.');
         if (indexPeriod !== 0) {
+            // Add the prefix (no zero or #) and then add the leading zeros
             if (indexHash < index0) {
                 return numberFormat.replaceAll("'", '').substring(0, indexHash) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
             }
@@ -82,6 +92,12 @@ export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boole
     return ""
 }
 
+/**
+ * Returns the suffix
+ * @param numberFormat - the number format
+ * @param locale - the locale
+ * @param scale - the scale of the celleditor
+ */
 export function getSuffix(numberFormat:string, locale: string, scale?:number) {
     const numberSeperators = getNumberSeparators(locale)
     if (!numberFormat.endsWith('0') && !numberFormat.endsWith('#')) {
@@ -89,10 +105,12 @@ export function getSuffix(numberFormat:string, locale: string, scale?:number) {
             return numberSeperators.decimal;
         }
         else if (numberFormat.includes(".") && scale === 0) {
+            // decimal sign and trailing zeros
             return numberSeperators.decimal + numberFormat.split(".")[1];
         }
         const indexHash = numberFormat.lastIndexOf('#');
         const index0 = numberFormat.lastIndexOf('0');
+        // return the substring of the numberformat after the last # or zero
         if (indexHash > index0) {
             return numberFormat.replaceAll("'", '').substring(indexHash + 1)
         }
@@ -111,10 +129,20 @@ export function getSuffix(numberFormat:string, locale: string, scale?:number) {
     return ""
 }
 
+/**
+ * Returns the value as string without group seperators and the decimal seperator changed to a dot
+ * @param value - the value to replace
+ * @param numberSeperators the number seperators
+ */
 function replaceGroupAndDecimal(value: string, numberSeperators: { decimal: string, group: string }) {
     return value.replaceAll(numberSeperators.group, '').replaceAll(numberSeperators.decimal, '.')
 }
 
+/**
+ * Returns the given number value as string
+ * @param value - the value
+ * @param numberFormat - the numbervalue
+ */
 export function getNumberValueAsString (value: any, numberFormat: string) {
     const displayScaleDigits = getDisplayScaleDigits(numberFormat);
     let valueToReturn = typeof value === "number" ? value.toString() : value;
@@ -139,6 +167,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     /** Reference for the NumberCellEditor input element */
     const numberInput = useRef<HTMLInputElement>(null);
 
+    /** Returns true, if the editors value is valid */
     const checkSelectedRow = () => {
         return props.selectedRow && (props.selectedRow.data[props.columnName] !== undefined && props.selectedRow.data[props.columnName] !== null);
     }
@@ -160,14 +189,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
     // The number seperator for the given locale
     const numberSeperators = getNumberSeparators(props.context.appSettings.locale);
-
-    /**
-     * Returns the number without numberseperators
-     * @param value - the number which needs to be parsed
-     */
-    const parseNumber = (value: string) => {
-        return parseFloat(replaceGroupAndDecimal(value, numberSeperators));
-    }
 
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
@@ -202,7 +223,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     /** 
      * Returns a string which will be added before the number, if there is a minimum amount of digits and the value is too small,
      * 0s will be added
-     * @returns a string which will be added before the number
      */
     const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? getNumberValueAsString(props.selectedRow.data[props.columnName], props.cellEditor.numberFormat) : undefined, false, props.context.appSettings.locale, useGrouping), [props.cellEditor.numberFormat, props.selectedRow, useGrouping]);
 
@@ -262,21 +282,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                 numberInput.current.blur();
             }
         }
-    }, [])
-
-    useEffect(() => {
-        if (props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
-            if (value === "-" && numberInput.current?.value === "") {
-                numberInput.current.value = "-"
-            }
-        }
-        else {
-            if (value === "-" && numberInput.current?.value === "-") {
-                setValue("");
-                numberInput.current.value = "";
-            }
-        }
-    }, [value, props.columnMetaData])
+    }, []);
 
     /**
      * When a value is pasted check if the value isn't too big for the max length
@@ -329,6 +335,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
             // Checks if the decimal length limit is hit and when it is don't allow more inputs
             let eValue = event.target.value;
 
+            // Returns the decimal value of the entered value
             const getDecimalValue = () => {
                 if (event.key !== "Backspace" && event.key !== "-" && event.key !== numberSeperators.decimal) {
                     eValue = eValue.replaceAll(numberSeperators.group, "").replaceAll(prefix, "").replaceAll(suffix, "");
@@ -352,10 +359,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                 return parseInt(eValue);
             }
 
+            // Returns true, if the decimal length is being exceeded
             const isExceedingDecimalLength = () => {
                 return decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString()
             }
 
+            // Returns true, if the entered key is - and the editor is signed
             const isEnteringMinusWhenSigned = () => {
                 return event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed === false
             }
@@ -364,6 +373,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
             //     return !isSelectedBeforeComma(event.target.value) && writeScaleDigits.maxScale !== 0 && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).scale === 0;
             // }
             
+            // Don't allow keyinputs if the decimal limit is exceeded or a minus when signed is entered
             if (isExceedingDecimalLength() || isEnteringMinusWhenSigned()) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -417,6 +427,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                             if (numberInput.current) {
                                 let stringCopy = numberInput.current.value.slice();
                                 stringCopy = stringCopy.replace(prefix, "").replace(suffix, "");
+                                // bigdecimal always without group and correct decimal seperator
                                 setValue(new bigDecimal(replaceGroupAndDecimal(stringCopy, numberSeperators)).getValue())
                             }
                             //setValue(event.value.toString());

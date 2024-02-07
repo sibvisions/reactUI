@@ -41,6 +41,7 @@ const ScreenWrapper:FC<{
         }
     },[])
 
+    // use the consumer to provide the lib user with the screen, so they can add it where they want in their screenwrapper
     return <ScreenContext.Consumer>{({screen}) => children(screen)}</ScreenContext.Consumer>;
 }
 export default ScreenWrapper

@@ -28,7 +28,7 @@ const WorkScreen: FC = () => {
     /** State of the active-screens */
     const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);
 
-    /** Returns the built windows */
+    /** Returns the built windows as ReactElement (ready to render) */
     const buildWindow = useCallback((screens:ActiveScreen[]):Array<ReactElement> => {
         let tempArray: Array<ReactElement> = [];
         screens.forEach(screen => {
@@ -40,9 +40,7 @@ const WorkScreen: FC = () => {
     }, [context.contentStore]);
 
     /** The screens which need to be rendered */
-    const renderedScreens = useMemo(() => {
-        return buildWindow(activeScreens)
-    }, [activeScreens]);
+    const renderedScreens = useMemo(() => buildWindow(activeScreens), [activeScreens]);
 
     /** Check if the opened screens are only popups, if yes show the desktoppanel */
     const onlyPopupsOpen = useMemo(() => {
@@ -64,6 +62,7 @@ const WorkScreen: FC = () => {
         }
     },[context.subscriptions, context.designer?.isVisible]);
 
+    // Update the screen title when the renderedScreens change
     useEffect(() => {
         if (activeScreens.length && activeScreens[0] && activeScreens[0].title) {
             context.contentStore.topbarTitle = activeScreens[0].title;
@@ -75,11 +74,10 @@ const WorkScreen: FC = () => {
         }
     }, [renderedScreens]);
 
-
-
     return (
         <ResizeHandler>
             {activeScreens.length && renderedScreens.length ?
+                // If there are only popups opened, also render the desktoppanel
                 onlyPopupsOpen && context.appSettings.desktopPanel && !context.server.linkOpen ?
                     <>
                         {renderedScreens}

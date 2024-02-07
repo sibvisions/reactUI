@@ -59,6 +59,10 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
+    /**
+     * Returns true, if the given value is the selectedValue of the celleditor
+     * @param value - the value of the field
+     */
     const getBooleanValueFromValue = (value: any) => {
         if (value === props.cellEditor.selectedValue) {
             return true;
@@ -66,7 +70,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
         return false;
     }
 
-    /** Current state of wether the CheckBox is currently checked or not */
+    /** Current state of whether the CheckBox is currently checked or not */
     const [checked, setChecked] = useState(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName]) : false);
 
     /** Extracting onLoadCallback and id from props */
@@ -139,7 +143,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
             );
         }
         
-        // Timeout of 1 in cell-editor so selectRecord gets called first
         if (props.isCellEditor) {
             const selectReq = createSelectRowRequest();
             selectReq.dataProvider = props.dataRow;
