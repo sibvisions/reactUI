@@ -101,6 +101,7 @@ const UIToolBarPanel: FC<IToolBarPanel> = (props) => {
                     popupSize={parsePrefSize(props.screen_size_)}
                     reportSize={reportSize}
                     compSizes={componentSizes}
+                    // only use tb-main and tb-center
                     components={components.filter(comp => comp.props.id.includes(id + '-'))}
                     style={panelGetStyle(
                         false,

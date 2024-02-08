@@ -46,8 +46,10 @@ export interface IComponentConstants {
 }
 
 const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
+    /** The forwarded ref to all components */
     const forwardedRef = useRef<any>(null);
 
+    /** Returns true, if there is a fallback for the layoutStyle */
     const hasConstantFallback = useMemo(() => {
         if ([COMPONENT_CLASSNAMES.INTERNAL_FRAME, COMPONENT_CLASSNAMES.MOBILELAUNCHER, COMPONENT_CLASSNAMES.DESKTOPPANEL, COMPONENT_CLASSNAMES.GROUPPANEL, COMPONENT_CLASSNAMES.PANEL, COMPONENT_CLASSNAMES.SCROLLPANEL, COMPONENT_CLASSNAMES.SPLITPANEL, COMPONENT_CLASSNAMES.TABSETPANEL, COMPONENT_CLASSNAMES.TOOLBARPANEL, COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN].indexOf(baseProps.className as COMPONENT_CLASSNAMES) !== -1) {
             return true;
@@ -61,8 +63,10 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
     /** Hook for MouseListener */
     useMouseListener(props.name, forwardedRef.current ? forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    /** Repaints the resizers of the selectedComponent in the designer */
     useRepaintResizer(props.name, layoutStyle, forwardedRef.current);
 
+    /** Returns the correct string for each component for designer updates */
     const designerUpdatesString = useMemo(() => {
         if (props.className === COMPONENT_CLASSNAMES.EDITOR) {
             switch ((props as IEditor).cellEditor?.className) {
@@ -102,8 +106,10 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
         return "invalid"
     }, [props.className, props.text])
 
+    /** A flag which changes, when the designer updates the components css properties */
     const designerUpdate = useDesignerUpdates(designerUpdatesString);
 
+    /** Returns the correct element which needs to be adjusted/resend the size when the designer updates */
     const getCorrectElementForDesignerUpdate = () => {
         if (forwardedRef.current) {
             if (props.className === COMPONENT_CLASSNAMES.EDITOR) {
@@ -123,6 +129,7 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
         return undefined
     }
 
+    /** Returns additional dependencies which are needed to report the size again */
     const getAdditionalDependency = () => {
         if ([COMPONENT_CLASSNAMES.LABEL, COMPONENT_CLASSNAMES.BUTTON].indexOf(props.className as COMPONENT_CLASSNAMES) !== -1) {
             return props.text;

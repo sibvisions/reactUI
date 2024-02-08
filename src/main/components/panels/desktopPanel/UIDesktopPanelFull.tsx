@@ -173,6 +173,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (props) => {
                         <DesktopTabPanel 
                             {...props} 
                             components={components.filter(comp => comp.props.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)}
+                            // Only use internal frames as compSizes
                             compSizes={componentSizes ? new Map([...componentSizes].filter(comp => props.context.contentStore.getComponentById(comp[0])?.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) : undefined}
                             compStyle={props.compStyle}
                             layoutStyle={props.layoutStyle} /> 

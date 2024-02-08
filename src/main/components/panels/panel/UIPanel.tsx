@@ -73,14 +73,17 @@ export function panelReportSize(id: string,
     minusWidth?: boolean) {
     if (onLoadCallback) {
         const adjustedSize: Dimension = { height: calcPref.height, width: calcPref.width }
+        // GroupPanel needs an extra 28px for the header
         if (type === "G") {
             adjustedSize.height += 28
         }
         else if (type === "S") {
+            // Scrollpanel extra 17px for scrollbars
             adjustedSize.height += minusHeight ? 17 : 0
             adjustedSize.width += minusWidth ? 17 : 0
         }
 
+        // Add border width
         if (styleClassNames.includes("f_standard_border")) {
             const borderWidth = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--input-border-width"));
             if (!isNaN(borderWidth)) {
@@ -110,21 +113,9 @@ export function panelReportSize(id: string,
  * @returns the style of the panel/layout.
  */
 export function panelGetStyle(group: boolean, layoutStyle?: CSSProperties, prefSize?: Dimension, modal?: boolean, modalSize?: string, version?: "partial"|"full") {
-    let s: CSSProperties = {};
-    /** If Panel is a popup and prefsize is set use it, not the height layoutContext provides */
-    // if (modal && version !== "full") {
-    //     const screenSize = parsePrefSize(modalSize);
-    //     if (screenSize) {
-    //         s = { ...layoutStyle, height: screenSize.height, width: screenSize.width }
-    //     }
-    //     else if (prefSize) {
-    //         s = { ...layoutStyle, height: prefSize.height, width: prefSize.width };
-    //     }
-    // }
-    // else {
-        s = { ...layoutStyle }
-    //}
+    let s: CSSProperties = { ...layoutStyle };
 
+    // Set top and left to undefined, some components could be missing if this would not be done
     if (Object.getOwnPropertyDescriptor(s, 'top')?.configurable && Object.getOwnPropertyDescriptor(s, 'left')?.configurable) {
         s.top = undefined;
         s.left = undefined;
@@ -153,6 +144,7 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
     /** Preferred size of panel */
     const prefSize = parsePrefSize(props.preferredSize);
 
+    /** True, if this is a toolbar and it is the last toolbar of its parent */
     const isLastToolBar = useMemo(() => {
         if (id.includes("TB") && props.parent) {
             const tbChildren = [...props.context.contentStore.getChildren(props.parent + "-tbMain", COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN)];
@@ -163,8 +155,10 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
         return false;
     }, [id, props.parent]);
 
+    /** True if this panel is a toolbar */
     const isToolBar = useMemo(() => props.className === COMPONENT_CLASSNAMES.TOOLBAR, [props.className]);
 
+    /** True, if the overflow is hidden. */
     const isOverflowHidden = useMemo(() => {
         let isHidden = true;
         if (props.parent) {
@@ -208,6 +202,7 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
         )
     }, [onLoadCallback]);
 
+    /** Returns the className based on the position of the toolbar, for border positions */
     const getToolBarClassName = useCallback(() => {
         if (isToolBar && !isLastToolBar) {
             switch (parseInt(props.layout.split(",")[7])) {

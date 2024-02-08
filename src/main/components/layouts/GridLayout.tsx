@@ -50,19 +50,25 @@ const GridLayout: FC<ILayout> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** Callback which gets called when the layout is done layouting */
     const runAfterLayout = useRunAfterLayout();
 
     /** Margins of layout */
     const margins = useMemo(() => new Margins(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(0, 4)), [layout]);
+
     /** Gaps between the components */
     const gaps = useMemo(() => new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6)), [layout]);
+
     /** GridSize of the layout */
     const gridSize = useMemo(() => new GridSize(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(6, 8)), [layout]);
 
+    /** The children of this panel/layout */
     const children = context.contentStore.getChildren(id, className);
 
+    /** Contains the previous sizeMap to provide a fallback when children and compSizes aren't the same size */
     const prevSizeMap = useRef<Map<string, CSSProperties>>(new Map<string, CSSProperties>());
 
+    /** The GridLayout-Assistant used for the designer, if it isn't already available, initialise it */
     const gridLayoutAssistant = useMemo(() => {
         if (context.designer && isDesignerVisible(context.designer)) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
@@ -93,6 +99,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         }
     }, [context.designer, context.designer?.isVisible, gridSize]);
 
+    // The layoutinfo of the BorderLayout-Assistant
     const layoutInfo = useMemo(() => {
         if (gridLayoutAssistant) {
             return gridLayoutAssistant.layoutInfo;
@@ -128,6 +135,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                 if (component.constraints && component.visible !== false) {
                     const constraints = new CellConstraints(component.constraints);
 
+                    // Add the components with their constraints into the layoutinfo
                     if (isDesignerActive(gridLayoutAssistant) && layoutInfo) {
                         layoutInfo.componentConstraints.set(component.name, component.constraints);
                     }
@@ -277,6 +285,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         return prevSizeMap.current;
     },[layout, compSizes, reportSize, id, style, context.contentStore]);
 
+    // Designer layoutinfo needs current componentSizes
     useEffect(() => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.gridLayouts.has(name)) {
             context.designer.gridLayouts.get(name)!.layoutInfo.componentSizes = compSizes;

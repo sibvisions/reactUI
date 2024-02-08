@@ -177,7 +177,8 @@ const UIToolBarHelper: FC<IToolBarHelper & IComponentConstants> = (props) => {
             props.minimumSize,
             props.maximumSize,
             props.onLoadCallback
-        )
+        );
+        
         if (props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
             if (props.toolBarVisible === false) {
                 reportFunc();

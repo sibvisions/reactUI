@@ -97,6 +97,7 @@ export const getColMetaData = (colName:string, columns?:(LengthBasedColumnDescri
     return undefined
 }
 
+/** returns the given rem into px */
 function convertRemToPixels(rem:number) {    
     return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
@@ -264,6 +265,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** True, if virtualscrolling is loading */
     const [listLoading, setListLoading] = useState(false);
 
+    /** A helper variable which saves the rowselection event to then use the value when the mouse is released */
     const rowSelectionHelper = useRef<{data: any, selectedColumn: string, index: number, filter: any, event: DataTableSelectionCellChangeEvent<any>}>()
 
     // Cache for the sort-definitions
@@ -278,17 +280,22 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** A counter which indicates how many linkedReference still need to be fetched (concatmask). Used for column width measurement */
     const linkedRefFetchList = useRef<string[]>([]);
 
+    /** A flag, which triggers when the table should remeasure itself */
     const [measureFlag, setMeasureFlag] = useState<boolean>(false);
 
     // Fetches Data if dataprovider has not been fetched yet
     useFetchMissingData(screenName, props.dataBook);
 
+    /** True, if the table is currently selecting */
     const [tableIsSelecting, setTableIsSelecting] = useState<boolean>(false);
 
+    /** True, when a resizer has been clicked */
     const clickedResizer = useRef<boolean>(false);
 
+    /** A set of functions, of currently held mouse-events to call them later */
     const heldMouseEvents = useRef<Set<Function>>(new Set());
 
+    /** Which cell has been clicked */
     const cellClickEvent = useRef<string>("");
 
     /** Hook for MouseListener */
@@ -406,6 +413,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 return newCell
             }
             else if (selectedRow.index > -1) {
+                // Select a column, if there is a row selected but no column
                 sendSelectRequest(columnOrder[0], undefined, 0);
             }
         }
@@ -415,6 +423,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
 
+    /** True if cell-editing is currently happening */
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
     /** The navigation-mode for the enter key sent by the server default: cell and focus */
@@ -448,6 +457,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         return ""
     }
 
+    /** Sets the height of the items to the row size of the table. Used for virtual scrolling */
     useEffect(() => {
         setItemSize(tableRowHeight);
     }, [tableRowHeight])
@@ -466,6 +476,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         }
                         else {
                             let height = props.tableHeaderVisible !== false ? 42 : 4
+                            // If there are no rows, still add 50px, else take the rowcount times the rowheight
                             if (providerData.length === 0) {
                                 height += 50;
                             }
@@ -473,6 +484,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                                 height += providerData.length * tableRowHeight
                             }
 
+                            // If the estimated table width is bigger than the available width set by the parent, add 17px for the scrollbar
                             if (props.layoutStyle && (estTableWidth + 4) > (props.layoutStyle!.width as number)) {
                                 height += 17;
                             }
@@ -524,8 +536,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     if (currentTable) {
                         const theader = currentTable.querySelectorAll('th');
                         const trows = currentTable.querySelectorAll('tbody > tr');
-    
-                        //table.destroyStyleElement();
     
                         /** First set width of headers for columns then rows */
                         for (let i = 0; i < theader.length; i++) {
@@ -614,6 +624,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         })());
     }, [providerData, rows]);
 
+    /** If there are LinkedCellEditors in the table, add their column to a list to fetch their referencedDatabook */
     useLayoutEffect(() => {
         props.columnNames.forEach(colName => {
             const columnMetaData = getColMetaData(colName, metaData?.columns);
@@ -951,6 +962,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const columnMetaData = getColMetaData(colName, metaData?.columns);
             const className = columnMetaData?.cellEditor?.className;
 
+            /** Returns true, if a cell is editable and can open the editor or can be directly edited */
             const getCellIsEditable = (rowData: any) => {
                 if (rowData && metaData && columnMetaData) {
                     if (columnMetaData?.cellEditor.className && [CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData.cellEditor.className as CELLEDITOR_CLASSNAMES) !== -1) {
@@ -992,6 +1004,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 } as CSSProperties}
                 body={(rowData: any|undefined, tableInfo: any) => {
                     const isEditable = getCellIsEditable(rowData);
+                    // If there is no data, display empty, if the row is selected, render potential celleditors, 
+                    //if the row isn't selected just diplay the formatted values to improve performance
                     if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
                     else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
                         return <CellEditor
@@ -1098,7 +1112,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     }
 
     /** 
-     * When the virtual scroll occurs, set the firstRow index to the current first row of the virtual scroll and check if more data needs to be loaded,
+     * When the virtual scroll occurs, check if the providerData is less than what the last scrolled row would be and check if all data is fetched from the provider
      * if yes, fetch data, no set virtual rows to the next bunch of datarows
      * If the lib user extends the Table with onLazyLoadFetch, call it when the table fetches.
      * @param event - the scroll event
@@ -1143,66 +1157,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const handleColResizeEnd = (e:DataTableColumnResizeEndEvent) => {
         if (tableRef.current) {
             const widthReq = createWidthRequest();
-            let newColumnWidth = e.element.offsetWidth - e.delta;
             widthReq.dataProvider = props.dataBook;
             widthReq.columnName = e.column.props.field;
             if (props.onColResizeEnd) {
                 props.onColResizeEnd(e);
             }
-
-            const table = tableRef.current;
-            const container = table.getElement();
-
-            //container.querySelector('.p-resizable-column[style*="pointer-events"]').style.removeProperty('pointer-events')
-            // if (props.autoResize === false) {
-            //     //reverse prime fit sizing                
-            //     let nextColumn = e.element.nextElementSibling as HTMLElement | undefined;
-            //     let nextColumnWidth = nextColumn ? nextColumn.offsetWidth + e.delta : e.delta;
-
-            //     if (newColumnWidth > 15 && nextColumnWidth > 15) {
-            //         table.resizeTableCells(newColumnWidth, nextColumnWidth);
-            //     }
-                
-            //     newColumnWidth = e.element.offsetWidth + (nextColumn ? e.delta : 0);
-
-            //     //custom sizing based on primes original column sizing code
-            //     let widths:number[] = [];
-            //     let colIndex = DomHandler.index(table.resizeColumnElement);
-            //     let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
-            //     headers.forEach(header => widths.push(DomHandler.getOuterWidth(header, false)));
-        
-            //     table.destroyStyleElement();
-            //     table.createStyleElement();
-        
-            //     let innerHTML = '';
-            //     const dp = Math.round(e.delta / (widths.length - colIndex - 1));
-            //     const dpr = e.delta - dp * (widths.length - colIndex - 2);
-            //     const totalWidth = widths.reduce((agg, w) => agg + w, 0);
-            //     widths.forEach((width, index) => {
-            //         let colWidth = index === colIndex 
-            //             ? newColumnWidth 
-            //             : (index > colIndex) 
-            //                 ? width - (index === widths.length - 1 ? dpr : dp) 
-            //                 : width;
-
-            //         let style = table.props.scrollable 
-            //             ? `flex: 0 0 ${colWidth}px !important; max-width: ${colWidth}px` 
-            //             : `width: ${colWidth}px !important`;
-                    
-            //         innerHTML += `
-            //             .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-            //             .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-            //             .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
-            //                 ${style}
-            //             }
-            //         `
-            //     });
-            //     table.styleElement.innerHTML = innerHTML;
-            //     widthReq.width = newColumnWidth;
-            // }
-            // else {
-            //     widthReq.width = e.element.offsetWidth;
-            // }
             showTopBar(props.context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), props.topbar);
         }
     }
@@ -1352,6 +1311,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     const focused = useRef<boolean>(false);
 
+    // initially fetch more rows until you have 100
     useEffect(() => {
         const dataBook = props.context.contentStore.getDataBook(screenName, props.dataBook)
         if (dataBook?.data && !dataBook.isAllFetched && providerData.length < rows) {
@@ -1362,65 +1322,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar);
         }
     }, [providerData])
-
-    // useEffect(() => {
-    //     //this will force the table to refresh its internal visible item count
-    //     //setItemSize(tableRowHeight + Math.random() / 1E10);
-
-    //     if (tableRef.current) {
-    //         const table = tableRef.current
-    //         //resize columns
-    //         if(props.autoResize === false) {
-    //             let presetColumnWidths = 0;
-    //             const idxToSkip:string[] = []
-    //             let innerHTML = '';
-    //             let widths:number[] = [];
-    //             let headers = DomHandler.find(table.table, '.p-datatable-thead > tr > th');
-    //             headers.forEach((header, index) => {
-    //                 const width = header.style.getPropertyValue('width') || DomHandler.getOuterWidth(header, false);
-    //                 if (header.getAttribute("column-width-set")) {
-    //                     let style = table.props.scrollable
-    //                         ? `flex: 0 0 ${width} !important; max-width: ${width}`
-    //                         : `width: ${width} !important`;
-    //                     presetColumnWidths += parseFloat(width);
-    //                     innerHTML += 
-    //                     `
-    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
-    //                             ${style}
-    //                         }
-    //                     `
-    //                     idxToSkip.push(index.toString());
-    //                 }
-    //                 widths.push(parseFloat(width))
-    //             });
-    //             const totalWidth = widths.reduce((agg, w) => agg + w, 0) - presetColumnWidths;
-    //             const tableWidth = table.table.offsetWidth - presetColumnWidths;
-
-    //             table.destroyStyleElement();
-    //             table.createStyleElement();
-                
-    //             widths.forEach((width, index) => {
-    //                 if (!idxToSkip.includes(index.toString())) {
-    //                     let colWidth = (width / totalWidth) * tableWidth;
-    //                     let style = table.props.scrollable 
-    //                         ? `flex: 0 0 ${colWidth}px !important; max-width: ${colWidth}px` 
-    //                         : `width: ${colWidth}px !important`;
-                        
-    //                     innerHTML += `
-    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-thead > tr > th:nth-child(${index + 1}),
-    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-tbody > tr > td:nth-child(${index + 1}),
-    //                         .p-datatable[${table.state.attributeSelector}] .p-datatable-tfoot > tr > td:nth-child(${index + 1}) {
-    //                             ${style}
-    //                         }
-    //                     `
-    //                 }
-    //             });
-    //             table.styleElement.innerHTML = innerHTML;
-    //         }
-    //     }
-    // }, [props.layoutStyle?.width, estTableWidth, providerData]);
     
     return (
         <SelectedCellContext.Provider value={selectedCellId}>

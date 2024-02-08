@@ -44,6 +44,7 @@ const UIScrollPanel: FC<IPanel & IComponentConstants> = (props) => {
     /** Reference if a fixed amount of px (height) should be substracted if scrollbar appears */
     const minusHeight = useRef<boolean>(false);
 
+    /** The size of the panels layout */
     const [layoutSize, setLayoutSize] = useState<Dimension|undefined>(undefined)
 
     /** Removes 17px from width and/or height of the panel for the layout-calculation to make room for the scrollbar if a scrollbar is needed */
@@ -70,19 +71,6 @@ const UIScrollPanel: FC<IPanel & IComponentConstants> = (props) => {
                 (s.height as number) -= 17;
             }
         }
-
-        // componentSizes?.forEach((size, str) => {
-        //     if (s.height !== undefined && (s.height as number) < size.preferredSize.height) {
-        //         s.height = size.preferredSize.height;
-        //         (s.width as number) -= 17;
-        //         minusWidth.current = true;
-        //     }
-        //     if (s.width !== undefined && (s.width as number) < size.preferredSize.width) {
-        //         s.width = size.preferredSize.width;
-        //         (s.height as number) -= 17;
-        //         minusHeight.current = true;
-        //     }
-        // });
 
         return s;
 

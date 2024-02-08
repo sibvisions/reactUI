@@ -23,8 +23,10 @@ import { appContext } from "../../../contexts/AppProvider";
  * @param props - the properties received from the table
  */
 const DirectCellRenderer: FC<ICellRender> = (props) => {
+    /** A reference to forward to the components */
     const forwardedRef = useRef<any>();
 
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext)
 
     return (

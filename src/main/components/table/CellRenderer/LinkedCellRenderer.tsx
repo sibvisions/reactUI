@@ -30,6 +30,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     /** The data provided by the databook */
     const [providedData] = useDataProviderData(props.screenName, cellEditorMetaData.linkReference.referencedDataBook||"");
 
+    /** Flag to rerender when the displayMap changes */
     const [displayMapChanged, setDisplayMapChanged] = useState<boolean>(false);
 
     /** Use context to gain access for contentstore and server methods */
@@ -41,6 +42,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     /** True, if there is a displayReferencedColumnName or a displayConcatMask */
     const isDisplayRefColNameOrConcat = useMemo(() => cellEditorMetaData.displayReferencedColumnName || cellEditorMetaData.displayConcatMask, [cellEditorMetaData.displayReferencedColumnName, cellEditorMetaData.displayConcatMask]);
 
+    // Subscribes to displayMap changes
     useEffect(() => {
         context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
 

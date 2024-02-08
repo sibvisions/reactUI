@@ -388,8 +388,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
             event.stopPropagation();
         }
     });
-
-    // TODO: It should be possible to remove this double inputnumber implementation
+    
     return (
             <span ref={props.forwardedRef} id={props.name} aria-label={props.ariaLabel} {...popupMenu} style={props.layoutStyle}>
                 <InputNumber

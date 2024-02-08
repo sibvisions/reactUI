@@ -108,14 +108,26 @@ const fontFaces: Record<string, string> = {
     'sans-serif': 'sans-serif',
 }
 
+/**
+ * Returns the name of the size for the given size number
+ * @param size - the size as number
+ */
 function nameForSize(size: number) {
     return (Object.entries(namedSizes).find(e => e[1] === size) ?? [''])[0];
 }
 
+/**
+ * Returns the face for the font
+ * @param face - the font as string
+ */
 function fontForFace(face: String) {
     return (Object.entries(fontFaces).find(e => e[1] === face) ?? [''])[0];
 }
 
+/**
+ * Transforms the given text from potential quill syntax into HTML syntax
+ * @param html - the text
+ */
 function transformHTMLFromQuill(html: string = ''):string {
     if(!html) { return html }
     html = html.replace(/<(\/ *)?strong>/g, (m, a = '') => `<${a}b>`);
@@ -149,10 +161,13 @@ function transformHTMLFromQuill(html: string = ''):string {
     }
 
     html = d.body.innerHTML;
-
     return html;
 }
 
+/**
+ * Transforms the given HTML string to quill
+ * @param html - the text
+ */
 function transformHTMLToQuill(html: string = ''):string {
     if(!html) { return html }
     html = html.replace(/<(\/ *)?b>/g, (m, a = '') => `<${a}strong>`);
@@ -352,6 +367,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
             onLoad: () => {
+                // HTML Editor size sending works best during onLoad
                 if (props.forwardedRef.current && onLoadCallback) {
                     sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
                 }
@@ -368,6 +384,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 keyboard: true,
                 history: true,
             },
+            // How the header should look like of the HTML-Editor
             headerTemplate: (
                 <>
                 <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>

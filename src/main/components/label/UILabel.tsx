@@ -48,8 +48,10 @@ const UILabel: FC<IBaseComponent & IExtendableLabel & IComponentConstants> = (pr
     /** True, if the label contains html */
     const isHTML = useIsHTMLText(props.text);
 
+    /** True until the label reports itself for the first time */
     const initialReport = useRef<boolean>(true);
 
+    // If the label has already initially reported itself, debounce the loadCallbacks, so when the browser is resized, it doesn't report itself for each px
     useEffect(() => {
         if (labelRef.current && onLoadCallback && !initialReport.current) {
             const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
@@ -71,8 +73,6 @@ const UILabel: FC<IBaseComponent & IExtendableLabel & IComponentConstants> = (pr
             props.onChange(props.text)
         }
     }, [props.text]);
-
-    //useAddLayoutStyle(wrapRef.current, layoutStyle, onLoadCallback, props.text);
 
     /** DangerouslySetInnerHTML because a label should display HTML tags as well e.g. <b> label gets bold */
     return(

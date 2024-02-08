@@ -43,8 +43,10 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
     /** Reference for the map element */
     const mapInnerRef = useRef(null);
 
+    /** list for all markers on the map */
     const markersRef = useRef<google.maps.Marker[]>([]);
 
+    /** list for all groups/polygons on the map */
     const groupsRef = useRef<google.maps.Polygon[]>([]);
 
     /** The state if the map is loaded and ready */
@@ -226,7 +228,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
                 }
             }
 
-            // When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker positio to center
+            // When the map is dragged and there is a selectedMarker and locked on center is enabled, set selectedMarker position to center
             // If the lib user extends the Map with onDrag, call it when the Map is being dragged.
             const onDrag = () => {
                 if (props.onDrag) {

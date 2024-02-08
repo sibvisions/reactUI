@@ -41,6 +41,7 @@ interface CustomTreeNode extends TreeNode {
     subPageKey: string|null,
 }
 
+/** Returns a transformed filter to a pageKey */
 export function toPageKey(filter: SelectFilter) {
     let pageKeyObj:any = {};
     for (let i = 0; i < filter.columnNames.length; i++) {
@@ -95,8 +96,10 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
     /** State of the key of a single node that is selected */
     const [selectedKey, setSelectedKey] = useState<any>();
 
+    /** True, if the tree has been initialised */
     const initialized = useRef<boolean>(false);
 
+    /** True if the tree is currently focused */
     const focused = useRef<boolean>(false);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
@@ -123,6 +126,7 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
         props.forwardedRef.current
     ]);
 
+    /** Sets the style of the tree, here extra because the useAddLayoutStyle doesn't work in BaseComponent because I can't pass the nodes upwards */
     useLayoutEffect(() => {
         if (props.forwardedRef.current && onLoadCallback) {
             props.forwardedRef.current.style.setProperty("top", props.layoutStyle?.top !== undefined ? `${props.layoutStyle.top}px`: null)

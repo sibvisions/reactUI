@@ -21,7 +21,6 @@ import useComponents from "../../../hooks/components-hooks/useComponents";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import Dimension from "../../../util/types/Dimension";
-import ChildWithProps from "../../../util/types/ChildWithProps";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { IExtendableSplitPanel } from "../../../extend-components/panels/ExtendSplitPanel";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
@@ -69,6 +68,7 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel & IComponentConstants> = (
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props
 
+    /** Returns the preferredSize for the entire SplitPanel */
     const getSplitPrefSize = useCallback(() => {
         let size:Dimension = { height: props.forwardedRef.current.offsetHeight, width: props.forwardedRef.current.offsetWidth }
         if (compSizes && compSizes.size) {
@@ -119,7 +119,7 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel & IComponentConstants> = (
     }
 
     /**
-     * When the sSplitPanel gets resized, rebuild the sizeMap for the layout sizes
+     * When the SplitPanel gets resized, rebuild the sizeMap for the layout sizes
      * @param firstSize - the size of the "first" component
      * @param secondSize  - the size of the "second" component
      */

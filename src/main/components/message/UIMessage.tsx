@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { ConfirmDialog, ConfirmDialogProps } from 'primereact/confirmdialog';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 import React, { CSSProperties, FC, useCallback, useContext, useMemo, useState } from 'react';
 import DialogResponse from '../../response/ui/DialogResponse';
 import { translation } from '../../util/other-util/Translation';
@@ -25,12 +25,10 @@ import { createCloseFrameRequest, createDispatchActionRequest } from '../../fact
 import REQUEST_KEYWORDS from '../../request/REQUEST_KEYWORDS';
 import { concatClassnames } from '../../util/string-util/ConcatClassnames';
 
+/** This component displays a popup to display a message, based on the severity the messages look different. */
 const UIMessage: FC<DialogResponse> = (props) => {
     /** Returns utility variables */
     const context = useContext(appContext);
-
-    /** The properties ConfirmDialog */
-    const [confirmProps, setConfirmProps] = useState<ConfirmDialogProps>({});
 
     // Returns the correct header type
     const getHeaderType = (iconType: 0 | 1 | 2 | 3 | 9 | -1) => {
@@ -48,17 +46,21 @@ const UIMessage: FC<DialogResponse> = (props) => {
         }
     }
 
-    const headerContent = useCallback((iconType: 0 | 1 | 2 | 3 | 9 | -1): { icon: string, text: string } => {
-        if (iconType === 0) {
+    /**
+     * Returns the text and icon of the header element
+     * @param headerType - the type of the header
+     */
+    const headerContent = useCallback((headerType: 0 | 1 | 2 | 3 | 9 | -1): { icon: string, text: string } => {
+        if (headerType === 0) {
             return { text: translation.get("Information") as string, icon: "pi pi-info-circle" };
         }
-        else if (iconType === 1) {
+        else if (headerType === 1) {
             return { text: translation.get("Warning") as string, icon: "pi pi-exclamation-circle" };
         }
-        else if (iconType === 2) {
+        else if (headerType === 2) {
             return { text: translation.get("Error") as string, icon: "pi pi-times-circle" };
         }
-        else if (iconType === 3) {
+        else if (headerType === 3) {
             return { text: translation.get("Question") as string, icon: "pi pi-question-circle" };
         }
         else {
@@ -178,6 +180,7 @@ const UIMessage: FC<DialogResponse> = (props) => {
         }
     }, [translation, props.okText, props.notOkText, props.cancelText, context.server.topbar]);
 
+    // Element of the header
     const dialogHeader = useMemo(() => {
         return (<>
             {props.iconType !== 9 && props.iconType !== -1 &&
@@ -191,7 +194,7 @@ const UIMessage: FC<DialogResponse> = (props) => {
         </>)
     }, [props.iconType, headerContent]);
 
-
+    // Message element
     const dialogMessage = useMemo(() => {
         return (
             <>
@@ -202,7 +205,7 @@ const UIMessage: FC<DialogResponse> = (props) => {
         )
     }, [props.message])
 
-
+    // Footer element
     const dialogFooter = useMemo(() => {
         return (<>
             {props.buttonType !== 8 && props.buttonType !== -1 &&
@@ -213,6 +216,7 @@ const UIMessage: FC<DialogResponse> = (props) => {
         </>)
     }, [props.buttonType, props.okComponentId, props.cancelComponentId, props.notOkComponentId, footerContent]);
 
+    // When pressing the 'x' or pressing esc send a close frame to the server
     const handleOnHide = () => {
         const closeFrameReq = createCloseFrameRequest();
         closeFrameReq.componentId = props.componentId;

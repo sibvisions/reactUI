@@ -30,10 +30,11 @@ export interface TopBarContextType {
 //     hide: () => {}
 // });
 
+// Counter for how many topbar request are currently ongoing
 let topbarCount = 0;
 
 /**
- * Shows the topbar and after the promise is fulfilled, the topbar disappears
+ * Shows the topbar and after the promises are fulfilled (topbarcount is 0), the topbar disappears
  * @param promise - the promise which is being sent
  * @param topbar - the topbar to display
  * @returns 
@@ -57,24 +58,32 @@ export function showTopBar(promise: Promise<any>, topbar: TopBarContextType|unde
 
 // Shows a topbar at the top of the browser when a promise is being processed.
 const TopBar:FC = () => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** True, if the topbar is currently visible */
     const [show, setShow] = useState(false);
 
+    /** True, if the topbar settings are allowed to be loaded */
     const [allowTopbarSettings, setAllowTopbarSettings] = useState(false);
 
+    /** A flag to know if the topbar design was changed by the designer */
     const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
 
+    /** A timeout for the medium color */
     const mediumTimeout = useRef<NodeJS.Timeout|null>(null);
 
+    /** A timeout for the long color */
     const longTimeout = useRef<NodeJS.Timeout|null>(null);
 
+    // Subscribes to the designer topbar color change
     useEffect(() => {
         context.designerSubscriptions.subscribeToTopbarColor(() => setDesignerTopbarChanged(prevState => !prevState))
 
         return () => context.designerSubscriptions.unsubscribeFromTopbarColor();
     }, [context.designerSubscriptions]);
 
+    /** Returns which color the topbar currently displays */
     const mapBarColors = (v:string, idx:number, a:string[]) => {
         if (a.length === 1) {
             return [0, v];
@@ -82,6 +91,7 @@ const TopBar:FC = () => {
         return [idx / (a.length - 1), v];
     }
 
+    // Initially loads the topbar so it exists in the dom tree and the style can be adjusted
     useLayoutEffect(() => {
             TopBarProgress.config({
                 barColors: {0: "#ffffff"},
@@ -98,6 +108,7 @@ const TopBar:FC = () => {
             })
     }, [])
 
+    // Allow topbarsettings when the app is ready, position the topbar at the bottom if needed
     useEffect(() => {
         if (context.appReady) {
             if (window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-position") === "\"bottom\"") {
@@ -112,6 +123,7 @@ const TopBar:FC = () => {
         }
     }, [context.appReady]);
 
+    /** Loads the topbar css settings */
     const topbarSettings = useMemo(() => {
         if (allowTopbarSettings) {
             return getSettingsFromCSSVar({
@@ -135,6 +147,7 @@ const TopBar:FC = () => {
         }
     }, [designerTopbarChanged, allowTopbarSettings]);
 
+    /** Sets the topbar config */
     useEffect(() => {
         if (topbarSettings) {
             TopBarProgress.config({
@@ -146,6 +159,7 @@ const TopBar:FC = () => {
         }
     }, [topbarSettings]);
 
+    /** Server gets its topbar functions */
     useEffect(() => {
         context.server.topbar = {
             show: () => setShow(true),
@@ -153,6 +167,7 @@ const TopBar:FC = () => {
         }
     }, [context.server]);
 
+    /** Starts the timeouts to change the topbars colors */
     useEffect(() => {
         if (show) {
             const colorSettings = getSettingsFromCSSVar({ 
@@ -166,6 +181,7 @@ const TopBar:FC = () => {
                 } 
             });
 
+            // check if the css-variable has a valid number if yes and the color is set, change the config so the color of the topbar changes after a period of time
             let  mediumTimeoutInterval = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--topbar-medium-interval"));
             if (!isNaN(mediumTimeoutInterval) && mediumTimeoutInterval && colorSettings.mediumColor) {
                 mediumTimeout.current = setTimeout(() => {
@@ -191,6 +207,7 @@ const TopBar:FC = () => {
             }
         }
         else {
+            // reset the timeouts so the topbar starts at the default color again
             if (mediumTimeout.current) {
                 clearTimeout(mediumTimeout.current);
                 mediumTimeout.current = null;

@@ -91,6 +91,7 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
     let editor = <div>{props.cellData}</div>
     if (metaData) {
         const docStyle = window.getComputedStyle(document.documentElement);
+        // Add more than 100% so the editor takes up the whole width/height of the table-cell
         const calcWidth = "calc(100% + " + docStyle.getPropertyValue('--table-cell-padding-left-right') + " + 0.1rem)";
         const calcHeight = "calc(100% + " + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + ")";
 
@@ -105,8 +106,6 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 editorStyle: { 
                     width: calcWidth, 
                     height: calcHeight, 
-                    //marginLeft: calcMarginLeft, 
-                    //marginTop: calcMarginTop 
                 },
                 autoFocus: true,
                 stopCellEditing: stopCellEditing,
@@ -120,8 +119,6 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 layoutStyle: { 
                     width: calcWidth, 
                     height: calcHeight, 
-                    //marginLeft: calcMarginLeft, 
-                    //marginTop: calcMarginTop 
                 }
             }} />
     }
@@ -141,11 +138,13 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
 
+    /** A reference to forward to the celleditors */
     const forwardedRef = useRef<any>(null);
 
     /** Reference which contains the pressed key for input editors */
     const passRef = useRef<string>("")
 
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** Context for the selected cell */
@@ -154,6 +153,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
 
+    /** Document style object */
     const docStyle = window.getComputedStyle(document.documentElement);
 
     // Calculates the minus margin-left to display no gap when opening the cell-editor
@@ -162,22 +162,17 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     // Calculates the minus margin-top to display no gap when opening the cell-editor
     const calcMarginTop = useMemo(() => "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)", []);
  
+    /** A stored click event to call when the table is done with selecting row/cell */
     const [storedClickEvent, setStoredClickEvent] = useState<Function|undefined>(undefined);
 
-    const filter = useMemo(() => {
-        const values = props.primaryKeys.map(pk => props.rowData[pk]);
-        return {
-            columnNames: props.primaryKeys,
-            values: values
-        }
-    }, [props.rowData, props.primaryKeys])
-
+    /** When editing stops, reset the passRef */
     useEffect(() => {
         if (!edit) {
             passRef.current = "";
         }
     }, [edit]);
 
+    /** When the celleditor stops editing set the startEditing property of the table to false and notify it */
     const stopEditing = useCallback(() => {
         const table = context.contentStore.getComponentByName(props.name);
         if (table) {
@@ -252,10 +247,12 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Adds Keylistener to the tableContainer */
     useEventHandler(tableContainer, "keydown", handleCellKeyDown);
 
+    /** Sets the table state if the cell is currently editing or not */
     useEffect(() => {
         props.setIsEditing(edit);
     }, [edit])
     
+    /** When the table is no longer selecting and there is a storedClickEvent, call it and then reset it */
     useEffect(() => {
         if (!props.tableIsSelecting && storedClickEvent) {
             storedClickEvent();
@@ -263,7 +260,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         }
     }, [props.tableIsSelecting, storedClickEvent]);
 
-    /** Either return the correctly rendered value or a in-cell editor when readonly is true don't display an editor*/
+    /** Either return the cellrenderer or a in-cell editor when readonly is true don't display an editor*/
     return (
         (edit && props.isEditable) ?
             <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>

@@ -30,8 +30,10 @@ const ImageCellRenderer: FC<ICellRender> = (props) => {
     /** Casts the cell-editor property to ICellEditorImage because we can be sure it is a image-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorImage;
 
+    /** The icon-data parsed */
     const iconData = props.cellData && props.cellData.includes("FontAwesome") ? parseIconData(undefined, props.cellData) : undefined;
 
+    /** Either use base64 encoding, resource url or use the defaultImageName */
     const getImageSource = () => {
         if (props.cellData) {
             if (props.columnMetaData) {
@@ -46,6 +48,7 @@ const ImageCellRenderer: FC<ICellRender> = (props) => {
         return context.server.RESOURCE_URL + castedCellEditor.defaultImageName;
     }
 
+    /** Returns either the icon if cellFormatting, an icon element if FontAwesome icon or an image element */
     const getImageElement = () => {
         if (props.icon) {
             return props.icon;

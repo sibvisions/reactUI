@@ -21,8 +21,8 @@ import FlowLayout from "./FlowLayout";
 import FormLayout from "./FormLayout";
 import GridLayout from "./GridLayout";
 import NullLayout from "./NullLayout";
-import { BorderLayoutAssistant, FlowLayoutAssistant, FormLayoutAssistant, GridLayoutAssistant, LayoutAssistant, NullLayoutAssistant } from "../../util/types/designer/LayoutAssistant";
-import { BorderLayoutInformation, FlowLayoutInformation, FormLayoutInformation, GridLayoutInformation, LAYOUTS } from "../../util/types/designer/LayoutInformation";
+import { LayoutAssistant } from "../../util/types/designer/LayoutAssistant";
+import { FormLayoutInformation, LAYOUTS } from "../../util/types/designer/LayoutInformation";
 
 /**
  * General information for layouts:
@@ -53,10 +53,16 @@ export interface ILayout {
     hasBorder?:boolean
 }
 
+/** Returns true, if the designer is active */
 export function isDesignerActive(layoutAssistant:LayoutAssistant|null) {
     return layoutAssistant !== null;
 }
 
+/**
+ * Clears lists and maps from the layoutInfo of the given layout assistant
+ * @param layoutAssistant - the layout assistant to be cleared
+ * @param layoutType - the layout type
+ */
 export function clearDesignerLayoutInfo(layoutAssistant: LayoutAssistant|null, layoutType: LAYOUTS) {
     if (layoutAssistant && isDesignerActive(layoutAssistant) && layoutAssistant.layoutInfo) {
         layoutAssistant.layoutInfo.componentConstraints.clear();

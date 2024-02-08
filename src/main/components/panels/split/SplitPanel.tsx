@@ -57,6 +57,7 @@ interface ISplitPanel extends IForwardRef {
  * @param props - Props received by UISplitPanel which is the "wrapper" of this component
  */
 const SplitPanel: FC<ISplitPanel> = (props) => {
+    /** Returns the initial first position of the divider */
     const getInitFirstPosition = useCallback(() => {
         let pos:number|undefined = undefined;
         if (props.dividerPosition !== -1) {
@@ -118,16 +119,16 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     /** Reference for the second component */
     const secondRef = useRef<HTMLDivElement>(null);
 
+    /** The dragging-delta */
     const deltaRef = useRef<number>(0);
 
     /** The absolute position */
     let absolutePosition = 0;
 
-    //const timer = useRef<any>(null)
-
+    /** True, if this is the initial render */
     const [initial, setInitial] = useState<boolean>(true);
 
-    /** Measures the sizes of the first and seconds components and then calls the onResize function given by props*/
+    /** Measures the sizes of the first and seconds components and then calls the onResize function given by props to recalculate the layout*/
     const callOnResize = (isInitial?: boolean) => {
         if (props.onResize && secondRef.current && firstRef.current) {
             const firstDom = firstRef.current.getBoundingClientRect();

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useRef } from "react";
+import React, { CSSProperties, FC, useCallback } from "react";
 import { Tooltip } from "primereact/tooltip";
 import { IPanel, panelGetStyle, panelReportSize } from "../panel/UIPanel";
 import useComponents from "../../../hooks/components-hooks/useComponents";
@@ -74,9 +74,6 @@ const UIGroupPanel: FC<IPanel & IComponentConstants> = (props) => {
                     className="rc-panel-group-caption"
                     style={{ ...props.compStyle }}
                     dangerouslySetInnerHTML={{ __html: props.text as string }} >
-                    {/* <span>
-                        {props.text}
-                    </span> */}
                 </div>
                 <div
                     className="rc-panel-group-content"

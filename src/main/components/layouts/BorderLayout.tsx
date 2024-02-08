@@ -64,8 +64,10 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     /** Horizontal- and vertical Gap */
     const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
 
+    /** Callback which gets called when the layout is done layouting */
     const runAfterLayout = useRunAfterLayout();
 
+    /** The BorderLayout-Assistant used for the designer, if it isn't already available, initialise it */
     const borderLayoutAssistant = useMemo(() => {
         if (context.designer && isDesignerVisible(context.designer)) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
@@ -93,6 +95,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         }
     }, [context.designer, context.designer?.isVisible]);
 
+    // The layoutinfo of the BorderLayout-Assistant
     const layoutInfo = useMemo(() => {
         if (borderLayoutAssistant) {
             return borderLayoutAssistant.layoutInfo;
@@ -143,6 +146,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             /** Get the preferredSize for the areas of the BorderLayout */
             children.forEach(component => {
                 if (component.visible !== false && component.constraints) {
+                    // Set the current constraints of the borderlayout into the layoutInfo of the designer
                     if (isDesignerActive(borderLayoutAssistant) && layoutInfo) {
                         layoutInfo.componentConstraints.set(component.name, component.constraints);
                     }
@@ -410,6 +414,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
     }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, components, 
         margins.marginBottom, margins.marginLeft, margins.marginRight, margins.marginTop, borderLayoutAssistant]);
 
+    // Designer layoutinfo needs current componentSizes
     useEffect(() => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.borderLayouts.has(name)) {
             context.designer.borderLayouts.get(name)!.layoutInfo.componentSizes = compSizes;

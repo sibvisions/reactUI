@@ -81,7 +81,8 @@ const UIGauge: FC<IGauge & IComponentConstants> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
 
-    // Sets the gauge properties on render
+    // Sets the gauge properties on render. You pass the gauge an HTMLElement and the properties and the gauge renders itself via dom manipulation
+    // No need for a gauge component here
     useLayoutEffect(() => {
         if(props.forwardedRef.current && !gauge.current) {
             switch(gaugeStyle) {

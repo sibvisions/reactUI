@@ -41,6 +41,7 @@ const UIMenuBar: FC<any> = (baseProps) => {
     /** The menu-items sent by the server changed into objects which PrimeReact's MenuModel-API can use */
     const menuItems = useMenuItems(menuChildren);
 
+    /** Subscribes to designer-changes so the components are updated live */
     const designerUpdate = useDesignerUpdates('menubar');
 
     // Adds a wrapper div to all submenu-lists, for the submenus to be correctly displayed when there are sub-submenus

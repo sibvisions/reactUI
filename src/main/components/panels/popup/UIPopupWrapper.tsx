@@ -46,8 +46,10 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** Live properties of the popup */
     const [props] = useProperties<IPopup>(baseProps.popupId, baseProps);
 
+    /** Live properties of the panel below the popup */
     const [childProperties] = useProperties<IPanel>(baseProps.id, baseProps, true);
 
     /** The current app-theme e.g. "basti" */
@@ -65,8 +67,6 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** True, if the first popup size initialization has completed. */
     const [initializePopup, setInitializePopup] = useState<boolean>(false);
 
-    //const [initializeCompSizes, setInitializeCompSizes] = useState<boolean>(false);
-
     /** Subscribes the resize-handler to the theme */
     useEffect(() => {
         context.subscriptions.subscribeToTheme("popup", (theme:string) => setAppTheme(theme));
@@ -77,7 +77,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         }
     }, [context.subscriptions]);
 
-    /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen */
+    /** When the Popup gets closed, send a closeScreenRequest to the server and call contentStore closeScreen or closeContent if it's a content */
     const handleOnHide = () => {
         if (baseProps.onClose) {
             baseProps.onClose();
@@ -112,6 +112,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 });
             }
     
+            // Focus the last focused component after closing the dialog
             const lastFocusedComponent = context.contentStore.lastFocusedComponent
             if (lastFocusedComponent) {
                 let componentToFocus = document.getElementById(lastFocusedComponent.id);

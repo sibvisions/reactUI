@@ -61,11 +61,14 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
     /** Current state of the calculatedStyle by the FormLayout */
     const [calculatedStyle, setCalculatedStyle] = useState<CSSProperties>();
 
+    /** Callback which gets called when the layout is done layouting */
     const runAfterLayout = useRunAfterLayout();
 
+    /** The FlowLayout-Assistant used for the designer, if it isn't already available, initialise it */
     const flowLayoutAssistant = useMemo(() => {
         if (context.designer && isDesignerVisible(context.designer)) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
+            // FlowLayout has no constraints
             components.forEach(component => compConstraintMap.set(component.props.name, "flow-no-constraints"));
             if (!context.designer.flowLayouts.has(name)) {
                 context.designer.createFlowLayoutAssistant({
@@ -91,6 +94,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         }
     }, [context.designer, context.designer?.isVisible]);
 
+    // The layoutinfo of the FlowLayout-Assistant
     const layoutInfo = useMemo(() => {
         if (flowLayoutAssistant) {
             return flowLayoutAssistant.layoutInfo;
@@ -120,6 +124,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         /** If the orientation is horizontal */
         const isRowOrientation = parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL;
 
+        /** Filters the toolbars from the children, if the FlowLayout is a Frame or ToolbarPanel, undefined if there are no toolbars */
         const toolBarsFiltered:[string, IBaseComponent][]|undefined = parent ? 
             id.includes("-tbMain") ? 
                 [...context.contentStore.getChildren(id, className)] 
@@ -127,13 +132,16 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 [...context.contentStore.getChildren(panelType === "Frame-Toolbar" ? id : parent, className)].filter(child => child[1].className === COMPONENT_CLASSNAMES.TOOLBAR) 
         : undefined;
 
+        /** The children of the Panel, only the toolbars if it is a frame */
         const children = panelType === "Frame-Toolbar" ? new Map(toolBarsFiltered) : context.contentStore.getChildren(id, className);
 
         /** Sorts the Childcomponent based on indexOf property */
         const childrenSorted = new Map([...children.entries()].sort((a, b) => {return (a[1].indexOf as number) - (b[1].indexOf as number)}));
 
+        /** The gap between toolbars */
         const toolbarGap = isToolBar ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--toolbar-gap')) : 0;
 
+        /** The gap in toolbars */
         const toolbarCompExtraGap = isToolBar ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--toolbar-comp-gap')) : 0;
 
         // Adding an extra gap between components in a toolbar for styling reasons
@@ -146,8 +154,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
         }
 
-
-
         /**
          * Checks if the bar is first toolbar
          * @param id - the id of the toolbar
@@ -159,7 +165,6 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             }
             return true;
         }
-
 
         /**
          * Checks if the bar is last toolbar
@@ -268,6 +273,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         }
                     }
 
+                    // Set the correct indices of the component for the FlowLayout-Assistent in the designer
                     if (isDesignerActive(flowLayoutAssistant)) {
                         setComponentIndeces(layoutInfo, component.name, component.indexOf);
                     }
@@ -446,6 +452,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         return sizeMap;
     }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, flowLayoutAssistant, components]);
 
+    // Designer layoutinfo needs current componentSizes
     useEffect(() => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.flowLayouts.has(name)) {
             context.designer.flowLayouts.get(name)!.layoutInfo.componentSizes = compSizes;

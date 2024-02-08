@@ -64,22 +64,28 @@ const UIFrame: FC<IFrame> = (props) => {
     /** The size of the toolbar */
     const [toolBarSize, setToolBarSize] = useState<Dimension>({ width: 0, height: 0 });
 
+    // When the menubar properties change and there are none, set the size to 0/0
     useEffect(() => {
         if (!menuBarProps) {
             setMenuBarSize({ width: 0, height: 0 })
         }
     }, [menuBarProps]);
 
+    // When hasToolBars change and there are none, set the size to 0/0
     useEffect(() => {
         if (!hasToolBars) {
             setToolBarSize({ width: 0, height: 0 })
         }
     }, [hasToolBars]);
 
-    /** A callback to set the menubar-size */
+    /** A callback to set the menubar-size. This callback is given to the menubar component, 
+     *  when it is ready, it calls this callback to let the frame know it's size.
+     */
     const menuBarSizeCallback = useCallback((size:Dimension) => setMenuBarSize(size), []);
 
-    /** A callback to set the toolbar-size */
+    /** A callback to set the toolbar-size. This callback is given to the toolbar component, 
+     *  when it is ready, it calls this callback to let the frame know it's size.
+     */
     const toolBarSizeCallback = useCallback((size:Dimension) => {
         if (toolBarSize.height !== size.height || toolBarSize.width !== size.width) {
             setToolBarSize(size)
@@ -89,7 +95,7 @@ const UIFrame: FC<IFrame> = (props) => {
     /** The icon properties for the frame icon */
     const iconProps = useMemo(() => parseIconData(undefined, props.iconImage), [props.iconImage]);
 
-    /** The frame style minus the menubar-size and toolbar-size */
+    /** The frame style minus the menubar-size and toolbar-size. So the layout has the proper size */
     const adjustedStyle = useMemo(() => {
         const styleCopy:CSSProperties = {...props.frameStyle};
         if (props.frameStyle) {

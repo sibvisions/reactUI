@@ -29,6 +29,7 @@ import { CellFormatting } from "../CellEditor"
 import { getFont, parseIconData } from "../../comp-props/ComponentProperties"
 import { SelectedCellContext } from "../UITable"
 
+/** Interfaces for cellrenderers */
 export interface ICellRenderer {
     name:string
     screenName: string,
@@ -61,8 +62,10 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
 
+    /** Reference for the cell element */
     const cellRef = useRef<any>(null);
 
+    /** adds or removes the readonly className to the cells parent */
     useLayoutEffect(() => {
         if (cellRef.current && cellRef.current.parentElement) {
             if (!props.addReadOnlyClass && cellRef.current.parentElement.classList.contains("cell-readonly")) {
@@ -74,6 +77,7 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
         }
     }, [props.addReadOnlyClass])
 
+    /** Contains the cell-style extracted from the cellformatting property */
     const cellStyles: { cellStyle: CSSProperties, cellClassNames: string[], cellIcon: IconProps | null } = useMemo(() => {
         let cellStyle:any = { };
         const cellClassNames:string[] = ['cell-data', props.isHTML ? "html-cell" : ""];
@@ -109,7 +113,7 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
         return { cellStyle: cellStyle, cellClassNames: cellClassNames, cellIcon: cellIcon }
     }, [props.cellFormatting, props.colName])
 
-    // Returns the cell-icon or null
+    // Returns the cell-icon as icon if FontAwesome, image element or null
     const icon = useMemo(() => {
         if (cellStyles.cellIcon?.icon) {
             if(isFAIcon(cellStyles.cellIcon.icon))
@@ -127,6 +131,7 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
         }
     }, [cellStyles.cellIcon?.icon, context.server.RESOURCE_URL]);
 
+    /** Returns the correct renderer component based on the celleditor datatype and the respective properties */
     const [Renderer, rendererProps] = useMemo(() => {
         switch (columnMetaData?.cellEditor.className) {
             case CELLEDITOR_CLASSNAMES.CHECKBOX:
@@ -161,6 +166,7 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
         }
     }, [columnMetaData?.cellEditor.className]);
 
+    // When clicking on a celleditor that is not an image or directcelleditor, store the click event to execute later in case of row selection
     const handleClickEvent = useCallback(() => {
         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1 &&
             props.setStoredClickEvent && props.setEdit) {
@@ -170,6 +176,7 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
         }
     }, []);
 
+    // Wait for the selected cell switch and then call the click event
     useEffect(() => {
         if (cellContext.selectedCellId === props.cellClickEvent && cellContext.selectedCellId === props.cellId) {
             handleClickEvent();
@@ -183,6 +190,7 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
             style={cellStyles.cellStyle}
             className={cellStyles.cellClassNames.join(' ')}
             onMouseUp={(e) => {
+                // check if 1 click or double click to open the editor, if the same cell is already selected immediatley call the click event, if not wait for selecting
                 if (props.isEditable && ((columnMetaData?.cellEditor.preferredEditorMode === 1 && e.detail === 1) || (columnMetaData?.cellEditor.preferredEditorMode !== 1 && e.detail === 2))) {
                     if (cellContext.selectedCellId === props.cellId) {
                         handleClickEvent();

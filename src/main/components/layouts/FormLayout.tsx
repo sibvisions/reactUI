@@ -44,7 +44,8 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
-
+    
+    /** Callback which gets called when the layout is done layouting */
     const runAfterLayout = useRunAfterLayout();
 
     /** Extract variables from baseprops */
@@ -63,6 +64,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         panelType
     } = baseProps;
 
+    /** The FormLayout-Assistant used for the designer, if it isn't already available, initialise it */
     const formLayoutAssistant = useMemo(() => {
         if (context.designer && isDesignerVisible(context.designer)) {
             const compConstraintMap:Map<string, string> = new Map<string, string>();
@@ -101,6 +103,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         }
     }, [context.designer, context.designer?.isVisible])
 
+    // The layoutinfo of the FormLayout-Assistant
     const layoutInfo = useMemo(() => {
         if (formLayoutAssistant) {
             return formLayoutAssistant.layoutInfo;
@@ -164,6 +167,11 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             /** True, if the target dependent anchors should be calculated again. */
             let calculatedTargetDependentAnchors = false;
 
+            /**
+             * Returns true, if the anchor is already in that list
+             * @param anchor - the anchor to check
+             * @param anchorList - the list to check
+             */
             const containsAnchor = (anchor:Anchor, anchorList:Anchor[]) => {
                 for (let i = 0; i < anchorList.length; i++) {
                     if (anchorList[i].name === anchor.name) {
@@ -190,13 +198,13 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 });
 
                 if (isDesignerActive(formLayoutAssistant) && layoutInfo) {
-                    layoutInfo.componentConstraints.clear()
                     anchors.forEach(pAnchor => {
                         let anchor:Anchor|undefined = pAnchor;
                         let anchorStartChar = anchor.name.substring(0, 1);
                         let anchorList = (["l", "r", "h"].indexOf(anchorStartChar) !== -1 ? layoutInfo!.horizontalAnchors : layoutInfo!.verticalAnchors);
                         const pos = anchorList.findIndex((a: Anchor) => a.name === anchor?.relatedAnchorName) !== -1 ? anchorList.findIndex((a: Anchor) => a.name === anchor?.relatedAnchorName) + 1 : anchorList.length;
 
+                        // Adds the anchor at the correct position to the correct list (horizontal, vertical), not for vertical and horizontal anchors
                         while (anchor && !containsAnchor(anchor, anchorList)) {
                             anchorStartChar = anchor.name.substring(0, 1);
                             if (!(anchorStartChar.startsWith("v") || anchorStartChar.startsWith("h"))) {
@@ -206,6 +214,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             anchor = anchor.relatedAnchor;
                         }
 
+                        // Checking if the layout is an AdvancedFormLayout
                         if ((pAnchor.name === "r0" || pAnchor.name === "b0") && pAnchor.position === 0 && !pAnchor.autoSize) {
                             formLayoutAssistant!.setIsAdvancedFormLayout(true);
                             layoutInfo.advancedLabelPosition = pAnchor.name === "r0" ? "left" : "top";
@@ -225,6 +234,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         let bottomAnchor = anchors.get(anchorNames[2]); 
                         let rightAnchor = anchors.get(anchorNames[3]);
 
+                        // If the designer is active create the anchors to fill them into the layoutinfo lists/maps
                         if (isDesignerActive(formLayoutAssistant)) {
                             if (!topAnchor) {
                                 topAnchor = formLayoutAssistant!.createAnchors(anchorNames[0]).find((createdAnchor: Anchor) => createdAnchor.name === anchorNames[0]);
@@ -247,6 +257,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             const constraint: Constraints = new Constraints(topAnchor, leftAnchor, bottomAnchor, rightAnchor);
                             componentConstraints.set(component.id, constraint);
 
+                            // Add the components with their constraints into the layoutinfo, horizontal and vertical anchors get converted to their relative anchors
                             if (isDesignerActive(formLayoutAssistant) && formLayoutAssistant) {
                                 layoutInfo!.componentConstraints.set(component.name, formLayoutAssistant.getConvertedVerticalHorizontalConstraints(component.constraints));
                             }
@@ -254,7 +265,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                     }
                 });
 
-                
+                // Creates the designer-anchor which are the last available anchor sent by the server + 1, so it is possible to add new rows and columns
                 if (isDesignerActive(formLayoutAssistant) && formLayoutAssistant) {
                     const createDesignerAnchor = (anchor: Anchor) => {
                         if (!anchors.has(anchor.name)) {
@@ -625,7 +636,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
 
             /** Calculates all target size dependent anchors. This can only be done after the target has his correct size. */
             const calculateTargetDependentAnchors = () => {
-
+                /** Returns the calculated minimum size or the set minimum size by the server */
                 const getMinimumSize = (calcMinWidth:number, calcMinHeight:number):Dimension => {
                     if (baseProps.minimumSize) {
                         return baseProps.minimumSize;
@@ -879,6 +890,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                         sizeMap.set(component.id, { height: (style?.height as number) * 0.75, width: (style?.width as number) * 0.75 })
                     }
 
+                    // Setting component indeces in layoutInfo of designer
                     if (isDesignerActive(formLayoutAssistant) && layoutInfo) {
                         quickSort(indexArr, 0, indexArr.length - 1);
                         layoutInfo.componentIndeces = indexArr.map(o => o.name);
@@ -949,6 +961,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
         return calculatedStyle.current;
     }, [layout, layoutData, compSizes, style.width, style.height, id, calculateLayout, context.contentStore, components]);
 
+    // Designer layoutinfo needs current componentSizes
     useEffect(() => {
         if (context.designer && isDesignerVisible(context.designer) && context.designer.formLayouts.has(name)) {
             context.designer.formLayouts.get(name)!.layoutInfo.componentSizes = compSizes;

@@ -31,6 +31,7 @@ export interface IWindow extends IPanel, IComponentConstants {
     modal: boolean
 }
 
+/** Mobile launcher is the root component for applications which are started with transferType: full */
 const UIMobileLauncher: FC<IWindow> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
     const [children, components, componentSizes] = useComponents(props.id, props.className);

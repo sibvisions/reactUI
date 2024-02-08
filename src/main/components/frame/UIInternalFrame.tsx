@@ -30,6 +30,7 @@ import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import Bounds from "../layouts/models/Bounds";
 import { IComponentConstants } from "../BaseComponent";
 
+/** Interface for the internal frame */
 export interface IInternalFrame extends IWindow, IComponentConstants {
     iconifiable?: boolean
     maximizable?:boolean
@@ -128,7 +129,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
         }
     }
 
-    /** Sets the RnD bounds (drag limitations for RnD). You can't drag it over tge menubar, but you can drag it out of the sides and bottom of the browser-window */
+    /** Sets the RnD bounds (drag limitations for RnD). You can't drag it over the menubar, but you can drag it out of the sides and bottom of the browser-window */
     useLayoutEffect(() => {
         if (rndRef.current) {
             rndRef.current.setState({bounds: {
@@ -179,7 +180,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
         }
     }, [frameContext.openFrames]);
 
-    // Initially sets the framestyle and sends a boundsrquest to the server, also tells the frameContext the name of the opened frame
+    // Initially sets the framestyle and sends a boundsrequest to the server, also tells the frameContext the name of the opened frame
     useEffect(() => {
         if (props.context.transferType === "full" && props.context.launcherReady && initFrame.current) {
             if (rndRef.current) {
@@ -243,6 +244,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
                 if (props.centerRelativeTo) {
                     const relativeElem = getCenterRelativeElem();
                     const relativeComp = props.context.contentStore.getComponentById(props.centerRelativeTo);
+                    // Only needed for knowing if the parent is ready (visible)
                     const relativeCompParent = relativeComp ? props.context.contentStore.getComponentByName(props.context.contentStore.getScreenName(relativeComp.id) as string) : undefined;
                     
                     let parentElem;
@@ -270,6 +272,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
                     }
                 }
                 else {
+                    // Open the frames on top of each other with some gaps
                     rndRef.current.updatePosition({ x: 25 * (frameContext.openFrames.length - 1), y: 32 * (frameContext.openFrames.length - 1) });
                     setFramePosition({ x: 25 * (frameContext.openFrames.length - 1), y: 32 * (frameContext.openFrames.length - 1) })
                     setPositionFlag(false);
@@ -303,6 +306,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
     };
 
     return (
+        // in tabmode don't render the RnD Frame. RnD is the Wrapper for dragging and UIFrame has the menubar, toolbar and layout
         (!frameContext.tabMode || props.modal) ?
             <>
                 {props.modal && <div className="rc-glasspane" />}

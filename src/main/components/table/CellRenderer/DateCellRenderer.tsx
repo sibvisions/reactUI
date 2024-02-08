@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { isValid, format, formatISO } from "date-fns";
+import { isValid, formatISO } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import React, { FC, useContext, useMemo } from "react";
 import { appContext } from "../../../contexts/AppProvider";

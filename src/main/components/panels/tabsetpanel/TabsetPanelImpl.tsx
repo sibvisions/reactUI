@@ -86,6 +86,7 @@ const TabsetPanelImpl: FC<ITabsetImpl & IComponentConstants> = (props) => {
             const external = props.layoutStyle;
             let width:number|undefined;
             let height:number|undefined;
+            // External means the size set by the parent
             if (external?.width && external?.height && panelRef.current) {
                 width = external.width as number;
                 const navbarHeight = panelRef.current.nav ? panelRef.current.nav.offsetHeight : 48;

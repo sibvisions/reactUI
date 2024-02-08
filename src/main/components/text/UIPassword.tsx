@@ -42,8 +42,10 @@ const UIPassword: FC<ITextField & IExtendableText> = (props) => {
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props;
 
+    /** Reference for the input element */
     const inputRef = useRef<any>(null);
 
+    /** Hook for requesting focus */
     useRequestFocus(id, props.requestFocus, inputRef.current, props.context);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */

@@ -56,6 +56,7 @@ const UIIcon: FC<IIcon & IExtendableIcon & IComponentConstants> = (props) => {
     /** The alignment of the component */
     const alignments = useMemo(() => getAlignments(props), [props.horizontalAlignment, props.verticalAlignment]);
 
+    /** The size of the icon, needed for rerender */
     const [iconSize, setIconSize] = useState<Dimension|null>(null);
     
     /**
@@ -107,8 +108,8 @@ const UIIcon: FC<IIcon & IExtendableIcon & IComponentConstants> = (props) => {
     }, [props.image]);
 
     /** 
-    * Returns wether the icon is a FontAwesome icon or an image sent by the server 
-    * @returns Iconelement based on if the icon is FontAwesome or server sent image
+    * Returns whether the icon is a FontAwesome icon or an image sent by the server 
+    * @returns icon element based on if the icon is FontAwesome or server sent image
     */
     const iconOrImage = (icon:string|undefined) => {
         if (icon) {
