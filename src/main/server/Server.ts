@@ -300,6 +300,12 @@ class Server extends BaseServer {
             if (this.screensToClose.length) {
                 if (this.maybeOpenScreen && !this.contentStore.activeScreens.length) {
                     if (!this.screensToClose.some(screenToClose => screenToClose.windowName === this.maybeOpenScreen!.componentId)) {
+                        this.screensToClose.forEach((screenToClose) => {
+                            //@ts-ignore
+                            let index = this.contentStore.screenHistory.findLastIndex((screen: { componentId: string, className: string }) => screen.componentId === screenToClose.windowName);
+                            this.contentStore.screenHistory.splice(index, 1);
+                        });
+                        this.openedByClose = true;
                         this.api.sendOpenScreenRequest(this.maybeOpenScreen.className).then(() => this.screensToClose.forEach(screenToClose => cleanUpScreen(screenToClose)));
                     }
                     this.maybeOpenScreen = undefined;
@@ -525,7 +531,7 @@ class Server extends BaseServer {
         // }
         // If there have been more than two screens opened in the application, remember the last closed screen
         if (this.contentStore.screenHistory.length > 1) {
-            const screen = this.contentStore.screenHistory[this.contentStore.screenHistory.length - 2]
+            const screen = this.contentStore.screenHistory[this.contentStore.screenHistory.length - 2];
             this.maybeOpenScreen = { className: screen.className, componentId: screen.componentId};
         }
 

@@ -89,7 +89,12 @@ export default class ContentStore extends BaseContentStore {
             else {
                 // push active screen in the screenhistory if it isn't a popup
                 if (screenInfo.className) {
-                    this.screenHistory.push({ className: screenInfo.className, componentId: screenInfo.name });
+                    if (!this.server.openedByClose) {
+                        this.screenHistory.push({ className: screenInfo.className, componentId: screenInfo.name });
+                    }
+                    else {
+                        this.server.openedByClose = false;
+                    }
                 }
                 
                 if (this.activeScreens[0] && this.activeScreens[0].popup) {
