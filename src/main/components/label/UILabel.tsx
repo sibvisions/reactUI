@@ -55,7 +55,7 @@ const UILabel: FC<IBaseComponent & IExtendableLabel & IComponentConstants> = (pr
     useEffect(() => {
         if (labelRef.current && onLoadCallback && !initialReport.current) {
             const debounced = _.debounce(() => sendOnLoadCallback(id, props.className, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), labelRef.current, onLoadCallback), 100)
-            debounced()
+            debounced();
         }
     }, [props.layoutStyle?.width, props.layoutStyle?.height])
 

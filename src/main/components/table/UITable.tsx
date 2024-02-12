@@ -298,6 +298,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** Which cell has been clicked */
     const cellClickEvent = useRef<string>("");
 
+    const [scrollHeight, setScrollHeight] = useState(props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined);
+
     /** Hook for MouseListener */
     useMouseListener(
         props.name, 
@@ -460,7 +462,14 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** Sets the height of the items to the row size of the table. Used for virtual scrolling */
     useEffect(() => {
         setItemSize(tableRowHeight);
-    }, [tableRowHeight])
+    }, [tableRowHeight]);
+
+    useEffect(() => {
+        if (props.layoutStyle?.height) {
+            const debounced = _.debounce(() => setScrollHeight(`${props.layoutStyle?.height}px`), 100);
+            debounced();
+        }
+    }, [props.layoutStyle?.height])
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
@@ -1390,8 +1399,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     selection={selectedCell}
                     selectionMode="single"
                     cellSelection
-                    scrollHeight="flex"
-                    //scrollHeight={props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined}
+                    //scrollHeight="flex"
+                    scrollHeight={scrollHeight}
                     scrollable={props.layoutStyle?.height && virtualEnabled ? true : false}
                     virtualScrollerOptions={ virtualEnabled ? { 
                         itemSize, 

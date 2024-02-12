@@ -259,7 +259,7 @@
     }
 
     &.p-datatable-scrollable .p-datatable-wrapper {
-        overflow-y: hidden;
+        overflow-y: hidden !important;
     }
 
     .p-column-title {

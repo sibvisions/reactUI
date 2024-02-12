@@ -289,7 +289,10 @@ const Menu: FC<IMenu> = (props) => {
     const foldMenuOnCollapse = useMemo(() => context.appSettings.menuOptions.foldMenuOnCollapse, [context.appSettings.menuOptions]);
 
     /** State of the active-screens */
-    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);  
+    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);
+
+    /** State of the currently expanded menu-items */
+    const [expandedKeys, setExpandedKeys] = useState<any>({});
 
     /** get menu items */
     const menuItems = useMenuItems();
@@ -344,8 +347,18 @@ const Menu: FC<IMenu> = (props) => {
         if (props.menuOptions.menuBar) {
             if (menuItems) {
                 const foundMenuItem:MenuItem|null = getSelectedMenuItem(menuItems, selectedMenuItemId);
-                if (foundMenuItem) {
-                    foundMenuItem.expanded = true;
+                if (foundMenuItem && foundMenuItem.id) {
+                    const splitId = foundMenuItem.id.split("/");
+                    const newExpandedKeys:any = {};
+                    splitId.forEach((key, i) => {
+                        let expandKey = splitId.slice(0, i + 1).join("/");
+                        // removes unique id from key
+                        if (expandKey.includes("____")) {
+                            expandKey = expandKey.substring(0, expandKey.indexOf("_"));
+                        }
+                        newExpandedKeys[expandKey] = true
+                    });
+                    setExpandedKeys(newExpandedKeys);
                 }
 
                 // TODO there seems to be a new property for panelmenu "expandedKeys" which is not available yet but will be in the future
@@ -477,7 +490,34 @@ const Menu: FC<IMenu> = (props) => {
                             <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                                 <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
                             </div>
-                            <PanelMenu model={menuItems} ref={panelMenu} />
+                            {/** @ts-ignore */}
+                            <PanelMenu 
+                                model={menuItems} 
+                                ref={panelMenu} 
+                                //@ts-ignore
+                                expandedKeys={expandedKeys} 
+                                //@ts-ignore
+                                onExpandedKeysChange={e => {
+                                // Find out which item has just been expanded
+                                let newExpandedItem = {...e};
+                                Object.keys(newExpandedItem).forEach(key => {
+                                    if (Object.keys(expandedKeys).includes(key)) {
+                                        delete newExpandedItem[key];
+                                    }
+                                });
+                                const newExpandedKeys = Object.keys(newExpandedItem);
+                                const expandedKeysToSet:any = {};
+                                // If we've found exactly 1 item that has been expanded, check the which parents are needed to be extended
+                                // and add them to the expandedKeys object.
+                                if (newExpandedKeys.length === 1) {
+                                    const splitKeys = newExpandedKeys[0].split("/");
+                                    splitKeys.forEach((key, i) => {
+                                        expandedKeysToSet[splitKeys.slice(0, i + 1).join("/")] = true
+                                    })
+                                }
+                                
+                                setExpandedKeys(expandedKeysToSet);
+                            }} />
                             {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
                         </div>
                     }

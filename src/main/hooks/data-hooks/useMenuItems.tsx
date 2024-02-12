@@ -87,9 +87,13 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                 return item.text
             }
 
+            const menuLabel = getItemLabel(item);
+
             // Setting initial menu-item properties
             const menuItem:MenuItem = {
-                label: getItemLabel(item),
+                // Math.random for unique ids
+                id: !isBaseComp(item) && menuLabel ? item.group + '____' + Math.random().toString() : undefined,
+                label: menuLabel,
                 icon: iconData.icon,
                 style: {...(!isFAIcon(iconData.icon) ? {
                     '--iconWidth': `${iconData.size?.width}px`,
@@ -151,7 +155,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                 if (isCorporation(isCorp ? "corporation" : "standard", appTheme)) {
                     menuGroup.forEach(value => {
                         const flatItems = value.filter(menuitem => menuitem.flat);
-                        flatItems.forEach(menuItem => {
+                        flatItems.forEach((menuItem) => {
                             primeMenu.push(getMenuItem(menuItem, false));
                             value.splice(value.findIndex(valItem => valItem.componentId === menuItem.componentId), 1);
                         })
@@ -169,6 +173,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                             // If the menu-group hasn't been found add it
                             if (!foundMenuGroup) {
                                 const newMainMenuGroup = {
+                                    key: nameSplit.slice(0, i + 1).join("/"),
                                     label: nameSplit[i],
                                     icon: undefined,
                                     // If i is nameSplit.length - 1 it is the last level and we can just get the final subitem-level
@@ -269,7 +274,21 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
 
     useEffect(() => {
         if (menuItems.length) {
-            Array.from(document.getElementsByClassName("p-menuitem--active")).forEach(elem => elem.classList.remove("p-menuitem--active"));
+            // First remove the active classname from all items
+            const removeActiveClassName = (items: MenuItem[]) => {
+                items.forEach(item => {
+                    if (item.items) {
+                        removeActiveClassName(item.items as MenuItem[]);
+                    }
+                    else {
+                        if (item.className && item.className.includes("p-menuitem--active")) {
+                            item.className = item.className.replace(" p-menuitem--active", "");
+                        }
+                    }
+                })
+            }
+
+            removeActiveClassName(menuItems);
             const foundMenuItem:MenuItem|null = getSelectedMenuItem(menuItems, selectedMenuItemId);
             if (foundMenuItem) {
                 foundMenuItem.className = concatClassnames(foundMenuItem.className, "p-menuitem--active");
