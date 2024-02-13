@@ -38,8 +38,10 @@ import { ActiveScreen } from "../../contentstore/BaseContentStore";
 const useMenuItems = (menus?:string[], isCorp?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Current state of menu items */
     const [menuItems, setMenuItems] = useState<Array<MenuItem>>([]);
+
     /** The current app-theme e.g. "basti" */
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
@@ -105,7 +107,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                 separator: item.className === "Separator" ? true : false,
             }
 
-            // If the item is sent by the server add a dispatch-action command and if the icon is custom add a classname
+            // If the server mode is transfertype full add a dispatch-action command and if the icon is custom add a classname
             if (isBaseComp(item)) {
                 menuItem.command = item.eventAction 
                 ? 
@@ -124,12 +126,11 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                 const castedMenuItem = menuItem as MenuItemCustom
                 castedMenuItem.command = () => showTopBar(item.action(), context.server.topbar);
                 castedMenuItem.className = concatClassnames(
-                    item.className ? item.className : item.componentId.split(':')[0],
-                    item.className && item.navigationName  ? item.className + "____" + item.navigationName : "",
-                    !isFAIcon(iconData.icon) ? "custom-menu-icon" : "", 
+                    !isFAIcon(iconData.icon) ? "custom-menu-icon" : "",
                     isSingleGroup && !isCorporation(isCorp ? "corporation" : "standard", appTheme) ? "single-group-item" : ""
                 );
                 castedMenuItem.componentId = item.componentId;
+                // two identifiers to find the selected menu-item where the second identifier is more precise
                 castedMenuItem.screenClassName = item.className ? item.className : item.componentId.split(':')[0];
                 castedMenuItem.secondIdentifier = item.className && item.navigationName  ? item.className + "____" + item.navigationName : "";
                 return castedMenuItem;
@@ -289,6 +290,7 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
             }
 
             removeActiveClassName(menuItems);
+            // Then find the selected menuitem and add the className to geht the selected color
             const foundMenuItem:MenuItem|null = getSelectedMenuItem(menuItems, selectedMenuItemId);
             if (foundMenuItem) {
                 foundMenuItem.className = concatClassnames(foundMenuItem.className, "p-menuitem--active");

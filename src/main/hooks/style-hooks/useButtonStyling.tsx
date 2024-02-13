@@ -49,6 +49,7 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
     /** The margins of a button */
     const margins = useMemo(() => getMargins(props.margins), [props.margins]);
 
+    /** Rerender triggers when the button background changes */
     const designerBgdChanged = useButtonBackground();
 
     /** Various style properties which are set by the properties received from the server */

@@ -15,6 +15,7 @@
 
 import LoginRequest from "./LoginRequest";
 
+/** Interface for custom-login requests */
 interface CustomLoginRequest extends LoginRequest {
     [key:string]: any;
 }

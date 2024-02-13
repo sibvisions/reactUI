@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useState, useContext, useCallback } from "react";
-import { MenuItem, MenuItemCommandEvent } from "primereact/menuitem";
+import { MenuItem } from "primereact/menuitem";
 import { appContext } from "../../contexts/AppProvider";
 import { createAboutRequest, createLogoutRequest } from "../../factories/RequestFactory";
 import { showTopBar } from "../../components/topbar/TopBar";
@@ -24,9 +24,7 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import { translation } from "../../util/other-util/Translation";
 import UserData from "../../model/UserData";
 
-/**
- * Returns the profile-menu-options and handles the actions of each option.
- */
+/** Returns the profile-menu-options and handles the actions of each option. */
 const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -63,9 +61,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
                 {
                     label: translation.get("Change password"),
                     icon: "pi pi-lock-open",
-                    command() {
-                        context.subscriptions.emitChangePasswordVisible()
-                    }
+                    command: () =>  context.subscriptions.emitChangePasswordVisible()
                 }
             )
         }
@@ -95,8 +91,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
             label: translation.get("About"),
             icon: "pi pi-info-circle",
             command() {
-                showTopBar(context.server.sendRequest(createAboutRequest(), REQUEST_KEYWORDS.ABOUT), context.server.topbar)
-                //context.subscriptions.emitToast({ name: "", message: "ReactUI Version: " + LIB_VERSION }, "info");
+                showTopBar(context.server.sendRequest(createAboutRequest(), REQUEST_KEYWORDS.ABOUT), context.server.topbar);
             }
         })
 
@@ -113,7 +108,6 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
                 }
             })
         }
-
 
         setModel([
             {

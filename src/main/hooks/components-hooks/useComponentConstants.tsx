@@ -19,8 +19,6 @@ import useLayoutValue from "../style-hooks/useLayoutValue";
 import useComponentStyle from "../style-hooks/useComponentStyle";
 import { AppContextType, appContext } from "../../contexts/AppProvider";
 import IBaseComponent from "../../util/types/IBaseComponent";
-import { TopBarContextType } from "../../components/topbar/TopBar";
-import { IPanel } from "../../components/panels/panel/UIPanel";
 import useStyleClassNames from "./useStyleClassNames";
 
 /**
@@ -36,12 +34,13 @@ const useComponentConstants = <T extends IBaseComponent> (baseProps:T, fb?:CSSPr
     /** Up to date properties for the component */
     const [props] = useProperties<T>(baseProps.id, {...baseProps});
 
-    /** get the layout style value */
-    const layoutStyle = useLayoutValue(props.parent || ((props as any).screen_modal_ || (props as any).content_modal_) ? props.id : "root", fb);
+    /** get the layout style value, if there is no parent and no popup use root keyword to get all available space */
+    const layoutStyle = useLayoutValue(props.parent || context.contentStore.isPopup(props as any) ? props.id : "root", fb);
 
     /** get the component style of the component */
     const compStyle = useComponentStyle(props);
 
+    /** get the classnames */
     const styleClassNames = useStyleClassNames(props.style)
 
     return [context, [props], layoutStyle, compStyle, styleClassNames];

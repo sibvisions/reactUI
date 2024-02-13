@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { CSSProperties, useLayoutEffect, useMemo, useState } from "react"
+import { CSSProperties, useMemo } from "react"
 import IBaseComponent from "../../util/types/IBaseComponent";
 
 // map to quickly get to the syscolor css variables

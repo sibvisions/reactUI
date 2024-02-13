@@ -41,15 +41,30 @@ export function onFocusLost(componentId: string, server: Server|ServerFull) {
     return server.sendRequest(focusLostReq, REQUEST_KEYWORDS.FOCUS_LOST, true);
 }
 
+/**
+ * Handles when a component gains focus
+ * @param name - the name of the component
+ * @param className - the classname of the component
+ * @param eventFocusGained - flag if there is an event to send focus gained
+ * @param focusable - true, if the component is focusable
+ * @param event - the event
+ * @param focusId - the focus id
+ * @param context - the context
+ * @param isCellEditor - true, if the component is a celleditor
+ * @returns 
+ */
 export function handleFocusGained(name: string, className: string, eventFocusGained: boolean|undefined, focusable: boolean|undefined, event:any, focusId:string, context: AppContextType, isCellEditor?: boolean) {
+    // If a celleditor in a table gets focused or focusable is false, dont do anything
     if (isCellEditor || focusable === false) {
         if (event) {
             event.preventDefault();
         }
         return
     }
+    // Set lastfocusedComponent to refocus when a popup gets closed
     context.contentStore.lastFocusedComponent = {id: focusId, className: className};
 
+    // Send a request to the server if eventFocusGained is true
     if (eventFocusGained) {
         onFocusGained(name, context.server);
     }

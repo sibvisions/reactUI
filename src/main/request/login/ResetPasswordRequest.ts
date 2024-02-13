@@ -15,6 +15,7 @@
 
 import BaseRequest from "../BaseRequest";
 
+/** Interface for reset-password requests */
 interface ResetPasswordRequest extends BaseRequest {
     identifier?: string
 }

@@ -15,13 +15,14 @@
 
 import tinycolor from "tinycolor2";
 
+/** Transforms rgb/hsl colors to hex colors */
 const defaultTransforms = {
     'csv': (v:string) => {
         const regexMatch = (v.match(/(rgb|hsl|#)(\((\d+,\s*\d+%,\s*\d+%|\d+,\s*\d+,\s*\d+)\)|[0-9a-fA-F]{6})/g));
         if (regexMatch) {
             const colorArray = Array.from(regexMatch);
             if (colorArray.length) {
-                return colorArray.map(color => tinycolor(color).toHexString())
+                return colorArray.map(color => tinycolor(color).toHexString());
             }
             else {
                 const primaryColorMatch = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color').match(/(rgb|hsl|#)(\((\d+,\s*\d+%,\s*\d+%|\d+,\s*\d+,\s*\d+)\)|[0-9a-fA-F]{6})/g);

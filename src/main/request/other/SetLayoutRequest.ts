@@ -13,6 +13,7 @@
  * the License.
  */
 
+/** Interface for SetLayout requests */
 interface SetLayoutRequest {
     componentId?: string,
     parentId?: string,

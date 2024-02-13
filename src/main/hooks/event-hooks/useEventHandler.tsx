@@ -17,7 +17,7 @@ import { useEffect, useRef } from "react";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 
 /**
- * Adds an event-handler to the target, also handles cleanup
+ * Adds an event-handler to the target for the given event, also handles cleanup
  * @param target - the element the event should be added to
  * @param event - the event
  * @param handler - the function which should be executed

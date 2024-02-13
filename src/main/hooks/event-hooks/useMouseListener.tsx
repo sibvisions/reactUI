@@ -41,6 +41,8 @@ const getMouseButton = (button:number): "Left"|"Middle"|"Right" => {
  * @param eventMousePressed - true if mouse pressed should be added
  * @param eventMouseReleased - true if mouse released should be added
  * @param hold - function on hold
+ * @param isTable - true, if this is in a table
+ * @param rowSelectionFunc - a row select function which is called on mouse release
  */
 const useMouseListener = (
     compName:string, 
@@ -55,12 +57,16 @@ const useMouseListener = (
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
+    /** true, if an element has been pressed */
     const pressedElement = useRef<boolean>(false);
 
+    /** The x-position when clicking */
     const pressedX = useRef<number>();
     
+    /** The y-position when clicking */
     const pressedY = useRef<number>();
 
+    /** The className of the component */
     const componentClassName = useMemo(() => {
         if (context.contentStore.getComponentByName(compName)) {
             return context.contentStore.getComponentByName(compName)!.className
@@ -68,15 +74,22 @@ const useMouseListener = (
         return undefined
     }, [compName])
 
+    /**
+     * Checks where has been clicked and sends the data to the server
+     * @param event - the mouse event
+     */
     const handleMousePressed = (event:MouseEvent) => {
+        // Don't send when the dropdownbutton of a linkedcelleditor has been clicked
         if ((event.target as HTMLElement).closest(".p-autocomplete-dropdown")) {
             event.stopPropagation();
         }
 
+        // Save the press-position for later
         pressedX.current = event.x;
         pressedY.current = event.y;
         pressedElement.current = true;
 
+        // Call the row selection function
         if (isTable && rowSelectionFunc) {
             const release = () => rowSelectionFunc(event);
             hold ? hold("row_select", release) : release();
@@ -95,10 +108,12 @@ const useMouseListener = (
     }
 
     const handleMouseUp = (event:MouseEvent) => {
+        // Don't send when the dropdownbutton of a linkedcelleditor has been clicked
         if ((event.target as HTMLElement).closest(".p-autocomplete-dropdown")) {
             event.stopPropagation();
         }
 
+        // Only send when the eventflag is true, and the x and y position from mousedown and mouseup is the same
         if (eventMouseClicked && pressedX.current === event.x && pressedY.current === event.y) {
             const clickReq = createMouseClickedRequest();
             clickReq.componentId = compName;

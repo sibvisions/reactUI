@@ -424,7 +424,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 onChange={event => {
                     //@ts-ignore
                     setDateValue(event.value ? event.value : null);
-                    isChanging.current = true;
 
                     if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
                         calendar.current?.hide();
@@ -493,7 +492,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 placeholder={props.cellEditor_placeholder_}
                 formatDateTime={(date: Date) => {
                     // if the user is currently editing and has not "submitted" do NOT format the date
-                    if (isChanging.current && calendarInput.current?.value) {
+                    if (startedEditing.current && calendarInput.current?.value) {
                         return calendarInput.current?.value
                     }
                     let formattedValue = "";

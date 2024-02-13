@@ -15,11 +15,13 @@
 
 import DataProviderRequest from "./DataProviderRequest"
 
+/** Type for sort definitions */
 export type SortDefinition = {
     columnName: string,
     mode: "None"|"Ascending"|"Descending"
 }
 
+/** Interface for sort requests */
 interface SortRequest extends DataProviderRequest {
     sortDefinition?: SortDefinition[],
     columnName?:string

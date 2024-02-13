@@ -17,7 +17,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { appContext } from "../../contexts/AppProvider";
 
 /**
- * This hook returns the current state of either the selectedRow of the databook sent by the server for the given dataprovider
+ * This hook returns the current state of the selectedRow of the databook sent by the server for the given dataprovider
  * @param screenName - the name of the screen
  * @param dataProvider - the dataprovider
  * @param rowIndex - the index of the row
@@ -51,7 +51,6 @@ const useRowSelect = (screenName:string, dataProvider: string, rowIndex?:number)
     /** The current state of either the entire selectedRow or the given columns value of the selectedRow */
     const [selectedRow, setSelectedRow] = useState<any>(currentlySelectedRow);
 
-
     /**
      * Subscribes to rowSelection which updates the value of selectedRow
      * @returns unsubscribes from rowSelection
@@ -59,13 +58,14 @@ const useRowSelect = (screenName:string, dataProvider: string, rowIndex?:number)
     useEffect(() => {
         const onRowSelection = (newRow: any) => {
             if (newRow) {
+                // If rowIndex is undefined or the rowIndex is the currently selectedRow/new row, use the data from the new row
                 if (rowIndex === undefined || (rowIndex !== undefined && rowIndex === newRow.index)) {
-                    // if show index is false return the dataRow object, else return all of the Databook's selectedRow object
                     setSelectedRow({data: newRow.dataRow, index: newRow.index, selectedColumn: newRow.selectedColumn});
                 }
                 else {
-                    // Gets the current data of the databook for the correct row
-                    const data = context.contentStore.getDataBook(screenName, dataProvider)?.data?.get("current")[rowIndex]
+                    // If the rowIndex is NOT the currently selectedRow use the data of the row it is in NOT the row which is selected
+                    // used for tables which should display values which are not the currently selected rows.
+                    const data = context.contentStore.getDataBook(screenName, dataProvider)?.data?.get("current")[rowIndex];
                     if (data) {
                         setSelectedRow({data: data, index: newRow.index, selectedColumn: newRow.selectedColumn});
                     }

@@ -37,6 +37,7 @@ export default class ContentStoreFull extends BaseContentStore {
     /** Server instance */
     server: ServerFull = new ServerFull(this, this.subManager, this.appSettings, this.history);
 
+    /** VisionX Designer instance */
     designer: Designer|null = null;
 
     /**
@@ -62,6 +63,7 @@ export default class ContentStoreFull extends BaseContentStore {
      * Updates a components properties when the server sends new properties
      * @param existingComp - the existing component already in contentstore
      * @param newComp - the new component of changedcomponents
+     * @param notifyList - a list of component-names to notify them, that their children changed
      */
      updateExistingComponent(existingComp:IBaseComponent|undefined, newComp:IBaseComponent, notifyList: string[]) {
         if (existingComp) {
@@ -81,6 +83,7 @@ export default class ContentStoreFull extends BaseContentStore {
                     }
                 }
 
+                // notify the parent that the children changed
                 if (newPropName === "parent" && existingComp[newPropName] !== newComp[newPropName]) {
                     this.addToNotifyList(existingComp, notifyList);
                 }
@@ -88,10 +91,12 @@ export default class ContentStoreFull extends BaseContentStore {
                 // @ts-ignore
                 existingComp[newPropName] = newComp[newPropName];
 
+                // When the VisionX Designer is active and the selectedComponent is being updated, update the designers selectedComponent aswell
                 if (this.designer && this.designer.selectedComponent?.component.id === existingComp.id) {
                     this.designer.setSelectedComponent({...this.designer.selectedComponent, component: existingComp});
                 }
 
+                // update parent to match the correct artificial component id
                 if (newPropName === "parent" && existingComp.className === COMPONENT_CLASSNAMES.TOOLBAR && !(existingComp.parent?.includes("TBP") || newComp.parent?.includes("TBP"))) {
                     existingComp[newPropName] = newComp[newPropName] + "-frame-toolbar";
                 }
@@ -151,22 +156,6 @@ export default class ContentStoreFull extends BaseContentStore {
                     }
                 }
 
-                // const removeChildren = (id: string, className: string, isCustom?:boolean) => {
-                //     const children = this.getChildren(id, className);
-                //     children.forEach(child => {
-                //         removeChildren(child.id, child.className);
-
-                //         if (isCustom) {
-                //             this.replacedContent.delete(newComponent.id);
-                //             this.removedCustomComponents.set(child.id, child);
-                //         }
-                //         else {
-                //             this.flatContent.delete(child.id);
-                //             this.removedContent.set(child.id, child);
-                //         }
-                //     });
-                // }
-
                 if (newComponent["~remove"]) {
                     if (!isCustom) {
                         if (existingComponent && existingComponent.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
@@ -188,13 +177,11 @@ export default class ContentStoreFull extends BaseContentStore {
                             }
                         }
                         else {
-                            //removeChildren(newComponent.id, existingComponent.className);
                             this.flatContent.delete(newComponent.id);
                             this.removedContent.set(newComponent.id, existingComponent);
                         }
                     }
                     else {
-                        //removeChildren(newComponent.id, existingComponent.className, true);
                         this.replacedContent.delete(newComponent.id);
                         this.removedCustomComponents.set(newComponent.id, existingComponent);
                     }
@@ -214,10 +201,12 @@ export default class ContentStoreFull extends BaseContentStore {
             if (!existingComponent) {
                 if (!isCustom) {
                     if (newComponent["~remove"] !== 'true' && newComponent["~remove"] !== true && newComponent["~destroy"] !== 'true' && newComponent["~destroy"] !== true) {
+                        // Update parent id to match the artificial component of the frame toolbar
                         if (newComponent.className === COMPONENT_CLASSNAMES.TOOLBAR && !newComponent.parent?.includes("TBP")) {
                             newComponent.parent = newComponent.parent + "-frame-toolbar";
                         }
 
+                        // If the component was just created by the designer (dragged component in from menu) set designerNew to true
                         if (this.designer?.isVisible && newComponent.name.startsWith('new_') && (newComponent.constraints === "West" || newComponent.constraints === null)) {
                             newComponent.designerNew = true;
                         }
@@ -241,7 +230,7 @@ export default class ContentStoreFull extends BaseContentStore {
                 }
             }
 
-                        /** Add parent of newComponent to notifyList */
+            /** Add parent of newComponent to notifyList */
             if (
                 newComponent.parent || 
                 newComponent["~remove"] || 
@@ -364,16 +353,20 @@ export default class ContentStoreFull extends BaseContentStore {
         }
 
         if (className) {
+            // If it is a toolbarpanel only use the two artificial panels tbMain and tbCenter
             if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                 children = new Map([...children].filter(entry => entry[0].includes("-tb")));
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                // Main helper panel, only use the toolbar components (with additional)
                 children = new Map([...children].filter(entry => entry[1]["~additional"]));
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                // center helper only use the panel
                 children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
             }
             else if (className === COMPONENT_CLASSNAMES.MOBILELAUNCHER || className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
+                // components for mobile launcher
                 children = new Map([...children].filter(entry => !entry[1]["~additional"]));
             }
         }
@@ -402,16 +395,20 @@ export default class ContentStoreFull extends BaseContentStore {
         }
 
         if (className) {
+            // If it is a toolbarpanel only use the two artificial panels tbMain and tbCenter
             if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                 children = new Map([...children].filter(entry => entry[0].includes("-tb")));
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                // Main helper panel, only use the toolbar components (with additional)
                 children = new Map([...children].filter(entry => entry[1]["~additional"]));
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                // center helper only use the panel
                 children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
             }
             else if (className === COMPONENT_CLASSNAMES.MOBILELAUNCHER || className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) {
+                // components for mobile launcher
                 children = new Map([...children].filter(entry => !entry[1]["~additional"]));
             }
         }
@@ -421,6 +418,7 @@ export default class ContentStoreFull extends BaseContentStore {
     /**
     * Returns the component id of a screen for a component
     * @param id - the id of the component
+    * @param dataProvider - the dataprovider
     * @returns the component id of a screen for a component
     */
     getScreenName(id: string, dataProvider?:string) {

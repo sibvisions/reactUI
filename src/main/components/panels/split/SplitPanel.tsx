@@ -134,15 +134,6 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
             const firstDom = firstRef.current.getBoundingClientRect();
             const secondDom = secondRef.current.getBoundingClientRect();
 
-            // clearTimeout(timer.current);
-            // timer.current = setTimeout(() => {
-            //     if (props.onResize) {
-            //         props.onResize(
-            //             { width: firstDom.width, height: firstDom.height },
-            //             { width: secondDom.width, height: secondDom.height }
-            //         )
-            //     }
-            // }, 50)
             props.onResize(
                 { width: firstDom.width, height: firstDom.height },
                 { width: secondDom.width, height: secondDom.height }

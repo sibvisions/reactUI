@@ -67,11 +67,13 @@ export interface DraggablePanel extends DraggableComponent {
     layoutType: LAYOUTS
 }
 
+/** Enum for Drag Action */
 export enum DRAG_ACTION {
     MOVE = 0,
     RESIZE = 1
 }
 
+/** Type for GhostComponent */
 export type GhostComponentType = {
     createGhostComponent: (event: React.DragEvent<HTMLElement>, element: HTMLElement, action: DRAG_ACTION) => void,
     resizeGhostComponent: (delta: ResizeDelta, resizeStartPosition: RESIZE_START_POSITION|null) => void,
@@ -79,8 +81,10 @@ export type GhostComponentType = {
     removeGhostComponent: () => void
 }
 
+/** Type for ResizeDelta */
 export type ResizeDelta = { deltaX: number, deltaY:number }|number|null
 
+/** Interface for LayoutAssistant */
 export interface LayoutAssistant {
     layoutInfo: FormLayoutInformation | BorderLayoutInformation | FlowLayoutInformation | GridLayoutInformation | NullLayoutInformation,
     handleResizeDragStart:(component: IBaseComponent, resizeStartPosition: RESIZE_START_POSITION|null) => void,
@@ -97,6 +101,7 @@ export interface LayoutAssistant {
     removeOriginalConstraintsFromOldParent:(component: IBaseComponent, designer: Designer) => void
 }
 
+/** Interface for FormLayoutAssistant */
 export interface FormLayoutAssistant extends LayoutAssistant {
     layoutInfo: FormLayoutInformation,
     originalAbsoluteAnchorPositions: Map<string, number>,
@@ -176,18 +181,18 @@ export interface FormLayoutAssistant extends LayoutAssistant {
 }
 
 
-
+/** Interface for BorderLayoutAssistant */
 export interface BorderLayoutAssistant extends LayoutAssistant {
     layoutInfo: BorderLayoutInformation,
     getUsedConstraints:(original: boolean) => string[],
     getDraggingDelta:(resizeStartPosition: RESIZE_START_POSITION|null, relativePosition: Coordinates, originalElement: HTMLElement) => number|null,
 }
-
+/** Interface for FlowLayoutAssistant */
 export interface FlowLayoutAssistant extends LayoutAssistant {
     getDraggingDelta:(resizeStartPosition: RESIZE_START_POSITION|null, relativePosition: Coordinates, originalElement: HTMLElement) => ResizeDelta|null
     layoutInfo: FlowLayoutInformation,
 }
-
+/** Interface for GridLayoutAssistant */
 export interface GridLayoutAssistant extends LayoutAssistant {
     layoutInfo: GridLayoutInformation,
     getCoveredAreas:(gridX: number, gridY: number, gridWidth: number, gridHeight: number) => string[],
@@ -195,6 +200,7 @@ export interface GridLayoutAssistant extends LayoutAssistant {
     getNewGridConstraints:(relativePosition: Coordinates, constraints: string, usedAreas: string[]) => string|null
 }
 
+/** Interface for NullLayoutAssistant */
 export interface NullLayoutAssistant extends LayoutAssistant {
     layoutInfo: NullLayoutInformation,
 }

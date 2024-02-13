@@ -389,6 +389,7 @@ export function setPrimeReactLocale() {
      locale('custom');
 }
 
+/** Sets the date locale */
 export function setDateLocale(locale: string) {
     const splitLocale = locale.split('_')[0];
 
@@ -411,7 +412,7 @@ export function setDateLocale(locale: string) {
     } 
 }
 
-// Returns the globalLocale
+/** Returns the globalLocale */ 
 export function getDateLocale(locale: string) {
     const splitLocale = locale.split('_')[0];
 

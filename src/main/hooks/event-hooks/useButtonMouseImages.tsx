@@ -19,7 +19,7 @@ import { appContext } from "../../contexts/AppProvider";
 import useEventHandler from "./useEventHandler";
 
 /**
- * Returns true if the ico is a FontAwesome icon
+ * Returns true if the icon is a FontAwesome icon
  * @param iconName - the name of the icon
  */
 export const isFAIcon = (iconName?:string) => {

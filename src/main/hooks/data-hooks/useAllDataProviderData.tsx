@@ -19,6 +19,7 @@ import { getScreensData } from "../../util/data-util/GetDataProvidersOfComp";
 
 /**
  * This hook returns the current data of all dataproviders of a component as Map
+ * This is mostly used for components like the tree which have multiple dataBooks!
  * @param screenName - the name of the screen
  * @param dataBooks - the databooks of the component
  * @returns the current data of all dataproviders of a component as Map
@@ -34,7 +35,7 @@ const useAllDataProviderData = (screenName:string, dataBooks?:string[]): Map<str
      * @returns unsubscribes from screenDataChange
      */
     useEffect(() => {
-        /** sets the state */
+        /** gets the data from the contentStore and sets the state */
         const onScreenDataChange = () => {
             const a = getScreensData(context.contentStore.getScreenDataproviderMap(screenName), dataBooks)
             setDataMap(new Map(a));

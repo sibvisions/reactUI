@@ -29,8 +29,6 @@ const useDesignerUpdates = (type:string) => {
     
     useEffect(() => {
         const updateFunc = () => setDesignerUpdate(prevState => prevState === undefined ? prevState = true : !prevState);
-
-        // TODO: type enum and add useDesignerUpdates in BaseComponent with function to get correct enum value
         switch (type) {
             case "std-menu":
                 context.designerSubscriptions.subscribeToStdHeader(updateFunc);

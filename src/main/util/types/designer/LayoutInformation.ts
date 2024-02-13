@@ -46,6 +46,7 @@ export type AnchorPair = {
     bottomRightAnchor: Anchor 
 }
 
+/** Interface for LayoutInformation */
 export interface LayoutInformation {
     id: string,
     name: string,
@@ -57,7 +58,7 @@ export interface LayoutInformation {
     layoutType: LAYOUTS;
 }
 
-/** Type for FormLayoutInformations */
+/** Interface for FormLayoutInformations */
 export interface FormLayoutInformation extends LayoutInformation {
     layoutData: string,
     horizontalGap: number,
@@ -73,15 +74,18 @@ export interface FormLayoutInformation extends LayoutInformation {
     anchors: Map<string, Anchor>
 }
 
+/** Interface for BorderLayoutInformation */
 export interface BorderLayoutInformation extends LayoutInformation {
     currentSize: Dimension|null
 }
 
+/** Interface for FlowLayoutInformation */
 export interface FlowLayoutInformation extends LayoutInformation {
     orientation: ORIENTATION,
     autoWrap: boolean
 }
 
+/** Interface for GridLayoutInformation */
 export interface GridLayoutInformation extends LayoutInformation {
     gridSize: GridSize,
     currentSize: Dimension|null,
@@ -89,6 +93,7 @@ export interface GridLayoutInformation extends LayoutInformation {
     rowSize: number
 }
 
+/** Interface for NullLayoutInformation */
 export interface NullLayoutInformation extends LayoutInformation {
     
 }

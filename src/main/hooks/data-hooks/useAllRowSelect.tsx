@@ -19,6 +19,7 @@ import { getScreenSelectedRows } from "../../util/data-util/GetDataProvidersOfCo
 
 /**
  * This hook returns every currently selected Row of all dataproviders of a component as Map
+ * This is mostly used for components like the tree which have multiple dataBooks!
  * @param screenName - the name of the screen
  * @param dataBooks - the databooks of the component
  * @returns  every currently selected Row of all dataproviders of a component as Map
@@ -32,6 +33,7 @@ const useAllRowSelect = (screenName:string, dataBooks?:string[]) => {
 
     // Subscribes to ScreenRowChange
     useEffect(() => {
+        /** gets the data from the contentStore and sets the state */
         const onScreenSelectedRowChange = () => {
             const a = getScreenSelectedRows(context.contentStore.getScreenDataproviderMap(screenName), dataBooks);
             setSelectedRowMap(new Map(a));

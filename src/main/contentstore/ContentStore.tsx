@@ -42,6 +42,7 @@ export default class ContentStore extends BaseContentStore {
     /** Server instance */
     server: Server = new Server(this, this.subManager, this.appSettings, this.history);
 
+    /** VisionX Designer instance */
     designer: Designer|null = null;
 
     /** A Map which stores the menugroup as key and an array of the menu-item objects usable by PrimeReact as values */
@@ -53,6 +54,7 @@ export default class ContentStore extends BaseContentStore {
     /** The current logged in user */
     currentUser: UserData = new UserData();
 
+    /** Messages which are currently being displayed */
     openMessages: Array<{ id: string, fn: Function }> = [];
 
     /** A cache for the dialog-buttons to know which component-id to send to the server */
@@ -81,6 +83,7 @@ export default class ContentStore extends BaseContentStore {
      */
     setActiveScreen(screenInfo?:ActiveScreen, popup?:boolean) {
         if (screenInfo) {
+            // popups are always getting pushed and don't replace the activescreens
             if (popup) {
                 const popupScreen:ActiveScreen = {...screenInfo};
                 popupScreen.popup = true 
@@ -97,10 +100,12 @@ export default class ContentStore extends BaseContentStore {
                     }
                 }
                 
+                // If the first opened screen is a popup and another screen is opened, but it in the first slot of activeScreens
                 if (this.activeScreens[0] && this.activeScreens[0].popup) {
                     this.activeScreens.unshift(screenInfo);
                 }
                 else {
+                    // When a new active screen gets set, add the current one to inactiveScreens, in case it needs to be removed later
                     if (this.activeScreens.length && !this.inactiveScreens.includes(this.activeScreens[0].name)) {
                         this.inactiveScreens.push(this.activeScreens[0].name);
                     }
@@ -120,6 +125,7 @@ export default class ContentStore extends BaseContentStore {
      * Updates a components properties when the server sends new properties
      * @param existingComp - the existing component already in contentstore
      * @param newComp - the new component of changedcomponents
+     * @param notifyList - a list of component-names to notify them, that their children changed
      */
     updateExistingComponent(existingComp:IBaseComponent|undefined, newComp:IBaseComponent, notifyList: string[]) {
         if (existingComp) {
@@ -139,10 +145,12 @@ export default class ContentStore extends BaseContentStore {
                     }
                 }
 
+                // notify the parent that the children changed
                 if (newPropName === "parent" && existingComp[newPropName] !== newComp[newPropName]) {
                     this.addToNotifyList(existingComp, notifyList);
                 }
                 
+                /** update the screen title */
                 if (newPropName === "screen_title_") {
                     this.topbarTitle = newProp;
                     const foundActiveScreen = this.activeScreens.find(as => as.id === existingComp.id);
@@ -152,9 +160,10 @@ export default class ContentStore extends BaseContentStore {
                     this.subManager.emitActiveScreens();
                 }
 
-                // @ts-ignore
+                // @ts-ignore update properties
                 existingComp[newPropName] = newComp[newPropName];
 
+                // When the VisionX Designer is active and the selectedComponent is being updated, update the designers selectedComponent aswell
                 if (this.designer && this.designer.selectedComponent?.component.id === existingComp.id) {
                     this.designer.setSelectedComponent({...this.designer.selectedComponent, component: existingComp});
                 }
@@ -173,6 +182,7 @@ export default class ContentStore extends BaseContentStore {
      * Sets or updates flatContent, removedContent, replacedContent, updates properties and notifies subscriber
      * that either a popup should be displayed, properties changed, or their parent changed, based on server sent components
      * @param componentsToUpdate - an array of components sent by the server
+     * @param desktop - true, if the changes happpen to the desktoppanel
      */
     updateContent(componentsToUpdate: Array<IBaseComponent>, desktop:boolean) {
         /** An array of all parents which need to be notified */
@@ -225,25 +235,8 @@ export default class ContentStore extends BaseContentStore {
                     }
                 }
 
-                // const removeChildren = (id: string, className: string, isCustom?:boolean) => {
-                //     const children = this.getChildren(id, className);
-                //     children.forEach(child => {
-                //         removeChildren(child.id, child.className);
-                //         if (isCustom) {
-                //             this.replacedContent.delete(newComponent.id);
-                //             this.removedCustomComponents.set(child.id, child);
-                //         }
-                //         else {
-                //             this.flatContent.delete(child.id);
-                //             this.removedContent.set(child.id, child);
-                //         }
-                        
-                //     });
-                // }
-
                 if (newComponent["~remove"]) {
                     if (!isCustom) {
-                        //removeChildren(newComponent.id, existingComponent.className);
                         if (desktop) {
                             this.desktopContent.delete(newComponent.id);
                             this.removedDesktopContent.set(newComponent.id, existingComponent);
@@ -255,7 +248,6 @@ export default class ContentStore extends BaseContentStore {
                         }
                     }
                     else {
-                        //removeChildren(newComponent.id, existingComponent.className, true);
                         this.replacedContent.delete(newComponent.id);
                         this.removedCustomComponents.set(newComponent.id, existingComponent);
                     }
@@ -314,6 +306,7 @@ export default class ContentStore extends BaseContentStore {
                             this.desktopContent.set(newComponent.id, newComponent);
                         }
                         else {
+                            // If the component was just created by the designer (dragged component in from menu) set designerNew to true
                             if (this.designer?.isVisible && newComponent.name.startsWith('new_') && (newComponent.constraints === "West" || newComponent.constraints === null)) {
                                 newComponent.designerNew = true;
                             }
@@ -322,6 +315,7 @@ export default class ContentStore extends BaseContentStore {
                         }
                     }
 
+                    // If VisionX designer is active, update the selectedComponent if it is the same id
                     if (this.designer && this.designer.selectedComponent && this.designer.selectedComponent.component.name === newComponent.name) {
                         this.designer.setSelectedComponent({...this.designer.selectedComponent, component: newComponent});
                     }
@@ -394,6 +388,7 @@ export default class ContentStore extends BaseContentStore {
     /**
      * Returns all visible children of a parent, if tabsetpanel also return invisible
      * @param id - the id of the component
+     * @param className - the classname of the component
      */
     getChildren(id: string, className?: string): Map<string, IBaseComponent> {
         let children = new Map<string, IBaseComponent>();
@@ -417,13 +412,16 @@ export default class ContentStore extends BaseContentStore {
         }
 
         if (className) {
+            // If it is a toolbarpanel only use the two artificial panels tbMain and tbCenter
             if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                 children = new Map([...children].filter(entry => entry[0].includes("-tb")));
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                // Main helper panel, only use the toolbar components (with additional)
                 children = new Map([...children].filter(entry => entry[1]["~additional"]));
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                // center helper only use the panel
                 children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
             }
         }
@@ -453,12 +451,15 @@ export default class ContentStore extends BaseContentStore {
 
         if (className) {
             if (className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+                // If it is a toolbarpanel only use the two artificial panels tbMain and tbCenter
                 children = new Map([...children].filter(entry => entry[0].includes("-tb")));
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN) {
+                // Main helper panel, only use the toolbar components (with additional)
                 children = new Map([...children].filter(entry => entry[1]["~additional"]));
             }
             else if (className === COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER) {
+                // center helper only use the panel
                 children = new Map([...children].filter(entry => !entry[1]["~additional"] && !entry[0].includes("-tb")));
             }
         }

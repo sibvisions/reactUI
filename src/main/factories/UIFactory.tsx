@@ -21,7 +21,6 @@ import UIIcon from "../components/icon/UIIcon";
 import UIChart from "../components/chart/UIChart";
 import UIGauge from "../components/gauge/UIGauge";
 import UICustomComponentWrapper, { ICustomComponentWrapper } from '../components/custom-comp/UICustomComponentWrapper';
-import UITree from "../components/tree/UITree";
 import UIDesktopPanel from "../components/panels/desktopPanel/UIDesktopPanel";
 import UIToolBarPanel from "../components/panels/toolbarPanel/UIToolBarPanel";
 import UIToolBarHelper from "../components/panels/toolbarPanel/UIToolBarHelper";
@@ -71,6 +70,11 @@ export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props)
     return <UICustomComponentWrapper {...props} component={props.component} key={props.id}/>
 }
 
+/**
+ * Returns an UIMessage component as popup
+ * @param props - properties for the message component
+ * @returns an UIMessage component as popup
+ */
 export const createUIMessage: FC<DialogResponse> = (props) => {
     return <UIMessage key={props.componentId} {...props} />
 }
@@ -102,7 +106,8 @@ const Editor = (props: any) => {
         else if (props.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {
             return <UIEditorLinked {...props} />
         }
-        else{
+        else {
+            // Returns the dummy if none is eligable
             return <Dummy {...props} />
         }
     } 
@@ -113,7 +118,7 @@ const Editor = (props: any) => {
 }
 
 /**
- * Decides which CellEditor should be used
+ * Returns the editor element
  * @param props - properties sent by the server
  */
 export function createEditor(props: IRCCellEditor) {
@@ -134,7 +139,7 @@ const maybePopup = (element: JSX.Element) => {
     }
 }
 
-
+/** A Map where the keys are the classNames of the components and the values are functions to render those components */
 const baseComponentMap = new Map<string, React.ComponentType<any>>()
 .set(COMPONENT_CLASSNAMES.SPLITPANEL, props => <UISplitPanel {...props} />)
 .set(COMPONENT_CLASSNAMES.BUTTON, props => <UIButton {...props} />)
@@ -162,6 +167,7 @@ const baseComponentMap = new Map<string, React.ComponentType<any>>()
 .set(COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN, props => <UIToolBarHelper {...props} />)
 .set(COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, props => <UIToolBarHelper {...props} />)
 
+/** Components of partial transfertype */
 const componentsMap = new Map<string, React.ComponentType<any>>([...baseComponentMap])
 .set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
 .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanel {...props} />)
@@ -171,6 +177,7 @@ const componentsMap = new Map<string, React.ComponentType<any>>([...baseComponen
 .set(COMPONENT_CLASSNAMES.TABSETPANEL, props => <UITabsetPanel {...props} />)
 
 
+/** Components of full transfertype */
 const componentsMapV2 = new Map<string, React.ComponentType<any>>([...baseComponentMap])
 .set(COMPONENT_CLASSNAMES.PANEL, props => <UIPanel {...props} />)
 .set(COMPONENT_CLASSNAMES.DESKTOPPANEL, props => <UIDesktopPanelFull {...props} />)
@@ -189,6 +196,7 @@ const componentsMapV2 = new Map<string, React.ComponentType<any>>([...baseCompon
 export const componentHandler = (baseComponent: IBaseComponent, contentStore:BaseContentStore) => {
     let Comp:Function|undefined;
 
+    // In case a name starts with a dot or hashtag, remove it, because this leads to problems with dom selection
     if (baseComponent.name && (baseComponent.name.startsWith(".") || baseComponent.name.startsWith("#"))) {
         baseComponent.name = baseComponent.name.substring(1);
     }
@@ -201,6 +209,7 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
         return createCustomComponentWrapper({...baseComponent, component: <BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp /></BaseComponent>, isGlobal: true})
     }
     else {
+        // className = CustomContainer use the eventSourceRef instead, get the function to render the component
         if (baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_CONTAINER || baseComponent.className === COMPONENT_CLASSNAMES.CUSTOM_COMPONENT) {
             Comp = contentStore.appSettings.transferType === "full" ? componentsMapV2.get(baseComponent.classNameEventSourceRef as string) : componentsMap.get(baseComponent.classNameEventSourceRef as string);
         }
@@ -209,6 +218,7 @@ export const componentHandler = (baseComponent: IBaseComponent, contentStore:Bas
         }
         
         if (Comp) {
+            // The component to render gets wrapped with the BaseComponent which executes hooks, functions, which all components have to execute.
             if (contentStore.appSettings.transferType !== "full") {
                 //@ts-ignore
                 return maybePopup(<BaseComponent key={baseComponent.id + "-wrapper"} {...baseComponent}><Comp key={baseComponent.id} /></BaseComponent>);

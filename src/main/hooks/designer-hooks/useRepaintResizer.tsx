@@ -15,6 +15,12 @@
 import { CSSProperties, useContext, useEffect } from "react";
 import { appContext, isDesignerVisible } from "../../contexts/AppProvider";
 
+/**
+ * Repaints the designers resizer elements of the selectedComponent incase the position changes
+ * @param name - the name of the component
+ * @param layoutStyle - the current layoutStyle of the component
+ * @param ref - the element reference of the component
+ */
 const useRepaintResizer = (name: string, layoutStyle: CSSProperties|undefined, ref: any) => {
     const context = useContext(appContext)
 

@@ -26,18 +26,22 @@ const useResponsiveBreakpoints = (elRef:HTMLElement, breakPoints:number[], menuC
     /** Current value of the size of the ref */
     const [breakSize, setBreakSize] = useState(breakPoints[0]);
 
+    /** True, when the hook has initialised */
     const [initialise, setInitialise] = useState(false);
 
-    const testRef = useRef<any>(null);
+    /** A Timeout to set the breakpoints */
+    const timeoutRef = useRef<any>(null);
 
+    // Initialise the hook and trigger a rerender
     useEffect(() => {
         if (elRef !== null && !initialise) {
             setInitialise(true)
         }
     }, [elRef]);
 
+    /** Creates the observer instance */
     const observer = useMemo(() => {
-        clearTimeout(testRef.current);
+        clearTimeout(timeoutRef.current);
         /** Returns the nearest break point */
         const findBreakPoint = (width:number):number => {
             if (elRef && elRef.classList.contains("collapsed")) {
@@ -50,7 +54,7 @@ const useResponsiveBreakpoints = (elRef:HTMLElement, breakPoints:number[], menuC
         }
 
         return new ResizeObserver(entries => {
-            testRef.current = setTimeout(() => {
+            timeoutRef.current = setTimeout(() => {
                 /** Get the current width */
                 const { width } = entries[0].contentRect;
                 setBreakSize(findBreakPoint(width + 1))

@@ -15,6 +15,7 @@
 
 import DataProviderRequest from "./DataProviderRequest";
 
+/** Interface for width requests */
 interface WidthRequest extends DataProviderRequest {
     columnName?: string,
     width?: number

@@ -31,6 +31,7 @@ const useDataProviders = (screenName:string) => {
     // Subscribes to the dataproviders of a screen
     useEffect(() => {
         const onDataProviderChange = () => {
+            // Uses the keys of the map to return the names of the dataproviders
             if (context.contentStore.getScreenDataproviderMap(screenName)) {
                 setDataProviders(Array.from(context.contentStore.getScreenDataproviderMap(screenName)!.keys() as IterableIterator<string>))
             }

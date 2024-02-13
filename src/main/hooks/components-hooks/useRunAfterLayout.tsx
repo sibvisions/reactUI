@@ -15,7 +15,7 @@
 
 import { useLayoutEffect, useRef } from "react";
 
-//Calls a function after layouting
+/** Calls a function after layouting */
 export function useRunAfterLayout() {
     let torun = useRef<Function[]>([]);
     

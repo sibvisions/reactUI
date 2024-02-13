@@ -26,6 +26,7 @@ import { LengthBasedColumnDescription, NumericColumnDescription } from "../../re
  */
 const useOutsideClick = (ref: any, setEdit: Function, metaData: NumericColumnDescription|LengthBasedColumnDescription|undefined) => {
     useEffect(() => {
+        // This checks if the click was outside to stop editing or close panels
         const handleClickOutside = (event: any) => {
             if (ref.current 
                 && !ref.current.contains(event.target) 

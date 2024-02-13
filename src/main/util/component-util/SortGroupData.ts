@@ -15,6 +15,13 @@
 
 import { LatLngExpression } from "leaflet";
 
+/**
+ * Returns the latitude and longitude value of a given point
+ * @param point - the point to check
+ * @param latColName - the latitude columnName in the databook
+ * @param lngColName - the longitude columnName in the databook
+ * @returns 
+ */
 export function getLatAndLngValue(point: any, latColName: string|undefined, lngColName: string|undefined) {
     const latValue = latColName ? point[latColName] : point.LATITUDE;
     const lat:number = typeof latValue === "string" && !isNaN(parseFloat(latValue)) ? parseFloat(latValue) : latValue;

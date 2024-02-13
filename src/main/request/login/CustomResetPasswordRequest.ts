@@ -15,6 +15,7 @@
 
 import ResetPasswordRequest from "./ResetPasswordRequest";
 
+/** Interface for custom-reset-password requests */
 interface CustomResetPasswordRequest extends ResetPasswordRequest {
     [key:string]: any;
 }

@@ -16,7 +16,7 @@
 import { useMemo } from "react";
 
 /**
- * Returns the component constants which almost every component uses
+ * Returns the split up classNames which are being sent by the server in the "style" property
  * @param baseProps - the baseproperties a component receives from the server
  * @param fb - the fallback value for styles
  */

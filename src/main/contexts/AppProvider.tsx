@@ -49,6 +49,10 @@ export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull):
     return (contentStore as ContentStore).menuItems !== undefined;
 }
 
+/**
+ * Returns true, if the designer is currently visible
+ * @param designer - the designer instance or null
+ */
 export function isDesignerVisible(designer: Designer|null) {
     if (designer) {
         return designer.isVisible;
@@ -85,25 +89,27 @@ export type AppContextType = {
 
 /** Contentstore instance */
 const contentStore = new ContentStore();
+
 /** SubscriptionManager instance */
 const subscriptions = new SubscriptionManager(contentStore);
+
 /** DesignerSubscriptionManager instance */
 const designerSubscriptions = new DesignerSubscriptionManager(contentStore);
+
 /** AppSettings instance */
 const appSettings = new AppSettings(contentStore, subscriptions);
+
 /** Server instance */
 const server = new Server(contentStore, subscriptions, appSettings);
+
 /** API instance */
 const api = new API(server, contentStore, appSettings, subscriptions);
 
 contentStore.setSubscriptionManager(subscriptions);
 contentStore.setServer(server);
 contentStore.setAppSettings(appSettings)
-
 server.setAPI(api);
-
 subscriptions.setAppSettings(appSettings);
-
 subscriptions.setServer(server);
 
 /** Initial value for state */
@@ -123,10 +129,7 @@ const initValue: AppContextType = {
 /** Context containing the server and contentstore */
 export const appContext = createContext<AppContextType>(initValue)
 
-/**
- * This component provides the appContext to its children
- * @param children - the children
- */
+/** This component provides the appContext to its children */
 const AppProvider: FC<ICustomContent> = (props) => {
     /** History of react-router-dom */
     const history = useHistory();
@@ -154,7 +157,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
     /** Flag if the websocket is connected */
     const wsIsConnected = useRef<boolean>(false);
 
-    /** Reference for the relauncharguments sent by the server */
+    /** Reference for the relaunchArguments sent by the server */
     const relaunchArguments = useRef<any>(null);
 
     /** Current State of the context */
@@ -163,25 +166,20 @@ const AppProvider: FC<ICustomContent> = (props) => {
     /** Flag to retrigger Startup if session expires */
     const [restart, setRestart] = useState<boolean>(false);
 
+    /** State if session is expired */
     const [sessionExpired, setSessionExpired] = useState<boolean>(false);
 
+    /** Reference for the interval at which alive requests are being sent */
     const aliveInterval = useRef<any>();
 
-    // useLayoutEffect(() => {
-    //     addCSSDynamically('color-schemes/default.css', "schemeCSS", () => {});
-    //     addCSSDynamically('themes/basti.css', "themeCSS", () => {});
-    // }, [])
-
     /**
-     * Subscribes to session-expired notification and app-ready
-     * @returns unsubscribes from session and app-ready
+     * Subscribes to session-expired, app-ready and restart
+     * @returns unsubscribes from session, app-ready and restart
      */
      useEffect(() => {
         contextState.subscriptions.subscribeToAppReady((ready:boolean) => setContextState(prevState => ({ ...prevState, appReady: ready })));
         contextState.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
         contextState.subscriptions.subscribeToSessionExpired((sessionExpired:boolean) => setSessionExpired(sessionExpired));
-
-
 
         return () => {
             contextState.subscriptions.unsubscribeFromAppReady();
@@ -190,6 +188,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
     },[contextState.subscriptions]);
 
+    /** When the session expires, clear the alive interval so no more alive intervals are being sent */
     useEffect(() => {
         if (sessionExpired) {
             clearInterval(aliveInterval.current);
@@ -244,11 +243,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
             }, 5000);
             reconnectInterval.stop();
 
+            /** Connects the websocket to the server */
             const connectWs = () => {
                 return new Promise<void>((resolve) => {
                     console.log('connecting WebSocket')
                     const urlSubstr = baseURL.substring(baseURL.indexOf("//") + 2, baseURL.indexOf(searchPathToSet));
     
+                    // create the websocket and connect to this url, wss secure, ws unsecure + searchPath + clientId + reconnect if needed
                     ws.current = new WebSocket((baseURL.substring(0, baseURL.indexOf("//")).includes("https") ? "wss://" : "ws://") + urlSubstr + "/pushlistener?clientId=" + encodeURIComponent(getClientId())
                     + (isReconnect.current ? "&reconnect" : ""));
                     ws.current.onopen = () => {
@@ -256,14 +257,17 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         resolve();
                     };
                     ws.current.onclose = (event) => {
+                        // Stop sending ping and alive on ws close
                         pingInterval.stop();
                         clearInterval(aliveInterval.current);
                         if (event.code === 1000) {
+                            // no reconnect
                             wsIsConnected.current = false;
                             console.log("WebSocket has been closed.");
                             resolve();
                         }
                         else if (event.code !== 1008) {
+                            // reconnecting
                             isReconnect.current = true;
                             wsIsConnected.current = false;
                             console.log("WebSocket has been closed, reconnecting in 5 seconds.");
@@ -272,12 +276,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                 reconnectActive = true;
                             }
                             
+                            // stop after 5 retries
                             if (index > 5 && reconnectActive) {
                                 reconnectInterval.stop();
                                 reconnectActive = false;
                             }
-                            
-                            // setTimeout(() => connectWs(), 3000);
                         }
                         else {
                             if (event.code === 1008) {
@@ -305,6 +308,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                             reader.onloadend = () => { 
                                 let jscmd = JSON.parse(String(reader.result)); 
                     
+                                // Reset the application
                                 if (jscmd.command === "dyn:relaunch") {
                                     contextState.contentStore.reset();
                                     relaunchArguments.current = jscmd.arguments;
@@ -320,6 +324,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                     sessionStorage.clear();
                                 }
                                 else if (jscmd.command === "api/reopenScreen") {
+                                    // reopen the current screen
                                     if (!isDesignerVisible(contextState.designer)) {
                                         const openReq = createOpenScreenRequest();
                                         openReq.className = jscmd.arguments.className;
@@ -327,9 +332,11 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                     }
                                 }
                                 else if (jscmd.command === "dyn:reloadCss") {
+                                    //reload the css
                                     contextState.subscriptions.emitAppCssVersion(jscmd.arguments.version);
                                 }
                                 else if (jscmd.command === "api/menu") {
+                                    // reload the menu
                                     const menuReq = createBaseRequest();
                                     showTopBar(contextState.server.sendRequest(menuReq, REQUEST_KEYWORDS.MENU), contextState.server.topbar);
                                 }
@@ -338,10 +345,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         }
                         else {
                             if (e.data === "api/changes") {
+                                // send a changes request
                                 contextState.server.sendRequest(createChangesRequest(), REQUEST_KEYWORDS.CHANGES);
                             }
                             else if (e.data === "OK" && !wsIsConnected.current) {
                                 if (isReconnect.current) {
+                                    // Reconnect success
                                     isReconnect.current = false;
                                     console.log("WebSocket reconnected.");
                                     if (reconnectActive) {
@@ -355,11 +364,13 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                     wsIsConnected.current = true;
                                 }
                                 else {
+                                    // connection success
                                     console.log("WebSocket opened.");
                                     wsIsConnected.current = true;
                                 }
             
                                 if (contextState.server.wsPingInterval > 0) {
+                                    // start pinging
                                     pingInterval.start();
                                 }
                             }
@@ -376,14 +387,17 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 (req as StartupRequest).arguments = restartArgs;
                 relaunchArguments.current = null;
             }
+            // Send a ui refresh if the session should be preserved
             contextState.server.sendRequest(req, (preserve && !restartArgs) ? REQUEST_KEYWORDS.UI_REFRESH : REQUEST_KEYWORDS.STARTUP)
             .then(result => {
                 if (result !== null) {
+                    // sets startup property from the app ready properties to true
                     contextState.appSettings.setAppReadyParam("startup");
                     if (!preserve) {
                         sessionStorage.setItem("startup", JSON.stringify(result));
                     }
     
+                    // Creates an interval to send alive requests to the server
                     if (contextState.server.aliveInterval >= 0) {
                         aliveInterval.current = setInterval(() => {
                             if ((Math.ceil(Date.now() / 1000) - Math.ceil(contextState.server.lastRequestTimeStamp / 1000)) >= Math.floor(contextState.server.aliveInterval / 1000))  {
@@ -394,10 +408,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         }, contextState.server.aliveInterval)
                     }
     
+                    // initialises the WebSocket
                     if (([RESPONSE_NAMES.SESSION_EXPIRED, RESPONSE_NAMES.ERROR] as string[]).indexOf((result[0] as BaseResponse).name) === -1) {
                         initWS(contextState.server.BASE_URL);
                     }
                     
+                    // Calls function of onStartup if declared by a lib user
                     if (props.onStartup) {
                         props.onStartup();
                     }
@@ -411,6 +427,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             return new Promise<any>((resolve, reject) => {
                 fetch('assets/config/app.json').then((r) => r.json())
                 .then((data) => {
+                    // Set various parameters which could be entered in the app.json
                     if (data.appName) {
                         startUpRequest.applicationName = data.appName
                     }
@@ -450,15 +467,18 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         autoRestartSession = true;
                     }
 
+                    // if this is set to true, the css-designer will be enabled
                     if (data.useDesigner === true) {
                         contextState.appSettings.showDesigner = true;
                     }
 
+                    // if this is set to true, the visionx-designer will be enabled
                     if (data.useUIDesigner === true && props.enableDesigner) {
                         contextState.appSettings.showUIDesigner = props.enableDesigner
                         
                     }
 
+                    // url where the css files are being uploaded
                     if (data.designerUploadUrl) {
                         designerUrlToSet = data.designerUploadUrl;
                     }
@@ -567,6 +587,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             let appName;
             let baseUrl;
 
+            // Convert either out of URL Parameters or from passed properties
             if (options instanceof URLSearchParams) {
                 convertedOptions = new Map(options);
             }
@@ -645,6 +666,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 schemeToSet = props.colorScheme;
             }
 
+            // load the set colorscheme into dom
             if (schemeToSet) {
                 contextState.appSettings.setApplicationColorSchemeByURL(schemeToSet);
                 addCSSDynamically('color-schemes/' + schemeToSet + '.css', "schemeCSS", () => contextState.appSettings.setAppReadyParam("schemeCSS"));
@@ -659,6 +681,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 themeToSet = props.theme;
             }
 
+            // load the set theme into dom
             if (themeToSet) {
                 contextState.appSettings.setApplicationThemeByURL(themeToSet);
                 addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"));
@@ -718,6 +741,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         const afterConfigFetch = () => {
             checkExtraOptions(props.embedOptions ? props.embedOptions : urlParams);
             if (contextState.transferType === "full") {
+                // Creates new ContentStore and Server instances for full transferType. Other instances need to be set again to have current ones
                 contextState.contentStore = new ContentStoreFull(history);
                 contextState.contentStore.setSubscriptionManager(contextState.subscriptions);
                 contextState.contentStore.setAppSettings(contextState.appSettings);
@@ -751,6 +775,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
 
                 contextState.server.autoRestartOnSessionExpired = autoRestartSession;
                 
+                // open the screen which is being entered into the url, eg. when reloading
                 if (history.location.pathname.includes("/screens/")) {
                     contextState.server.linkOpen = history.location.pathname.replaceAll("/", "").substring(indexOfEnd(history.location.pathname, "screens") - 1);
                 }
@@ -811,6 +836,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         contextState.server.RESOURCE_URL = contextState.server.BASE_URL + "/resource/" + response.applicationName;
                     }
 
+                    // Load css files into dom
                     if (response.applicationColorScheme && !schemeToSet) {
                         addCSSDynamically('color-schemes/' + response.applicationColorScheme + '.css', "schemeCSS", () => {});
                     }
@@ -819,9 +845,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => {});
                     }
                 });
+                // if not preserve send exit for old application
                 if (!preserveOnReload) {
                     contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
-                }                
+                }
                 sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload);
             } 
             else {
@@ -835,6 +862,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             .catch(() => afterConfigFetch())
         }
         else {
+            // Build the correct baseURL in production if the url has a specific structure
             if (process.env.NODE_ENV === "production") {
                 const splitURLPath = window.location.pathname.split("/");
 
@@ -859,6 +887,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
     }, [restart]);
 
+    // When the designer gets toggled on, keep instances up to date
     useEffect(() => {
         if (contextState.designer) {
             contextState.designer.contentStore = contextState.contentStore;
@@ -867,6 +896,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
         }
     }, [contextState.designer, contextState.contentStore, contextState.server, restart]);
 
+    // Global eventlistener to listen to control presses
     useEventHandler(document.body, "keydown", (event) => (event as any).key === "Control" ? contextState.ctrlPressed = true : undefined);
 
     useEventHandler(document.body, "keyup", (event) => (event as any).key === "Control" ? contextState.ctrlPressed = false : undefined);

@@ -47,6 +47,7 @@ export function getPrimePrefix(numberFormat:string, value:any, locale: string, u
     if (count - valueLength >= 1) {
         let string = "";
         let j = 2;
+        // add leading zeros and grouping if needed
         for (let i = 0; i < count - valueLength; i++) {
             string += "0";
             if (useGrouping) {
@@ -64,6 +65,10 @@ export function getPrimePrefix(numberFormat:string, value:any, locale: string, u
     return "";
 }
 
+/**
+ * Returns the minimum and maximum scale digits based on the numberFormat. The maximum scale is 20
+ * @param numberFormat - the number format
+ */
 export function getDisplayScaleDigits(numberFormat:string) {
     const splitString = numberFormat.includes('.') ? numberFormat.split('.')[1] : undefined;
     if (splitString) {
@@ -87,6 +92,13 @@ export function getWriteScaleDigits(numberFormat:string, scale:number) {
     return scale === 0 ? { minScale: 0, maxScale: 0 } : scale === -1 ? {minScale: count, maxScale: 20} : {minScale: count, maxScale: scale < count ? count : scale}
 }
 
+/**
+ * Returns a formatted number using the Intl.NumberFormat.format function
+ * @param numberFormat - the number format
+ * @param locale - the locale as string
+ * @param value - the value to format
+ * @param scale - the scale
+ */
 export function formatNumber(numberFormat: string, locale: string, value: any, scale:number) {
     return Intl.NumberFormat(locale,
         {

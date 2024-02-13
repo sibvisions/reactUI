@@ -19,12 +19,15 @@ import { DeviceStatus } from "../../response/event/DeviceStatusResponse";
 
 /**
  * Returns the current devicestatus of the application
+ * @param sigpad - true, if the caller of this hook is a signaturepad
  */
 const useDeviceStatus = (sigpad?:boolean) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
+
     /** Current state of the loaded translation */
     const [deviceStatus, setDeviceStatus] = useState<DeviceStatus|boolean>(sigpad ? false : context.appSettings.deviceStatus);
+    
     /** Last value of deviceStatus to prevent unnecassary state updates */
     const lastDeviceStatus = useRef<DeviceStatus>(context.appSettings.deviceStatus);
 

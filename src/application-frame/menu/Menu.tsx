@@ -498,25 +498,39 @@ const Menu: FC<IMenu> = (props) => {
                                 expandedKeys={expandedKeys} 
                                 //@ts-ignore
                                 onExpandedKeysChange={e => {
-                                // Find out which item has just been expanded
-                                let newExpandedItem = {...e};
-                                Object.keys(newExpandedItem).forEach(key => {
-                                    if (Object.keys(expandedKeys).includes(key)) {
-                                        delete newExpandedItem[key];
+                                const newExpandedItemsLength = Object.keys(e).length;
+                                const oldExpandedItemsLength = Object.keys(expandedKeys).length;
+                                if (newExpandedItemsLength > oldExpandedItemsLength) {
+                                    // Find out which item has just been expanded
+                                    let newExpandedItem = {...e};
+                                    Object.keys(newExpandedItem).forEach(key => {
+                                        if (Object.keys(expandedKeys).includes(key)) {
+                                            delete newExpandedItem[key];
+                                        }
+                                    });
+                                    const newExpandedKeys = Object.keys(newExpandedItem);
+                                    const expandedKeysToSet:any = {};
+                                    // If we've found exactly 1 item that has been expanded, check the which parents are needed to be extended
+                                    // and add them to the expandedKeys object.
+                                    if (newExpandedKeys.length === 1) {
+                                        const splitKeys = newExpandedKeys[0].split("/");
+                                        splitKeys.forEach((key, i) => {
+                                            if (splitKeys.slice(0, i + 1).join("/") !== "undefined") {
+                                                expandedKeysToSet[splitKeys.slice(0, i + 1).join("/")] = true
+                                            }
+                                            
+                                        })
                                     }
-                                });
-                                const newExpandedKeys = Object.keys(newExpandedItem);
-                                const expandedKeysToSet:any = {};
-                                // If we've found exactly 1 item that has been expanded, check the which parents are needed to be extended
-                                // and add them to the expandedKeys object.
-                                if (newExpandedKeys.length === 1) {
-                                    const splitKeys = newExpandedKeys[0].split("/");
-                                    splitKeys.forEach((key, i) => {
-                                        expandedKeysToSet[splitKeys.slice(0, i + 1).join("/")] = true
-                                    })
+                                    // Only set the expandedKeys if there is something to set, to prevent unneccesairy collapsing and expanding
+                                    if (Object.keys(expandedKeysToSet).length) {
+                                        setExpandedKeys(expandedKeysToSet);
+                                    }
+                                    
                                 }
-                                
-                                setExpandedKeys(expandedKeysToSet);
+                                else {
+                                    setExpandedKeys(e);
+                                }
+
                             }} />
                             {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}
                         </div>

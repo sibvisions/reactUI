@@ -20,6 +20,7 @@ import { componentHandler, createCustomComponentWrapper } from "../../factories/
 import IBaseComponent from "../../util/types/IBaseComponent";
 import Dimension from "../../util/types/Dimension";
 
+/** Type for componentSizes which includes prefSize, minSize and maxSize */
 export type ComponentSizes = {
     preferredSize: Dimension,
     minimumSize: Dimension,
@@ -27,15 +28,15 @@ export type ComponentSizes = {
 }
 
 /**
- * A hook which returns the state of a parents rendered Childcomponents and their preferred size 
+ * A hook which returns the children, their render-ready ReactElements and their sizes of a parent
  * @param id - the id of the component
- * @returns a layouts rendered Childcomponents and their preferred size
+ * @param className - the className of the component
  */
 const useComponents = (id: string, className:string): [Array<IBaseComponent>, Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
 
-    /** A cache for componentsizes before preferredSizes is being set */
+    /** A cache for componentSizes before preferredSizes is being set */
     const tempSizes = useRef<Map<string, ComponentSizes>>(new Map<string, ComponentSizes>())
 
     /** Use context to gain access for contentstore and server methods */
@@ -44,6 +45,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
     /** A reference map of which components have already been added */
     const componentsChildren = useRef<Map<string, Array<string>>>(new Map<string, Array<string>>());
 
+    /** True, if the components (children) of a parent have changed */
     const componentsChanged = useRef<boolean>(false);
 
     
@@ -64,37 +66,29 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
             componentsChanged.current = false;
         }
         
+        // An array which holds the React Elements of the children
         const reactChildrenArray: Array<any> = [];
 
         /**
-         * This function gets called when onLoadcallback of a component is called, if all components of a parents are loaded,
-         * set the preferredSizes, if the components change update the current preferredSizes.
+         * Returns true, if a components size has changed in comparison to it's old size
          * @param compSizes - the old compSizes
          * @param newPref - the preferred size of the component
          * @param newMin - the minimum size of the component
          * @param newMax - the maximum size of the component
          */
-        const sizesChanged = (compId: string, compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {
+        const sizesChanged = (compSizes:ComponentSizes|undefined, newPref:Dimension, newMin:Dimension, newMax:Dimension) => {
             if (compSizes) {
-                //if (context.contentStore.getComponentById(compId)?.className !== COMPONENT_CLASSNAMES.LABEL) {
-                    if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
-                        return false;
-                    }
-                //}
-                // else {
-                //     if (compSizes.preferredSize.height === newPref.height) {
-                //         // Label text was probably empty and now it's not empty anymore
-                //         if (compSizes.preferredSize.width === 0 && newPref.width !== 0) {
-                //             return true;
-                //         }
-                //         return false;
-                //     }
-                // }
+                if (_.isEqual(compSizes.preferredSize, newPref) && _.isEqual(compSizes.minimumSize, newMin) && _.isEqual(compSizes.maximumSize, newMax)) {
+                    return false;
+                }
             }
             return true;
         }
 
-        // Returns true, if the children have changed from before 
+        /** 
+         * Returns true, if the children have changed from before 
+         * @param compId - the component id of the component to check 
+         */ 
         const childrenChanged = (compId:string) => {
             const arraysEqual = (a:string[], b:string[]) => {
                 let aClone = [...a];
@@ -127,6 +121,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
         /** Callback which gets called by each component in sendOnLoadCallBack */
         const componentHasLoaded = (compId: string, prefSize:Dimension, minSize:Dimension, maxSize:Dimension) => {
             const children = context.contentStore.getChildren(id, className);
+            // Check if there are still components in tempsizes which are no longer children of the component
             tempSizes.current.forEach((val, key) => {
                 if (!children.has(key)) {
                     tempSizes.current.delete(key);
@@ -146,7 +141,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
             const allowPreferredSizeChange = () => {
                 if (context.contentStore.getComponentById(compId)) {
                     if ((tempSizes.current.size === children.size || id.includes('TP')) && 
-                        (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) 
+                        (sizesChanged(preferredComp, prefSize, minSize, maxSize) 
                         || childrenChanged(compId) 
                         || componentsChanged.current 
                         || (tempSizeBefore === children.size - 1 && tempSizeAfter === children.size)
@@ -163,16 +158,8 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
                 componentsChanged.current = false;
             }
                 
-            //Set Preferred Sizes of changed Components
-            // if(preferredSizes && preferredSizes.has(compId)) {
-            //     const preferredComp = preferredSizes.get(compId);
-            //     if (preferredComp && (preferredSizes.size === children.size) && (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) || childrenChanged(compId))) {
-            //         preferredComp.preferredSize = prefSize;
-            //         preferredComp.minimumSize = minSize;
-            //         preferredComp.maximumSize = maxSize;
-            //         setPreferredSizes(new Map(preferredSizes));
-            //     }
-            // }
+
+            // Update the reference of componentsChildren, to know in later instances if there are children that have changed
             if (context.contentStore.componentChildren.get(compId)) {
                 componentsChildren.current.set(compId, Array.from(context.contentStore.componentChildren.get(compId) as Set<string>));
             }
@@ -187,11 +174,13 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
         /** Create the reactchildren */
         children.forEach(child => {
             let reactChild;
+            // pass the componentHasLoaded function to the children, so that they can report their size
             child.onLoadCallback = componentHasLoaded;
             if (!context.contentStore.customComponents.has(child.name)) {
                 if (id.includes("popup")) {
                     context.subscriptions.propertiesSubscriber.get(child.id)?.apply(undefined, [child]);
                 }
+                // Create the ReactElements which are ready to be rendered
                 reactChild = componentHandler(child, context.contentStore);
             }
             /** If it is a custom component, put the custom component in the CustomComponentWrapper */
@@ -211,6 +200,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
     /** Current state of a parents Childcomponents as reactchildren */
     const [components, setComponents] = useState<Array<ReactElement>>([]);
 
+    /** Initially build the components and set the state */
     useEffect(() => {
         setComponents(buildComponents())
     }, [])

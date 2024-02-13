@@ -40,6 +40,10 @@ export function getMetaData<T extends string|undefined, U extends "numeric"|unde
     return undefined
 }
 
+/**
+ * Returns the primaryKey columns as array based on the metadata
+ * @param metaData - the metadata
+ */
 export function getPrimaryKeys(metaData: MetaDataResponse|undefined): string[] {
     if (metaData) {
         if (metaData.primaryKeyColumns) {

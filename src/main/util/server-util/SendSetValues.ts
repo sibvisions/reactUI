@@ -27,6 +27,10 @@ import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
  * @param columnName - the column name
  * @param value - current value of component to send
  * @param server - the server instance
+ * @param topbar - the topbar to show the progress
+ * @param rowIndex - the rowindex
+ * @param selectedIndex - the index of the selected row
+ * @param filter - the filter for selecting a row
  */
 export async function sendSetValues(
     dataProvider: string,
@@ -55,6 +59,7 @@ export async function sendSetValues(
         tempValues = Object.values(value);
     }
 
+    // If there is a row to send and the row is not the currently selected row, add the filter
     if (rowIndex !== undefined) {
         if (selectedIndex !== undefined && rowIndex !== selectedIndex) {
             req.filter = filter

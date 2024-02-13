@@ -16,7 +16,7 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Adds an event-handler to the target, also handles cleanup
+ * Adds an event-handler to the target, also handles cleanup for multiple elements
  * @param targets - the element the event should be added to
  * @param event - the event
  * @param handler - the function which should be executed

@@ -13,7 +13,6 @@
  * the License.
  */
 
-import ComponentResponse from "../ComponentResponse"
 import MessageResponse from "../ui/MessageResponse"
 
 

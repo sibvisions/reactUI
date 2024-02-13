@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { CSSProperties, useEffect, useLayoutEffect } from "react";
+import { CSSProperties, useLayoutEffect } from "react";
 import LoadCallBack from "../../util/types/LoadCallBack";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 

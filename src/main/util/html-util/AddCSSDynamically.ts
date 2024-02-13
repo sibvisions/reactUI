@@ -51,23 +51,6 @@ export function addCSSDynamically(path:string, type:"applicationCSS"|"schemeCSS"
         document.head.appendChild(link);
     }
 
-    //var img = document.createElement('img');
-    //document.body.appendChild(img);
-
-    //img.onerror = img.onload = function() {
-        //Timeout so css has time to load before components register
-        // setTimeout(() => {
-        //     img.onerror = img.onload = null;
-        //     document.body.removeChild(img);
-        //     appReadyCallback(type);
-        // }, 500)
-        // img.onerror = img.onload = null;
-        // document.body.removeChild(img);
-        // appReadyCallback(type)
-    //};
-
-    //img.src = path
-
     link.onload = () => {
         var img = document.createElement('img');
         document.body.appendChild(img);
@@ -79,7 +62,6 @@ export function addCSSDynamically(path:string, type:"applicationCSS"|"schemeCSS"
         };
 
         img.src = path
-        //appReadyCallback(type)
     };
 
     link.addEventListener("error", (e) => {

@@ -13,10 +13,12 @@
  * the License.
  */
 
+/** Interface for the RecordFormats */
 export interface RecordFormat {
     [k: string]: RecordFormatEntry;
 }
 
+/** Interface for a single RecordFormat Entry */
 export interface RecordFormatEntry {
     format: string[];
     records: number[][];
