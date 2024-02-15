@@ -159,7 +159,7 @@ export class DesignerSubscriptionManager {
     }
 
     /**
-     * Subscribes a component to designer standard-menu-width changes
+     * Subscribes a component to designer standard-menu-collpased-width changes
      * @param fn - the function to update the state
      */
      subscribeToStdMenuCollapsedWidth(fn: Function) {
@@ -167,14 +167,14 @@ export class DesignerSubscriptionManager {
     }
 
     /** 
-     * Unsubscribes a component from designer standard-menu-width changes
+     * Unsubscribes a component from designer standard-menu-collpased-width changes
      * @param fn - the function which should be unsubscribed
      */
     unsubscribeFromStdMenuCollapsedWidth(fn: Function) {
         this.stdMenuCollapsedWidthSubscriber.splice(this.stdMenuCollapsedWidthSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
-    /** Notifies the subscribed components that the standard-menu-width has changed */
+    /** Notifies the subscribed components that the standard-menu-collpased-width has changed */
     notifyStdMenuCollapsedWidthChanged() {
         this.stdMenuCollapsedWidthSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
     }
@@ -251,14 +251,14 @@ export class DesignerSubscriptionManager {
     }
 
     /** 
-     * Unsubscribes a component from designer button-padding changes
+     * Unsubscribes a component from designer button-background changes
      * @param fn - the function which should be unsubscribed
      */
     unsubscribeFromButtonBackground(fn:Function) {
         this.buttonBackgroundSubscriber.splice(this.buttonBackgroundSubscriber.findIndex(subFunction => subFunction === fn), 1);
     }
 
-    /** Notifies the subscribed components that the button-padding has changed */
+    /** Notifies the subscribed components that the button-background has changed */
     notifyButtonBackgroundChanged() {
         this.buttonBackgroundSubscriber.forEach(subFunction => subFunction.apply(undefined, []));
     }
@@ -512,6 +512,7 @@ export class DesignerSubscriptionManager {
         this.menuBarHeightSubscriber.forEach(subFunction => subFunction.apply(undefined, []))
     }
 
+    /** Notifies all subscribers of all properties, that there have been changes, incase of reset */
     notifyAll() {
         this.notifyButtonBackgroundChanged();
         this.notifyButtonPaddingChanged();

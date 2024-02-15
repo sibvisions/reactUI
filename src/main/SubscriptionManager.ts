@@ -61,7 +61,7 @@ export class SubscriptionManager {
 
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the 
-     * useRowSelect hook, subscribe to the changes of a screens dataproviders selectedRow, the key is the screens screen name and the
+     * useRowSelect hook, to the changes of a screens dataproviders selectedRow, the key is the screens screen name and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers selectedRow state
      */
@@ -75,7 +75,7 @@ export class SubscriptionManager {
 
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
-     * useDataProviderData hook, subscribe to the changes of a screens dataproviders data, the key is the screens screen name and the
+     * useDataProviderData hook, to the changes of a screens dataproviders data, the key is the screens screen name and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers data state
      */
@@ -83,7 +83,7 @@ export class SubscriptionManager {
 
     /**
      * A Map which stores another Map of dataproviders of a screen, it subscribes the components which use the
-     * useMetadata hook, subscribe to the changes of a screens dataproviders metadata, the key is the screens screen name and the
+     * useMetadata hook, to the changes of a screens dataproviders metadata, the key is the screens screen name and the
      * value is another Map which key is the dataprovider and the value is an array of functions to update the
      * subscribers metadata state
      */
@@ -112,10 +112,16 @@ export class SubscriptionManager {
      */
     treeSubscriber = new Map<string, Array<Function>>();
 
+    /**
+     * A Map which stores another Map of dataproviders of a screen, it subscribes LinkedCellEditors, to the changes of the displayMap, the key is the screens screen name and the
+     * value is another Map which key is the dataprovider and the value is an array of functions to update a flag to rerender the displayMap
+     */
     linkedDisplayMapSubscriber = new Map<string, Map<string, Array<Function>>>();
 
+    /** A Map which keys are the id of the tree and the values are functions to notify the tree that data updated in the databook */
     treeDataChangedSubscriber = new Map<string, Function>();
 
+    /** A Map which keys are the id of the tree and the values are functions to notify the tree that the selected rows changed in the databook */
     treeSelectionChangedSubscriber = new Map<string, Function>();
 
     /** An array of functions to update the menuitem states of its subscribers */
@@ -192,10 +198,13 @@ export class SubscriptionManager {
     /** A function to update the mfa-url-component to its properties */
     mFAURLSubscriber:Map<string, Function> = new Map<string, Function>();
 
+    /** A Function which notifies the subscriber which appReadyParameter are true and which are not */
     appReadyParamsSubscriber: Function = () => {};
 
+    /** A mao which keys are the id of menubuttons and the values are functions to update a state flag in the menubutton, to update the menubuttons menu */
     menuButtonItemsSubscriber:Map<string, Function> = new Map<string, Function>();
 
+    /** A function to set the upload dialog visible and set the fileId, to send the correct file id to the server */
     uploadDialogSubscriber: Function = () => {};
 
     /**
@@ -326,7 +335,7 @@ export class SubscriptionManager {
     }
 
     /**
-     * Subscribes components which to datadisplaymap, to update their map
+     * Subscribes components which use a datadisplaymap, to update their map
      * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
@@ -391,10 +400,20 @@ export class SubscriptionManager {
             this.treeSubscriber.set(masterDataBook, new Array<Function>(fn));
     }
 
+    /**
+     * Subscribes a tree, to update their tree nodes if data changes in the tree's databooks
+     * @param id - the id of the tree
+     * @param fn - the function to update the state
+     */
     subscribeToTreeDataChange(id:string, fn:Function) {
         this.treeDataChangedSubscriber.set(id, fn);
     }
 
+    /**
+     * Subscribes a tree, to update their tree nodes to selected row changes in the tree's databooks
+     * @param id - the id of the tree
+     * @param fn - the function to update the state
+     */
     subscribeToTreeSelectionChange(id:string, fn:Function) {
         this.treeSelectionChangedSubscriber.set(id, fn);
     }
@@ -525,6 +544,7 @@ export class SubscriptionManager {
 
     /**
      * Subscribes to theme
+     * @param id - the id of the subscriber
      * @param fn - the function to update the state
      */
     subscribeToTheme(id:string, fn:Function) {
@@ -541,6 +561,7 @@ export class SubscriptionManager {
 
     /**
      * Subscribes to mfa-wait-properties
+     * @param name - the id of the subscriber
      * @param fn - the function to update the state
      */
     subscribeToMFAWait(name: string, fn:Function) {
@@ -555,6 +576,10 @@ export class SubscriptionManager {
         this.mFAURLSubscriber.set(name, fn);
     }
 
+    /**
+     * Subscribes the Loading-Screen to the app-ready parameters, to display the parameters which are not ready yet if debug flag is true
+     * @param fn - the function to update the state
+     */
     subscribeToAppReadyParams(fn: Function) {
         this.appReadyParamsSubscriber = fn;
     }
@@ -575,10 +600,19 @@ export class SubscriptionManager {
         this.sessionExpiredSubscriber.push(fn);
     }
 
+    /**
+     * Subscribes the menubutton components to changes to their menu, to update their menu
+     * @param key - the key of the menubutton
+     * @param fn - the function to update the menu
+     */
     subscribeToMenuButtonItems(key: string, fn: Function) {
         this.menuButtonItemsSubscriber.set(key, fn);
     }
 
+    /** 
+     * Subscribes the UploadDialog, to know if it is visible and which fileId to use
+     * @param fn - the function to update the state
+     */
     subscribeToUploadDialog(fn: Function) {
         this.uploadDialogSubscriber = fn;
     }
@@ -613,7 +647,7 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscibes components from dataChange
+     * Unsubscibes components from metadata
      * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
@@ -623,7 +657,7 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscibes components from dataChange
+     * Unsubscibes components from displaymapchanges
      * @param screenName - the screen name of the screen
      * @param dataProvider - the dataprovider
      * @param fn - the function to update the data state
@@ -675,7 +709,7 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribes a component from screen-name changes
+     * Unsubscribes a component from screen-title changes
      * @param id - the screen name
      */
     unsubscribeFromScreenTitle() {
@@ -700,10 +734,18 @@ export class SubscriptionManager {
             subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
     }
 
+    /**
+     * Unsubscribes the tree from it's changed data
+     * @param id - the id of the tree
+     */
     unsubscribeFromTreeDataChange(id:string) {
         this.treeDataChangedSubscriber.delete(id);
     }
 
+    /**
+     * Unsubscribes the tree from it's selected row changes
+     * @param id - the id of the tree
+     */
     unsubscribeFromTreeSelectionChange(id:string) {
         this.treeSelectionChangedSubscriber.delete(id);
     }
@@ -737,12 +779,13 @@ export class SubscriptionManager {
     }
 
     /**
-     * Unsubscribe change-password dialog from visible
+     * Unsubscribe message dialog dialog from visible
      */
      unsubscribeFromMessageDialogProps() {
         this.messageDialogPropsSubscriber = () => {};
     }
 
+    /** Unsubscribes from error dialog props */
     unsubscribeFromErrorDialogProps() {
         this.errorDialogPropsSubscriber = () => {};
     }
@@ -857,6 +900,10 @@ export class SubscriptionManager {
         this.loginActiveSubscriber = () => {};
     }
 
+    /**
+     * Unsubscribes the menubutton from it's menu changes
+     * @param key - the id of the menubutton
+     */
     unsubscribeFromMenuButtonItems(key:string) {
         this.menuButtonItemsSubscriber.delete(key)
     }
@@ -926,6 +973,10 @@ export class SubscriptionManager {
         this.screenTitleSubscriber.apply(undefined, [screenTitle])
     }
 
+    /**
+     * Notifies the subscribers that their tabtitle changed
+     * @param tabTitle - the new tabtitle
+     */
     notifyTabTitleChanged(tabTitle:string) {
         this.tabTitleSubscriber.forEach(subFunction => subFunction.apply(undefined, [tabTitle]));
     }
@@ -938,6 +989,12 @@ export class SubscriptionManager {
         this.treeSubscriber.get(masterDataBook)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
+    /**
+     * Notifies the subscribers that the data changed
+     * @param dataBook - the databook which was changed
+     * @param data - the data which was changed
+     * @param pageKeyHelper - the pageKeyHelper to find the correct nodes to edit
+     */
     notifyTreeDataChanged(dataBook:string, data: any, pageKeyHelper:string) {
         this.treeDataChangedSubscriber.forEach((v, k) => {
             const splitDataBooks = k.split("_");
@@ -947,6 +1004,11 @@ export class SubscriptionManager {
         });
     }
 
+    /**
+     * Notifies the subscribers that the selected row changed
+     * @param dataBook - the databook where the selected row was changed
+     * @param selectedRow - the new selected row
+     */
     notifyTreeSelectionChanged(dataBook:string, selectedRow: ISelectedRow|undefined) {
         this.treeSelectionChangedSubscriber.forEach((v, k) => {
             const splitDataBooks = k.split("_");
@@ -957,22 +1019,31 @@ export class SubscriptionManager {
     }
 
     /**
-     * Notifies every subscribed component of given screenName and dataProvider
-     * @param screenName 
-     * @param dataProvider 
+     * Notifies every subscribed component of given screenName and dataProvider that the sortdefinition changed
+     * @param screenName - the screen name 
+     * @param dataProvider - the dataprovider name
      */
     notifySortDefinitionChange(screenName:string, dataProvider:string) {
         this.sortDefinitionSubscriber.get(screenName)?.get(dataProvider)?.forEach(subFunction => subFunction.apply(undefined, []));
     }
 
+    /** Notifies the loading-screen about the status of the appready parameters */
     notifyAppReadyParamsChange() {
         this.appReadyParamsSubscriber.apply(undefined, [this.appSettings.appReadyParams])
     }
 
+    /**
+     * Notifies the menubutton that the menu has changed
+     * @param id - the id of the menubutton to notify
+     */
     notifyMenuButtonItemsChange(id: string) {
         this.menuButtonItemsSubscriber.get(id)?.apply(undefined, []);
     }
 
+    /**
+     * Notifies the UploadDialog to be visible and the fileid to send to the server
+     * @param fileId 
+     */
     notifyUploadDialog(fileId: string) {
         this.uploadDialogSubscriber.apply(undefined, [fileId])
     }
@@ -1040,6 +1111,10 @@ export class SubscriptionManager {
         this.errorBarPropertiesSubscriber.apply(undefined, [header, body, sessionExpired, priority, gone, retryFunc, dontShowRestart]);
     }
 
+    /**
+     * Notify the error dialog to be visible and about the errors to display
+     * @param errData - the error data sent by the server
+     */
     emitErrorDialogProperties(errData: ErrorResponse) {
         this.errorDialogPropsSubscriber(errData)
     }
@@ -1063,6 +1138,7 @@ export class SubscriptionManager {
         this.toolbarSubscriber.forEach((subFunc) => subFunc.apply(undefined, [(this.contentStore as ContentStore).toolbarItems]));
     }
 
+    /** Tell the restart subscriber to restart the application */
     emitRestart() {
         this.restartSubscriber.forEach((subFunc) => subFunc.apply(undefined, []));
     }
@@ -1144,10 +1220,15 @@ export class SubscriptionManager {
         this.mFAURLSubscriber.forEach((subFunc) => subFunc.apply(undefined, [link, timeout, timeoutReset]));
     }
 
+    /** Notify the subscriber that a login-request is currently active */
     emitLoginActive(isActive:boolean) {
         this.loginActiveSubscriber.apply(undefined, [isActive])
     }
 
+    /**
+     * Notify the session expired subscribers, that the session is currently expired or not
+     * @param sessionExpired - true, if the session is currently expired
+     */
     emitSessionExpiredChanged(sessionExpired:boolean) {
         this.sessionExpiredSubscriber.forEach(subFunc => subFunc.apply(undefined, [sessionExpired]));
     }

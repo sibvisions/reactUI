@@ -50,7 +50,6 @@ import { translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
 import IBaseComponent from "../util/types/IBaseComponent";
 import DispatchActionRequest from "../request/events/DispatchActionRequest";
-import { DesignerComponentGroup } from "../util/types/designer/DesignerComponents";
 import { isDesignerVisible } from "../contexts/AppProvider";
 import DesignerComponentsResponse from "../response/designer/DesignerComponentsResponse";
 import newCreatedComponentResponse from "../response/designer/NewCreatedComponentResponse";
@@ -276,6 +275,7 @@ class Server extends BaseServer {
     /**
      * Calls the correct functions based on the responses received and then calls the routing decider
      * @param responses - the responses received
+     * @param request - the request that led to this response
      */
     async responseHandler(responses: Array<BaseResponse>, request: any) {
         if (Array.isArray(responses)) {       
@@ -354,11 +354,13 @@ class Server extends BaseServer {
             }
         }
 
+        // Title for the tab of the browser
         if (appParams.Application_title_web) {
             this.contentStore.tabTitle = appParams.Application_title_web;
             this.subManager.notifyTabTitleChanged(appParams.Application_title_web);
         }
 
+        // Title for the screen in the topbar of the menu
         if (appParams.Application_title_name) {
             this.contentStore.topbarTitle = appParams.Application_title_name;
             this.subManager.notifyScreenTitleChanged(appParams.Application_title_name); 
@@ -383,7 +385,7 @@ class Server extends BaseServer {
     }
 
     /**
-     * Resets the contentStore
+     * sets the login, properties, opens MFA id needed, sets the users username and resets the contentStore
      * @param login - the loginDataResponse
      */
     login(login: LoginResponse){
@@ -455,7 +457,6 @@ class Server extends BaseServer {
     
                             if (workScreen.screen_title_) {
                                 this.contentStore.topbarTitle = workScreen.screen_title_;
-                                //this.subManager.notifyScreenTitleChanged(workScreen.screen_title_);
                             }
                             this.contentStore.setActiveScreen({ 
                                 name: genericData.componentId, 
@@ -465,9 +466,6 @@ class Server extends BaseServer {
                                 navigationName: workScreen.screen_navigationName_
                             }, workScreen ? workScreen.screen_modal_ : false);
         
-                            // if (workScreen.screen_modal_ && this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2] && this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name)) {
-                            //     this.contentStore.dataBooks.set(workScreen.name, this.contentStore.getScreenDataproviderMap(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 2].name) as Map<string, IDataBook>);
-                            // }
                         }
                     }
                     this.onOpenScreenFunction();
@@ -523,12 +521,6 @@ class Server extends BaseServer {
             }
         }
 
-        // for (let entry of this.contentStore.removedContent.entries()) {
-        //     if (entry[1].contentParentName === closeScreenData.componentId) {
-        //         this.contentStore.cleanUp(entry[1].id, entry[1].name, entry[1].className, true);
-        //         this.contentStore.flatContent.delete(entry[1].id + "-popup");
-        //     }
-        // }
         // If there have been more than two screens opened in the application, remember the last closed screen
         if (this.contentStore.screenHistory.length > 1) {
             const screen = this.contentStore.screenHistory[this.contentStore.screenHistory.length - 2];
@@ -574,15 +566,8 @@ class Server extends BaseServer {
     /**
      * Returns the current screen-name
      * @param dataProvider 
-     * @returns 
      */
     getScreenName(dataProvider:string) {
-        // if (this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1]) {
-        //     const activeScreen = this.contentStore.getComponentByName(this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name);
-        //     if (activeScreen && (activeScreen as IPanel).content_modal_ !== true) {
-        //         return this.contentStore.activeScreens[this.contentStore.activeScreens.length - 1].name;
-        //     }
-        // }
         if (dataProvider) {
             const splitDataProvider = dataProvider.split("/");
             return splitDataProvider[1]
@@ -793,14 +778,6 @@ class Server extends BaseServer {
 
             if (workScreen && workScreen.content_modal_) {
                 this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
-                // if (!contentData.update) {
-                //     if(contentData.changedComponents && contentData.changedComponents.length) {
-                //         this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
-                //     }
-                // }
-                // else {
-                //     this.contentStore.setActiveScreen({ name: workScreen.name, id: workScreen ? workScreen.id : "", className: workScreen ? workScreen.content_className_ : "" }, workScreen ? workScreen.content_modal_ : false);
-                // }
             }
         }
     }

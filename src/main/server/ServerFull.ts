@@ -65,6 +65,7 @@ enum REQUEST_ENDPOINTS {
     SET_PARAMETER = "/v2/api/setParameter"
 }
 
+/** Server class sends requests and handles responses. This class is for transferType full mode */
 export default class ServerFull extends BaseServer {
     /**
      * Returns true if the component exists
@@ -147,8 +148,7 @@ export default class ServerFull extends BaseServer {
 
     /**
      * Returns the current screen-name
-     * @param dataProvider 
-     * @returns 
+     * @param dataProvider - the dataprovider
      */
     getScreenName(dataProvider: string): string {
         const splitDataProvider = dataProvider.split("/");
@@ -171,6 +171,10 @@ export default class ServerFull extends BaseServer {
         }
     }
 
+    /**
+     * Handles closing the screen
+     * @param closeScreenData - the closescreen data
+     */
     closeScreen(closeScreenData: CloseScreenResponse): void {
         
     }

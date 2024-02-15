@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import PrimeReact from 'primereact/api';
 import { Route, Switch } from "react-router-dom";
 import UIManager from './application-frame/screen-management/ui-manager/UIManager';
@@ -34,7 +34,9 @@ import UIToast from './main/components/toast/UIToast';
 import ErrorBar from './application-frame/error-bar/ErrorBar';
 import UploadDialog from './application-frame/upload-dialog/UploadDialog';
 
+/** This component is displayed when the application would crash based on a runtime error */
 const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unknown>) => void }> = ({ error, resetErrorBoundary }) => {
+    /** True, if the details of the error should be shown */
     const [showDetails, setShowDetails] = useState<boolean>();
 
     return (
@@ -85,6 +87,7 @@ const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unkn
  * @param props - Custom content, which a user can define when using reactUI as library e.g CustomScreens, CustomComponents, ReplaceScreen
  */
 const ReactUI: FC<ICustomContent> = (props) => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
     
     /** PrimeReact ripple effect */
@@ -99,6 +102,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     /** The state of the tab-title */
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
+    /** A flag to rerender when messages should be displayed */
     const [messageFlag, setMessageFlag] = useState<number>(0);
 
     /** Adds the application.css to the head */
@@ -114,7 +118,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     }, [appCssVersion, restart, context.appSettings]);
 
     /**
-     * Subscribes to app-name, css-version and restart
+     * Subscribes to css-version, restart, the tab title and the messages
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
@@ -131,6 +135,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
         }
     }, [context.subscriptions]);
 
+    /** When the app isn't ready, add a className to the document body */
     useEffect(() => {
         if (!context.appReady && !document.body.classList.contains("is-loading")) {
             document.body.classList.add("is-loading");
@@ -140,6 +145,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
         }
     }, [context.appReady]);
 
+    /** The currently open messages */
     const messages = useMemo(() => {
         if (context.transferType !== "full") {
             return context.contentStore.openMessages.map(message => message.fn.apply(undefined, []));

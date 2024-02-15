@@ -663,7 +663,7 @@ body {
     }
 
     .p-panelmenu-header {
-        > a {
+        a {
             background: var(--std-menu-background);
             border-color: var(--std-menu-background);
             color: var(--std-menu-text-color);
@@ -689,12 +689,18 @@ body {
         }
     }
 
+    .p-panelmenu-header-content {
+        background: var(--std-menu-background);
+        border-color: var(--std-menu-background);
+        color: var(--std-menu-text-color);
+    }
+
     .p-panelmenu-content {
         background: var(--std-menu-background);
 
         .p-menuitem {
             .p-menuitem-link {
-                //background: var(--std-menu-background);
+                background: var(--std-menu-background);
                 .p-menuitem-icon, .p-menuitem-text {
                     color: var(--std-menu-text-color);
                 }

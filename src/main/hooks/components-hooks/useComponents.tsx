@@ -61,7 +61,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
             }
         });
 
-        if (componentsChanged) {
+        if (componentsChanged.current) {
             setPreferredSizes(new Map(tempSizes.current));
             componentsChanged.current = false;
         }

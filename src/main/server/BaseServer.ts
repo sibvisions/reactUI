@@ -48,11 +48,13 @@ import { TopBarContextType, showTopBar } from "../components/topbar/TopBar";
 import IBaseComponent from "../util/types/IBaseComponent";
 import { toPageKey } from "../components/tree/UITreeV2";
 
+/** An enum to know which type of request queue is currently active for the request */
 export enum RequestQueueMode {
     QUEUE = "queue",
     IMMEDIATE = "immediate"
 }
 
+/** Contains functions to handle responses and sendRequest which are used by both transfer modes */
 export default abstract class BaseServer {
     /** Contentstore instance */
     contentStore: BaseContentStore|ContentStore|ContentStoreFull;
@@ -117,25 +119,32 @@ export default abstract class BaseServer {
     /** The navigation-name of a screen if the app was directly launched by a link */
     linkOpen = "";
 
+    /** The URL where the CSS-Files, which are being created bei the CSS-designer, should be uploaded to */
     designerUrl = "";
 
+    /** If true, automatically restart the application on session expired */
     autoRestartOnSessionExpired = false;
 
+    /** True, if the application is currently exiting */
     isExiting = false;
 
+    /** Instance of the topbar (progressbar) */
     topbar: TopBarContextType|undefined;
 
+    /** Possibly open this screen, when another screen is closed or undefined if no screen should be opened. (Screenhistory closing screens -> open screen before) */
     maybeOpenScreen:{ className: string, componentId: string }|undefined = undefined;
 
+    /** A list of screens which haven't yet been closed by the server but are closed client-side. A closeScreen request still needs to be sent to the server. */
     screensToClose:{windowId: string, windowName: string, closeDirectly: boolean|undefined}[] = [];
 
+    /** True, if the home properties should be ignored in the screen generic response */
     ignoreHome = false;
 
+    /** True, if the home button was recently pressed */
     homeButtonPressed = false;
 
+    /** Databooks which need to be deleted because they're in a content which was closed */
     contentDataBooksToDelete: Map<string, string[]> = new Map<string, string[]>();
-
-    timeStart:number|undefined = undefined;
 
     // True if the screen has been opened by history close
     openedByClose = false;
@@ -200,6 +209,7 @@ export default abstract class BaseServer {
      * @param endpoint - the endpoint to send the request to
      * @param waitForOpenRequests - if true the request result waits until all currently open immediate requests are finished as well
      * @param queueMode - controls how the request is dispatched
+     * @param handleResponse - true, if the response should be handled
      *  - RequestQueueMode.QUEUE: default, requests are sent one after another
      *  - RequestQueueMode.IMMEDIATE: request is sent immediately
      */
@@ -230,6 +240,7 @@ export default abstract class BaseServer {
                     let exist = true;
                     request.dataProvider.forEach((dataProvider:string) => {
                         const screenName = this.getScreenName(dataProvider);
+                        // If the dataprovider doesn't exist yet and it is not under the missingdatafetches array. It doesn't exist and the request is not to be sent
                         if (!this.contentStore.dataBooks.get(screenName)?.has(dataProvider) && !this.missingDataFetches.includes(dataProvider)) {
                             exist = false;
                         }
@@ -247,6 +258,7 @@ export default abstract class BaseServer {
                             // Contents are saved under the "main" screen (dataProvider.split("/")[1]) but to check if a content is opened we have to get the name differently.
                             const dataProviderScreenName = this.getScreenName(request.dataProvider);
                             const activeScreenName = request.screenName ? request.screenName : splitDataProvider[splitDataProvider.length - 2];
+                            // Check if the screen is open
                             const screenIsOpen = this.contentStore.activeScreens.some(as => {
                                 const acitveScreenComponent = this.contentStore.getComponentById(as.id);
                                 if (acitveScreenComponent) {
@@ -265,6 +277,7 @@ export default abstract class BaseServer {
                                 return
                             }
         
+                            // If the dataprovider doesn't exist yet and it is not under the missingdatafetches array. It doesn't exist and the request is not to be sent
                             if (!this.contentStore.dataBooks.get(dataProviderScreenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
                                 reject("Dataprovider doesn't exist: " + request.dataProvider);
                                 return
@@ -285,6 +298,7 @@ export default abstract class BaseServer {
             }
 
             if (queueMode === RequestQueueMode.IMMEDIATE) {
+                // There are possibly more than one endpoint because of the different transferTypes, so get the correct one from the endpointmap with the request keyword (endpoint parameter)
                 let finalEndpoint = this.endpointMap.get(endpoint);
 
                 if (endpoint === REQUEST_KEYWORDS.UI_REFRESH) {
@@ -323,15 +337,11 @@ export default abstract class BaseServer {
                     .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
                     .then(result => {
                         if (result.code) {
+                            // If error reject
                             if (400 <= result.code && result.code <= 599) {
                                 return Promise.reject(result.code + " " + result.reasonPhrase + ". " + result.description);
                             }
                         }
-                        result.forEach((result1:any) => {
-                            if (result1.name === "dal.fetch") {
-                                result1['timestamp'] = Date.now();
-                            }
-                        })
                         return result;
                     }, (err) => Promise.reject(err))
                     .then((results) => handleResponse ? this.responseHandler.bind(this)(results, request) : results, (err) => Promise.reject(err))
@@ -345,6 +355,7 @@ export default abstract class BaseServer {
                         resolve(results)
                     }, (err) => Promise.reject(err))
                     .catch(error => {
+                        // Display various possible errors
                         if (typeof error === "string") {
                             const splitErr = error.split(".");
                             const code = error.substring(0, 3);
@@ -379,6 +390,7 @@ export default abstract class BaseServer {
                             this.uiRefreshInProgress = false;
                         }
 
+                        // If there are designerCreatedComponents, the server will now know of them, so we can destroy them
                         if (endpoint === REQUEST_KEYWORDS.SET_LAYOUT) {
                             const componentsToDestroy:IBaseComponent[] = this.contentStore.designerCreatedComponents.map((compName: string) => { return { id: compName, "~destroy": true } as IBaseComponent });
                             this.contentStore.designerCreatedComponents = [];
@@ -446,9 +458,7 @@ export default abstract class BaseServer {
                 this.subManager.emitErrorBarVisible(true);
                 reject(new Error("timeOut"))
             }, ms);
-            if (endpoint === "/api/dal/selectRecord") {
-                this.timeStart = Date.now();
-            }
+
             promise.then(res => {
                     clearTimeout(timeoutId);
                     resolve(res);
@@ -505,6 +515,7 @@ export default abstract class BaseServer {
             });
 
             for (const [, response] of responses.entries()) {
+                // If there is a content add the databook to the array so it will be deleted later
                 if (response.name === RESPONSE_NAMES.DAL_META_DATA && contentId) {
                     const castedResponse = response as MetaDataResponse;
                     if (!this.contentDataBooksToDelete.has(contentId)) {
@@ -551,6 +562,11 @@ export default abstract class BaseServer {
         }
     }
 
+    /**
+     * Returns the current screen-name
+     * @param dataProvider - the dataprovider
+     * @returns 
+     */
     abstract getScreenName(dataProvider:string): string;
 
     /**
@@ -565,6 +581,7 @@ export default abstract class BaseServer {
             /** The data of the row */
             const selectedRow = this.contentStore.getDataRow(screenName, dataProvider, selectedRowIndex);
             if (!selectedRow) {
+                // If there is no selectedRow in the databook, fetch it and set it
                 const dataBook = this.contentStore.dataBooks.get(screenName)?.get(dataProvider);
                 if (dataBook && dataBook.data && dataBook.data.get("current")) {
                     const length = dataBook.data.get("current").length;
@@ -636,6 +653,7 @@ export default abstract class BaseServer {
             }
         }
 
+        /** If some records (cells) are readonly parse the data */
         const readOnlyRecords: Record<string, any>[] = [];
         if (fetchData.recordReadOnly) {
             fetchData.recordReadOnly.records.forEach((readOnlyArray, index) => {
@@ -665,20 +683,34 @@ export default abstract class BaseServer {
         });
     }
 
+    /**
+     * Builds a dataToDisplay Map for LinkedCellEditors, based on the LinkReference and the data
+     * @param screenName - the screenName
+     * @param column - the columnDefinition
+     * @param dataArray - the data
+     * @param dataBook - the databook
+     * @param dataProvider - the dataprovider name
+     */
     buildDataToDisplayMap(screenName:string, column: any, dataArray:any[], dataBook:IDataBook, dataProvider:string) {
         let dataToDisplayMap = new Map<string, string>();
-        const cellEditor = column.cellEditor as ICellEditorLinked
+        const cellEditor = column.cellEditor as ICellEditorLinked;
+        // edit if available
         if (cellEditor.linkReference.dataToDisplayMap) {
             dataToDisplayMap = cellEditor.linkReference.dataToDisplayMap
         }
         let notifyDataMap = false;
+
+        // If there are no columnNames set in the columnNames of linkReference, add the bound columnName
         if (!cellEditor.linkReference.columnNames.length) {
             cellEditor.linkReference.columnNames.push(column.columnName)
         }
+
+        // Get the index for the correct column from the columnNames to find it in the referencedColumnNames
         const index = cellEditor.linkReference.columnNames.findIndex(colName => colName === column.columnName);
         if (dataArray.length && Object.keys(dataArray[0]).includes(cellEditor.linkReference.referencedColumnNames[index])) {
             dataArray.forEach((data) => {
                 if (data) {
+                    // Create the key for the displayMap based on the data of the datarow and the columns of the linkreference
                     const referencedData = getExtractedObject(data, [cellEditor.linkReference.referencedColumnNames[index]]);
                     const keyObj = generateDisplayMapKey(
                         data,
@@ -689,9 +721,11 @@ export default abstract class BaseServer {
                         cellEditor,
                         "build-map"
                     )
+                    // Get the object of the columns which should be displayed from the datarow
                     const columnViewNames = cellEditor.columnView ? cellEditor.columnView.columnNames : dataBook.metaData!.columnView_table_;
                     const columnViewData = getExtractedObject(data, columnViewNames);
                     if (cellEditor.displayReferencedColumnName) {
+                        // If there is a displayReferencedColumnName take the key obj as key and the value is the value of this column of the datarow
                         const extractDisplayRef = getExtractedObject(data, [...cellEditor.linkReference.referencedColumnNames, cellEditor.displayReferencedColumnName]);
                         dataToDisplayMap.set(JSON.stringify(keyObj), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
                         dataToDisplayMap.set(JSON.stringify(referencedData), extractDisplayRef[cellEditor.displayReferencedColumnName as string]);
@@ -705,15 +739,18 @@ export default abstract class BaseServer {
                             // Replacing "*" in case the actual value which needs to be displayed is "*"
                             displayString = cellEditor.displayConcatMask.replaceAll("*", "[asterisk_xyz]")
                             const count = (cellEditor.displayConcatMask.match(/\*/g) || []).length;
+                            // For every "*" in the concatmask append a column from the data of the columnNames
                             for (let i = 0; i < count; i++) {
                                 displayString = displayString.replace('[asterisk_xyz]', columnViewData[columnViewNames[i]] !== undefined ? columnViewData[columnViewNames[i]] : "");
                             }
                         }
                         else {
+                            // If there are no "*" use every column of columnViewNames
                             columnViewNames.forEach((column, i) => {
                                 displayString += columnViewData[column] + (i !== columnViewNames.length - 1 ? cellEditor.displayConcatMask : "");
                             });
                         }
+                        // Set/Update the map and set the notify flag in case the subscribers should be notified
                         if (!dataToDisplayMap.has(JSON.stringify(keyObj)) || dataToDisplayMap.get(JSON.stringify(keyObj)) !== displayString) {
                             if (!notifyDataMap) {
                                 notifyDataMap = true;
@@ -742,7 +779,7 @@ export default abstract class BaseServer {
      * Builds the data and then tells contentStore to update its dataProviderData
      * Also checks if all data of the dataprovider is fetched and sets contentStores dataProviderFetched
      * @param fetchData - the fetchResponse
-     * @param detailMapKey - the referenced key which should be added to the map
+     * @param request - the request which has been sent to receive this fetch response
      */
      processFetch(fetchData: FetchResponse, request: any) {
         const builtData = this.buildDatasets(fetchData);
@@ -759,7 +796,8 @@ export default abstract class BaseServer {
             if (dataBook.isAllFetched === undefined || fetchData.isAllFetched) {
                 dataBook.isAllFetched = fetchData.isAllFetched;
             }
-            
+           
+            // If there are referencedCellEditors (LinkedCellEditors) build the datatodisplay map
             if (dataBook.metaData) {
                 if (dataBook.referencedCellEditors?.length) {
                     dataBook.referencedCellEditors.forEach((column) => {
@@ -828,6 +866,8 @@ export default abstract class BaseServer {
                 );
             }
 
+            // If there are recordFormat changes parse them and set them
+            // Go through the records columns and add the style if there is any
             if (changedProvider.recordFormat) {
                 if (dataBook?.metaData) {
                     const columnNames = dataBook?.metaData.columns.map(col => col.name);
@@ -865,9 +905,10 @@ export default abstract class BaseServer {
                         }
                     }
                 }
-
             }
 
+            // If there are recordReadOnly changes, parse them and set them
+            // Go through a records columns and set the 0 or 1 values if recordReadOnly is true or not
             if (changedProvider.recordReadOnly) {
                 if (dataBook?.metaData) {
                     const columnNames = dataBook?.metaData.columns.map(col => col.name);
@@ -933,6 +974,7 @@ export default abstract class BaseServer {
             }
         }
         
+        // Reload -1 means refetching the databook
         if (changedProvider.reload === -1) {
             if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
                 this.missingDataFetches.push(changedProvider.dataProvider);
@@ -956,6 +998,7 @@ export default abstract class BaseServer {
                 }), this.topbar as TopBarContextType);
         }
         else if (changedProvider.reload !== undefined) {
+            // Reload at a specific number means reload this specific index of the table
             if (!this.contentStore.dataBooks.get(this.getScreenName(changedProvider.dataProvider))?.has(changedProvider.dataProvider) && !this.missingDataFetches.includes(changedProvider.dataProvider)) {
                 this.missingDataFetches.push(changedProvider.dataProvider);
             }
@@ -987,6 +1030,7 @@ export default abstract class BaseServer {
      * @param expData - the sessionExpiredResponse
      */
      sessionExpired(expData: SessionExpiredResponse) {
+        // If uirefresh or autorestart restart the app
         if (this.uiRefreshInProgress || this.autoRestartOnSessionExpired) {
             // if (this.appSettings.transferType !== "full") {
             //     this.history?.push("/login");
@@ -1002,6 +1046,7 @@ export default abstract class BaseServer {
             sessionStorage.clear();
         }
         else {
+            // display error message
             this.subManager.emitErrorBarProperties(true, false, false, 11, translation.get("Session expired!"));
             this.subManager.emitErrorBarVisible(true);
             this.subManager.emitSessionExpiredChanged(true)
@@ -1022,6 +1067,10 @@ export default abstract class BaseServer {
         this.subManager.emitDeviceMode(deviceStatus.layoutMode);
     }
 
+    /**
+     * Displays an error if there is a bad client response
+     * @param badClientData - the bad client message
+     */
     badClient(badClientData:BadClientResponse) {
         const versionSubstring = badClientData.info.substring(badClientData.info.indexOf("[") + 1, badClientData.info.indexOf("]"));
         const versionSplit = versionSubstring.split("!");

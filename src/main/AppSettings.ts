@@ -23,6 +23,7 @@ import ContentStoreFull from "./contentstore/ContentStoreFull";
 import { LoginModeType } from "./response/login/LoginResponse";
 import ApplicationMetaDataResponse from "./response/app/ApplicationMetaDataResponse";
 
+/** Interface for ApplicationMetaData */
 type ApplicationMetaData = {
     clientId: string,
     langCode: string,
@@ -103,6 +104,7 @@ export default class AppSettings {
     /** The devicemode of the client */
     deviceMode:string = "desktop";
 
+    /** Whether the current transferType of the application is partial or full */
     transferType:"partial"|"full" = "partial"
 
     /**
@@ -130,7 +132,7 @@ export default class AppSettings {
         applicationName: ""
     };
 
-    /** The visible-buttons object */
+    /** The visible-buttons object, displays which buttons in the topbar are visible */
     visibleButtons:VisibleButtons = { 
         reload: false, 
         rollback: false, 
@@ -160,6 +162,7 @@ export default class AppSettings {
     /** The welcome screen of the app */
     welcomeScreen:{name: string, initOpened: boolean} = { name: "", initOpened: false};
 
+    /** The componentId of the homescreen */
     homeScreen: string | undefined;
 
     /** The desktop-panel of the app, undefined if there is no desktop-screen */
@@ -181,10 +184,13 @@ export default class AppSettings {
     /** CSS files to add when the app is ready */
     cssToAddWhenReady:Array<any> = [];
 
+    /** True, if the button to enable the css-designer should be visible */
     showDesigner: boolean = false;
 
+    /** True, if the button to enable the VisionX-designer should be visible */
     showUIDesigner: Function|undefined
     
+    /** If true, during the loadingscreen the missing appready parameters will be shown, useful if the app is not starting and stuck on the loadingscreen */
     showDebug: boolean = false;
 
     /**
@@ -195,7 +201,7 @@ export default class AppSettings {
         this.menuModeAuto = value;
     }
 
-    /** Sets if the menu is collapsed */
+    /** Sets if the menu is collapsed or expanded */
     setMenuCollapsed(collapsedVal:boolean) {
         this.menuCollapsed = collapsedVal;
     }
@@ -242,6 +248,7 @@ export default class AppSettings {
             }
         }
 
+        // If the color scheme is not set by the url, check if the css-designer set one or use the server set one or the default one
         if (!this.applicationMetaData.applicationColorScheme.urlSet) {
             if (sessionStorage.getItem("reactui-designer-scheme-" + appMetaData.applicationName)) {
                 const designerScheme = sessionStorage.getItem("reactui-designer-scheme-" + appMetaData.applicationName) as string;
@@ -260,6 +267,7 @@ export default class AppSettings {
 
         }
         
+        // If the theme is not set by the url, check if the css-designer set one or use the server set one or the default one
         if (!this.applicationMetaData.applicationTheme.urlSet) {
             if (sessionStorage.getItem("reactui-designer-theme-" + appMetaData.applicationName)) {
                 const designerTheme = sessionStorage.getItem("reactui-designer-theme-" + appMetaData.applicationName) as string;
@@ -384,7 +392,7 @@ export default class AppSettings {
         }
     }
 
-    /** Sets one of the app-ready parameters, if all of the needed parameters are true, set appReady to true */
+    /** Sets one of the app-ready parameters, if all of the needed parameters are true, set appReady to true,, then the loadingscreen gets removed and the menu/login is shown */
     setAppReadyParam(param:"applicationCSS"|"schemeCSS"|"themeCSS"|"startup"|"userOrLogin"|"translation") {
         switch (param) {
             case "applicationCSS":

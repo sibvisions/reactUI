@@ -31,6 +31,7 @@ import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
 import ErrorResponse from "./main/response/error/ErrorResponse";
 
+/** The interface of the appwrapper */
 interface IAppWrapper {
     embedOptions?: { [key: string]: any },
     theme?: string,
@@ -39,6 +40,7 @@ interface IAppWrapper {
     children?: React.ReactNode
 }
 
+/** A component which wraps the reactUI to handle some additional tasks */
 const AppWrapper: FC<IAppWrapper> = (props) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
@@ -58,6 +60,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     /** The currently used app-layout */
     const appLayout = useMemo(() => context.appSettings.applicationMetaData.applicationLayout.layout, [context.appSettings.applicationMetaData]);
 
+    /** The previous url location */
     const prevLocation = useRef<string>(history.location.pathname);
 
     /** When the designer-mode gets enabled/disabled, adjust the height and width of the application */
@@ -96,7 +99,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
     }, [showDesignerView, context.designer?.isVisible])
 
     /**
-     * Subscribes to app-name, css-version and restart
+     * Subscribes to the theme
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
@@ -192,6 +195,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    /**
+     * Returns the model of the speeddial to possibly open the CSS- or VisionX designer
+     */
     const getSpeedDialModel = () => {
         const speeddialModel = [];
         if (context.appSettings.showDesigner) {

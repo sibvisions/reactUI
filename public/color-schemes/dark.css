@@ -309,7 +309,7 @@ body {
 .p-panelmenu .single-group-item.p-menuitem--active .p-panelmenu-header-link {
   color: var(--std-menu-activeitem-color);
 }
-.p-panelmenu .p-panelmenu-header > a {
+.p-panelmenu .p-panelmenu-header a {
   background: var(--std-menu-background);
   border-color: var(--std-menu-background);
   color: var(--std-menu-text-color);
@@ -329,7 +329,15 @@ body {
   border-color: var(--std-menu-item-hover-background);
   color: var(--std-menu-item-hover-text-color);
 }
+.p-panelmenu .p-panelmenu-header-content {
+  background: var(--std-menu-background);
+  border-color: var(--std-menu-background);
+  color: var(--std-menu-text-color);
+}
 .p-panelmenu .p-panelmenu-content {
+  background: var(--std-menu-background);
+}
+.p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link {
   background: var(--std-menu-background);
 }
 .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link .p-menuitem-text {

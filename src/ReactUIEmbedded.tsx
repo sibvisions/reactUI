@@ -34,6 +34,7 @@ import ErrorBar from "./application-frame/error-bar/ErrorBar";
  * @param props - Custom content, which a user can define when using reactUI as library e.g CustomScreens, CustomComponents, ReplaceScreen
  */
 const ReactUIEmbedded:FC<ICustomContent> = (props) => {
+    /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
     /** PrimeReact ripple effect */
@@ -48,6 +49,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
     /** The state of the tab-title */
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
+    /** A flag to rerender when messages should be displayed */
     const [messageFlag, setMessageFlag] = useState<boolean>(true);
 
     /** Adds the application.css to the head */
@@ -60,7 +62,7 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
     }, [appCssVersion, restart, context.appSettings]);
 
     /**
-     * Subscribes to app-name, css-version and restart
+     * Subscribes to messages, css-version and restart
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {

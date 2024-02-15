@@ -309,7 +309,7 @@ body {
 .p-panelmenu .single-group-item.p-menuitem--active .p-panelmenu-header-link {
   color: var(--std-menu-activeitem-color);
 }
-.p-panelmenu .p-panelmenu-header > a {
+.p-panelmenu .p-panelmenu-header a {
   background: var(--std-menu-background);
   border-color: var(--std-menu-background);
   color: var(--std-menu-text-color);

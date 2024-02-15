@@ -13,7 +13,6 @@
  * the License.
  */
 
-/** Other imports */
 import Server from "./server/Server";
 import ContentStore from "./contentstore/ContentStore";
 import { createCloseScreenRequest, createOpenScreenRequest, createSetScreenParameterRequest, createInsertRecordRequest, createSelectRowRequest } from "./factories/RequestFactory";
@@ -38,6 +37,7 @@ import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
 import { ICustomDefaultLogin, ICustomMFAText, ICustomMFAUrl, ICustomMFAWait, ICustomResetLogin } from "../application-frame/login/Login";
 import RESPONSE_NAMES from "./response/RESPONSE_NAMES";
 
+/** Interface for API which contains all API functions */
 export interface IAPI {
     sendRequest: (req: any, keyword: string) => void,
     sendOpenScreenRequest: (id:string, parameter?: { [key: string]: any }) => Promise<any>,
@@ -83,12 +83,16 @@ class API implements IAPI {
 
     /** Server instance */
     #server: BaseServer|Server|ServerFull;
+
     /** Contentstore instance */
     #contentStore: BaseContentStore|ContentStore|ContentStoreFull
+
     /** AppSettings instance */
     #appSettings: AppSettings
+
     /** the react routers history object */
     history?: History<any>;
+
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager
 
@@ -141,7 +145,7 @@ class API implements IAPI {
     }
 
     /**
-     * Sends parameters to the server.
+     * Sends key-value pairs to the server.
      * @param parameter - the screen-parameters
      */
      sendParameter(parameter: { [key: string]: any }) {
@@ -176,7 +180,7 @@ class API implements IAPI {
             if (parameter) {
                 csRequest.parameter = parameter;
             }
-            //TODO topbar
+
             this.#server.sendRequest(csRequest, REQUEST_KEYWORDS.CLOSE_SCREEN).then(res => {
                 if (res[0] === undefined || res[0].name !== RESPONSE_NAMES.ERROR) {
                     if (popup) {
@@ -397,9 +401,11 @@ class API implements IAPI {
      */
     addCustomComponent(name:string, customComp:ReactElement) {
         let component = this.#contentStore.getComponentByName(name);
+        // Check for tables, because if they are in navigationtables, you have to also handle the toolbarpanel
         let tableFlag = component && component.className === COMPONENT_CLASSNAMES.TABLE && component.parent?.includes("TBP") && this.#contentStore.getComponentById(component.parent);
         
         if (component) {
+            // If tableFlag, add the name of the parent instead, because of the toolbarpanel
             this.#contentStore.customComponents.set(tableFlag ? this.#contentStore.getComponentById(component.parent)!.name : name, () => customComp);
             const notifyList = new Array<string>();
             if (tableFlag) {
@@ -458,7 +464,7 @@ class API implements IAPI {
     }
 
     /**
-     * Adds a css file to the head before the dynamically loaded css files of the reactUI
+     * Adds a css file to the head before the dynamically loaded css files (color-scheme, theme, application.css) of the reactUI
      * @param path - the path to the css-file
      */
     addCSSToHeadBefore(path:string) {
@@ -491,7 +497,7 @@ class API implements IAPI {
     }
 
     /**
-     * Adds a css file to the head after the dynamically loaded css files of the reactUI
+     * Adds a css file to the head after the dynamically loaded css files (color-scheme, theme, application.css) of the reactUI
      * @param path - the path to the css-file
      */
     addCSSToHeadAfter(path:string) {

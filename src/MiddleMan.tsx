@@ -31,6 +31,7 @@ import { BorderLayoutAssistant, Coordinates, DraggableComponent, DraggablePanel,
 import { ISplit } from './main/components/panels/split/UISplitPanel';
 import { DesignerComponentGroup } from './main/util/types/designer/DesignerComponents';
 
+/** Type for designers selectedComponent */
 export type SelectedComponent = { 
     component: IBaseComponent, 
     element: HTMLElement, 
@@ -38,6 +39,7 @@ export type SelectedComponent = {
     layoutAssistant: LayoutAssistant | null
 };
 
+/** Interface for the VisionX Designer class */
 export interface Designer {
     contentStore: BaseContentStore|undefined;
     server: BaseServer|undefined;
@@ -80,6 +82,7 @@ export interface Designer {
     paintResizer: (rect: DOMRect) => void
 }
 
+/** Interface for custom content a lib user can set as properties */
 export interface ICustomContent {
     customAppWrapper?: IUIManagerProps["customAppWrapper"]
     onStartup?: Function

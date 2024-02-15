@@ -13,6 +13,8 @@
  * the License.
  */
 
+// THIS IS A FILE TO RE-EXPORT EVERYTHING THAT IS AVAILABLE WHEN USING THE REACTUI AS LIBRARY
+
 import '@sibvisions/reactui-designer/main.css'
 
 // Base ReactUI
