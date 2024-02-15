@@ -59,7 +59,7 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
             }
         });
 
-        if (componentsChanged) {
+        if (componentsChanged.current) {
             setPreferredSizes(new Map(tempSizes.current));
             componentsChanged.current = false;
         }
@@ -144,7 +144,7 @@ const useComponents = (id: string, className:string): [Array<BaseComponent>, Arr
              */
             const allowPreferredSizeChange = () => {
                 if (context.contentStore.getComponentById(compId)) {
-                    if (tempSizes.current.size === children.size && 
+                    if ((tempSizes.current.size === children.size || id.includes('TP')) && 
                         (sizesChanged(compId, preferredComp, prefSize, minSize, maxSize) 
                         || childrenChanged(compId) 
                         || componentsChanged.current 

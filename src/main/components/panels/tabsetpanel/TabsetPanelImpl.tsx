@@ -111,7 +111,7 @@ const TabsetPanelImpl: FC<ITabsetImpl> = (props) => {
      */
      useLayoutEffect(() => {
         if (onLoadCallback && panelRef.current) {
-            if (props.compSizes && props.compSizes.size > 0 && props.selectedIndex !== -1) {
+            if (props.compSizes && props.compSizes.size > 0 && props.selectedIndex !== -1 && props.selectedIndex !== undefined && props.selectedIndex < props.components.length) {
                 const selectedPanel = props.compSizes.get(props.components[(props.selectedIndex as number)].props.id)?.preferredSize;
                 if (selectedPanel) {
                     const navbarHeight = panelRef.current.nav ? panelRef.current.nav.offsetHeight : 48;
