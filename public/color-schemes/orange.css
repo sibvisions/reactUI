@@ -314,17 +314,17 @@ body {
   border-color: var(--std-menu-background);
   color: var(--std-menu-text-color);
 }
-.p-panelmenu .p-panelmenu-header:not(.p-highlight):not(.p-disabled) > a:hover {
+.p-panelmenu .p-panelmenu-header:not(.p-highlight):not(.p-disabled) a:hover {
   background: var(--std-menu-item-hover-background);
   border-color: var(--std-menu-item-hover-background);
   color: var(--std-menu-item-hover-text-color);
 }
-.p-panelmenu .p-panelmenu-header.p-highlight > a {
+.p-panelmenu .p-panelmenu-header.p-highlight a {
   background: var(--std-menu-background);
   border-color: var(--std-menu-background);
   color: var(--std-menu-text-color);
 }
-.p-panelmenu .p-panelmenu-header.p-highlight:not(.p-disabled) > a:hover {
+.p-panelmenu .p-panelmenu-header.p-highlight:not(.p-disabled) a:hover {
   background: var(--std-menu-item-hover-background);
   border-color: var(--std-menu-item-hover-background);
   color: var(--std-menu-item-hover-text-color);

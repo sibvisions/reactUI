@@ -669,19 +669,19 @@ body {
             color: var(--std-menu-text-color);
         }
 
-        &:not(.p-highlight):not(.p-disabled) > a:hover {
+        &:not(.p-highlight):not(.p-disabled) a:hover {
             background: var(--std-menu-item-hover-background);
             border-color: var(--std-menu-item-hover-background);
             color: var(--std-menu-item-hover-text-color);
         }
 
         &.p-highlight {
-            > a {
+            a {
                 background: var(--std-menu-background);
                 border-color: var(--std-menu-background);
                 color: var(--std-menu-text-color);
             } 
-            &:not(.p-disabled) > a:hover {
+            &:not(.p-disabled) a:hover {
                 background: var(--std-menu-item-hover-background);
                 border-color: var(--std-menu-item-hover-background);
                 color: var(--std-menu-item-hover-text-color);
