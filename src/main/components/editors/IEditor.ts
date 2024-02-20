@@ -16,8 +16,9 @@
 import IBaseComponent from "../../util/types/IBaseComponent";
 
 /** Interface for cellEditor property of CellEditors */
-export interface ICellEditor{
+export interface ICellEditor {
     className: string,
+    style?: string,
     contentType?: string,
     horizontalAlignment?: 0 | 1 | 2| 3,
     verticalAlignment?: 0 | 1 | 2| 3,
@@ -34,10 +35,11 @@ export interface IEditor extends IBaseComponent{
     cellEditor_horizontalAlignment_?: 0 | 1 | 2| 3,
     cellEditor_verticalAlignment_?: 0 | 1 | 2| 3,
     cellEditor_background_?:string,
-    cellEditor_foreground_?:string
-    cellEditor_font_?:string
-    cellEditor_placeholder_?:string
-    cellEditor_text_?:string
+    cellEditor_foreground_?:string,
+    cellEditor_font_?:string,
+    cellEditor_placeholder_?:string,
+    cellEditor_text_?:string,
+    cellEditor_style_?:string,
     columnName: string,
     dataRow: string,
     text:string,

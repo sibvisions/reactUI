@@ -101,6 +101,10 @@ const Editor = (props: any) => {
             return <UIEditorChoice {...props} />
         }
         else if (props.cellEditor.className === CELLEDITOR_CLASSNAMES.CHECKBOX) {
+            const editorStyle = props.cellEditor_style_ ? props.cellEditor_style_ : props.cellEditor.style || "" 
+            if (editorStyle.includes('ui-button')) {
+                return <UIButton {...props}/>
+            }
             return <UIEditorCheckBox {...props} />
         }
         else if (props.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED) {

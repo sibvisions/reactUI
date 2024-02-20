@@ -17,7 +17,7 @@ import { IComponentConstants } from "../BaseComponent";
 
 /** Interface for Buttons contains properties which are sent by the server */
 export interface IButton extends IBaseComponent, IComponentConstants {
-    accelerator: string,
+    accelerator?: string,
     horizontalTextPosition?:number,
     verticalTextPosition?:number,
     borderPainted?: boolean,
