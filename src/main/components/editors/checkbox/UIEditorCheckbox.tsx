@@ -35,6 +35,9 @@ import { createSelectRowRequest } from "../../../factories/RequestFactory";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import { showTopBar } from "../../topbar/TopBar";
 import { IComponentConstants } from "../../BaseComponent";
+import ServerFull from "../../../server/ServerFull";
+import Server from "../../../server/Server";
+import { SelectFilter } from "../../../request/data/SelectRowRequest";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -49,6 +52,85 @@ export interface IEditorCheckBox extends IRCCellEditor {
 }
 
 /**
+ * Returns true, if the given value is the selectedValue of the celleditor
+ * @param value - the value of the field
+ */
+export const getBooleanValueFromValue = (value: any, selectedValue: any) => {
+    if (value === selectedValue) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Sends a setValues Request to the server when the checkbox is clicked
+ * @param name - the name of the editor
+ * @param dataRow - the datarow of the editor
+ * @param columnName - the columnName of the editor
+ * @param selected - true, if the checkbox is currently selected
+ * @param selectedValue - the selectedValue of the checkbox
+ * @param deselectedValue - the deselectedValue of the checkbox
+ * @param server - the server instance
+ * @param rowIndex - the function to get the rowindex
+ * @param selectedRowIndex - the currently selected row index
+ * @param filter - a possible filter so send
+ * @param isCellEditor - true, if the editor is a celleditor
+ */
+export const handleCheckboxOnChange = (
+    name: string, 
+    dataRow: string, 
+    columnName: string, 
+    selected: boolean|any, 
+    selectedValue: any, 
+    deselectedValue: any,
+    server: Server|ServerFull,
+    rowIndex?: Function,
+    selectedRowIndex?: number,
+    filter?: SelectFilter,
+    isCellEditor?: boolean
+
+) => {
+    const doSendSetValues = () => {
+        sendSetValues(
+            dataRow,
+            name,
+            columnName,
+            columnName,
+            // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
+            (typeof selected === "boolean" ? !selected : deselectedValue !== undefined ? deselectedValue === selected : selected === false) ? 
+                selectedValue !== undefined ? 
+                    selectedValue 
+                : 
+                    true
+            : 
+                deselectedValue !== undefined ? 
+                    deselectedValue 
+                : 
+                    false,
+            server,
+            server.topbar,
+            rowIndex ? rowIndex() : undefined,
+            selectedRowIndex,
+            filter ? filter : undefined
+        );
+    }
+    
+    if (isCellEditor) {
+        const selectReq = createSelectRowRequest();
+        selectReq.dataProvider = dataRow;
+        selectReq.componentId = name;
+        selectReq.rowNumber = rowIndex ? rowIndex() : undefined;
+        selectReq.selectedColumn = columnName;
+        selectReq.filter = filter ? filter : undefined;
+        showTopBar(server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_ROW), server.topbar);
+        doSendSetValues()
+    }
+    else {
+        doSendSetValues()
+    }
+}
+
+/**
  * The CheckBoxCellEditor displays a CheckBox and its label and edits its value in its databook
  * @param props - Initial properties sent by the server for this component
  */
@@ -59,19 +141,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
     /** Alignments for CellEditor */
     const alignments = getAlignments(props);
 
-    /**
-     * Returns true, if the given value is the selectedValue of the celleditor
-     * @param value - the value of the field
-     */
-    const getBooleanValueFromValue = (value: any) => {
-        if (value === props.cellEditor.selectedValue) {
-            return true;
-        }
-        return false;
-    }
-
     /** Current state of whether the CheckBox is currently checked or not */
-    const [checked, setChecked] = useState(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName]) : false);
+    const [checked, setChecked] = useState(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) : false);
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -102,8 +173,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
 
     // Sets the checked value based on the selectedRow data
     useEffect(() => {
-        setChecked(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName]) : false);
-    }, [props.selectedRow]);
+        setChecked(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) : false);
+    }, [props.selectedRow, props.cellEditor.selectedValue]);
 
     // If the lib user extends the CheckboxCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
@@ -116,47 +187,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
         }
     }, [props.selectedRow, props.onChange]);
 
-    // Sends a setValues Request to the server when the checkbox is clicked
-    const handleOnChange = () => {
-        const doSendSetValues = () => {
-            sendSetValues(
-                props.dataRow,
-                props.name,
-                props.columnName,
-                props.columnName,
-                // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
-                (!checked) ? 
-                    props.cellEditor.selectedValue !== undefined ? 
-                        props.cellEditor.selectedValue 
-                    : 
-                        true
-                : 
-                    props.cellEditor.deselectedValue !== undefined ? 
-                        props.cellEditor.deselectedValue 
-                    : 
-                        false,
-                props.context.server,
-                props.topbar,
-                props.rowIndex ? props.rowIndex() : undefined,
-                props.selectedRow.index,
-                props.filter ? props.filter : undefined
-            );
-        }
-        
-        if (props.isCellEditor) {
-            const selectReq = createSelectRowRequest();
-            selectReq.dataProvider = props.dataRow;
-            selectReq.componentId = props.name;
-            selectReq.rowNumber = props.rowIndex ? props.rowIndex() : undefined;
-            selectReq.selectedColumn = props.columnName;
-            selectReq.filter = props.filter ? props.filter : undefined;
-            showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_ROW), props.context.server.topbar);
-            doSendSetValues()
-        }
-        else {
-            doSendSetValues()
-        }
-    }
+
 
     return (
         <span
@@ -183,7 +214,19 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                 event.preventDefault();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
                 if (event.key === " ") {
-                    handleOnChange()
+                    handleCheckboxOnChange(
+                        props.name, 
+                        props.dataRow,
+                        props.columnName, 
+                        checked, 
+                        props.cellEditor.selectedValue, 
+                        props.cellEditor.deselectedValue, 
+                        props.context.server,
+                        props.rowIndex,
+                        props.selectedRow.index,
+                        props.filter,
+                        props.isCellEditor
+                    )
                 }
                 if (event.key === "Tab") {
                     if (props.isCellEditor && props.stopCellEditing) {
@@ -209,7 +252,19 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                         props.onClick(event.originalEvent);
                     }
 
-                    handleOnChange()
+                    handleCheckboxOnChange(
+                        props.name, 
+                        props.dataRow,
+                        props.columnName, 
+                        checked, 
+                        props.cellEditor.selectedValue, 
+                        props.cellEditor.deselectedValue, 
+                        props.context.server,
+                        props.rowIndex,
+                        props.selectedRow.index,
+                        props.filter,
+                        props.isCellEditor
+                    )
                 }}
                 disabled={props.isReadOnly}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
@@ -237,7 +292,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                     : props.cellEditor_text_ ? props.cellEditor_text_ : props.cellEditor?.text}
                 </label>
             }
-
         </span>
     )
 }

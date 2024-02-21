@@ -30,13 +30,15 @@ import { IExtendableToggleButton } from "../../../extend-components/buttons/Exte
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import { isCompDisabled } from "../../../util/component-util/IsCompDisabled";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
-import { RenderButtonHTML } from "../button/UIButton";
+import { RenderButtonHTML, getButtonText, isCheckboxCellEditor } from "../button/UIButton";
+import { IEditorCheckBox, getBooleanValueFromValue, handleCheckboxOnChange } from "../../editors/checkbox/UIEditorCheckbox";
+import { IComponentConstants } from "../../BaseComponent";
 
 /**
  * This component displays a Button which can be toggled on and off
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) => {
+const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton | IEditorCheckBox & IComponentConstants> = (props) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
@@ -62,15 +64,15 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
                 if (buttonRef.current.getElement().classList.contains('p-button-icon-only')) {
                     buttonRef.current.getElement().classList.remove('p-button-icon-only');
                 }
-                buttonRef.current.getElement().querySelector('.p-button-label').innerHTML = props.text;
+                buttonRef.current.getElement().querySelector('.p-button-label').innerHTML = getButtonText(props);
             }
             else {
-                if (!buttonRef.current.getElement().classList.contains('p-button-icon-only') && !props.text) {
+                if (!buttonRef.current.getElement().classList.contains('p-button-icon-only') && !getButtonText(props)) {
                     buttonRef.current.getElement().classList.add('p-button-icon-only');
                 }
             }
         }
-    }, [isHTML, props.selected])
+    }, [isHTML, !isCheckboxCellEditor(props) ? props.selected : props.selectedRow ? props.selectedRow.data[props.columnName] : undefined]);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -81,21 +83,57 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
 
     //If lib-user extends Togglebutton with onChange, call it when selected changes
     useEffect(() => {
-        if (props.onChange) {
-            props.onChange(props.selected);
+        if (!isCheckboxCellEditor(props)) {
+            if (props.onChange) {
+                props.onChange(props.selected);
+            }
         }
-    }, [props.selected, props.onChange])
+    }, [!isCheckboxCellEditor(props) ? props.selected : undefined, !isCheckboxCellEditor(props) ? props.onChange : undefined])
 
     /** When the ToggleButton is pressed, send a pressButtonRequest to the server */
     const handleOnChange = (event:ToggleButtonChangeEvent) => {
-        // if lib user extends onClick, call when clicking
-        if (props.onClick) {
-            props.onClick(event.originalEvent);
-        }
+        if (!isCheckboxCellEditor(props)) {
+            // if lib user extends onClick, call when clicking
+            if (props.onClick) {
+                props.onClick(event.originalEvent);
+            }
 
-        const req = createDispatchActionRequest();
-        req.componentId = props.name;
-        showTopBar(props.context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), props.topbar);
+            const req = createDispatchActionRequest();
+            req.componentId = props.name;
+            showTopBar(props.context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), props.topbar);
+        }
+        else {
+            handleCheckboxOnChange(
+                props.name,
+                props.dataRow,
+                props.columnName,
+                props.selectedRow ? props.selectedRow.data[props.columnName] : false,
+                props.cellEditor.selectedValue,
+                props.cellEditor.deselectedValue,
+                props.context.server,
+                props.rowIndex,
+                props.selectedRow.index,
+                props.filter,
+                props.isCellEditor
+            )
+        }
+    }
+
+    const getChecked = () => {
+        if (!isCheckboxCellEditor(props)) {
+            return props.selected === undefined ? false : props.selected
+        }
+        else {
+            if (!props.selectedRow) {
+                return undefined;
+            }
+            else {
+                if (props.selectedRow.data[props.columnName] !== undefined) {
+                    return getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue);
+                }
+            }
+        }
+        return false;
     }
 
     return (
@@ -112,7 +150,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
                     "rc-togglebutton",
                     !btnStyle.borderPainted ? "border-notpainted" : '',
                     btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
-                    props.borderOnMouseEntered ? "mouse-border" : '',
+                    !isCheckboxCellEditor(props) ? (props as IButtonSelectable).borderOnMouseEntered ? "mouse-border" : "" : "",
                     `gap-${btnStyle.iconGapPos}`,
                     btnStyle.iconDirection,
                     props.parent?.includes("TB") ? "rc-toolbar-button" : "",
@@ -136,23 +174,23 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton> = (props) 
                         '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
                         '--iconColor': btnStyle.iconProps.color,
                         '--iconImage': `url(${props.context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
-                        '--iconTextGap': `${props.imageTextGap || 4}px`,
+                        '--iconTextGap': `${!isCheckboxCellEditor(props) ? (props as IButtonSelectable).imageTextGap || 4 : 4}px`,
                         '--iconCenterGap': `${btnStyle.iconCenterGap}px`
                     } : {})
                 } as CSSProperties}
-                onLabel={!isHTML ? props.text : undefined}
-                offLabel={!isHTML ? props.text : undefined}
+                onLabel={!isHTML ? getButtonText(props) : undefined}
+                offLabel={!isHTML ? getButtonText(props) : undefined}
                 offIcon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 onIcon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}
                 iconPos={btnStyle.iconPos}
                 tabIndex={btnStyle.tabIndex}
-                checked={props.selected === undefined ? false : props.selected}
+                checked={getChecked()}
                 onChange={handleOnChange}
                 onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left" }}>
-                    {isHTML && props.text && <RenderButtonHTML text={props.text} />}
+                    {isHTML && props.text && <RenderButtonHTML text={getButtonText(props) || ""} />}
                 </ToggleButton>
         </span>
     )

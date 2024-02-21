@@ -31,7 +31,7 @@ const DirectCellRenderer: FC<ICellRender> = (props) => {
 
     return (
         <>
-            <span className="cell-data-content" style={{ display: "flex", justifyContent: "center", alignItems:"center" }}>
+            <span className="cell-data-content" style={{ display: "flex", justifyContent: "center", alignItems:"center", width: "100%", height: "100%" }}>
                 <CellEditorWrapper
                     {...{
                         id: "",

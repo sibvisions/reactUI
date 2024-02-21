@@ -26,7 +26,7 @@ import { isCheckboxCellEditor } from "../../components/buttons/button/UIButton";
 import { IComponentConstants } from "../../components/BaseComponent";
 
 // Interface for button-style
-interface IButtonStyle {
+export interface IButtonStyle {
     style: CSSProperties,
     iconProps: IconProps,
     iconPos: "left" | "right",
@@ -38,6 +38,27 @@ interface IButtonStyle {
     pressedIconProps: IconProps | undefined,
     mouseOverIconProps: IconProps | undefined
 }
+
+/**
+ * Returns true, if the two arrays share at least one value
+ * @param array1 - the first array
+ * @param array2 - the second array
+ * @returns 
+ */
+function hasSameValue(array1: string[], array2: string[]): boolean {
+    // check each value in array1
+    for (const value of array1) {
+        // Check, if the value is in array2
+        if (array2.includes(value)) {
+            return true; // value found
+        }
+    }
+    
+    // no value found
+    return false;
+}
+
+const cbStyles = ["ui-switch", "ui-togglebutton", "ui-button"];
 
 /**
  * This hook returns style properties used by all button components
@@ -57,31 +78,12 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
         const isCB = isCheckboxCellEditor(props);
-        if (!isCB && props.url) { return {} } 
-        /**
-         * Returns true, if the two arrays share at least one value
-         * @param array1 - the first array
-         * @param array2 - the second array
-         * @returns 
-         */
-        function hasSameValue(array1: string[], array2: string[]): boolean {
-            // check each value in array1
-            for (const value of array1) {
-                // Check, if the value is in array2
-                if (array2.includes(value)) {
-                    return true; // value found
-                }
-            }
-            
-            // no value found
-            return false;
-        }
+        if (!isCB && props.url) { return {} }  
         
-        const cbStyles = ["ui-radiobutton", "ui-switch", "ui-togglebutton", "ui-button"];
         const isCBOrRB = isCB ? 
-                        hasSameValue(cbStyles, props.cellEditor_style_ ? props.cellEditor_style_?.split(',') : props.cellEditor?.style?.split(',') || []) 
+                        !hasSameValue(cbStyles, props.cellEditor_style_ ? props.cellEditor_style_?.split(',') : props.cellEditor?.style?.split(',') || []) 
                         : 
-                        (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON)
+                        (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON);
         let btnBackground = compStyle?.background ? compStyle.background as string : isCBOrRB ? "transparent" : window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
         const alignments = getAlignments(props);
         let btnJustify: string|undefined = !isCB && props.horizontalTextPosition === 1 ? alignments.va : alignments.ha;
@@ -137,7 +139,12 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
         if (!isCheckboxCellEditor(props) && props.url) {
             return 0;
         }
-        if (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON) {
+        const isCB = isCheckboxCellEditor(props);
+        const isCBOrRB = isCB ? 
+        !hasSameValue(cbStyles, props.cellEditor_style_ ? props.cellEditor_style_?.split(',') : props.cellEditor?.style?.split(',') || []) 
+        : 
+        (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON);
+        if (isCBOrRB) {
             if (ref && ref2) {
                 return ref.offsetWidth / 2 - ref2.offsetWidth / 2
             }
@@ -166,7 +173,7 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
                 return "left";
             }
         }
-        return "left"
+        return "right"
     }, [!isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, !isCheckboxCellEditor(props) ? props.verticalTextPosition : undefined]);
 
     /** If the icon is left or right of the center */

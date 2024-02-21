@@ -59,6 +59,7 @@ import BaseComponent from "../components/BaseComponent";
 import DialogResponse from "../response/ui/DialogResponse";
 import UIMessage from "../components/message/UIMessage";
 import UITreeV2 from "../components/tree/UITreeV2";
+import UISwitch from "../components/buttons/switch/UISwitch";
 
 
 /**
@@ -103,7 +104,16 @@ const Editor = (props: any) => {
         else if (props.cellEditor.className === CELLEDITOR_CLASSNAMES.CHECKBOX) {
             const editorStyle = props.cellEditor_style_ ? props.cellEditor_style_ : props.cellEditor.style || "" 
             if (editorStyle.includes('ui-button')) {
-                return <UIButton {...props}/>
+                return <UIButton {...props} />
+            }
+            else if (editorStyle.includes('ui-radiobutton')) {
+                return <UIRadioButton {...props} />
+            }
+            else if (editorStyle.includes('ui-togglebutton')) {
+                return <UIToggleButton {...props} />
+            }
+            else if (editorStyle.includes('ui-switch')) {
+                return <UISwitch {...props} />
             }
             return <UIEditorCheckBox {...props} />
         }
