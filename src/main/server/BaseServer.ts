@@ -149,9 +149,6 @@ export default abstract class BaseServer {
     // True if the screen has been opened by history close
     openedByClose = false;
 
-    // True if the screen has been opened by history close
-    openedByClose = false;
-
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
