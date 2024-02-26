@@ -16,7 +16,7 @@
 import React, { CSSProperties, FC,  useLayoutEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
-import useButtonStyling, { IButtonStyle } from "../../../hooks/style-hooks/useButtonStyling";
+import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
 import useButtonMouseImages, { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";

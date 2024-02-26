@@ -43,7 +43,8 @@ import { SelectFilter } from "../../../request/data/SelectRowRequest";
 export interface ICellEditorCheckBox extends ICellEditor {
     text?: string,
     selectedValue?:string|boolean|number,
-    deselectedValue?:string|boolean|number
+    deselectedValue?:string|boolean|number,
+    imageName?: string
 }
 
 /** Interface for CheckBoxCellEditor */

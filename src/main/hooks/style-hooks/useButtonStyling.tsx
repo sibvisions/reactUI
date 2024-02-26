@@ -120,7 +120,7 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
     }, [compStyle, !isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, margins, designerBgdChanged]);
 
     /** The image property parsed as usable icon props */
-    const iconProps = useMemo(() => parseIconData(compStyle?.color as string, props.image), [compStyle?.color, props.image]);
+    const iconProps = useMemo(() => parseIconData(compStyle?.color as string, !isCheckboxCellEditor(props) ? props.image : props.cellEditor.imageName), [compStyle?.color, props.image]);
 
     /** The position of the icon */
     const iconPos = useMemo(() => {
