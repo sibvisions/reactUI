@@ -193,6 +193,9 @@ export default class AppSettings {
     /** If true, during the loadingscreen the missing appready parameters will be shown, useful if the app is not starting and stuck on the loadingscreen */
     showDebug: boolean = false;
 
+    /** If true, BigDecimal come as string */
+    option_bigdecimal_as_string = true;
+
     /**
      * Sets the menu-mode
      * @param value - the menu-mode
