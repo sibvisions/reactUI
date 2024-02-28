@@ -127,8 +127,9 @@ export default class ContentStoreFull extends BaseContentStore {
         let existingComponent: IBaseComponent | undefined;
 
         componentsToUpdate.forEach(newComponent => {
+            const componentScreenName = this.getScreenName(newComponent.id);
             /** Checks if the component is a custom component */
-            const isCustom:boolean = this.customComponents.has(newComponent.name as string);
+            const isCustom:boolean = componentScreenName && this.customComponents.has(componentScreenName) && this.customComponents.get(componentScreenName)!.has(newComponent.name as string) ? true : false;
             existingComponent = this.getExistingComponent(newComponent.id);
 
             if (existingComponent) {

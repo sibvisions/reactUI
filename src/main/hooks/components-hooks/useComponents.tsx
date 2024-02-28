@@ -48,6 +48,9 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
     /** True, if the components (children) of a parent have changed */
     const componentsChanged = useRef<boolean>(false);
 
+    /** The screenName of this component */
+    const screenName = useMemo(() => context.contentStore.getScreenName(id),[id]);
+
     
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
     const buildComponents = useCallback((): Array<ReactElement> => {
@@ -171,31 +174,34 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
             componentsChanged.current = false;
         }
 
-        /** Create the reactchildren */
-        children.forEach(child => {
-            let reactChild;
-            // pass the componentHasLoaded function to the children, so that they can report their size
-            child.onLoadCallback = componentHasLoaded;
-            if (!context.contentStore.customComponents.has(child.name)) {
-                if (id.includes("popup")) {
-                    context.subscriptions.propertiesSubscriber.get(child.id)?.apply(undefined, [child]);
+        if (screenName) {
+            /** Create the reactchildren */
+            children.forEach(child => {
+                let reactChild;
+                // pass the componentHasLoaded function to the children, so that they can report their size
+                child.onLoadCallback = componentHasLoaded;
+                if (!context.contentStore.customComponents.get(screenName)?.has(child.name)) {
+                    if (id.includes("popup")) {
+                        context.subscriptions.propertiesSubscriber.get(child.id)?.apply(undefined, [child]);
+                    }
+                    // Create the ReactElements which are ready to be rendered
+                    reactChild = componentHandler(child, context.contentStore);
                 }
-                // Create the ReactElements which are ready to be rendered
-                reactChild = componentHandler(child, context.contentStore);
-            }
-            /** If it is a custom component, put the custom component in the CustomComponentWrapper */
-            else {
-                let customComp = context.contentStore.customComponents.get(child.name)?.apply(undefined, []);
-                reactChild = createCustomComponentWrapper({...child, component: customComp, isGlobal: false});
-            }
-                
-            if(reactChild){
-                reactChildrenArray.push(reactChild);
-            }
-        });
+                /** If it is a custom component, put the custom component in the CustomComponentWrapper */
+                else {
+                    let customComp = context.contentStore.customComponents.get(screenName)?.get(child.name)?.apply(undefined, []);
+                    reactChild = createCustomComponentWrapper({ ...child, component: customComp, isGlobal: false });
+                }
+
+                if (reactChild) {
+                    reactChildrenArray.push(reactChild);
+                }
+            });
+        }
+
         return reactChildrenArray;
         
-    },[context.contentStore, id, preferredSizes, className, tempSizes.current]);
+    },[context.contentStore, id, preferredSizes, className, tempSizes.current, screenName]);
     
     /** Current state of a parents Childcomponents as reactchildren */
     const [components, setComponents] = useState<Array<ReactElement>>([]);
@@ -224,7 +230,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
                 /** Checks if the new component is already added in the current components if yes add the old component else the new one */
                 components.forEach(oc => {
                     const objectKeys = Object.keys(oc.props).filter(key => key !== "onLoadCallback");
-                    if(nc.props.id === oc.props.id && !context.contentStore.customComponents.has(nc.props.name) && _.isEqual(_.pick(oc.props, objectKeys), _.pick(nc.props, objectKeys))) {
+                    if(screenName && nc.props.id === oc.props.id && !context.contentStore.customComponents.get(screenName)?.has(nc.props.name) && _.isEqual(_.pick(oc.props, objectKeys), _.pick(nc.props, objectKeys))) {
                         alreadyAdded = true
                         cl.push(oc);
                     }
@@ -240,7 +246,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
         return () => {
             context.subscriptions.unsubscribeFromParentChange(id);
         }
-    }, [context.subscriptions, id, components, buildComponents, context.contentStore.customComponents]);
+    }, [context.subscriptions, id, components, buildComponents, context.contentStore.customComponents, screenName]);
 
     return [children, components, preferredSizes];
 }

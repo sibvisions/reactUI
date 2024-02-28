@@ -195,8 +195,9 @@ export default class ContentStore extends BaseContentStore {
         let existingComponent: IBaseComponent | undefined;
 
         componentsToUpdate.forEach(newComponent => {
+            const componentScreenName = this.getScreenName(newComponent.id);
             /** Checks if the component is a custom component */
-            const isCustom:boolean = this.customComponents.has(newComponent.name as string);
+            const isCustom:boolean = componentScreenName && this.customComponents.has(componentScreenName) && this.customComponents.get(componentScreenName)!.has(newComponent.name as string) ? true : false;
             existingComponent = this.getExistingComponent(newComponent.id);
 
             if (existingComponent) {
@@ -528,28 +529,6 @@ export default class ContentStore extends BaseContentStore {
      */
     registerReplaceScreen(title: string, replaceScreen: ReactElement){
         this.replaceScreens.set(title, (x:any) => React.cloneElement(replaceScreen, x));
-    }
-
-    /**
-     * Registers a customComponent to the customComponents
-     * @param title - the title of the customComponent
-     * @param customComp - the custom component
-     */
-    registerCustomComponent(title:string, customComp?:ReactElement) {
-        if (customComp === undefined) {
-            this.customComponents.set(title, () => null);
-        }
-        else {
-            this.customComponents.set(title, () => customComp);
-        }
-        /** Notifies the parent that a custom component has replaced a server sent component */
-        if (this.getComponentByName(title)) {
-            const customComp = this.getComponentByName(title) as IBaseComponent
-            const notifyList = new Array<string>();
-            if (customComp.parent)
-                notifyList.push(customComp.parent);
-            notifyList.filter(this.onlyUniqueFilter).forEach(parentId => this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []));
-        }
     }
 
     /**
