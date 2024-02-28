@@ -185,6 +185,9 @@ export default class AppSettings {
     
     showDebug: boolean = false;
 
+    /** If true, BigDecimal come as string */
+    option_bigdecimal_as_string = true;
+
     /**
      * Sets the menu-mode
      * @param value - the menu-mode

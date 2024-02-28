@@ -40,7 +40,6 @@ import { showTopBar } from "../topbar/TopBar";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";
 import useAddLayoutStyle from "../../hooks/style-hooks/useAddLayoutStyle";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
-import Dimension from "../../util/types/Dimension";
 import CELLEDITOR_CLASSNAMES from "../editors/CELLEDITOR_CLASSNAMES";
 import { getGlobalLocale } from "../../util/other-util/GetDateLocale";
 
@@ -272,6 +271,10 @@ const UIChart: FC<IChart> = (baseProps) => {
 
                 const getLIDX = () => {
                     if (labels) {
+                        const xLabel = labels.find(label => label === dataRow[xColumnName]);
+                        if (xLabel) {
+                            return xLabel;
+                        }
                         return labels.indexOf(dataRow[xColumnName])
                     }
                     else {
@@ -659,8 +662,8 @@ const UIChart: FC<IChart> = (baseProps) => {
                         const label = e.chart.data.labels[firstPoint.datasetIndex];
                         const value = e.chart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
                         const obj:any = {}
-                        obj[label] = value.y;
-                        obj[xColumnName] = value.x;
+                        obj[label] = context.appSettings.option_bigdecimal_as_string && typeof value.y === "number" ? value.y.toString() : value.y;
+                        obj[xColumnName] = context.appSettings.option_bigdecimal_as_string && typeof value.x === "number" ? value.x.toString() : value.x;
                         const foundData = providerData.find(data => data[label] === obj[label] && data[xColumnName] === obj[xColumnName]);
                         if (foundData) {
                             const selectReq = createSelectRowRequest();
