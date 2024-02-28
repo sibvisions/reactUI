@@ -2,18 +2,10 @@
 The JVx ReactUI Client is a web application for JVx applications. It is used to dynamically render work-screens, created with the JVx framework. All layouts of JVx are supported. The client has two different menu-layouts and a login mechanism. It is possible to either run the ReactUI as standalone web application or as library to create your own react-projects or to even embed it into an existing project.
 
 # Requirements
-- Node version: 12.1.0 or later
-- Java version: 6 or later (for the JVx application)
+- Node version: 12.1.0 or later (Node.js Download: https://nodejs.org/en/download)
+- Java version: 8 or later (for the JVx application)
 - A JVx application, running on a Java application (Jetty, Tomcat, ...) server, using JVx mobile UI
-- If you use ReactUI as lib you will need React 16.8.0 (for Hooks)
-
-# Bundling
-There are two options to use bundling with webpack.
-
-1. Production Bundle
-run `npm run bundle` to create a production bundle. URL configuration is then required in your app where reactUI is used as lib. Does not accept config.json!
-2. Development Bundle
-run `npm run devbundle` to create a development bundle. URL configuration is possible but config.json is also allowed.
+- IDE of your choice (Visual Studio Code is recommended: https://code.visualstudio.com/download)
 
 # Getting Started
 - Clone the git repository, open it in your development environment of choice and run ```npm install``` to download the dependencies.
@@ -22,7 +14,9 @@ run `npm run devbundle` to create a development bundle. URL configuration is pos
 
     1. config.json File
     
-        Add a file called config.json in your public folder of your project. This file will be used to send the required data to the server during the startup-request. 
+        Add a file called config.json in your public folder of your project. This file will be used to send the required data to the server during the startup-request.
+
+       **The `appName` and `baseUrl` properties are the most important properties in this file!**
         
         Example:
 
@@ -42,7 +36,7 @@ run `npm run devbundle` to create a development bundle. URL configuration is pos
         }
         ```
 
-    2. URL
+    3. URL
 
         The parameters which are set in the config.json file, can also be set in the url, simply put the parameter after the first "/" of your url.
 
@@ -61,6 +55,14 @@ If everything works out as planned, you will be redirected to the login:
 After you logged in or if you have a valid username, password combination you will be redirected to home:
 
 ![connected-home](https://github.com/sibvisions/reactUI/blob/master/src/readme-imgs/connected.png)
+
+# Bundling
+There are two options to use bundling with webpack.
+
+1. Production Bundle
+run `npm run bundle` to create a production bundle. URL configuration is then required in your app where reactUI is used as lib. Does not accept config.json!
+2. Development Bundle
+run `npm run devbundle` to create a development bundle. URL configuration is possible but config.json is also allowed.
 
 # Documentation
 
