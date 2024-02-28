@@ -914,7 +914,7 @@ body {
 .rc-toolbar .rc-toolbar-border-bottom {
   border-bottom: var(--toolbar-separator);
 }
-.rc-toolbar .rc-button.mouse-border {
+.rc-toolbar .rc-button.mouse-border, .rc-toolbar .rc-togglebutton.mouse-border {
   color: var(--toolbar-color);
 }
 

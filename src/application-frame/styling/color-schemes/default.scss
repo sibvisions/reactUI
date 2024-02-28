@@ -1508,7 +1508,7 @@ body {
         border-bottom: var(--toolbar-separator);
     }
 
-    .rc-button.mouse-border {
+    .rc-button.mouse-border, .rc-togglebutton.mouse-border {
         color: var(--toolbar-color);
     }
 }
