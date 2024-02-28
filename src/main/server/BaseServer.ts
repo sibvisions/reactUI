@@ -845,8 +845,9 @@ export default abstract class BaseServer {
                     const dataArray: any[] = Array.from(dataBook.data.get("current"));
                     if (dataArray.length >= formattedRecords.length) {
                         formattedRecords.forEach((formattedRecord, i) => {
-                            dataArray[i]["__recordFormat"] = formattedRecord;
+                            dataArray[i]["__recordFormats"] = formattedRecord;
                         });
+                        console.log(dataArray)
                         dataBook.data.set("current", dataArray);
                     }
                 }
