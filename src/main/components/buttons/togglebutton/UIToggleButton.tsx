@@ -140,7 +140,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton | IEditorCh
         <span
             ref={props.forwardedRef}
             id={props.name}
-            style={props.layoutStyle}
+            style={!props.id ? undefined: props.layoutStyle}
             aria-label={props.ariaLabel}
             aria-pressed={props.ariaPressed}
         >
