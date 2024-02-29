@@ -16,7 +16,7 @@
 import React, { CSSProperties, FC,  useLayoutEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
-import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
+import useButtonStyling, { BUTTON_CELLEDITOR_STYLES } from "../../../hooks/style-hooks/useButtonStyling";
 import useButtonMouseImages, { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { createDispatchActionRequest } from "../../../factories/RequestFactory";
@@ -52,7 +52,20 @@ export function isCheckboxCellEditor(props: IBaseComponent & IComponentConstants
 }
 
 export function getButtonText(props: IBaseComponent & IComponentConstants | IEditorCheckBox & IComponentConstants) {
-    return !isCheckboxCellEditor(props) ? props.text : props.cellEditor.text ? props.cellEditor.text : props.columnName
+    if (!isCheckboxCellEditor(props)) {
+        return props.text;
+    }
+    else {
+        if ((props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.BUTTON) || props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) && props.cellEditor.selectedValue === null && props.cellEditor.deselectedValue === null) {
+            return props.selectedRow ? props.selectedRow.data[props.columnName] : "";
+        }
+        else if (props.cellEditor.text === null && props.columnMetaData) {
+            return props.columnMetaData.label;
+        }
+        else {
+            return props.cellEditor.text;
+        }
+    }
 }
 
 /**
@@ -79,7 +92,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
     const popupMenu = usePopupMenu(props);
 
     /** True if the text is HTML */
-    const isHTML = useIsHTMLText(isCheckboxCellEditor(props) ? props.cellEditor.text ? props.cellEditor.text : props.columnName : props.text);
+    const isHTML = useIsHTMLText(getButtonText(props));
 
     /** Extracting onLoadCallback and id from baseProps */
     const { onLoadCallback, id } = props;
@@ -112,7 +125,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                 props.dataRow,
                 props.columnName,
                 false,
-                props.cellEditor.selectedValue,
+                props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK) ? props.selectedRow ? props.selectedRow.data[props.columnName] : null : props.cellEditor.selectedValue,
                 props.cellEditor.deselectedValue,
                 props.context.server,
                 props.rowIndex,
@@ -148,9 +161,8 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
             } as CSSProperties,
             className: concatClassnames(
                 "rc-button",
-                props.style?.includes("hyperlink") ? concatClassnames("p-component", "p-button", "p-button-link", isCompDisabled(props) ? "hyperlink-disabled" : "") : "",
+                props.style?.includes("hyperlink") || (isCheckboxCellEditor(props) && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) ? concatClassnames("p-component", "p-button", "p-button-link", isCompDisabled(props) ? "hyperlink-disabled" : "") : "",
                 !btnStyle.borderPainted ? "border-notpainted" : "",
-                props.style?.includes("hyperlink") ? "p-button-link" : "",
                 btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
                 !isCheckboxCellEditor(props) ? (props as IButton).borderOnMouseEntered ? "mouse-border" : "" : "",
                 `gap-${btnStyle.iconGapPos}`,
@@ -158,6 +170,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                 props.parent?.includes("TB") ? "rc-toolbar-button" : "",
                 btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
                 props.focusable === false ? "no-focus-rect" : "",
+                (isCheckboxCellEditor(props) && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) && !props.style?.includes("hyperlink") ? "hyperlink" : "", 
                 props.styleClassNames
             ),
             tabIndex: btnStyle.tabIndex,
@@ -171,17 +184,17 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
         }
 
         // If there is an url in props, render a hyperlink button
-        if (!isCheckboxCellEditor(props) && props.url) {
+        if ((!isCheckboxCellEditor(props) && props.url) || (isCheckboxCellEditor(props) && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK))) {
             return (
                 <span className="hyperlink-wrapper">
                     <a
                         {...btnProps}
-                        href={props.url}
-                        target={props.target}
+                        href={!isCheckboxCellEditor(props) ? props.url : undefined}
+                        target={!isCheckboxCellEditor(props) ? props.target : undefined}
                         layoutstyle-wrapper={props.name}
                         aria-label={props.ariaLabel}
                         {...popupMenu}>
-                        {props.text}
+                        {isHTML ? <RenderButtonHTML text={getButtonText(props) || ""} /> : getButtonText(props)}
                     </a>
                 </span>
 
@@ -201,7 +214,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                         tooltipOptions={{ position: "left" }}
                         layoutstyle-wrapper={props.name}
                         {...popupMenu}>
-                        {isHTML && props.text && <RenderButtonHTML text={getButtonText(props) || ""} />}
+                        {isHTML && <RenderButtonHTML text={getButtonText(props) || ""} />}
                     </Button>
                     {props.classNameEventSourceRef === "UploadButton" &&
                         // render an additional invisible input element to open the file dialog and upload files
