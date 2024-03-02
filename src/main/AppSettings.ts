@@ -34,7 +34,9 @@ type ApplicationMetaData = {
     applicationTheme: { value: string, urlSet: boolean },
     applicationName: string,
     aliveInterval?: number,
-    rememberMe?: boolean
+    rememberMe?: boolean,
+    mandatoryMarkVisible: boolean,
+    mandatoryMark?: string
 }
 
 /** Interface for whether specific buttons should be visible or not */
@@ -127,7 +129,9 @@ export default class AppSettings {
         applicationLayout: { layout: "standard", urlSet: false },
         applicationTheme: { value: "basti", urlSet: false },
         applicationColorScheme: { value: "default", urlSet: false },
-        applicationName: ""
+        applicationName: "",
+        mandatoryMarkVisible: true,
+        mandatoryMark: "*"
     };
 
     /** The visible-buttons object */
@@ -229,6 +233,8 @@ export default class AppSettings {
         this.applicationMetaData.preserveOnReload = appMetaData.preserveOnReload;
         this.applicationMetaData.aliveInterval = appMetaData.aliveInterval;
         this.applicationMetaData.rememberMe = appMetaData.rememberMe;
+        this.applicationMetaData.mandatoryMarkVisible = appMetaData.mandatoryMarkVisible ?? true;
+        this.applicationMetaData.mandatoryMark = appMetaData.mandatoryMark;
 
         if (!this.applicationMetaData.applicationLayout.urlSet) {
             if (appMetaData.applicationLayout) {
