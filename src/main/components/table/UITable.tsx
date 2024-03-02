@@ -52,6 +52,7 @@ import useDesignerUpdates from "../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../hooks/style-hooks/useHandleDesignerUpdate";
 import CellRenderer from "./CellRenderer/CellRenderer";
 import { getPrimaryKeys } from "../../util/data-util/GetMetaData";
+import { log } from "console";
 
 
 /** Interface for Table */
@@ -957,9 +958,9 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 }
             }
             return (
-                <>
+                <> 
                     <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (isNullable === false ? 
-                                   context.appSettings.applicationMetaData.mandatoryMarkVisible ? " " + context.appSettings.applicationMetaData.mandatoryMark ?? " *" : "" : "") }} />
+                                   context.appSettings.applicationMetaData.mandatoryMarkVisible ? " " + (context.appSettings.applicationMetaData.mandatoryMark ?? "*") : "" : "") }} />
                     <span onClick={() => handleSort(colName)} className="p-sortable-column-icon pi pi-fw"></span>
                     <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
