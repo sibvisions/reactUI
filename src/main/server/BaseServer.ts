@@ -98,6 +98,9 @@ export default abstract class BaseServer {
     /** True, if the translation has been fetched */
     translationFetched: boolean = false;
 
+    /** True, if the css-designer translation has been fetched */
+    cssDesignerTranslationFetched: boolean = false;
+
     /** True, if UIRefresh is currently in progress */
     uiRefreshInProgress: boolean = false;
 
@@ -898,7 +901,6 @@ export default abstract class BaseServer {
                         formattedRecords.forEach((formattedRecord, i) => {
                             dataArray[i]["__recordFormats"] = formattedRecord;
                         });
-                        console.log(dataArray)
                         dataBook.data.set("current", dataArray);
                     }
                 }

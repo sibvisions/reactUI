@@ -117,7 +117,7 @@ const UIManager: FC<IUIManagerProps> = (props) => {
         return () => {
             context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions) => setMenuOptions(menuOptions));
             context.subscriptions.unsubscribeFromTheme("uimanager");
-            context.subscriptions.unsubscribeFromActiveScreens("workscreen");
+            context.subscriptions.unsubscribeFromActiveScreens("uimanager");
         }
     }, [context.subscriptions])
 

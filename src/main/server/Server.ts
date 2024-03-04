@@ -46,7 +46,7 @@ import { indexOfEnd } from "../util/string-util/IndexOfEnd";
 import { History } from "history";
 import { createOpenScreenRequest } from "../factories/RequestFactory";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
-import { translation } from "../util/other-util/Translation";
+import { cssTranslation, translation } from "../util/other-util/Translation";
 import { overwriteLocaleValues, setDateLocale, setPrimeReactLocale } from "../util/other-util/GetDateLocale";
 import IBaseComponent from "../util/types/IBaseComponent";
 import DispatchActionRequest from "../request/events/DispatchActionRequest";
@@ -701,23 +701,41 @@ class Server extends BaseServer {
      * @param langData - the language data
      */
     async language(langData:LanguageResponse) {
-        if (langData.languageResource && !this.errorIsDisplayed) {
-            if (!this.translationFetched) {
-                await this.timeoutRequest(fetch(this.RESOURCE_URL + langData.languageResource), this.timeoutMs)
-                .then((response:any) => response.text())
-                .then(value => parseString(value, (err, result) => { 
+        const fetchTranslation = async (resource: string, isCSSDesigner: boolean) => {
+            const flag = isCSSDesigner ? this.cssDesignerTranslationFetched : this.translationFetched;
+            const translationMap = isCSSDesigner ? cssTranslation : translation;
+            if (!flag) {
+                await this.timeoutRequest(fetch(resource), this.timeoutMs)
+                .then((response:any) => {
+                    if (400 <= response.status && response.status <= 599) {
+                        return Promise.reject("Error fetching translation file " + (isCSSDesigner ? "CSS" : "default"))
+                    }
+                    return response.text()
+                })
+                .then(value => parseString(value, (err, result) => {
                     if (result) {
                         if (result.properties) {
-                            // After fetching the translation, fill the translation map, overwrite and set the locals and set translation appready param true
-                            result.properties.entry.forEach((entry:any) => translation.set(entry.$.key, entry._))
+                            result.properties.entry.forEach((entry: any) => translationMap.set(entry.$.key, entry._));
                         }
-                        overwriteLocaleValues(langData.langCode ? langData.langCode : "en");
-                        setPrimeReactLocale();
-                        this.appSettings.setAppReadyParam("translation");
-                        this.translationFetched = true;
+
+                        if (!isCSSDesigner) {
+                            overwriteLocaleValues(langData.langCode ? langData.langCode : "en");
+                            setPrimeReactLocale();
+                            this.appSettings.setAppReadyParam("translation");
+                            this.translationFetched = true;
+                        }
+                        else {
+                            this.appSettings.setAppReadyParam("cssTranslation");
+                            this.cssDesignerTranslationFetched = true;
+                        }
                     }
-                }));
+                }))
             }
+        }
+
+        if (langData.languageResource && !this.errorIsDisplayed) {
+            fetchTranslation(this.RESOURCE_URL + langData.languageResource, false);
+            fetchTranslation(this.RESOURCE_URL + "/com/sibvisions/apps/mobile/demo/translation_cssdesigner_de.xml", true).catch(() => this.appSettings.setAppReadyParam("cssTranslation"));
         }
         else {
             this.subManager.emitErrorBarProperties(true, false, false, 5, translation.get("Could not load translation"), translation.get("An error occured while fetching the translation."));

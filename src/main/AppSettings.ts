@@ -65,6 +65,7 @@ export type AppReadyType = {
     startupDone: boolean
     userOrLoginLoaded: boolean
     translationLoaded: boolean
+    cssTranslationLoaded: boolean
 }
 
 /** The AppSettings stores settings and flags for the application */
@@ -86,13 +87,13 @@ export default class AppSettings {
     }
 
     /** The logo to display when the menu is expanded */
-    LOGO_BIG:string = "/assets/logo_big.png";
+    LOGO_BIG:string = "/assets/basti/logo_big.png";
 
     /** The logo to display when the menu is collapsed */
-    LOGO_SMALL:string = "/assets/logo_small.png";
+    LOGO_SMALL:string = "/assets/basti/logo_small.png";
 
     /** The logo to display at the login screen */
-    LOGO_LOGIN:string = "/assets/logo_login.png";
+    LOGO_LOGIN:string = "/assets/basti/logo_login.png";
 
     /** The current region */
     locale:string = navigator.language.split("-")[0];
@@ -179,7 +180,8 @@ export default class AppSettings {
         themeCSSLoaded: false,
         startupDone: false,
         userOrLoginLoaded: false,
-        translationLoaded: false
+        translationLoaded: false,
+        cssTranslationLoaded: false
     }
     
     /** True, if the app is ready */
@@ -282,12 +284,18 @@ export default class AppSettings {
                 const designerTheme = sessionStorage.getItem("reactui-designer-theme-" + appMetaData.applicationName) as string;
                 this.applicationMetaData.applicationTheme.value = designerTheme;
                 addCSSDynamically('themes/' + designerTheme + '.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
+                this.LOGO_BIG = "/assets/" + designerTheme + "/logo_big.png";
+                this.LOGO_SMALL = "/assets/" + designerTheme + "/logo_small.png";
+                this.LOGO_LOGIN = "/assets/" + designerTheme + "/logo_login.png";
                 this.#subManager.emitThemeChanged(designerTheme);
             }
             else {
                 if (appMetaData.applicationTheme) {
                     this.applicationMetaData.applicationTheme.value = appMetaData.applicationTheme;
                     addCSSDynamically('themes/' + appMetaData.applicationTheme + '.css', "themeCSS", () => this.setAppReadyParam("themeCSS"));
+                    this.LOGO_BIG = "/assets/" + appMetaData.applicationTheme + "/logo_big.png";
+                    this.LOGO_SMALL = "/assets/" + appMetaData.applicationTheme + "/logo_small.png";
+                    this.LOGO_LOGIN = "/assets/" + appMetaData.applicationTheme + "/logo_login.png";
                     this.#subManager.emitThemeChanged(appMetaData.applicationTheme);
                 }
                 else {
@@ -402,7 +410,7 @@ export default class AppSettings {
     }
 
     /** Sets one of the app-ready parameters, if all of the needed parameters are true, set appReady to true,, then the loadingscreen gets removed and the menu/login is shown */
-    setAppReadyParam(param:"applicationCSS"|"schemeCSS"|"themeCSS"|"startup"|"userOrLogin"|"translation") {
+    setAppReadyParam(param:"applicationCSS"|"schemeCSS"|"themeCSS"|"startup"|"userOrLogin"|"translation"|"cssTranslation") {
         switch (param) {
             case "applicationCSS":
                 this.appReadyParams.appCSSLoaded = true;
@@ -428,6 +436,10 @@ export default class AppSettings {
                 this.appReadyParams.translationLoaded = true;
                 this.#subManager.notifyAppReadyParamsChange();
                 break;
+            case "cssTranslation":
+                this.appReadyParams.cssTranslationLoaded = true;
+                this.#subManager.notifyAppReadyParamsChange();
+                break;
             default:
                 break;
         }
@@ -441,7 +453,7 @@ export default class AppSettings {
         }
         else {
             if (!this.appReady && this.appReadyParams.appCSSLoaded && this.appReadyParams.schemeCSSLoaded && this.appReadyParams.themeCSSLoaded 
-                && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded) {
+                && this.appReadyParams.userOrLoginLoaded && this.appReadyParams.translationLoaded && this.appReadyParams.cssTranslationLoaded) {
                     this.cssToAddWhenReady.forEach(css => document.head.appendChild(css));
                     this.appReady = true;
                     this.#subManager.emitAppReady(true);
@@ -458,7 +470,8 @@ export default class AppSettings {
             themeCSSLoaded: false,
             startupDone: false,
             userOrLoginLoaded: false,
-            translationLoaded: false
+            translationLoaded: false,
+            cssTranslationLoaded: false
         };
     }
 }

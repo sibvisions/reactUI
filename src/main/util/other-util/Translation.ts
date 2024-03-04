@@ -215,5 +215,8 @@ export const translation = new Map()
     .set("Server error!", "Server error!")
     .set("Timeout! Couldn't connect to the server.", "Timeout! Couldn't connect to the server.")
     .set("Could not load translation", "Could not load translation")
-    .set("An error occured while fetching the translation.", "An error occured while fetching the translation")
+    .set("An error occured while fetching the translation.", "An error occured while fetching the translation");
+
+export const cssTranslation = new Map()
+    .set("General", "General");
 

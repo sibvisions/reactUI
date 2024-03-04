@@ -24,7 +24,7 @@ import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
  * @param loadBackFunction - the loadBackFunction received by 'usecomponents'
  * @param additionalDependency - an optional additional dependency to trigger the useEffect
  */
-const useAddLayoutStyle = (className: string, ref: any, layoutStyle: CSSProperties|undefined, loadBackFunction:LoadCallBack|undefined, addDep1?:any, addDep2?:any) => {
+const useAddLayoutStyle = (className: string, designerUpdate:boolean|undefined, ref: any, layoutStyle: CSSProperties|undefined, loadBackFunction:LoadCallBack|undefined, addDep1?:any, addDep2?:any) => {
     useLayoutEffect(() => {
         if ([COMPONENT_CLASSNAMES.INTERNAL_FRAME, COMPONENT_CLASSNAMES.MOBILELAUNCHER, COMPONENT_CLASSNAMES.DESKTOPPANEL,
              COMPONENT_CLASSNAMES.SPLITPANEL, COMPONENT_CLASSNAMES.TOOLBARPANEL, COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER,
@@ -36,6 +36,6 @@ const useAddLayoutStyle = (className: string, ref: any, layoutStyle: CSSProperti
                     ref.style.setProperty("height", layoutStyle?.height !== undefined ? `${layoutStyle.height}px`: null);
                 }
             }
-    }, [layoutStyle, loadBackFunction, addDep1, addDep2, className])
+    }, [layoutStyle, loadBackFunction, addDep1, addDep2, className, designerUpdate])
 }
 export default useAddLayoutStyle

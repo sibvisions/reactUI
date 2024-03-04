@@ -39,6 +39,6 @@ const useHandleDesignerUpdate = (className:string, designerUpdate:boolean|undefi
         }
     }, [designerUpdate])
 
-    useAddLayoutStyle(className, labelRef ? labelRef : ref, layoutStyle, loadCallBackFunc, additionalDependency)
+    useAddLayoutStyle(className, designerUpdate, labelRef ? labelRef : ref, layoutStyle, loadCallBackFunc, additionalDependency)
 }
 export default useHandleDesignerUpdate

@@ -30,6 +30,7 @@ import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
 import ErrorResponse from "./main/response/error/ErrorResponse";
+import { cssTranslation } from "./main/util/other-util/Translation";
 
 /** The interface of the appwrapper */
 interface IAppWrapper {
@@ -258,7 +259,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         setShowDesigner={() => setShowDesignerView(prevState => !prevState)}
                         changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
                         uploadCallback={(schemeFileName: string, themeFileName: string) => { }}
-                        transferType={context.transferType} >
+                        transferType={context.transferType}
+                        //translation={cssTranslation}
+                         >
                         {content}
 
                     </ReactUIDesigner> :

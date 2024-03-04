@@ -210,6 +210,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
         let wsPingIntervalToSet:number|undefined = undefined;
         let autoRestartSession:boolean = false;
 
+        let logoBigAlreadySet = false;
+        let logoSmallAlreadySet = false;
+        let logoLoginAlreadySet = false;
+
         /** Initialises the websocket and handles the messages the server sends and sets the ping interval. also handles reconnect */
         const initWS = (baseURL:string) => {
             let pingInterval = new Timer(() => ws.current?.send("PING"), contextState.server.wsPingInterval >= 10000 ? contextState.server.wsPingInterval : 10000);
@@ -519,10 +523,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
         
                     if (data.logoBig) {
                         contextState.appSettings.LOGO_BIG = data.logoBig;
+                        logoBigAlreadySet = true;
                     }
         
                     if (data.logoSmall) {
                         contextState.appSettings.LOGO_SMALL = data.logoSmall;
+                        logoSmallAlreadySet = true;
                     } 
                     else if (data.logoBig) {
                         contextState.appSettings.LOGO_SMALL = data.logoBig;
@@ -530,6 +536,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         
                     if (data.logoLogin) {
                         contextState.appSettings.LOGO_LOGIN = data.logoLogin;
+                        logoLoginAlreadySet = true;
                     }
                     else if (data.logoBig) {
                         contextState.appSettings.LOGO_LOGIN = data.logoBig;
@@ -684,6 +691,19 @@ const AppProvider: FC<ICustomContent> = (props) => {
             // load the set theme into dom
             if (themeToSet) {
                 contextState.appSettings.setApplicationThemeByURL(themeToSet);
+
+                if (!logoBigAlreadySet) {
+                    contextState.appSettings.LOGO_BIG = "/assets/" + themeToSet + "/logo_big.png";
+                }
+
+                if (!logoSmallAlreadySet) {
+                    contextState.appSettings.LOGO_SMALL = "/assets/" + themeToSet + "/logo_small.png";
+                }
+
+                if (!logoLoginAlreadySet) {
+                    contextState.appSettings.LOGO_LOGIN = "/assets/" + themeToSet + "logo_login.png";
+                }
+
                 addCSSDynamically('themes/' + themeToSet + '.css', "themeCSS", () => contextState.appSettings.setAppReadyParam("themeCSS"));
                 contextState.subscriptions.emitThemeChanged(themeToSet);
             }

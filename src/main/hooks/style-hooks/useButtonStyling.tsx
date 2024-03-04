@@ -84,6 +84,9 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
     /** Rerender triggers when the button background changes */
     const designerBgdChanged = useButtonBackground();
 
+    /** Button background */
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [props.designerUpdate]);
+
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
         const isCB = isCheckboxCellEditor(props);
@@ -126,7 +129,7 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
             alignItems: btnAlign,
             padding: margins ? margins.marginTop + 'px ' + margins.marginRight + 'px ' + margins.marginBottom + 'px ' + margins.marginLeft + 'px' : undefined,
         }
-    }, [compStyle, !isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, margins, designerBgdChanged]);
+    }, [compStyle, !isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, margins, designerBgdChanged, btnBgd]);
 
     /** The image property parsed as usable icon props */
     const iconProps = useMemo(() => parseIconData(compStyle?.color as string, !isCheckboxCellEditor(props) ? props.image : props.cellEditor.imageName), [compStyle?.color, props.image]);
