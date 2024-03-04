@@ -27,11 +27,13 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     applicationName: string
     applicationTheme: string
     applicationColorScheme: string
-    applicationDesign?:string
+    applicationDesign?: string
     aliveInterval?: number
     wsPingInterval?: number
-    userRestart?:boolean
-    foldMenuOnCollapse?:boolean,
-    rememberMe?: boolean
+    userRestart?: boolean
+    foldMenuOnCollapse?: boolean,
+    rememberMe?: boolean,
+    mandatoryMarkVisible?: boolean,
+    mandatoryMark?: string
 }
 export default ApplicationMetaDataResponse;

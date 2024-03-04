@@ -961,7 +961,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
             return (
                 <>
-                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{ __html: props.columnLabels[colIndex] + (isNullable === false ? " *" : "") }} />
+                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{
+                        __html: props.columnLabels[colIndex] + (isNullable === false ?
+                            props.context.appSettings.applicationMetaData.mandatoryMarkVisible ? " " + (props.context.appSettings.applicationMetaData.mandatoryMark ?? " *") : "" : "")
+                    }} />
                     <span onClick={() => handleSort(colName)} className="p-sortable-column-icon pi pi-fw"></span>
                     <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
                 </>)
