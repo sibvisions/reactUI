@@ -217,6 +217,5 @@ export const translation = new Map()
     .set("Could not load translation", "Could not load translation")
     .set("An error occured while fetching the translation.", "An error occured while fetching the translation");
 
-export const cssTranslation = new Map()
-    .set("General", "General");
+export const cssTranslation = new Map();
 

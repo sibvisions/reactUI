@@ -260,7 +260,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         changeTheme={(newTheme: string) => context.subscriptions.emitThemeChanged(newTheme)}
                         uploadCallback={(schemeFileName: string, themeFileName: string) => { }}
                         transferType={context.transferType}
-                        //translation={cssTranslation}
+                        translation={cssTranslation}
                          >
                         {content}
 

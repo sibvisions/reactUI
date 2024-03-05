@@ -67,6 +67,9 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** True, if the first popup size initialization has completed. */
     const [initializePopup, setInitializePopup] = useState<boolean>(false);
 
+    /** True, if the popup is currently maximized */
+    const [maximized, setMaximized] = useState<boolean>(false);
+
     /** Subscribes the resize-handler to the theme */
     useEffect(() => {
         context.subscriptions.subscribeToTheme("popup", (theme:string) => setAppTheme(theme));
@@ -194,6 +197,7 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (popupRef.current && popupRef.current.getContent() && comp) {
             const sizeMap = new Map<string, CSSProperties>();
             const popupSize:Dimension = { height: popupRef.current.getContent().offsetHeight, width: popupRef.current.getContent().offsetWidth };
+            console.log(popupSize)
             sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }
@@ -211,6 +215,8 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         }
     }, [componentSizes]);
 
+    console.log(popupRef.current?.getContent()?.offsetHeight)
+
     // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any
     return (
         <LayoutContext.Provider value={componentSize}>
@@ -225,6 +231,15 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 baseZIndex={1010}
                 ref={popupRef}
                 //onShow={() => handleInitialSize()}
+                resizable={props.screen_resizable_ || props.content_resizable_}
+                closable={props.screen_closable_ || props.content_closable_}
+                maximized={maximized}
+                maximizable={props.screen_maximizable_ || props.content_maximizable_}
+                onMaximize={(e) => {
+                    setMaximized(e.maximized);
+                    setTimeout(() => handlePopupResize(), 0)
+                    
+                }}
                 onResize={() => handleResize()}
                 closeOnEscape={false}
                 >

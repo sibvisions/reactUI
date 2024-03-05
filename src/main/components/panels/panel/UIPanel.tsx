@@ -40,7 +40,15 @@ export interface IPanel extends IBaseComponent {
     screen_size_?: string,
     content_className_?: string,
     content_modal_?: boolean,
-    content_title_?: string
+    content_title_?: string,
+    screen_resizable_?: boolean,
+    screen_iconifiable_?: boolean,
+    screen_maximizable_?: boolean,
+    screen_closable_?: boolean,
+    content_resizable_?: boolean,
+    content_iconifiable_?: boolean,
+    content_maximizable_?: boolean,
+    content_closable_?: boolean
 }
 
 /**
