@@ -13,6 +13,7 @@
  * the License.
  */
 :root {
+  --font-family:"Roboto";
   --font-size:12px;
   --login-form-top-bottom-padding:30px;
   --login-form-left-right-padding:40px;

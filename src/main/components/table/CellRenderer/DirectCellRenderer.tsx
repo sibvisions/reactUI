@@ -13,10 +13,12 @@
  * the License.
  */
 
-import React, { FC, useContext, useRef } from "react";
+import React, { FC, useContext, useMemo, useRef } from "react";
 import CellEditorWrapper from "../../editors/CellEditorWrapper";
 import { ICellRender } from "../CellEditor";
 import { appContext } from "../../../contexts/AppProvider";
+import { getAlignments } from "../../comp-props/GetAlignments";
+import { IEditor } from "../../editors/IEditor";
 
 /**
  * This Component renders Direct-Cell-Editors, which can be clicked directly and don't have to be opened extra. Eg. Checkbox and Choice
@@ -27,33 +29,39 @@ const DirectCellRenderer: FC<ICellRender> = (props) => {
     const forwardedRef = useRef<any>();
 
     /** Use context to gain access for contentstore and server methods */
-    const context = useContext(appContext)
+    const context = useContext(appContext);
+
+    const cellEditorWrapperProps = useMemo(() => {
+        return {
+            id: "",
+            ...props.columnMetaData,
+            name: props.name,
+            dataRow: props.dataProvider,
+            columnName: props.colName,
+            cellEditor_editable_: true,
+            editorStyle: { width: "100%", height: "100%" },
+            autoFocus: true,
+            rowIndex: () => props.rowNumber,
+            filter: props.filter,
+            readonly: !props.isEditable,
+            isCellEditor: true,
+            rowNumber: props.rowNumber,
+            colIndex: props.colIndex,
+            forwardedRef: forwardedRef,
+            context: context,
+            topbar: context.server.topbar,
+            layoutStyle: { width: "100%", height: "100%" }
+        }
+    }, [props]);
+
+    const alignments = useMemo(() => getAlignments({...cellEditorWrapperProps, className: "Editor"}), [cellEditorWrapperProps]);
+
+    console.log(alignments, cellEditorWrapperProps)
 
     return (
         <>
-            <span className="cell-data-content" style={{ display: "flex", justifyContent: "center", alignItems:"center", width: "100%", height: "100%" }}>
-                <CellEditorWrapper
-                    {...{
-                        id: "",
-                        ...props.columnMetaData,
-                        name: props.name,
-                        dataRow: props.dataProvider,
-                        columnName: props.colName,
-                        cellEditor_editable_: true,
-                        editorStyle: { width: "100%", height: "100%" },
-                        autoFocus: true,
-                        rowIndex: () => props.rowNumber,
-                        filter: props.filter,
-                        readonly: !props.isEditable,
-                        isCellEditor: true,
-                        rowNumber: props.rowNumber,
-                        colIndex: props.colIndex,
-                        forwardedRef: forwardedRef,
-                        context: context,
-                        topbar: context.server.topbar,
-                        layoutStyle: { width: "100%", height: "100%" }
-                    }}
-                />
+            <span className="cell-data-content" style={{ display: "flex", justifyContent: alignments.ha, alignItems: alignments.va, width: "100%", height: "100%" }}>
+                <CellEditorWrapper {...cellEditorWrapperProps} />
             </span>
         </>
     )
