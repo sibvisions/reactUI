@@ -915,11 +915,12 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             }
                         })
                     }
+                    
                     /** Set the state of the calculated Style */
                     calculatedStyle.current = {
                         style: {
-                            height: style?.height || borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
-                            width: style?.width || borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
+                            height: borderConstraint.bottomAnchor.position - borderConstraint.topAnchor.position,
+                            width: borderConstraint.rightAnchor.position - borderConstraint.leftAnchor.position,
                             left:  style?.left || borderConstraint.leftAnchor.getAbsolutePosition(),
                             top:  style?.top || borderConstraint.topAnchor.getAbsolutePosition(),
                             position: "relative",
