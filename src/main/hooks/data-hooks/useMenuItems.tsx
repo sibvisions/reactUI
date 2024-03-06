@@ -31,6 +31,35 @@ import * as _ from "underscore"
 import { ActiveScreen } from "../../contentstore/BaseContentStore";
 
 /**
+ * Removes the active classname from all menuitems
+ * @param items - the menuitems
+ */
+function removeActiveClassName(items: MenuItem[]) {
+    items.forEach(item => {
+        if (item.items) {
+            removeActiveClassName(item.items as MenuItem[]);
+        }
+        else {
+            if (item.className && item.className.includes("p-menuitem--active")) {
+                item.className = item.className.replace(" p-menuitem--active", "");
+            }
+        }
+    })
+}
+
+/**
+ * Adds the active classname to the selected menuitem
+ * @param items - the menuitems
+ * @param selectedMenuItemId - the id of the selected menuitem
+ */
+function addActiveClassName(items: MenuItem[], selectedMenuItemId: string) {
+    const foundMenuItem:MenuItem|null = getSelectedMenuItem(items, selectedMenuItemId);
+    if (foundMenuItem) {
+        foundMenuItem.className = concatClassnames(foundMenuItem.className, "p-menuitem--active");
+    }
+}
+
+/**
  * Returns the menuitems
  * @param menus - the menugroups in v2
  * @param isCorp - true, if the menu layout is corporation
@@ -46,7 +75,10 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
     const [appTheme, setAppTheme] = useState<string>(context.appSettings.applicationMetaData.applicationTheme.value);
 
     /** State of the active-screens */
-    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);  
+    const [activeScreens, setActiveScreens] = useState<ActiveScreen[]>(context.contentStore.activeScreens);
+    
+    // The current selected menu-item based on the active-screen
+    const selectedMenuItemId = useMemo(() => getSelectedMenuItemId(activeScreens, context), [activeScreens]);
 
     // Subscribes to the theme
     useEffect(() => {
@@ -201,6 +233,8 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
                 });
             }
 
+            addActiveClassName(primeMenu, selectedMenuItemId);
+
             setMenuItems(primeMenu);
         }
 
@@ -270,32 +304,11 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
         }
     }, [context.subscriptions, menus, appTheme]);
 
-    // The current selected menu-item based on the active-screen
-    const selectedMenuItemId = useMemo(() => getSelectedMenuItemId(activeScreens, context), [activeScreens]);
-
     useEffect(() => {
         if (menuItems.length) {
-            // First remove the active classname from all items
-            const removeActiveClassName = (items: MenuItem[]) => {
-                items.forEach(item => {
-                    if (item.items) {
-                        removeActiveClassName(item.items as MenuItem[]);
-                    }
-                    else {
-                        if (item.className && item.className.includes("p-menuitem--active")) {
-                            item.className = item.className.replace(" p-menuitem--active", "");
-                        }
-                    }
-                })
-            }
-
             removeActiveClassName(menuItems);
-            // Then find the selected menuitem and add the className to geht the selected color
-            const foundMenuItem:MenuItem|null = getSelectedMenuItem(menuItems, selectedMenuItemId);
-            if (foundMenuItem) {
-                foundMenuItem.className = concatClassnames(foundMenuItem.className, "p-menuitem--active");
-            }
-            setMenuItems([...menuItems])
+            addActiveClassName(menuItems, selectedMenuItemId);
+            setMenuItems([...menuItems]);
         }
     }, [selectedMenuItemId])
 
