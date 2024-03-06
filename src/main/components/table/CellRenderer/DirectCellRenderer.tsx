@@ -56,8 +56,6 @@ const DirectCellRenderer: FC<ICellRender> = (props) => {
 
     const alignments = useMemo(() => getAlignments({...cellEditorWrapperProps, className: "Editor"}), [cellEditorWrapperProps]);
 
-    console.log(alignments, cellEditorWrapperProps)
-
     return (
         <>
             <span className="cell-data-content" style={{ display: "flex", justifyContent: alignments.ha, alignItems: alignments.va, width: "100%", height: "100%" }}>

@@ -707,7 +707,7 @@ body {
             }
 
             &.p-menuitem--active {
-                .p-menuitem-link {
+                .p-menuitem-link, .p-menuitem-link:not(.p-disabled):hover {
                     .p-menuitem-text, .p-menuitem-icon {
                         color: var(--std-menu-activeitem-color);
                     }

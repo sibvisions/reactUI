@@ -197,7 +197,6 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         if (popupRef.current && popupRef.current.getContent() && comp) {
             const sizeMap = new Map<string, CSSProperties>();
             const popupSize:Dimension = { height: popupRef.current.getContent().offsetHeight, width: popupRef.current.getContent().offsetWidth };
-            console.log(popupSize)
             sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }
@@ -214,8 +213,6 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
             handleAfterInitial();
         }
     }, [componentSizes]);
-
-    console.log(popupRef.current?.getContent()?.offsetHeight)
 
     // Calls lib-user events onDragStart, onDrag, onDragEnd if there are any
     return (

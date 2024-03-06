@@ -689,12 +689,6 @@ body {
         }
     }
 
-    .p-panelmenu-header-content {
-        background: var(--std-menu-background);
-        border-color: var(--std-menu-background);
-        color: var(--std-menu-text-color);
-    }
-
     .p-panelmenu-content {
         background: var(--std-menu-background);
 
@@ -714,7 +708,7 @@ body {
             }
 
             &.p-menuitem--active {
-                .p-menuitem-link {
+                .p-menuitem-link, .p-menuitem-link:not(.p-disabled):hover {
                     .p-menuitem-text, .p-menuitem-icon {
                         color: var(--std-menu-activeitem-color);
                     }

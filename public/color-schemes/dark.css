@@ -329,11 +329,6 @@ body {
   border-color: var(--std-menu-item-hover-background);
   color: var(--std-menu-item-hover-text-color);
 }
-.p-panelmenu .p-panelmenu-header-content {
-  background: var(--std-menu-background);
-  border-color: var(--std-menu-background);
-  color: var(--std-menu-text-color);
-}
 .p-panelmenu .p-panelmenu-content {
   background: var(--std-menu-background);
 }
@@ -349,7 +344,7 @@ body {
 .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled):hover .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text {
   color: var(--std-menu-item-hover-text-color);
 }
-.p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link .p-menuitem-text, .p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link .p-menuitem-icon {
+.p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link .p-menuitem-text, .p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text, .p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link:not(.p-disabled):hover .p-menuitem-icon {
   color: var(--std-menu-activeitem-color);
 }
 
