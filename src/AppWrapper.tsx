@@ -182,13 +182,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                             })
                         }
 
-                        // Open a welcome screen if available or route to home instead of displaying blank page
-                        if (context.appSettings.welcomeScreen.name) {
-                            showTopBar(context.api.sendOpenScreenRequest(context.appSettings.welcomeScreen.name), context.server.topbar)
-                        }
-                        else if (pathName === "/") {
-                            history.replace("/home")
-                        }
+                        history.replace("/home")
                     }
                 }
                 prevLocation.current = history.location.pathname;

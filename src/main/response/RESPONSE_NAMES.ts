@@ -37,7 +37,6 @@ enum RESPONSE_NAMES {
     LANGUAGE="language",
     APPLICATION_SETTINGS="applicationSettings",
     DEVICE_STATUS="deviceStatus",
-    WELCOME_DATA="welcomeData",
     CLOSE_FRAME="closeFrame",
     CONTENT="content",
     CLOSE_CONTENT="closeContent",

@@ -20,7 +20,6 @@ import IBaseComponent from "../../util/types/IBaseComponent";
 interface GenericResponse extends ComponentResponse {
     changedComponents: Array<IBaseComponent>,
     update: boolean,
-    home: boolean,
-    welcome: boolean
+    home: boolean
 }
 export default GenericResponse

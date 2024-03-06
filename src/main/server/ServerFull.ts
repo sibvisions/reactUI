@@ -139,7 +139,6 @@ export default class ServerFull extends BaseServer {
     //.set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this))
     //.set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this))
     .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this))
-    //.set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this))
     //.set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this))
     //.set(RESPONSE_NAMES.CLOSE_CONTENT, this.closeContent.bind(this))
     .set(RESPONSE_NAMES.UI, this.handleUIResponse.bind(this))
