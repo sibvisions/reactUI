@@ -476,7 +476,7 @@ export function convertIcon(icon:string) {
         return "far fa-lemon"
     
         case 'phone':
-        return "fas fa-phone"
+        return "fas fa-phone-alt"
     
         case 'square-o':
         return "far fa-square"
@@ -485,7 +485,7 @@ export function convertIcon(icon:string) {
         return "far fa-bookmark"
     
         case 'phone-square':
-        return "fas fa-phone-square"
+        return "fas fa-phone-square-alt"
     
         case 'twitter':
         return "fab fa-twitter"
