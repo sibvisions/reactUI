@@ -159,6 +159,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
             _.debounce(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
         }
+        event.preventDefault()
     }
 
     /** Removes the dragging eventListeners */
