@@ -252,7 +252,6 @@ class Server extends BaseServer {
         .set(RESPONSE_NAMES.INFORMATION, this.showInfo.bind(this))
         .set(RESPONSE_NAMES.APPLICATION_SETTINGS, this.applicationSettings.bind(this))
         .set(RESPONSE_NAMES.DEVICE_STATUS, this.deviceStatus.bind(this))
-        .set(RESPONSE_NAMES.WELCOME_DATA, this.welcomeData.bind(this))
         .set(RESPONSE_NAMES.DIALOG, this.showMessageDialog.bind(this))
         .set(RESPONSE_NAMES.CLOSE_FRAME, this.closeFrame.bind(this))
         .set(RESPONSE_NAMES.CONTENT, this.content.bind(this))
@@ -457,23 +456,7 @@ class Server extends BaseServer {
                 }
             }
     
-            // If there is a welcome screen and it hasnt been opened yet
-            if (this.appSettings.welcomeScreen.name && !this.appSettings.welcomeScreen.initOpened) {
-                const pathName = (this.history as History).location.pathname as string;
-                // If there is a screen to open because there is a navigation-name set at the very beginning (url), open it.
-                const screenToOpen = this.contentStore.navigationNames.get(pathName.replaceAll("/", "").substring(indexOfEnd(pathName, "screens") - 1))?.componentId;
-                // Check if the url screen to open is the welcome screen or the response is a home screen and there is no screen to open via url or the screen cant be found in the navigationnames
-                if ((screenToOpen && screenToOpen.split(":")[0] === this.appSettings.welcomeScreen.name) || ((genericData.home || genericData.welcome) && (!this.linkOpen || !screenToOpen))) {
-                    openScreen()
-                }
-                else {
-                    this.noWelcomeRoute = true;
-                }
-                this.appSettings.welcomeScreen.initOpened = true;
-            }
-            else {
-                openScreen();
-            }
+            openScreen();
         }
         else {
             this.ignoreHome = false;
@@ -748,14 +731,6 @@ class Server extends BaseServer {
             this.contentStore.updateContent(appSettings.desktop, true);
         }
         this.subManager.emitAppSettings();
-    }
-
-    /**
-     * Sets the welcome-screen in app-settings
-     * @param welcomeData - the welcome-data response
-     */
-    welcomeData(welcomeData:WelcomeDataResponse) {
-        this.appSettings.setWelcomeScreen(welcomeData.homeScreen);
     }
 
     // Closes a frame
