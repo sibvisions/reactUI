@@ -152,6 +152,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     /** True, if the overlaypanel is visible */
     const [visible, setVisible] = useState<boolean>(false);
 
+    const onDateClicked = useRef<boolean>(false);
+
     /** The month/year which is currently displayed in the panel */
     const [viewDate, setViewDate] = useState<any>(convertToTimeZone(true));
 
@@ -421,16 +423,13 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 }}
                 value={isValidDate(dateValue) ? new Date(dateValue) : undefined}
                 appendTo={document.body}
-                onChange={event => {
+                onChange={event => {               
                     //@ts-ignore
                     setDateValue(event.value ? event.value : null);
 
-                    if (showTime && event.value && !timeChanged(event.value as Date, dateValue)) {
-                        calendar.current?.hide();
-                    }
-
-                    if (calendarInput.current) {
-                        calendarInput.current.focus();
+                    if (event.originalEvent?.type === "click") {
+                        onDateClicked.current = true;
+                        setTimeout(() => handleDateInput(), 0);
                     }
                 }}
                 onFocus={(event) => {
@@ -466,20 +465,51 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 readOnlyInput={props.isReadOnly || hasError}
                 //disabled={props.isReadOnly || hasError}
                 onVisibleChange={event => {
-                    // If the viewDate has changed do NOT change visibility
-                    if (!viewDateChanged.current) {
-                        setVisible(prevState => !prevState);
-                    }
-                    
-                    if (!focused.current) {
-                        handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
-                        focused.current = true;
-                    }
-                    if (event.type === 'outside') {
-                        if (props.eventFocusLost) {
-                            onFocusLost(props.name, props.context.server);
+                    if (showTime) {
+                        if (onDateClicked.current) {
+                            onDateClicked.current = false;
                         }
-                        focused.current = false;
+                        else {
+                            // If the viewDate has changed do NOT change visibility
+                            if (!viewDateChanged.current) {
+                                setVisible(prevState => !prevState);
+                            }
+
+                            if (!focused.current) {
+                                handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
+                                focused.current = true;
+                            }
+                            if (event.type === 'outside') {
+                                if (props.eventFocusLost) {
+                                    onFocusLost(props.name, props.context.server);
+                                }
+                                focused.current = false;
+                            }
+                        }
+                    }
+                    else {
+                        if (onDateClicked.current) {
+                            if (event.type === "dateselect" || (event.visible && event.type === undefined && event.callback !== undefined)) {
+                                onDateClicked.current = false;
+                            }
+                        }
+                        else {
+                            // If the viewDate has changed do NOT change visibility
+                            if (!viewDateChanged.current) {
+                                setVisible(prevState => !prevState);
+                            }
+
+                            if (!focused.current) {
+                                handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
+                                focused.current = true;
+                            }
+                            if (event.type === 'outside') {
+                                if (props.eventFocusLost) {
+                                    onFocusLost(props.name, props.context.server);
+                                }
+                                focused.current = false;
+                            }
+                        }
                     }
                 }}
                 tooltip={props.toolTipText}
