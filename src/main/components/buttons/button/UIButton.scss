@@ -189,6 +189,10 @@
     justify-content: center;
     align-items: center;
 
+    a {
+        text-decoration: underline;
+    }
+
     .hyperlink-disabled {
         pointer-events: none;
     }

@@ -1101,9 +1101,6 @@ export default abstract class BaseContentStore {
             } 
         }
 
-        if (dataProvider === "FilterMaster/SelJoiWitRoo-WM/directories#3") {
-            console.log(this.dataBooks.get(screenName)?.get(dataProvider)?.data?.get('current'))
-        }
         this.subManager.notifyDataChange(screenName, dataProvider);
         this.subManager.notifyScreenDataChange(screenName);
         this.subManager.notifyTreeDataChanged(dataProvider, this.dataBooks.get(screenName)?.get(dataProvider)?.data?.get(getPageKey()), getPageKey());
@@ -1370,7 +1367,7 @@ export default abstract class BaseContentStore {
             }
             this.setDataBook(screenName, dataProvider, sr)
         }
-        //console.log(this.dataBooks.get(screenName)?.get("JVxMobileDemo/Tre-PN/firstLevel#+"))
+
         this.subManager.emitRowSelect(screenName, dataProvider);
         this.subManager.notifyTreeSelectionChanged(dataProvider, this.dataBooks.get(screenName)?.get(dataProvider)?.selectedRow)
         if (compPanel && this.isPopup(compPanel) && this.getScreenDataproviderMap(dataProvider.split('/')[1])) {

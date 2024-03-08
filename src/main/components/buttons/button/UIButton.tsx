@@ -17,7 +17,7 @@ import React, { FC,  useLayoutEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import tinycolor from 'tinycolor2';
 import useComponentConstants from "../../../hooks/components-hooks/useComponentConstants";
-import useButtonStyling from "../../../hooks/style-hooks/useButtonStyling";
+import useButtonStyling, { BUTTON_CELLEDITOR_STYLES } from "../../../hooks/style-hooks/useButtonStyling";
 import useButtonMouseImages, { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import useMouseListener from "../../../hooks/event-hooks/useMouseListener";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
@@ -35,6 +35,9 @@ import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+import BaseComponent from "../../../util/types/BaseComponent";
+import { IEditorCheckBox, handleCheckboxOnChange } from "../../editors/checkbox/UIEditorCheckbox";
+import CELLEDITOR_CLASSNAMES from "../../editors/CELLEDITOR_CLASSNAMES";
 
 export const RenderButtonHTML: FC<{ text:string }> = (props) => {
     return (
@@ -42,11 +45,36 @@ export const RenderButtonHTML: FC<{ text:string }> = (props) => {
     )
 }
 
+/** Checks if the contentstore is for transfermode full */
+export function isCheckboxCellEditor(props: BaseComponent | IEditorCheckBox): props is IEditorCheckBox {
+    if ((props as IEditorCheckBox).cellEditor) {
+        return (props as IEditorCheckBox).cellEditor?.className === CELLEDITOR_CLASSNAMES.CHECKBOX
+    }
+    return false;
+}
+
+export function getButtonText(props: BaseComponent | IEditorCheckBox, baseProps: BaseComponent | IEditorCheckBox) {
+    if (!isCheckboxCellEditor(props)) {
+        return props.text;
+    }
+    else if (isCheckboxCellEditor(baseProps)) {
+        if ((baseProps.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.BUTTON) || baseProps.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) && baseProps.cellEditor.selectedValue === null && baseProps.cellEditor.deselectedValue === null) {
+            return baseProps.selectedRow ? baseProps.selectedRow.data[baseProps.columnName] : "";
+        }
+        else if (baseProps.cellEditor.text === null && baseProps.columnMetaData) {
+            return baseProps.columnMetaData.label;
+        }
+        else {
+            return baseProps.cellEditor.text;
+        }
+    }
+}
+
 /**
  * This component displays a basic button
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
+const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox> = (baseProps) => {
     /** Reference for the button element */
     const buttonRef = useRef<any>(null);
 
@@ -56,7 +84,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButton & IExtendableButton>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButton & IExtendableButton | IEditorCheckBox>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, buttonRef.current)
@@ -108,19 +136,33 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
     const onButtonPress = (event:any) => {
-        if (props.onClick) {
-            props.onClick(event)
+        if (!isCheckboxCellEditor(props)) {
+            // ReactUI as lib, execute given event
+            if (props.onClick) {
+                props.onClick(event)
+            }
+
+            if (props.eventAction) {
+                const req = createDispatchActionRequest();
+                req.componentId = props.name;
+                req.isUploadButton = props.classNameEventSourceRef === "UploadButton" ? true : undefined
+                showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
+            }
         }
-
-        // if (inputRef.current && props.classNameEventSourceRef === "UploadButton") {
-        //     inputRef.current.click();
-        // }
-
-        if (props.eventAction) {
-            const req = createDispatchActionRequest();
-            req.componentId = props.name;
-            req.isUploadButton = props.classNameEventSourceRef === "UploadButton" ? true : undefined
-            showTopBar(context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
+        else if (isCheckboxCellEditor(baseProps)) {
+            handleCheckboxOnChange(
+                baseProps.name,
+                baseProps.dataRow,
+                baseProps.columnName,
+                false,
+                baseProps.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK) ? baseProps.selectedRow ? baseProps.selectedRow.data[props.columnName] : null : baseProps.cellEditor.selectedValue,
+                baseProps.cellEditor.deselectedValue,
+                baseProps.context.server,
+                baseProps.rowIndex,
+                baseProps.selectedRow.index,
+                baseProps.filter,
+                baseProps.isCellEditor
+            )
         }
     }
 
@@ -142,7 +184,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                     '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
                     '--iconColor': btnStyle.iconProps.color,
                     '--iconImage': `url(${context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
-                    '--iconTextGap': `${props.imageTextGap || 4}px`,
+                    '--iconTextGap': `${!isCheckboxCellEditor(props) ? (props as IButton).imageTextGap || 4 : 4}px`,
                     '--iconCenterGap': `${btnStyle.iconCenterGap}px`
                 } : {})
             } as any,
@@ -155,7 +197,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                 }
             }
         }
-        if (props.url) {
+        if ((!isCheckboxCellEditor(props) && props.url) || (isCheckboxCellEditor(baseProps) && baseProps.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK))) {
             return (
                 <span className="hyperlink-wrapper">
                     <a
@@ -166,7 +208,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                             "p-button",
                             !btnStyle.borderPainted ? "border-notpainted" : "",
                             props.style?.includes("hyperlink") ? "p-button-link" : "",
-                            props.borderOnMouseEntered ? "mouse-border" : "",
+                            !isCheckboxCellEditor(props) ? (props as IButton).borderOnMouseEntered ? "mouse-border" : "" : "",
                             `gap-${btnStyle.iconGapPos}`,
                             btnStyle.iconDirection,
                             btnStyle.iconDirection && btnStyle.style.alignItems === "center" ? "no-center-gap" : "",
@@ -174,12 +216,12 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                             isCompDisabled(props) ? "hyperlink-disabled" : "",
                             styleClassNames
                         )}
-                        href={props.url}
-                        target={props.target}
+                        href={!isCheckboxCellEditor(props) ? props.url : undefined}
+                        target={!isCheckboxCellEditor(props) ? props.target : undefined}
                         layoutstyle-wrapper={props.name + "-wrapper"}
                         aria-label={props.ariaLabel}
                         {...popupMenu}>
-                        {props.text}
+                        {isHTML ? <RenderButtonHTML text={getButtonText(props, baseProps) || ""} /> : getButtonText(props, baseProps)}
                     </a>
                 </span>
 
@@ -195,7 +237,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
                             !btnStyle.borderPainted ? "border-notpainted" : "",
                             props.style?.includes("hyperlink") ? "p-button-link" : "",
                             btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
-                            props.borderOnMouseEntered ? "mouse-border" : "",
+                            !isCheckboxCellEditor(props) ? (props as IButton).borderOnMouseEntered ? "mouse-border" : "" : "",
                             `gap-${btnStyle.iconGapPos}`,
                             btnStyle.iconDirection,
                             props.parent?.includes("TB") ? "rc-toolbar-button" : "",
@@ -239,7 +281,7 @@ const UIButton: FC<IButton & IExtendableButton> = (baseProps) => {
     }
 
     return (
-        <span id={props.name + "-wrapper"} ref={buttonWrapperRef} style={layoutStyle}>
+        <span id={props.name + "-wrapper"} ref={buttonWrapperRef} style={!props.id ? undefined: layoutStyle}>
             {getElementToRender()}
         </span>
     )

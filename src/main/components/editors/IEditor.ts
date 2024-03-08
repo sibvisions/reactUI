@@ -18,6 +18,7 @@ import BaseComponent from "../../util/types/BaseComponent";
 /** Interface for cellEditor property of CellEditors */
 export interface ICellEditor{
     className: string,
+    style?: string,
     contentType?: string,
     horizontalAlignment?: 0 | 1 | 2| 3,
     verticalAlignment?: 0 | 1 | 2| 3,
@@ -38,9 +39,10 @@ export interface IEditor extends BaseComponent{
     cellEditor_font_?:string
     cellEditor_placeholder_?:string
     cellEditor_text_?:string
+    cellEditor_style_?:string
     columnName: string,
     dataRow: string,
-    text:string,
+    text?:string,
     autoFocus?: boolean,
     nullable?: boolean,
     readonly?: boolean,

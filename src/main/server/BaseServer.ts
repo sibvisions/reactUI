@@ -847,7 +847,6 @@ export default abstract class BaseServer {
                         formattedRecords.forEach((formattedRecord, i) => {
                             dataArray[i]["__recordFormats"] = formattedRecord;
                         });
-                        console.log(dataArray)
                         dataBook.data.set("current", dataArray);
                     }
                 }

@@ -30,14 +30,15 @@ import { IExtendableSelectable } from "../../../extend-components/buttons/Extend
 import useRequestFocus from "../../../hooks/event-hooks/useRequestFocus";
 import useDesignerUpdates from "../../../hooks/style-hooks/useDesignerUpdates";
 import useHandleDesignerUpdate from "../../../hooks/style-hooks/useHandleDesignerUpdate";
-import { RenderButtonHTML } from "../button/UIButton";
+import { RenderButtonHTML, getButtonText, isCheckboxCellEditor } from "../button/UIButton";
 import useIsHTMLText from "../../../hooks/components-hooks/useIsHTMLText";
+import { IEditorCheckBox, getBooleanValueFromValue, handleCheckboxOnChange } from "../../editors/checkbox/UIEditorCheckbox";
 
 /**
  * This component displays a RadioButton and its label
  * @param baseProps - Initial properties sent by the server for this component
  */
-const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps) => {
+const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable | IEditorCheckBox> = (baseProps) => {
     /** Reference for the RadioButton element */
     const rbRef = useRef<any>(null)
 
@@ -48,7 +49,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
     const buttonWrapperRef = useRef<HTMLSpanElement>(null);
 
     /** Component constants for contexts, properties and style */
-    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableSelectable>(baseProps);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IButtonSelectable & IExtendableSelectable | IEditorCheckBox>(baseProps);
 
     /** Style properties for the button */
     const btnStyle = useButtonStyling(props, layoutStyle, compStyle, labelRef.current, rbRef.current ? rbRef.current.element : undefined);
@@ -95,22 +96,51 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
 
     //If lib-user extends Radiobutton with onChange, call it when selected changes
     useEffect(() => {
-        if (props.onChange) {
-            props.onChange(props.selected === undefined ? true : !props.selected);
+        if (!isCheckboxCellEditor(props)) {
+            if (props.onChange) {
+                props.onChange(props.selected === undefined ? true : !props.selected);
+            }
         }
-    }, [props.selected])
+    }, [!isCheckboxCellEditor(props) ? props.selected : undefined])
 
     //If lib-user extends Radiobutton with onClick, call it when the Radiobutton is clicked
     const onClick = (event:RadioButtonChangeParams) => {
-        if (props.onClick) {
-            props.onClick(event.originalEvent);
+        if (!isCheckboxCellEditor(props)) {
+            if (props.onClick) {
+                props.onClick(event.originalEvent);
+            }
+            sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, context.server.topbar)
         }
-
-        sendSetValue(props.name, props.selected === undefined ? true : !props.selected, context.server, context.server.topbar)
+        else if (isCheckboxCellEditor(baseProps)) {
+            handleCheckboxOnChange(
+                baseProps.name,
+                baseProps.dataRow,
+                baseProps.columnName,
+                baseProps.selectedRow ? baseProps.selectedRow.data[baseProps.columnName] : false,
+                baseProps.cellEditor.selectedValue,
+                baseProps.cellEditor.deselectedValue,
+                baseProps.context.server,
+                baseProps.rowIndex,
+                baseProps.selectedRow.index,
+                baseProps.filter,
+                baseProps.isCellEditor
+            )
+        }
     }
 
+    /** Returns true, if the radiobutton is checked */
+    const getChecked = () => {
+        if (!isCheckboxCellEditor(props)) {
+            return props.selected === undefined ? false : props.selected
+        }
+        else if (isCheckboxCellEditor(baseProps)) {
+            return baseProps.selectedRow ? getBooleanValueFromValue(baseProps.selectedRow.data[baseProps.columnName], baseProps.cellEditor.selectedValue) : false;
+        }
+    }
+    
+
     return (
-        <span ref={buttonWrapperRef} style={layoutStyle}>
+        <span ref={buttonWrapperRef} style={!props.id ? undefined : layoutStyle}>
             <span
                 id={props.name}
                 aria-label={props.ariaLabel}
@@ -128,7 +158,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
                     '--radioAlign': btnStyle.style.alignItems,
                     '--radioPadding': btnStyle.style.padding,
                     '--background': btnStyle.style.background,
-                    '--iconTextGap': `${props.imageTextGap || 4}px`,
+                    '--iconTextGap': `${!isCheckboxCellEditor(props) ? (props as IButtonSelectable).imageTextGap || 4 : 4}px`,
                     '--iconCenterGap': `${btnStyle.iconCenterGap}px`,
                     ...(btnStyle.iconProps?.icon ? {
                         '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
@@ -141,15 +171,15 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
                     ref={rbRef}
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
-                    checked={props.selected}
+                    checked={getChecked()}
                     onChange={onClick}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left" }}
-                    disabled={isCompDisabled(props)}
+                    disabled={!isCheckboxCellEditor(props) ? isCompDisabled(props) : isCheckboxCellEditor(baseProps) ? baseProps.isReadOnly : undefined}
                     tabIndex={btnStyle.tabIndex}
                     className={props.focusable === false ? "no-focus-rect" : ""}
                 />
-                <label 
+                {(!isCheckboxCellEditor(props) || (isCheckboxCellEditor(baseProps) && !baseProps.isCellEditor)) && <label 
                     ref={labelRef} 
                     className={concatClassnames(
                         "p-radiobutton-label",
@@ -170,8 +200,8 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable> = (baseProps)
                     {btnStyle.iconProps.icon !== undefined &&
                         <i className={concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon')}/>
                     }
-                    {isHTML && props.text ? <RenderButtonHTML text={props.text} /> : props.text}
-                </label>
+                    {isHTML && props.text ? <RenderButtonHTML text={getButtonText(props, baseProps) || ""} /> : getButtonText(props, baseProps)}
+                </label>}
             </span>
         </span>
     )

@@ -80,7 +80,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
             let targetRows = gridSize.rows;
             
             children.forEach(component => {
-                if (component.visible !== false) {
+                if (component.visible !== false && component.constraints) {
                     const constraints = new CellConstraints(component.constraints);
                     const prefSize = compSizes.get(component.id)?.preferredSize || {width: 0, height: 0};
 
@@ -187,7 +187,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
 
             /** Calculate the sizes and build the sizeMap with each component based on the constraints with their component id as key and css style as value */
             children.forEach(component => {
-                if (component.visible !== false) {
+                if (component.visible !== false && component.constraints) {
                     const constraints = new CellConstraints(component.constraints);
                     const x = getPosition(xPosition, constraints.gridX, columnSize, gaps.horizontalGap) + constraints.margins.marginLeft;
                     const y = getPosition(yPosition, constraints.gridY, rowSize, gaps.verticalGap) + constraints.margins.marginTop;

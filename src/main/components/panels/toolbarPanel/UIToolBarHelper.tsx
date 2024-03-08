@@ -127,7 +127,7 @@ const ToolBarHelper:FC<IToolBarHelper> = (props) => {
             <div
                 className={concatClassnames(
                     props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? "rc-toolbar" : "rc-panel",
-                    props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN ? getTBPosClassName(props.constraints, props.isNavTable) : "",
+                    props.className === COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN && props.constraints ? getTBPosClassName(props.constraints, props.isNavTable) : "",
                     props.style
                 )}
                 ref={panelRef}

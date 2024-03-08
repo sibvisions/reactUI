@@ -220,12 +220,6 @@ const UIInternalFrame: FC<IInternalFrame> = (baseProps) => {
     //@ts-ignore
     }, [layoutStyle?.width, layoutStyle?.height, packSize, context.launcherReady, bounds]);
 
-    // useEffect(() => {
-    //     console.log(!initFrame.current && !positionFlag && frameStyle && framePosition)
-    //     if (!initFrame.current && !positionFlag && frameStyle && framePosition) {
-    //         sendBoundsRequest({ width: (frameStyle.width as number), height: (frameStyle.height as number), x: framePosition.x, y: framePosition.y });
-    //     }
-    // }, [frameStyle, framePosition])
 
     // When the server sends a dispose, call closeScreen
     useEffect(() => {

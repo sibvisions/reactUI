@@ -127,7 +127,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                 });
                 /** Build Constraints of Childcomponents and fill Constraints-Map */
                 children.forEach(component => {
-                    if (!(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME)) {
+                    if (!(context.transferType === "full" && panelType === "DesktopPanel" && component.className === COMPONENT_CLASSNAMES.INTERNAL_FRAME) && component.constraints) {
                         const anchorNames = component.constraints.split(";");
                         /** Get Anchors */
                         const topAnchor = anchors.get(anchorNames[0]); const leftAnchor = anchors.get(anchorNames[1]);

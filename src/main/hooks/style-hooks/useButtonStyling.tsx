@@ -13,18 +13,28 @@
  * the License.
  */
 
-import { CSSProperties, useContext, useEffect, useMemo, useState } from "react";
+import { CSSProperties, useMemo } from "react";
 import { IButton } from "../../components/buttons/IButton";
 import { getMargins, parseIconData } from "../../components/comp-props/ComponentProperties";
 import { getAlignments } from "../../components/comp-props/GetAlignments";
 import IconProps from "../../components/comp-props/IconProps";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
-import { appContext } from "../../contexts/AppProvider";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import useButtonBackground from "./useButtonBackground";
+import { IEditorCheckBox } from "../../components/editors/checkbox/UIEditorCheckbox";
+import { isCheckboxCellEditor } from "../../components/buttons/button/UIButton";
+
+/** Constant for CellEditorButtons */
+export enum BUTTON_CELLEDITOR_STYLES {
+    BUTTON = "ui-button",
+    HYPERLINK = "ui-hyperlink",
+    RADIOBUTTON = "ui-radiobutton",
+    TOGGLEBUTTON = "ui-togglebutton",
+    SWITCH = "ui-switch"
+}
 
 // Interface for button-style
-interface IButtonStyle {
+export interface IButtonStyle {
     style: CSSProperties,
     iconProps: IconProps,
     iconPos: "left" | "right",
@@ -38,6 +48,27 @@ interface IButtonStyle {
 }
 
 /**
+ * Returns true, if the two arrays share at least one value
+ * @param array1 - the first array
+ * @param array2 - the second array
+ * @returns 
+ */
+function hasSameValue(array1: string[], array2: string[]): boolean {
+    // check each value in array1
+    for (const value of array1) {
+        // Check, if the value is in array2
+        if (array2.includes(value)) {
+            return true; // value found
+        }
+    }
+    
+    // no value found
+    return false;
+}
+
+const cbStyles = [BUTTON_CELLEDITOR_STYLES.BUTTON, BUTTON_CELLEDITOR_STYLES.TOGGLEBUTTON, BUTTON_CELLEDITOR_STYLES.SWITCH, BUTTON_CELLEDITOR_STYLES.HYPERLINK];
+
+/**
  * This hook returns style properties used by all button components
  * @param props - the properties of the button
  * @param layoutStyle - the layoutstyle of the button
@@ -45,45 +76,43 @@ interface IButtonStyle {
  * @param ref2 - an extra element reference to center button content, needed for checkbox and radiobutton
  * @returns style properties used by all button components
  */
-const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle?: CSSProperties, ref?: HTMLElement, ref2?: HTMLElement): IButtonStyle => {
+const useButtonStyling = (props: IButton | IEditorCheckBox, layoutStyle?: CSSProperties, compStyle?: CSSProperties, ref?: HTMLElement, ref2?: HTMLElement): IButtonStyle => {
     /** The margins of a button */
     const margins = useMemo(() => getMargins(props.margins), [props.margins]);
 
+    /** Rerender triggers when the button background changes */
     const designerBgdChanged = useButtonBackground();
 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
-        if (props.url) {
-            return {}
-        }
-        let btnBackground = compStyle?.background ? compStyle.background as string : undefined;
-        let btnJustify = props.horizontalTextPosition !== 1 ? getAlignments(props).ha : getAlignments(props).va;
-        let btnAlign = props.horizontalTextPosition !== 1 ? getAlignments(props).va : getAlignments(props).ha;
+        const isCB = isCheckboxCellEditor(props);
+        if ((!isCB && props.url) || (isCB && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK))) { return {} }  
+        
+        const isCBOrRB = isCB ? 
+                        !hasSameValue(cbStyles, props.cellEditor_style_ ? props.cellEditor_style_?.split(',') : props.cellEditor?.style?.split(',') || []) 
+                        : 
+                        (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON);
+        let btnBackground = compStyle?.background ? compStyle.background as string : isCBOrRB ? "transparent" : window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+        const alignments = getAlignments(props);
+        let btnJustify: string|undefined = !isCB && props.horizontalTextPosition === 1 ? alignments.va : alignments.ha;
+        let btnAlign: string|undefined = !isCB && props.horizontalTextPosition === 1 ? alignments.ha : alignments.va;
 
-        if (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON) {
-            if (!btnBackground) {
-                btnBackground = "transparent"
-            }
-
+        if (!isCBOrRB) {
             if (!btnJustify) {
-                btnJustify = props.horizontalTextPosition !== 1 ? 'flex-start' : 'center';
+                btnJustify = 'center';
             }
 
             if (!btnAlign) {
-                btnAlign = props.horizontalTextPosition !== 1 ? 'center' : 'flex-start';
+                btnAlign = 'center';
             }
         }
         else {
-            if (!btnBackground) {
-                btnBackground = window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
-            }
-
             if (!btnJustify) {
-                btnJustify = "center";
+                btnJustify = !isCB && props.horizontalTextPosition === 1 ? 'center' : 'flex-start';
             }
 
             if (!btnAlign) {
-                btnAlign = "center";
+                btnAlign = !isCB && props.horizontalTextPosition === 1 ? 'flex-start' : 'center';
             }
         }
 
@@ -91,36 +120,45 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
             ...compStyle,
             background: btnBackground,
             borderColor: btnBackground,
-            flexDirection: props.horizontalTextPosition === 1 ? "column" : undefined,
+            flexDirection: !isCB && props.horizontalTextPosition === 1 ? "column" : undefined,
             justifyContent: btnJustify,
             alignItems: btnAlign,
             padding: margins ? margins.marginTop + 'px ' + margins.marginRight + 'px ' + margins.marginBottom + 'px ' + margins.marginLeft + 'px' : undefined,
         }
-    }, [compStyle, props.horizontalTextPosition, margins, designerBgdChanged]);
+    }, [compStyle, !isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, margins, designerBgdChanged]);
 
     /** The image property parsed as usable icon props */
-    const iconProps = useMemo(() => parseIconData(compStyle?.color as string, props.image), [compStyle?.color, props.image]);
+    const iconProps = useMemo(() => parseIconData(compStyle?.color as string, !isCheckboxCellEditor(props) ? props.image : props.cellEditor.imageName), [compStyle?.color, props.image]);
 
     /** The position of the icon */
     const iconPos = useMemo(() => {
-        if (props.horizontalTextPosition === 0 || (props.horizontalTextPosition === 1 && props.verticalTextPosition === 0)) {
-            return "right"
+        const isCB = isCheckboxCellEditor(props);
+        if (!isCB) {
+            if (props.horizontalTextPosition === 0 || (props.horizontalTextPosition === 1 && props.verticalTextPosition === 0)) {
+                return "right"
+            }
         }
+
         return "left"
-    }, [props.horizontalTextPosition, props.verticalTextPosition]);
+    }, [!isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, !isCheckboxCellEditor(props) ? props.verticalTextPosition : undefined]);
 
     /** Centering the contents of a button (icon, text) */
     const iconCenterGap = useMemo(() => {
-        if (props.url) {
+        if (!isCheckboxCellEditor(props) && props.url) {
             return 0;
         }
-        if (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON) {
+        const isCB = isCheckboxCellEditor(props);
+        const isCBOrRB = isCB ? 
+        !hasSameValue(cbStyles, props.cellEditor_style_ ? props.cellEditor_style_?.split(',') : props.cellEditor?.style?.split(',') || []) 
+        : 
+        (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON);
+        if (isCBOrRB) {
             if (ref && ref2) {
                 return ref.offsetWidth / 2 - ref2.offsetWidth / 2
             }
         }
         else {
-            if (ref) {
+            if (ref && ref.children.length) {
                 return (ref.children[1] as HTMLElement).offsetWidth / 2 - (iconProps.size?.width ? iconProps.size?.width / 2 : (ref.children[0] as HTMLElement).offsetWidth / 2);
             }
         }
@@ -129,42 +167,62 @@ const useButtonStyling = (props: IButton, layoutStyle?: CSSProperties, compStyle
 
     /** Where the icon gap is supposed to be */
     const iconGapPos = useMemo(() => {
-        if (props.horizontalTextPosition === undefined) {
-            return "right";
+        if (!isCheckboxCellEditor(props)) {
+            if (props.horizontalTextPosition === undefined) {
+                return "right";
+            }
+            else if (props.horizontalTextPosition === 1 && (props.verticalTextPosition === 2 || props.verticalTextPosition === undefined)) {
+                return "bottom";
+            }
+            else if (props.horizontalTextPosition === 1 && props.verticalTextPosition === 0) {
+                return "top";
+            }
+            else if (props.horizontalTextPosition === 0) {
+                return "left";
+            }
         }
-        else if (props.horizontalTextPosition === 1 && (props.verticalTextPosition === 2 || props.verticalTextPosition === undefined)) {
-            return "bottom";
-        }
-        else if (props.horizontalTextPosition === 1 && props.verticalTextPosition === 0) {
-            return "top";
-        }
-        else if (props.horizontalTextPosition === 0) {
-            return "left";
-        }
-        return "left"
-    }, [props.horizontalTextPosition, props.verticalTextPosition]);
+        return "right"
+    }, [!isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, !isCheckboxCellEditor(props) ? props.verticalTextPosition : undefined]);
 
     /** If the icon is left or right of the center */
     const iconDirection = useMemo(() => {
-        if (props.horizontalTextPosition === 1) {
-            if (!props.horizontalAlignment) {
-                return "icon-center-left";
-            }
-            else if (props.horizontalAlignment) {
-                return 'icon-center-right';
+        if (!isCheckboxCellEditor(props)) {
+            if (props.horizontalTextPosition === 1) {
+                if (!props.horizontalAlignment) {
+                    return "icon-center-left";
+                }
+                else if (props.horizontalAlignment) {
+                    return 'icon-center-right';
+                }
             }
         }
+
         return "";
-    }, [props.horizontalTextPosition, props.horizontalAlignment])
+    }, [!isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, !isCheckboxCellEditor(props) ? props.horizontalAlignment : undefined])
 
     /** True, if the border is painted */
-    const borderPainted = useMemo(() => props.borderPainted !== false ? true : false, [props.borderPainted]);
+    const borderPainted = useMemo(() => {
+        if (!isCheckboxCellEditor(props)) {
+            if (props.borderPainted !== false) {
+                return true;
+            }
+        }
+        else {
+            if (props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
+    }, [!isCheckboxCellEditor(props) ? props.borderPainted : undefined]);
 
     /** The parsed icon properties of the icon which is displayed when pressing the button */
-    const pressedIconData = useMemo(() => parseIconData(compStyle?.color as string, props.mousePressedImage), [compStyle?.color, props.mousePressedImage]);
+    const pressedIconData = useMemo(() => parseIconData(compStyle?.color as string, !isCheckboxCellEditor(props) ? props.mousePressedImage : undefined), [compStyle?.color, !isCheckboxCellEditor(props) ? props.mousePressedImage: undefined]);
 
     /** The parsed icon properties of the icon which is displayed when hovering the mouse over the button */
-    const mouseOverIconData = useMemo(() => parseIconData(compStyle?.color as string, props.mouseOverImage), [compStyle?.color, props.mouseOverImage]);
+    const mouseOverIconData = useMemo(() => parseIconData(compStyle?.color as string, !isCheckboxCellEditor(props) ? props.mouseOverImage : undefined), [compStyle?.color, !isCheckboxCellEditor(props) ? props.mouseOverImage : undefined]);
 
     return {
         style: buttonStyle,

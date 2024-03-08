@@ -81,7 +81,7 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
                             iconName = convertIcon(splittedColorIconData[0]);
                             break;
                         case 1:
-                            iconColor = tinycolor(prop.substring(prop.indexOf('=')+1, prop.indexOf(','))).toString();
+                            iconColor = prop.substring(prop.indexOf('=')+1, prop.indexOf(',')).includes("#") ? tinycolor(prop.substring(prop.indexOf('=')+1, prop.indexOf(','))).toString() : undefined;
                             break;
                         case 2: case 3:
                             iconSize = {width: parseInt(prop ?? 16), height: parseInt(prop ?? 16)};
@@ -96,7 +96,7 @@ export function parseIconData(foreground:string|undefined, iconData:string|undef
         else {
             splittedIconData = iconData.split(',');
             iconName = splittedIconData[0];
-            iconSize = {width: parseInt(splittedIconData[1]), height: parseInt(splittedIconData[2])};
+            iconSize = {width: parseInt(splittedIconData[1] ?? 16), height: parseInt(splittedIconData[2] ?? 16)};
             return {icon: iconName, size: iconSize, color: iconColor};
         }
     }

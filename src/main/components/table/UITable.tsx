@@ -1437,10 +1437,6 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
             }
         }
     }, [layoutStyle?.width, estTableWidth, providerData]);
-
-    if (props.dataBook === "FilterMaster/SelJoiWitRoo-WM/directories#3") {
-        console.log(providerData)
-    }
     
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
