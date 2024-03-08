@@ -36,7 +36,8 @@ type ApplicationMetaData = {
     aliveInterval?: number,
     rememberMe?: boolean,
     mandatoryMarkVisible: boolean,
-    mandatoryMark?: string
+    mandatoryMark?: string,
+    companyUrl?: string
 }
 
 /** Interface for whether specific buttons should be visible or not */
@@ -232,6 +233,7 @@ export default class AppSettings {
         this.applicationMetaData.rememberMe = appMetaData.rememberMe;
         this.applicationMetaData.mandatoryMarkVisible = appMetaData.mandatoryMarkVisible ?? true;
         this.applicationMetaData.mandatoryMark = appMetaData.mandatoryMark;
+        this.applicationMetaData.companyUrl = appMetaData.companyUrl;
 
         if (!this.applicationMetaData.applicationLayout.urlSet) {
             if (appMetaData.applicationLayout) {

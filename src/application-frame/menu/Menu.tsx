@@ -425,6 +425,17 @@ const Menu: FC<IMenu> = (props) => {
         }
     }
 
+    var imgLogo = (<img draggable="false" 
+                        className="menu-logo" 
+                        src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} 
+                        alt="logo" />);
+
+    var imgLogoMini = (<img draggable="false"
+                            className="menu-logo-mini" 
+                            src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} 
+                            alt="logo" />
+    )
+
     return (
         <>
             {(props.menuOptions.menuBar && props.menuOptions.toolBar && (!embeddedContext || embeddedContext.showMenu)) && !wsContext.isActive &&
@@ -435,7 +446,10 @@ const Menu: FC<IMenu> = (props) => {
                 )}>
                     <div className={"menu-header"}>
                         <div className="menu-logo-wrapper" ref={menuLogoRef}>
-                            <img draggable="false" className="menu-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+                            {context.appSettings.applicationMetaData.companyUrl !== undefined ? 
+                                <a href={context.appSettings.applicationMetaData.companyUrl} target="_blank">{imgLogo}</a> :
+                                imgLogo
+                            }
                         </div>
                         <div className="menu-topbar">
                             <div className="menu-topbar-left">
@@ -454,7 +468,10 @@ const Menu: FC<IMenu> = (props) => {
                     {props.menuOptions.menuBar && props.menuOptions.toolBar &&
                         <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
                             <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
-                                <img className="menu-logo-mini" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} alt="logo" />
+                            {context.appSettings.applicationMetaData.companyUrl !== undefined ? 
+                                <a href={context.appSettings.applicationMetaData.companyUrl} target="_blank">{imgLogoMini}</a> :
+                                imgLogoMini
+                            }
                             </div>
                             <PanelMenu model={menuItems} ref={panelMenu} />
                             {menuCollapsed && <div className="fadeout" ref={fadeRef}></div>}

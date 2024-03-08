@@ -34,6 +34,7 @@ interface ApplicationMetaDataResponse extends BaseResponse {
     foldMenuOnCollapse?: boolean,
     rememberMe?: boolean,
     mandatoryMarkVisible?: boolean,
-    mandatoryMark?: string
+    mandatoryMark?: string,
+    companyUrl?: string
 }
 export default ApplicationMetaDataResponse;
