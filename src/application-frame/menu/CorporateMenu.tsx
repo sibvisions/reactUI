@@ -92,6 +92,11 @@ const CorporateMenu:FC<IMenu> = (props) => {
         return () => context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
     }, [context.subscriptions]);
 
+    var imgLogo = (<img draggable="false" 
+                        className="menu-logo" 
+                        src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} 
+                        alt="logo" />);
+
     return (
         <>
             {(!embeddedContext || embeddedContext.showMenu) &&
@@ -99,10 +104,10 @@ const CorporateMenu:FC<IMenu> = (props) => {
                     <div className="corp-menu-topbar">
                         <div className="corp-menu-header">
                             <div className="corp-menu-logo-wrapper">
-                                <img
-                                    className="menu-logo"
-                                    draggable="false"
-                                    src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} alt="logo" />
+                                {context.appSettings.applicationMetaData.companyUrl !== undefined ? 
+                                    <a href={context.appSettings.applicationMetaData.companyUrl} target="_blank">{imgLogo}</a> :
+                                    imgLogo
+                                }
                             </div>
                             <span className="menu-screen-title">{props.screenTitle}</span>
                             <div className="profile-menu">
@@ -112,7 +117,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
                         {props.menuOptions.menuBar &&
                             <div className="corp-menu-menubar">
                                 {props.menuOptions.toolBar && toolbarItems && toolbarItems.length > 0 &&
-                                    <div style={{ maxHeight: "32px", minWidth: "32px" }}>
+                                    <div style={{ maxHeight: "32px", minWidth: "32px", marginLeft: "10px", marginRight: "5px" }}>
                                         <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="right" />
                                         <SpeedDial model={toolbarItems} direction="down" />
                                     </div>
