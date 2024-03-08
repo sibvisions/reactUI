@@ -21,6 +21,5 @@ interface GenericResponse extends ComponentResponse {
     changedComponents: Array<BaseComponent>,
     update: boolean,
     home: boolean,
-    welcome: boolean
 }
 export default GenericResponse

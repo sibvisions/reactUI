@@ -161,9 +161,6 @@ export default class AppSettings {
     /** True, if the menu is collapsed, default value based on window width */
     menuCollapsed:boolean = ["Small", "Mini"].indexOf(this.deviceStatus) !== -1;
 
-    /** The welcome screen of the app */
-    welcomeScreen:{name: string, initOpened: boolean} = { name: "", initOpened: false};
-
     homeScreen: string | undefined;
 
     /** The desktop-panel of the app, undefined if there is no desktop-screen */
@@ -371,11 +368,6 @@ export default class AppSettings {
     /** Sets the devicestatus */
     setDeviceStatus(deviceStatus:DeviceStatus) {
         this.deviceStatus = deviceStatus;
-    }
-
-    /** Sets the welcome-screen */
-    setWelcomeScreen(welcomeScreen:string) {
-        this.welcomeScreen.name = welcomeScreen;
     }
 
     /** Sets the desktop-panel */
