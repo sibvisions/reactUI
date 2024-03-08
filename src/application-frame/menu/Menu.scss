@@ -199,7 +199,18 @@
             .p-toggleable-content {
                 display: none;
             }
-        } 
+        }
+
+        .custom-menu-icon {
+            .p-menuitem-icon {
+                min-width: var(--iconWidth) !important;
+                max-width: var(--iconWidth) !important;
+                height: var(--iconHeight) !important;
+                display: inline-block;
+                background-image: var(--iconImage);
+                background-size: var(--iconWidth);
+            }
+        }
 
         .p-panelmenu-header {
             a {
