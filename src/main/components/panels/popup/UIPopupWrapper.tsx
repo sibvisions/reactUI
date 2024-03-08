@@ -65,6 +65,9 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** True, if the first popup size initialization has completed. */
     const [initializePopup, setInitializePopup] = useState<boolean>(false);
 
+    /** True, if the popup is currently maximized */
+    const [maximized, setMaximized] = useState<boolean>(false);
+
     //const [initializeCompSizes, setInitializeCompSizes] = useState<boolean>(false);
 
     /** Subscribes the resize-handler to the theme */
@@ -224,6 +227,14 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
                 baseZIndex={1010}
                 ref={popupRef}
                 //onShow={() => handleInitialSize()}
+                resizable={props.content_title_ !== undefined ? props.content_resizable_ : props.screen_resizable_}
+                closable={props.content_title_ !== undefined ? props.content_closable_ : props.screen_closable_}
+                maximized={maximized}
+                maximizable={props.content_title_ !== undefined ? props.content_maximizable_ : props.screen_maximizable_}
+                onMaximize={(e) => {
+                    setMaximized(e.maximized);
+                    setTimeout(() => handlePopupResize(), 0)
+                }}
                 onResize={() => handleResize()}
                 closeOnEscape={false}
                 >
