@@ -714,7 +714,7 @@ class Server extends BaseServer {
 
         if (langData.languageResource && !this.errorIsDisplayed) {
             fetchTranslation(this.RESOURCE_URL + langData.languageResource, false);
-            fetchTranslation(this.RESOURCE_URL + "/com/sibvisions/apps/mobile/demo/translation_cssdesigner_de.xml", true).catch(() => this.appSettings.setAppReadyParam("cssTranslation"));
+            //fetchTranslation(this.RESOURCE_URL + "/com/sibvisions/apps/mobile/demo/translation_cssdesigner_de.xml", true).catch(() => this.appSettings.setAppReadyParam("cssTranslation"));
         }
         else {
             this.subManager.emitErrorBarProperties(true, false, false, 5, translation.get("Could not load translation"), translation.get("An error occured while fetching the translation."));
