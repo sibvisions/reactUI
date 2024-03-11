@@ -224,9 +224,16 @@
             }
             .p-panelmenu-header-link {
                 border: none;
+                justify-content: space-between;
+                .p-submenu-icon {
+                    order: 1;
+                    margin-right: 0px;
+                }
+
                 /// When text is longer don't break
                 .p-menuitem-text {
-                    white-space: nowrap;
+                    order: 0;
+                    @extend %ellipsis-overflow;
                 }
             }
         }
