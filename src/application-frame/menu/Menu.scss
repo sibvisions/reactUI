@@ -221,17 +221,16 @@
                 border: none;
 
                 .p-panelmenu-header-link {
+                    justify-content: space-between;
                     .p-submenu-icon {
                         order: 1;
-                        position: absolute;
-                        margin-right: 0;
-                        right: 1rem;
+                        margin-right: 0px;
                     }
 
                     /// When text is longer don't break
                     .p-menuitem-text {
                         order: 0;
-                        white-space: nowrap;
+                        @extend %ellipsis-overflow;
                     }
                 }
             }
