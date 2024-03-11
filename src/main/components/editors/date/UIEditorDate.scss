@@ -39,9 +39,18 @@
         }
     }
 
+    &.rc-editor-date-panel-visible {
+        box-shadow: var(--focus-box-shadow);
+        border-radius: var(--editor-border-radius);
+    }
+
     &:focus-within {
         outline: 0 none;
         outline-offset: 0;
+    }
+
+    &:not(.p-calendar-disabled).p-focus > .p-inputtext {
+        box-shadow: none;
     }
 
     input {

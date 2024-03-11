@@ -397,7 +397,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     props.focusable === false ? "no-focus-rect" : "",
                     props.borderVisible === false ? "invisible-border" : "",
                     props.isReadOnly ? "rc-input-readonly" : "",
-                    props.styleClassNames
+                    props.styleClassNames,
+                    visible ? 'rc-editor-date-panel-visible' : ""
                 )}
                 panelClassName="rc-editor-date-panel"
                 inputClassName={concatClassnames("p-date-input")}
