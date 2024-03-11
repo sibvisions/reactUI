@@ -299,7 +299,7 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     const contextMenuEventRef = useRef<any>();
 
-    const popupMenu = usePopupMenu(props);
+    const popupMenu = usePopupMenu(props, contextMenuEventRef.current);
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
     /** Hook for MouseListener */
