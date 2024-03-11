@@ -297,6 +297,8 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
 
     const clickedResizer = useRef<boolean>(false);
 
+    const contextMenuEventRef = useRef<any>();
+
     const popupMenu = usePopupMenu(props);
 
     const heldMouseEvents = useRef<Set<Function>>(new Set());
