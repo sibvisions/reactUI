@@ -558,9 +558,48 @@ const UIChart: FC<IChart> = (props) => {
             }
         }
 
+        const handleSelection = (e: any) => {
+            const elementArr = e.chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
+            if (elementArr.length) {
+                const firstPoint = elementArr[0];
+                const label = e.chart.data.labels[firstPoint.datasetIndex];
+                const value = e.chart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                const obj: any = {}
+                if ([
+                    CHART_STYLES.STACKEDPERCENTAREA,
+                    CHART_STYLES.STACKEDPERCENTBARS,
+                    CHART_STYLES.STACKEDPERCENTHBARS,
+                    CHART_STYLES.OVERLAPPEDBARS,
+                    CHART_STYLES.OVERLAPPEDHBARS,
+                    CHART_STYLES.PIE,
+                    CHART_STYLES.RING
+                ].includes(chartStyle)) {
+                    obj[label] = providerData[firstPoint.index][label];
+                    obj[xColumnName] = providerData[firstPoint.index][xColumnName];
+                }
+                else {
+                    obj[label] = props.context.appSettings.option_bigdecimal_as_string && typeof value.y === "number" ? value.y.toString() : value.y;
+                    obj[xColumnName] = props.context.appSettings.option_bigdecimal_as_string && typeof value.x === "number" ? value.x.toString() : value.x;
+                }
+                const foundData = providerData.find(data => data[label] === obj[label] && data[xColumnName] === obj[xColumnName]);
+                if (foundData) {
+                    const selectReq = createSelectRowRequest();
+                    selectReq.componentId = props.name;
+                    selectReq.dataProvider = props.dataBook;
+                    selectReq.filter = {
+                        columnNames: metaData?.primaryKeyColumns || [],
+                        values: Object.values(_.pick(foundData, metaData?.primaryKeyColumns || []))
+                    }
+                    selectReq.selectedColumn = label
+                    showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, true), props.context.server.topbar);
+                }
+            }
+        }
+
         if ([CHART_STYLES.PIE, CHART_STYLES.RING].includes(chartStyle)) {
             return {
                 maintainAspectRatio: false,
+                onClick: handleSelection,
                 plugins: {
                     title,
                     tooltip,
@@ -647,30 +686,7 @@ const UIChart: FC<IChart> = (props) => {
                     usePointStyle: true,
                 },
                 maintainAspectRatio: false,
-                onClick: (e:any) => {
-                    var elementArr = e.chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
-                    if (elementArr.length) {
-                        const firstPoint = elementArr[0];
-                        const label = e.chart.data.labels[firstPoint.datasetIndex];
-                        const value = e.chart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
-                        const obj:any = {}
-                        obj[label] = props.context.appSettings.option_bigdecimal_as_string && typeof value.y === "number" ? value.y.toString() : value.y;
-                        obj[xColumnName] = props.context.appSettings.option_bigdecimal_as_string && typeof value.x === "number" ? value.x.toString() : value.x;
-                        const foundData = providerData.find(data => data[label] === obj[label] && data[xColumnName] === obj[xColumnName]);
-                        if (foundData) {
-                            const selectReq = createSelectRowRequest();
-                            selectReq.componentId = props.name;
-                            selectReq.dataProvider = props.dataBook;
-                            selectReq.filter = {
-                                columnNames: metaData?.primaryKeyColumns || [],
-                                values: Object.values(_.pick(foundData, metaData?.primaryKeyColumns || []))
-                            }
-                            selectReq.selectedColumn = label
-                            showTopBar(props.context.server.sendRequest(selectReq, REQUEST_KEYWORDS.SELECT_COLUMN, true), props.context.server.topbar);
-                        }
-
-                    }
-                },
+                onClick: handleSelection,
                 scales: {
                     ...axes.reduce((agg, axis) => {
                         agg[axis['id']] = axis;
