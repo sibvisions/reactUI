@@ -244,6 +244,8 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
+    const HTMLEditorRef = useRef<any>();
+
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, props.forwardedRef.current, props.context)
 
@@ -363,14 +365,18 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
         }
     }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, props.context.server]);
 
+    const [htmlInitial, setHtmlInitial] = useState<boolean>(true);
+
     // Returns PrimeReact properties for each fieldtypes have in common.
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
+            ref: HTMLEditorRef,
             onLoad: () => {
                 // HTML Editor size sending works best during onLoad
                 if (props.forwardedRef.current && onLoadCallback) {
                     sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
                 }
+                setHtmlInitial(false);
             },
             onTextChange: showSource || props.isReadOnly ? () => {} : (value: any) => {
                 startedEditing.current = true;
@@ -386,66 +392,66 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
             },
             // How the header should look like of the HTML-Editor
             headerTemplate: (
-                <>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <select className="ql-size" defaultValue="">
-                        <option value="small"></option>
-                        <option ></option>
-                        <option value="large"></option>
-                        <option value="huge"></option>
-                    </select>
-                </span>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <select className="ql-font">
-                        <option ></option>
-                        <option value="serif"></option>
-                        <option value="monospace"></option>
-                    </select>
-                </span>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <button className="ql-bold" aria-label="Bold"></button>
-                    <button className="ql-italic" aria-label="Italic"></button>
-                    <button className="ql-underline" aria-label="Underline"></button>
-                </span>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <button className="ql-script" value="sub"></button>
-                    <button className="ql-script" value="super"></button>
-                </span>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <select className="ql-color"></select>
-                    <select className="ql-background"></select>
-                </span>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <button type="button" className="ql-list" value="ordered" aria-label="Ordered List"></button>
-                    <button type="button" className="ql-list" value="bullet" aria-label="Unordered List"></button>
-                    <select className="ql-align">
-                        <option ></option>
-                        <option value="center"></option>
-                        <option value="right"></option>
-                        <option value="justify"></option>
-                    </select>
-                </span>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <button className="ql-strike" aria-label="Strike"></button>
-                </span>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <button className="ql-divider" aria-label="Divider">
-                        <svg width="18" height="18" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                            <rect className="ql-fill" x="0" y="45" width="100" height="10" />
-                        </svg>
-                    </button>
-                </span>
-                <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
-                    <button type="button" className="ql-clean" aria-label="Remove Styles"></button>
-                </span>
-                <span className="ql-formats">
-                    <button type="button" className="ql-source" aria-label="Source" onClick={() => setShowSource(!showSource)}>
-                        <svg width="18" height="18" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                            <path className="ql-fill" d="M58.059,14.795C55.938,14.23 53.676,15.502 53.11,17.764L36.71,80.254C36.145,82.375 37.417,84.637 39.679,85.202C39.962,85.344 40.386,85.344 40.669,85.344C42.507,85.344 44.203,84.071 44.628,82.233L61.028,19.602C61.593,17.482 60.321,15.361 58.059,14.795ZM30.49,26.247C28.934,24.692 26.248,24.692 24.693,26.247L3.91,47.171C2.355,48.726 2.355,51.413 3.91,52.968L24.552,73.892C25.4,74.74 26.39,75.164 27.521,75.164C28.51,75.164 29.641,74.74 30.348,74.033C31.903,72.478 31.903,69.792 30.348,68.237L12.676,49.999L30.49,32.044C32.045,30.347 32.045,27.802 30.49,26.247ZM96.09,47.171L75.307,26.247C73.752,24.692 71.066,24.692 69.51,26.247C67.955,27.802 67.955,30.488 69.51,32.044L87.324,49.999L69.51,67.954C67.955,69.509 67.955,72.196 69.51,73.751C70.359,74.599 71.348,74.882 72.338,74.882C73.328,74.882 74.459,74.458 75.307,73.609L96.09,52.826C97.645,51.271 97.645,48.726 96.09,47.171Z" />
-                        </svg>
-                    </button>
-                </span>
-                </>
+                <div className="ql-toolbar-wrapper">
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <select className="ql-size" defaultValue="">
+                            <option value="small"></option>
+                            <option ></option>
+                            <option value="large"></option>
+                            <option value="huge"></option>
+                        </select>
+                    </span>
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <select className="ql-font">
+                            <option ></option>
+                            <option value="serif"></option>
+                            <option value="monospace"></option>
+                        </select>
+                    </span>
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <button className="ql-bold" aria-label="Bold"></button>
+                        <button className="ql-italic" aria-label="Italic"></button>
+                        <button className="ql-underline" aria-label="Underline"></button>
+                    </span>
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <button className="ql-script" value="sub"></button>
+                        <button className="ql-script" value="super"></button>
+                    </span>
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <select className="ql-color"></select>
+                        <select className="ql-background"></select>
+                    </span>
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <button type="button" className="ql-list" value="ordered" aria-label="Ordered List"></button>
+                        <button type="button" className="ql-list" value="bullet" aria-label="Unordered List"></button>
+                        <select className="ql-align">
+                            <option ></option>
+                            <option value="center"></option>
+                            <option value="right"></option>
+                            <option value="justify"></option>
+                        </select>
+                    </span>
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <button className="ql-strike" aria-label="Strike"></button>
+                    </span>
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <button className="ql-divider" aria-label="Divider">
+                            <svg width="18" height="18" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                <rect className="ql-fill" x="0" y="45" width="100" height="10" />
+                            </svg>
+                        </button>
+                    </span>
+                    <span className={`ql-formats ${showSource ? 'ql-formats--disabled' : ''}`}>
+                        <button type="button" className="ql-clean" aria-label="Remove Styles"></button>
+                    </span>
+                    <span className="ql-formats">
+                        <button type="button" className="ql-source" aria-label="Source" onClick={() => setShowSource(!showSource)}>
+                            <svg width="18" height="18" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                <path className="ql-fill" d="M58.059,14.795C55.938,14.23 53.676,15.502 53.11,17.764L36.71,80.254C36.145,82.375 37.417,84.637 39.679,85.202C39.962,85.344 40.386,85.344 40.669,85.344C42.507,85.344 44.203,84.071 44.628,82.233L61.028,19.602C61.593,17.482 60.321,15.361 58.059,14.795ZM30.49,26.247C28.934,24.692 26.248,24.692 24.693,26.247L3.91,47.171C2.355,48.726 2.355,51.413 3.91,52.968L24.552,73.892C25.4,74.74 26.39,75.164 27.521,75.164C28.51,75.164 29.641,74.74 30.348,74.033C31.903,72.478 31.903,69.792 30.348,68.237L12.676,49.999L30.49,32.044C32.045,30.347 32.045,27.802 30.49,26.247ZM96.09,47.171L75.307,26.247C73.752,24.692 71.066,24.692 69.51,26.247C67.955,27.802 67.955,30.488 69.51,32.044L87.324,49.999L69.51,67.954C67.955,69.509 67.955,72.196 69.51,73.751C70.359,74.599 71.348,74.882 72.338,74.882C73.328,74.882 74.459,74.458 75.307,73.609L96.09,52.826C97.645,51.271 97.645,48.726 96.09,47.171Z" />
+                            </svg>
+                        </button>
+                    </span>
+                </div>
             )
         } : {
             ...(fieldType === FieldTypes.PASSWORD ? { inputRef: props.forwardedRef } : { ref: props.forwardedRef }),
@@ -505,6 +511,71 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, props.isReadOnly, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (fieldType === FieldTypes.HTML && !htmlInitial) {
+                if (props.forwardedRef.current && onLoadCallback) {
+                    const preferredSize = parsePrefSize(props.preferredSize);
+                    if (preferredSize) {
+                        sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, preferredSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
+                    }
+                    else {
+                        const toolbarElements = props.forwardedRef.current.querySelectorAll('.ql-formats') as NodeList;
+                        if (toolbarElements.length) {
+                            
+                            let oldY = 0;
+                            let yChanged = 0;
+                            let rowHighest = 0;
+                            let calcToolbarHeight = 0;
+                            const editorHeight = (props.forwardedRef.current.querySelector('.ql-editor') as HTMLElement).offsetHeight;
+                            toolbarElements.forEach((toolbarElement, i) => {
+                                const rect = (toolbarElement as HTMLElement).getBoundingClientRect();
+                                if (oldY === 0) {
+                                    oldY = rect.y;
+                                    rowHighest = rect.height;
+                                }
+                                else if (oldY !== rect.y) {
+                                    oldY = rect.y;
+                                    yChanged++;
+                                    calcToolbarHeight += rowHighest;
+                                    rowHighest = 0;
+                                }
+
+                                if (rect.height > rowHighest) {
+                                    rowHighest = rect.height;
+                                }
+
+                                if (i === toolbarElements.length - 1) {
+                                    calcToolbarHeight += rowHighest;
+                                }
+                            });
+                            calcToolbarHeight += 16;
+
+                            const calcPrefHeight = calcToolbarHeight + editorHeight;
+                            HTMLEditorRef.current.getToolbar().style.height = `${calcToolbarHeight}px`
+                            HTMLEditorRef.current.getContent().style.height = `calc(100% - ${calcToolbarHeight}px)`
+                            sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, { width: props.forwardedRef.current.offsetWidth, height: calcPrefHeight }, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback);
+                        }
+                        else {
+                            sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, preferredSize, parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
+                        }
+                    }
+                }
+            }
+        }, 0);
+    }, [htmlInitial, fieldType]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (!htmlInitial && fieldType === FieldTypes.HTML) {
+                props.forwardedRef.current.style.setProperty("top", props.layoutStyle?.top !== undefined ? `${props.layoutStyle.top}px`: null)
+                props.forwardedRef.current.style.setProperty("left", props.layoutStyle?.left !== undefined ? `${props.layoutStyle.left}px`: null);
+                props.forwardedRef.current.style.setProperty("width", props.layoutStyle?.width !== undefined ? `${props.layoutStyle.width}px`: null);
+                props.forwardedRef.current.style.setProperty("height", props.layoutStyle?.height !== undefined ? `${props.layoutStyle.height}px`: null);
+            }
+        }, 0)
+    }, [props.layoutStyle])
         
     /** Return either a textarea, password or normal textfield based on fieldtype */
     return (

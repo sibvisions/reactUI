@@ -48,11 +48,12 @@
 
     .p-editor-container {
         height: 100%;
-        display: flex;
-        flex-direction: column;
+        //display: flex;
+        //flex-direction: column;
 
         .p-editor-content.ql-snow {
             border-top: 0px;
+            height: auto;
         }
     }
 
