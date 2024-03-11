@@ -300,10 +300,15 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     const [scrollHeight, setScrollHeight] = useState(props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined);
 
+    const contextMenuEventRef = useRef<any>();
+
+    const popupMenu = usePopupMenu(props, contextMenuEventRef.current);
+
     /** Hook for MouseListener */
     useMouseListener(
         props.name, 
-        tableRef.current ? tableRef.current.getTable().querySelector(".p-datatable-tbody") as HTMLElement : undefined, 
+        props.forwardedRef.current ? props.forwardedRef.current : undefined,
+        //tableRef.current ? tableRef.current.getTable().querySelector(".p-datatable-tbody") as HTMLElement : undefined, 
         props.eventMouseClicked, 
         props.eventMousePressed, 
         props.eventMouseReleased,
@@ -1119,7 +1124,23 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 values: primaryKeys.map(pk => event.value.rowData[pk])
             }
             rowSelectionHelper.current = { data: event.value.rowData, selectedColumn: event.value.field, index: event.value.rowIndex, filter: filter, event: event }
-            //await sendSelectRequest(event.value.field, filter, event.value.rowIndex)
+        }
+    }
+
+    const handleRowSelectionRightClick = (event: any) => {
+        if (event.data && event.originalEvent.type === 'contextmenu') {
+            let filter:SelectFilter|undefined = undefined
+            filter = {
+                columnNames: primaryKeys,
+                values: primaryKeys.map(pk => event.data[pk])
+            }
+
+            const tableCellElement = event.originalEvent.target.closest('td')
+            if (tableCellElement) {
+                const columnName = (tableCellElement as HTMLElement).style.getPropertyValue('--colName');
+                const rowIndex = providerData.findIndex((data: any) => _.isEqual(_.pick(data, primaryKeys), _.pick(event.data, primaryKeys)));
+                rowSelectionHelper.current = { data: event.data, selectedColumn: columnName, index: rowIndex, filter: filter, event: event }
+            }
         }
     }
 
@@ -1347,7 +1368,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     caretColor: "transparent"
                 } as any}
                 tabIndex={getTabIndex(props.focusable, props.tabIndex ? props.tabIndex : 0)}
-                onClick={() => { 
+                onClick={() => {
                     if (!focused.current) {
                         focusIsClicked.current = true 
                     }  
@@ -1382,7 +1403,16 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     }
                 }}
                 onKeyDown={(event) => handleTableKeys(event)}
-                {...usePopupMenu(props)}
+                onContextMenu={(e) => {
+                    if (popupMenu.onContextMenu) {
+                        popupMenu.onContextMenu(e);
+                    }
+                    else {
+                        contextMenuEventRef.current = e;
+                        e.preventDefault();
+                    }
+                }}
+                //{...usePopupMenu(props)}
             >
                 <DataTable
                     key="table"
@@ -1431,7 +1461,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         return cn
                     }}
                     emptyMessage={""}
-                    breakpoint="0px" >
+                    breakpoint="0px"
+                    onContextMenu={handleRowSelectionRightClick} >
                     {columns}
                 </DataTable>
             </div>
