@@ -199,6 +199,10 @@
             .p-toggleable-content {
                 display: none;
             }
+
+            > .p-panelmenu-header > .p-panelmenu-header-content > .p-panelmenu-header-link {
+                justify-content: unset;
+            }
         }
 
         .custom-menu-icon {
