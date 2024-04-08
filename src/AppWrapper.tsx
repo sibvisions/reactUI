@@ -29,7 +29,6 @@ import useDesignerImages from "./main/hooks/style-hooks/useDesignerImages";
 import { Tooltip } from "primereact/tooltip";
 import BaseResponse from "./main/response/BaseResponse";
 import RESPONSE_NAMES from "./main/response/RESPONSE_NAMES";
-import DialogResponse from "./main/response/ui/DialogResponse";
 import ErrorResponse from "./main/response/error/ErrorResponse";
 interface IAppWrapper {
     embedOptions?: { [key: string]: any }

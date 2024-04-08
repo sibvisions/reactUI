@@ -24,6 +24,7 @@ import { appContext } from '../../contexts/AppProvider';
 import { createCloseFrameRequest, createDispatchActionRequest } from '../../factories/RequestFactory';
 import REQUEST_KEYWORDS from '../../request/REQUEST_KEYWORDS';
 import { concatClassnames } from '../../util/string-util/ConcatClassnames';
+import { InputText } from 'primereact/inputtext';
 
 const UIMessage: FC<DialogResponse> = (props) => {
     /** Returns utility variables */
@@ -198,6 +199,14 @@ const UIMessage: FC<DialogResponse> = (props) => {
                 <div className="message-dialog-content">
                     {props.message?.startsWith("<html>") ? <span dangerouslySetInnerHTML={{ __html: props.message as string }} /> : <>{props.message}</>}
                 </div>
+                {props.dataProvider !== undefined &&
+                <div className="message-dialog-input">
+                    <InputText type="text"
+                               id="input"
+                               placeholder="{props.inputLabel}" 
+                               size={3}/>
+                </div>
+                }
             </>
         )
     }, [props.message])

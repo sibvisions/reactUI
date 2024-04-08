@@ -128,7 +128,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
                             <div className="profile-menu">
                                 <ProfileMenu showButtons />
                             </div>
-                        </div>
+                        </div> 
                         {props.menuOptions.menuBar &&
                             <div className="corp-menu-menubar">
                                 {props.menuOptions.toolBar && toolbarItems && toolbarItems.length > 0 &&
