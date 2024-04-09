@@ -18,7 +18,7 @@ import { appContext } from "../../main/contexts/AppProvider";
 import { Dialog } from "primereact/dialog";
 import { translation } from "../../main/util/other-util/Translation";
 import { Button } from "primereact/button";
-import { REQUEST_KEYWORDS } from "../../moduleIndex";
+import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
 
 /** 
  * When an upload response takes too long, the file dialog can not be opened because a user gesture is needed.
