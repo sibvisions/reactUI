@@ -25,8 +25,11 @@ interface DialogResponse extends MessageResponse, ComponentResponse {
     okComponentId?: string,
     notOkComponentId?: string,
     cancelComponentId?: string
-    okText?:string
-    notOkText?:string
-    cancelText?:string
+    okText?: string
+    notOkText?: string
+    cancelText?: string
+    inputLabel?: string
+    dataProvider?: string
+    columnName?: string
 }
 export default DialogResponse
