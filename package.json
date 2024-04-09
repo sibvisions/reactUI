@@ -62,7 +62,6 @@
     "react-signature-canvas": "^1.0.5",
     "react-topbar-progress-indicator": "^4.1.0",
     "react-transition-group": "^4.4.1",
-    "rimraf": "^3.0.2",
     "rxjs": "^6.6.2",
     "sass": "^1.57.1",
     "sass-loader": "^12.6.0",
@@ -84,7 +83,9 @@
     "create-build-date": "node -p \"new Date()\" > build/builddate.txt",
     "build": "react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && npm run create-build-date && sass --no-source-map src/application-frame/styling/color-schemes:build/color-schemes && sass --no-source-map src/application-frame/styling/themes:build/themes",
     "build-ci": "CI=false && react-scripts build && rimraf build/config.json && rimraf build/altConfig.json && npm run create-build-date && sass --no-source-map src/application-frame/styling/color-schemes:build/color-schemes && sass --no-source-map src/application-frame/styling/themes:build/themes && zip -r reactBuild build",
-    "clean": "if exist dist rmdir /S /Q dist",
+    "clean": "run-script-os",
+    "clean:windows": "if exist dist rmdir /S /Q dist",
+    "clean:default": "test -d dist/ && rm -rf dist/; exit 0",
     "clean-ci": "rm -rf dist",
     "pre-package": "npm run build && npm run clean && npm run bundle && node dist/SetupPackage.js",
     "pre-package-ci": "npm run build && npm run clean-ci && npm run bundle && node dist/SetupPackage.js",
@@ -125,6 +126,9 @@
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "webpack": "^5.76.0",
-    "webpack-cli": "^4.10.0"
+    "webpack-cli": "^4.10.0",
+    "rimraf": "^3.0.2",
+    "rmdir": "^1.2.0",
+    "run-script-os": "^1.1.6"
   }
 }
