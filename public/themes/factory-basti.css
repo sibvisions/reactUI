@@ -172,8 +172,10 @@ body {
   padding: var(--std-menu-item-padding);
 }
 .basti .std-menu .p-panelmenu .p-panelmenu-icon {
-  left: calc(var(--std-menu-width) - 30px);
+  right: 10px;
+/*  left: calc(var(--std-menu-width) - 30px); */
 }
+
 .basti .std-menu .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {
   min-width: var(--menuicon-size);
   max-width: var(--menuicon-size);
