@@ -222,8 +222,8 @@ export default abstract class BaseServer {
                 return;
             }
 
-            if (!request.ignoreValidation) {
-                if (request.dataProvider) {
+            if (request.dataProvider) {
+                if (!request.ignoreValidation) {
                     if (Array.isArray(request.dataProvider)) {
                         let exist = true;
                         request.dataProvider.forEach((dataProvider:string) => {

@@ -217,7 +217,7 @@ const UIMessage: FC<DialogResponse> = (props) => {
 
     const dialogMessage = useMemo(() => {
         return (
-            <div>
+            <>
                 <div className="message-dialog-content">
                     {props.message?.startsWith("<html>") ? <span dangerouslySetInnerHTML={{ __html: props.message as string }} /> : <>{props.message}</>}
                 </div>
@@ -229,7 +229,7 @@ const UIMessage: FC<DialogResponse> = (props) => {
                                    rows={3}/>
                 </div>
                 }
-            </div>
+            </>
         )
     }, [props.message])
 
