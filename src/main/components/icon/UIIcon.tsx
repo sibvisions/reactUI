@@ -120,6 +120,9 @@ const UIIcon: FC<IIcon & IExtendableIcon> = (baseProps) => {
         }
     }, [props.image]);
 
+    // Whether the component uses mouse events
+    const hasMouseEvents = props.eventMouseClicked || props.eventMousePressed || props.eventMouseReleased;
+
     /** 
     * Returns wether the icon is a FontAwesome icon or an image sent by the server 
     * @returns Iconelement based on if the icon is FontAwesome or server sent image
@@ -168,7 +171,8 @@ const UIIcon: FC<IIcon & IExtendableIcon> = (baseProps) => {
             className={concatClassnames(
                 "rc-icon", 
                 props.focusable === false ? "no-focus-rect" : "",
-                styleClassNames
+                styleClassNames,
+                hasMouseEvents ? "enablePointerEvents" : ""
             )}
             style={{...layoutStyle, ...compStyle, overflow: "hidden", justifyContent: alignments.ha, alignItems: alignments.va}}
             tabIndex={getTabIndex(props.focusable, props.tabIndex)}
