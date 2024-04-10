@@ -278,7 +278,7 @@ const Menu: FC<IMenu> = (props) => {
             const childElem = props.forwardedRef.current.querySelector('.p-highlight > .p-panelmenu-header-link');
             if (childElem !== null && highlightElem !== null && (highlightElem as HTMLElement).parentElement !== null && !(highlightElem as HTMLElement).parentElement!.classList.contains("single-group-item")) {
                 childElem.scrollTop = 0;
-                childElem.querySelector('.p-highlight > .p-panelmenu-header-link').click();
+                childElem.click();
             }
         }
     },[props.forwardedRef])

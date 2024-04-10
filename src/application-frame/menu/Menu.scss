@@ -228,7 +228,6 @@
             }
             .p-panelmenu-header-link {
                 border: none;
-                justify-content: space-between;
                 .p-submenu-icon {
                     order: 1;
                     margin-right: 0px;
@@ -276,6 +275,13 @@
 
 .menu-logo-mini {
     max-height: 0px;
+}
+
+.menu-collapsed.no-mini {
+    .p-panelmenu-icon.pi-chevron-right,
+    .p-panelmenu-icon.pi-chevron-down {
+        visibility: hidden;
+    }
 }
 
 /// Fadeout div for not readable text if collapsed
