@@ -19,3 +19,8 @@
     justify-content: center;
     pointer-events: none;
 }
+
+.enablePointerEvents {
+    pointer-events: auto;
+    cursor: pointer;
+}
