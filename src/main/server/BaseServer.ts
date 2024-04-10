@@ -222,49 +222,51 @@ export default abstract class BaseServer {
                 return;
             }
 
-            if (request.dataProvider) {
-                if (Array.isArray(request.dataProvider)) {
-                    let exist = true;
-                    request.dataProvider.forEach((dataProvider:string) => {
-                        const screenName = this.getScreenName(dataProvider);
-                        if (!this.contentStore.dataBooks.get(screenName)?.has(dataProvider) && !this.missingDataFetches.includes(dataProvider)) {
-                            exist = false;
-                        }
-                    });
-
-                    if (!exist) {
-                        reject("Dataproviders don't exist: " + request.dataProvider);
-                        return
-                    }
-                }
-                else {
-                    if (this.appSettings.transferType !== "full") {
-                        const splitDataProvider = request.dataProvider.split("/");
-                        if (splitDataProvider.length > 1) {
-                            // Contents are saved under the "main" screen (dataProvider.split("/")[1]) but to check if a content is opened we have to get the name differently.
-                            const dataProviderScreenName = this.getScreenName(request.dataProvider);
-                            const activeScreenName = request.screenName ? request.screenName : splitDataProvider[splitDataProvider.length - 2];
-                            const screenIsOpen = this.contentStore.activeScreens.some(as => {
-                                const acitveScreenComponent = this.contentStore.getComponentById(as.id);
-                                if (acitveScreenComponent) {
-                                    if ((acitveScreenComponent as IPanel).content_modal_) {
-                                        return as.name === activeScreenName;
-                                    }
-                                    else {
-                                        return as.name === dataProviderScreenName;
-                                    }
-                                }
-                            });
-                            // Not sending dataprovider request if the screen isnt opened
-                            if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
-                                this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
-                                reject("Screen is not open: " + activeScreenName)
-                                return
+            if (!request.ignoreValidation) {
+                if (request.dataProvider) {
+                    if (Array.isArray(request.dataProvider)) {
+                        let exist = true;
+                        request.dataProvider.forEach((dataProvider:string) => {
+                            const screenName = this.getScreenName(dataProvider);
+                            if (!this.contentStore.dataBooks.get(screenName)?.has(dataProvider) && !this.missingDataFetches.includes(dataProvider)) {
+                                exist = false;
                             }
-        
-                            if (!this.contentStore.dataBooks.get(dataProviderScreenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
-                                reject("Dataprovider doesn't exist: " + request.dataProvider);
-                                return
+                        });
+
+                        if (!exist) {
+                            reject("Dataproviders don't exist: " + request.dataProvider);
+                            return
+                        }
+                    }
+                    else {
+                        if (this.appSettings.transferType !== "full") {
+                            const splitDataProvider = request.dataProvider.split("/");
+                            if (splitDataProvider.length > 1) {
+                                // Contents are saved under the "main" screen (dataProvider.split("/")[1]) but to check if a content is opened we have to get the name differently.
+                                const dataProviderScreenName = this.getScreenName(request.dataProvider);
+                                const activeScreenName = request.screenName ? request.screenName : splitDataProvider[splitDataProvider.length - 2];
+                                const screenIsOpen = this.contentStore.activeScreens.some(as => {
+                                    const acitveScreenComponent = this.contentStore.getComponentById(as.id);
+                                    if (acitveScreenComponent) {
+                                        if ((acitveScreenComponent as IPanel).content_modal_) {
+                                            return as.name === activeScreenName;
+                                        }
+                                        else {
+                                            return as.name === dataProviderScreenName;
+                                        }
+                                    }
+                                });
+                                // Not sending dataprovider request if the screen isnt opened
+                                if (!screenIsOpen && this.missingDataFetches.includes(request.dataProvider)) {
+                                    this.missingDataFetches.splice(this.missingDataFetches.indexOf(request.dataProvider), 1);
+                                    reject("Screen is not open: " + activeScreenName)
+                                    return
+                                }
+            
+                                if (!this.contentStore.dataBooks.get(dataProviderScreenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                                    reject("Dataprovider doesn't exist: " + request.dataProvider);
+                                    return
+                                }
                             }
                         }
                     }
