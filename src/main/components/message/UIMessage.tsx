@@ -13,23 +13,30 @@
  * the License.
  */
 
-import { ConfirmDialog } from 'primereact/confirmdialog';
-import React, { CSSProperties, FC, useCallback, useContext, useMemo, useState } from 'react';
+import { ConfirmDialog, ConfirmDialogProps } from 'primereact/confirmdialog';
+import React, { CSSProperties, FC, useCallback, useContext, useMemo, useState, useRef } from 'react';
 import DialogResponse from '../../response/ui/DialogResponse';
 import { translation } from '../../util/other-util/Translation';
 import { Button } from 'primereact/button';
 import tinycolor from 'tinycolor2';
 import { showTopBar } from '../topbar/TopBar';
 import { appContext } from '../../contexts/AppProvider';
-import { createCloseFrameRequest, createDispatchActionRequest } from '../../factories/RequestFactory';
+import { createCloseFrameRequest, createDispatchActionRequest, createSetValuesRequest } from '../../factories/RequestFactory';
 import REQUEST_KEYWORDS from '../../request/REQUEST_KEYWORDS';
 import { concatClassnames } from '../../util/string-util/ConcatClassnames';
 import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { RequestQueueMode } from 'src/main/server/BaseServer';
 
 /** This component displays a popup to display a message, based on the severity the messages look different. */
 const UIMessage: FC<DialogResponse> = (props) => {
     /** Returns utility variables */
     const context = useContext(appContext);
+
+    /** The properties ConfirmDialog */
+    const feedback = useRef<string>();
+
+    const [confirmProps, setConfirmProps] = useState<ConfirmDialogProps>({});
 
     // Returns the correct header type
     const getHeaderType = (iconType: 0 | 1 | 2 | 3 | 9 | -1) => {
@@ -79,9 +86,27 @@ const UIMessage: FC<DialogResponse> = (props) => {
     const footerContent = useCallback((buttonType: 4 | 5 | 6 | 7 | 8 | -1, okCompId?: string, cancelCompId?: string, notOkCompId?: string) => {
         const sendPressButton = (compId?: string) => {
             if (compId) {
+
+                let waitForRequest: boolean = false;
+
+                if (compId === okCompId || compId === notOkCompId) {
+                    if (props.dataProvider !== undefined) {
+                        const svReq = createSetValuesRequest();
+                        svReq.dataProvider = props.dataProvider;
+                        svReq.columnNames = [props.columnName!];
+                        svReq.values = [feedback.current];
+                        svReq.ignoreValidation = true;
+
+                        waitForRequest = true;
+
+                        showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), context.server.topbar);
+                    }
+                }
+
                 const pressBtnReq = createDispatchActionRequest();
                 pressBtnReq.componentId = compId;
-                showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_KEYWORDS.PRESS_BUTTON), context.server.topbar);
+
+                showTopBar(context.server.sendRequest(pressBtnReq, REQUEST_KEYWORDS.PRESS_BUTTON, waitForRequest), context.server.topbar);
             }
         }
 
@@ -204,10 +229,10 @@ const UIMessage: FC<DialogResponse> = (props) => {
                 </div>
                 {props.dataProvider !== undefined &&
                 <div className="message-dialog-input">
-                    <InputText type="text"
-                               id="input"
-                               placeholder="{props.inputLabel}" 
-                               size={3}/>
+                    <InputTextarea id="input"
+                                   onChange={(e) => feedback.current = e.target.value}
+                                   placeholder={props.inputLabel}
+                                   rows={3}/>
                 </div>
                 }
             </>

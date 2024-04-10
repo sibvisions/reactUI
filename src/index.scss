@@ -196,6 +196,17 @@ body {
             padding: 1.5rem 1rem;
             flex: 1;
         }
+        .message-dialog-input {
+            padding: 0 1rem 1.5rem 1rem;
+
+            .p-inputtext {
+                width: 100%;
+            }
+        }
+    }
+
+    .p-dialog-content > span {
+        width: 100%;
     }
 
     .p-dialog-footer {

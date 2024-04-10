@@ -18,6 +18,7 @@ import BaseRequest from "../BaseRequest";
 /** Interface for Requests with componentId */
 interface DataProviderRequest extends BaseRequest {
     dataProvider?:string|string[];
-    screenName?:string
+    screenName?:string;
+    ignoreValidation?: boolean | false;
 }
 export default DataProviderRequest;
