@@ -109,20 +109,21 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
      * @returns a Map key: component ids, value style properties for components
      */
     const componentSizes = useMemo(() => {
+        const layoutParts = layout.split(',');
         /** Map which contains component ids as key and positioning and sizing properties as value */
         const sizeMap = new Map<string, CSSProperties>();
         /** Gaps between the components */
-        const gaps = new Gaps(layout.substring(layout.indexOf(',') + 1, layout.length).split(',').slice(4, 6));
+        const gaps = new Gaps(layoutParts.slice(5, 7));
         /** Horizontal alignment of layout */
-        const outerHa = parseInt(layout.split(",")[8]);
+        const outerHa = parseInt(layoutParts[8]);
         /** Vertical alignment of layout */
-        const outerVa = parseInt(layout.split(",")[9]);
+        const outerVa = parseInt(layoutParts[9]);
         /** Alignment of the components */
-        const innerAlignment = parseInt(layout.split(",")[10]);
+        const innerAlignment = parseInt(layoutParts[10]);
         /** Wether the layout should be wrapped if there is not enough space for all components */
-        const autoWrap = (layout.split(",")[11] === 'true')
+        const autoWrap = (layoutParts[11] === 'true')
         /** If the orientation is horizontal */
-        const isRowOrientation = parseInt(layout.split(",")[7]) === ORIENTATION.HORIZONTAL;
+        const isRowOrientation = parseInt(layoutParts[7]) === ORIENTATION.HORIZONTAL;
 
         /** Filters the toolbars from the children, if the FlowLayout is a Frame or ToolbarPanel, undefined if there are no toolbars */
         const toolBarsFiltered:[string, IBaseComponent][]|undefined = parent ? 
@@ -254,7 +255,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         else {
                             /** If this isn't the first component add the gap between components*/
                             if (!bFirst) {
-                                calcHeight += gaps.verticalGap + toolbarGap;
+                                calcHeight += gaps.verticalGap;
                             }
                             calcHeight += prefSize.height;
                             /** Check for the widest component in row orientation */
@@ -359,12 +360,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         if (!bFirst && autoWrap && (style.width as number) > 0 && x + size.width > (style.width as number)) {
                             x = 0;
                             y += Math.floor((flowLayoutInfo.gridHeight + gaps.verticalGap) * fH / fPH);
-                            
                         }
 
                         if (innerAlignment === VERTICAL_ALIGNMENT.STRETCH) {
                             sizeMap.set(component.id, {
-                                left: Math.floor((left + x * fW / fPW)) + (!bFirst ? toolbarGap : 0),
+                                left: Math.floor((left + x * fW / fPW)),
                                 top: top + y,
                                 width: Math.floor(size.width * fW / fPW),
                                 height: Math.floor(flowLayoutInfo.gridHeight * fH / fPH),
@@ -373,7 +373,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         }
                         else {
                             sizeMap.set(component.id, {
-                                left: Math.floor((left + x * fW / fPW) + (!bFirst ? toolbarGap : 0)),
+                                left: Math.floor((left + x * fW / fPW)),
                                 top: Math.floor(top + y + ((flowLayoutInfo.gridHeight - size.height) * getAlignmentFactor(innerAlignment)) * fH / fPH),
                                 width: Math.floor(size.width * fW / fPW),
                                 height: Math.floor(size.height * fH / fPH),
@@ -396,16 +396,16 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         if (innerAlignment === HORIZONTAL_ALIGNMENT.STRETCH) {
                             sizeMap.set(component.id, {
                                 left: left + x,
-                                top: (top + y * fH / fPH) + (!bFirst ? toolbarGap : 0),
-                                width: flowLayoutInfo.gridWidth * fW / fPW,
-                                height: size.height * fH / fPH,
+                                top: Math.floor(top + y * fH / fPH),
+                                width: Math.floor(flowLayoutInfo.gridWidth * fW / fPW),
+                                height: Math.floor(size.height * fH / fPH),
                                 position: "absolute",
                             });
                         }
                         else {
                             sizeMap.set(component.id, {
                                 left: Math.floor(left + x + ((flowLayoutInfo.gridWidth - size.width) * getAlignmentFactor(innerAlignment)) * fW / fPW),
-                                top: Math.floor((top + y * fH / fPH) + (!bFirst ? toolbarGap : 0)),
+                                top: Math.floor(top + y * fH / fPH),
                                 width: Math.floor(size.width * fW / fPW),
                                 height: Math.floor(size.height * fH / fPH),
                                 position: "absolute"
@@ -416,7 +416,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             bFirst = false;
                         }
 
-                        y += size.height
+                        y += size.height + gaps.verticalGap;
                     }
                 }
             });
