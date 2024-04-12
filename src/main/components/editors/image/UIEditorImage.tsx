@@ -62,6 +62,9 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
     /** Hook for MouseListener */
     useMouseListener(props.name, wrapRef.current ? wrapRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
+    // Whether the component uses mouse events
+    const hasMouseEvents = props.eventMouseClicked || props.eventMousePressed || props.eventMouseReleased;
+
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
@@ -141,6 +144,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor> = (props) 
                 "rc-editor-image",
                 props.columnMetaData?.nullable === false ? "required-field" : "",
                 props.focusable === false ? "no-focus-rect" : "",
+                hasMouseEvents ? "handlePointerEvents" : ""
             )}
             style={{ ...props.layoutStyle, ...props.cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
