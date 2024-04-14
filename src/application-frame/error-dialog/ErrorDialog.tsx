@@ -109,7 +109,8 @@ const ErrorDialog:FC = () => {
 
     /** Build footer based on showDetails */ 
     const errorFooter = useCallback(() => {
-        return (
+        const showFooter = errorProps?.exceptions?.length;
+        return showFooter ? (
             <div className="error-dialog-footer">
                 <div className="error-dialog-footer-buttons">
                     {errorProps?.exceptions && errorProps.exceptions.length && <Button
@@ -162,7 +163,7 @@ const ErrorDialog:FC = () => {
                     </div>
                 }
             </div>
-        )
+        ) : null
     }, [showDetails, selectedError, errorProps, btnBgd]);
 
     return (
@@ -170,7 +171,7 @@ const ErrorDialog:FC = () => {
             id="error-dialog"
             className={concatClassnames("error-dialog", showDetails ? "error-details-enabled" : "") }
             header={translation.get(errorProps?.title as string) || translation.get("Error")} 
-            footer={errorFooter} 
+            footer={errorFooter}
             visible={visible} 
             onHide={handleOnHide} 
             baseZIndex={5000}
