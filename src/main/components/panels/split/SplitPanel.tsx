@@ -122,8 +122,8 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     /** The dragging-delta */
     const deltaRef = useRef<number>(0);
 
-    /** The absolute position */
-    let absolutePosition = 0;
+    /** The separator drag start position */
+    let separatorDragStartPosition = 0;
 
     /** True, if this is the initial render */
     const [initial, setInitial] = useState<boolean>(true);
@@ -151,10 +151,11 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
         }
 
         let newSeparatorPosition
-        if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL)
-            newSeparatorPosition = event.clientX - 20 - absolutePosition;
-        else
-            newSeparatorPosition = event.clientY - 20 - absolutePosition;
+        if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL){
+            newSeparatorPosition = separatorDragStartPosition + event.clientX - deltaRef.current;
+        } else {
+            newSeparatorPosition = separatorDragStartPosition + event.clientY - deltaRef.current;
+        }
         if(newSeparatorPosition > 0){
             _.debounce(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
@@ -181,12 +182,13 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     const dragStart = (event: React.MouseEvent<HTMLDivElement>) => {
         if(props.forwardedRef.current){
             const size:DOMRect = props.forwardedRef.current.getBoundingClientRect();
+            const separatorRect:DOMRect = event.currentTarget.getBoundingClientRect();
             if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
-                absolutePosition = size.x;
+                separatorDragStartPosition = separatorRect.x - size.x;
                 deltaRef.current = event.clientX;
             }   
             else {
-                absolutePosition = size.y;
+                separatorDragStartPosition = separatorRect.y - size.y;
                 deltaRef.current = event.clientY;
             }
                 
@@ -218,7 +220,7 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
             props.onResizeExtend(event);
         }
 
-        const newSeparatorPosition = event.targetTouches[0].clientX  - 20 - absolutePosition;
+        const newSeparatorPosition = separatorDragStartPosition + event.targetTouches[0].clientX - deltaRef.current;
         if(newSeparatorPosition > 0){
             _.debounce(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
@@ -229,12 +231,13 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
     const dragTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
         if(props.forwardedRef.current){
             const size:DOMRect = props.forwardedRef.current.getBoundingClientRect();
+            const separatorRect:DOMRect = event.currentTarget.getBoundingClientRect();
             if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
-                absolutePosition = size.x;
+                separatorDragStartPosition = separatorRect.x - size.x;
                 deltaRef.current = event.targetTouches[0].clientX;
             }
             else {
-                absolutePosition = size.y;
+                separatorDragStartPosition = separatorRect.y - size.y;
                 deltaRef.current = event.targetTouches[0].clientY;
             }
                 
