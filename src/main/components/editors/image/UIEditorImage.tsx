@@ -55,6 +55,9 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
     /**CSS properties for ImageViewer */
     const imageStyle = useImageStyle(horizontalAlignment, verticalAlignment, props.cellEditor_horizontalAlignment_, props.cellEditor_verticalAlignment_, props.cellEditor.preserveAspectRatio);
 
+    // Whether the component uses mouse events
+    const hasMouseEvents = props.eventMouseClicked || props.eventMousePressed || props.eventMouseReleased;
+
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
@@ -132,6 +135,7 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
                 "rc-editor-image",
                 props.columnMetaData?.nullable === false ? "required-field" : "",
                 props.focusable === false ? "no-focus-rect" : "",
+                hasMouseEvents ? "handlePointerEvents" : ""
             )}
             style={{ ...props.layoutStyle, ...props.cellStyle, overflow: "hidden", caretColor: "transparent" }}
             aria-label={props.ariaLabel}
