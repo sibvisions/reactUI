@@ -141,6 +141,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
 
         /** The gap between toolbars */
         const toolbarGap = isToolBar ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--toolbar-gap')) : 0;
+        const toolbarHalfGap = 5 + toolbarGap * .5;
 
         /** The gap in toolbars */
         const toolbarCompExtraGap = isToolBar ? parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--toolbar-comp-gap')) : 0;
@@ -224,7 +225,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 /** If the current component is the first */
                 let bFirst = true;
 
-                let tbExtraSize = toolBarsFiltered && toolBarsFiltered.length ? 5 : 0
+                let tbExtraSize = toolBarsFiltered?.length ? toolbarHalfGap : 0
 
                 const boundsWidth = style.width as number - margins.marginLeft - margins.marginRight;
                 const boundsHeight = style.height as number - margins.marginTop - margins.marginBottom;
@@ -280,7 +281,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     }
                 });
                 if (tbExtraSize !== 0) {
-                    isRowOrientation ? width += tbExtraSize : height += tbExtraSize * 2;
+                    isRowOrientation ? width += tbExtraSize : height += tbExtraSize;
                 }
                 const grid:FlowGrid = {columns: anzCols, rows: anzRows, gridWidth: width, gridHeight: height}
                 return grid;
@@ -425,8 +426,8 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {
                 runAfterLayout(() => {
                     reportSize({
-                        height: prefSize.height + margins.marginTop + margins.marginBottom + (toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0), 
-                        width: prefSize.width + margins.marginLeft + margins.marginRight + (toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0)
+                        height: prefSize.height + margins.marginTop + margins.marginBottom + (toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? toolbarHalfGap : 0 : 0), 
+                        width: prefSize.width + margins.marginLeft + margins.marginRight + (toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? toolbarHalfGap : 0 : 0)
                     });
                 });
             }
@@ -435,19 +436,19 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                     height: baseProps.popupSize.height, 
                     width: baseProps.popupSize.width, 
                     position: 'relative', 
-                    left: style?.left || toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0,
-                    top: style?.top || toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
+                    left: style?.left || toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? toolbarHalfGap : 0 : 0,
+                    top: style?.top || toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? toolbarHalfGap : 0 : 0 
                 });
             }
             else {
                 const height = (style?.height || prefSize.height + margins.marginTop + margins.marginBottom) as number;
                 const width = (style?.width || prefSize.width + margins.marginLeft + margins.marginRight) as number;
                 setCalculatedStyle({ 
-                    height: height - (toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0), 
-                    width: width - (toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0), 
+                    height: height - (toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? toolbarHalfGap : 0 : 0), 
+                    width: width - (toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? toolbarHalfGap : 0 : 0), 
                     position: 'relative', 
-                    left: style?.left || toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0, 
-                    top: style?.top || toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 
+                    left: style?.left || toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? toolbarHalfGap : 0 : 0, 
+                    top: style?.top || toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? toolbarHalfGap : 0 : 0 
                 });
             }
         }
