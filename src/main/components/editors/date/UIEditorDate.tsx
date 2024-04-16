@@ -514,7 +514,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     }
                 }}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}
+                tooltipOptions={{ position: "left", showDelay: 800 }}
                 viewDate={viewDate}
                 onViewDateChange={(e) => {
                     viewDateChanged.current = true;

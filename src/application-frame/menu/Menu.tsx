@@ -223,14 +223,14 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                     }
                 }}
                 tooltip="Home"
-                tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />
+                tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", showDelay: 800, mouseTrack: true, mouseTrackTop: 30 }} />
             }
             {props.showButtons && (!visibleButtons || visibleButtons.save) && <Button
                 icon="fas fa-save"
                 className="menu-topbar-buttons"
                 onClick={() => showTopBar(context.server.sendRequest(createSaveRequest(), REQUEST_KEYWORDS.SAVE), context.server.topbar)}
                 tooltip={translation.get("Save")}
-                tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} />}
+                tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", showDelay: 800, mouseTrack: true, mouseTrackTop: 30 }} />}
             {(!visibleButtons || (visibleButtons.reload || visibleButtons.rollback) && props.showButtons) &&
                 <Button
                     icon={!visibleButtons ? "fas fa-sync" : visibleButtons.reload && !visibleButtons.rollback ? "fas fa-sync" : "pi pi-undo"}
@@ -244,7 +244,7 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
                         }
                     }}
                     tooltip={translation.get(!visibleButtons ? "Reload" : visibleButtons.reload && !visibleButtons.rollback ? "Reload" : "Rollback")}
-                    tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", mouseTrack: true, mouseTrackTop: 30 }} /> }
+                    tooltipOptions={{ style: { opacity: "0.85" }, position:"bottom", showDelay: 800, mouseTrack: true, mouseTrackTop: 30 }} /> }
             {props.showButtons && menuOptions.userSettings && <div className="vl" />}
             {menuOptions.userSettings && <div className="profile-menu">
                 <Menubar

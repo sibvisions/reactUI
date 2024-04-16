@@ -110,7 +110,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
                     checked={props.selected ? props.selected : false}
                     onClick={onClick}
                     tooltip={props.toolTipText}
-                    tooltipOptions={{ position: "left" }}
+                    tooltipOptions={{ position: "left", showDelay: 800 }}
                     disabled={isCompDisabled(props)}
                     tabIndex={btnStyle.tabIndex}
                     className={props.focusable === false ? "no-focus-rect" : ""}

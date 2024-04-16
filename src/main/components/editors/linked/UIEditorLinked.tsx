@@ -1021,7 +1021,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     handleSelect(event.value)
                 }}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}
+                tooltipOptions={{ position: "left", showDelay: 800 }}
                 itemTemplate={itemTemplate}
                 {...(tableOptions ? {
                     optionGroupLabel: "label",

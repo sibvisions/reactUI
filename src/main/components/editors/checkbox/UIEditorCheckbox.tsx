@@ -270,7 +270,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                 disabled={props.isReadOnly}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}
+                tooltipOptions={{ position: "left", showDelay: 800 }}
                 className={props.focusable === false ? "no-focus-rect" : ""}
             />
             {!props.isCellEditor &&

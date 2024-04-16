@@ -504,7 +504,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
             },
             onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
             tooltip: props.toolTipText,
-            tooltipOptions:{ position: "left" },
+            tooltipOptions:{ position: "left", showDelay: 800 },
             placeholder: props.cellEditor_placeholder_,
             tabIndex: props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)
         }

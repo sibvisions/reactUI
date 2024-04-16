@@ -102,7 +102,7 @@ const UIText: FC<ITextField & IExtendableText> = (props) => {
                     }
                 }}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}
+                tooltipOptions={{ position: "left", showDelay: 800 }}
                 {...usePopupMenu(props)}
                 size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
                 onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}

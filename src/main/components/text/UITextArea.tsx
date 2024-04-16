@@ -100,7 +100,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
                     }
                 }}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}
+                tooltipOptions={{ position: "left", showDelay: 800 }}
                 {...usePopupMenu(props)}
                 cols={props.columns !== undefined && props.columns >= 0 ? props.columns : 18}
                 rows={props.rows !== undefined && props.rows >= 0 ? props.rows : 5}

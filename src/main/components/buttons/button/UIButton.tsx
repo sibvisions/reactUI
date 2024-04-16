@@ -211,7 +211,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                         iconPos={btnStyle.iconPos}
                         disabled={!isCheckboxCellEditor(props) ? isCompDisabled(props) : props.isReadOnly}
                         tooltip={props.toolTipText}
-                        tooltipOptions={{ position: "left" }}
+                        tooltipOptions={{ position: "left", showDelay: 800 }}
                         layoutstyle-wrapper={props.name}
                         {...popupMenu}>
                         {isHTML && <RenderButtonHTML text={getButtonText(props) || ""} />}

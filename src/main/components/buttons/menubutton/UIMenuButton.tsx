@@ -286,7 +286,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                     }
                 }}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}>
+                tooltipOptions={{ position: "left", showDelay: 800 }}>
                     {isHTML && props.text && <RenderButtonHTML text={props.text} />}
                 </SplitButton>
         </span>
