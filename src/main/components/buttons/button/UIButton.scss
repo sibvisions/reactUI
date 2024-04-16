@@ -129,6 +129,9 @@
 
 .rc-button-icon {
     font-size: var(--iconHeight);
+    min-width: var(--iconWidth);
+    min-height: var(--iconHeight);
+
     color: var(--iconColor);
     &:not([class*="fas fa-"]):not([class*="far fa-"]):not([class*="fab fa-"]) {
         width: var(--iconWidth);

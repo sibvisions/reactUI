@@ -252,7 +252,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox> = (baseProps) 
 
                         disabled={isCompDisabled(props)}
                         tooltip={props.toolTipText}
-                        tooltipOptions={{ position: "left" }}
+                        tooltipOptions={{ position: "left", showDelay: 800 }}
                         layoutstyle-wrapper={props.name + "-wrapper"}
                         {...popupMenu}>
                         {isHTML && props.text && <RenderButtonHTML text={props.text} />}

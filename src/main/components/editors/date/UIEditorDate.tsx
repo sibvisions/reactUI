@@ -495,7 +495,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor> = (props) => {
                     }
                 }}
                 tooltip={props.toolTipText}
-                tooltipOptions={{ position: "left" }}
+                tooltipOptions={{ position: "left", showDelay: 800 }}
                 viewDate={viewDate}
                 onViewDateChange={(e) => setViewDate(e.value)}
                 placeholder={props.cellEditor_placeholder_}

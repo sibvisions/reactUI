@@ -491,7 +491,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                     //disabled={props.isReadOnly}
                     autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                     tooltip={props.toolTipText}
-                    tooltipOptions={{position: "left"}}
+                    tooltipOptions={{position: "left", showDelay: 800}}
                     placeholder={props.cellEditor_placeholder_}
                 />
             </span>
@@ -558,7 +558,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
                 readOnly={props.isReadOnly}
                 autoFocus={props.autoFocus ? true : props.id === "" ? true : false}
                 tooltip={props.toolTipText}
-                tooltipOptions={{position: "left"}}
+                tooltipOptions={{position: "left", showDelay: 800}}
                 placeholder={props.cellEditor_placeholder_}
             />
     )

@@ -174,7 +174,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable | IEditorCheck
                     checked={getChecked()}
                     onChange={onClick}
                     tooltip={props.toolTipText}
-                    tooltipOptions={{ position: "left" }}
+                    tooltipOptions={{ position: "left", showDelay: 800 }}
                     disabled={!isCheckboxCellEditor(props) ? isCompDisabled(props) : isCheckboxCellEditor(baseProps) ? baseProps.isReadOnly : undefined}
                     tabIndex={btnStyle.tabIndex}
                     className={props.focusable === false ? "no-focus-rect" : ""}
