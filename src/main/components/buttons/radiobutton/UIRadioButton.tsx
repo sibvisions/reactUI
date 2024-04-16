@@ -70,8 +70,8 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable | IEditorCheck
         }
     }, [!isCheckboxCellEditor(props) ? props.selected : undefined])
 
-    //If lib-user extends Radiobutton with onClick, call it when the Radiobutton is clicked
-    const onClick = (event:RadioButtonChangeEvent) => {
+    //If lib-user extends Radiobutton with onChange, call it when the Radiobutton is changed
+    const onChange = (event:RadioButtonChangeEvent) => {
         if (!isCheckboxCellEditor(props)) {
             if (props.onClick) {
                 props.onClick(event.originalEvent);
@@ -137,7 +137,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable | IEditorCheck
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={getChecked()}
-                    onClick={onClick}
+                    onChange={onChange}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left", showDelay: 800 }}
                     disabled={!isCheckboxCellEditor(props) ? isCompDisabled(props) : props.isReadOnly}

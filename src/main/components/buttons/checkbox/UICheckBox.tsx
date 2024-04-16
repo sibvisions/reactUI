@@ -67,8 +67,8 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
         }
     }, [props.selected])
 
-    // If lib-user extends Checkbox with onClick, call it when the Checkbox has been clicked
-    const onClick = (event:CheckboxChangeEvent) => {
+    // If lib-user extends Checkbox with onChange, call it when the Checkbox has been changed
+    const onChange = (event:CheckboxChangeEvent) => {
         if (props.onClick) {
             props.onClick(event.originalEvent);
         }
@@ -108,7 +108,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
                     inputId={props.id}
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected ? props.selected : false}
-                    onClick={onClick}
+                    onChange={onChange}
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left", showDelay: 800 }}
                     disabled={isCompDisabled(props)}

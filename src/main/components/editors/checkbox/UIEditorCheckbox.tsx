@@ -248,7 +248,7 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                 inputId={id}
                 ref={cbRef}
                 checked={checked}
-                onClick={(event) => {
+                onChange={(event) => {
                     if (props.onClick) {
                         props.onClick(event.originalEvent);
                     }
