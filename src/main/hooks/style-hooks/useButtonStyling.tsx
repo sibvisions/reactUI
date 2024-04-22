@@ -90,16 +90,15 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
         const isCB = isCheckboxCellEditor(props);
-        if ((!isCB && props.url) || (isCB && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK))) { return {} }  
-        
         const isCBOrRB = isCB ? 
                         !hasSameValue(cbStyles, props.cellEditor_style_ ? props.cellEditor_style_?.split(',') : props.cellEditor?.style?.split(',') || []) 
                         : 
                         (props.className === COMPONENT_CLASSNAMES.CHECKBOX || props.className === COMPONENT_CLASSNAMES.RADIOBUTTON);
-        let btnBackground = compStyle?.background ? compStyle.background as string : isCBOrRB ? "transparent" : window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+        
+
         const alignments = getAlignments(props);
-        let btnJustify: string|undefined = !isCB && props.horizontalTextPosition === 1 ? alignments.va : alignments.ha;
-        let btnAlign: string|undefined = !isCB && props.horizontalTextPosition === 1 ? alignments.ha : alignments.va;
+        let btnJustify: string | undefined = !isCB && props.horizontalTextPosition === 1 ? alignments.va : alignments.ha;
+        let btnAlign: string | undefined = !isCB && props.horizontalTextPosition === 1 ? alignments.ha : alignments.va;
 
         if (!isCBOrRB) {
             if (!btnJustify) {
@@ -109,8 +108,7 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
             if (!btnAlign) {
                 btnAlign = 'center';
             }
-        }
-        else {
+        } else {
             if (!btnJustify) {
                 btnJustify = !isCB && props.horizontalTextPosition === 1 ? 'center' : 'flex-start';
             }
@@ -119,6 +117,26 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
                 btnAlign = !isCB && props.horizontalTextPosition === 1 ? 'flex-start' : 'center';
             }
         }
+
+        if (
+            (!isCB && props.url) || 
+            (isCB && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK))
+        ) { 
+            return {
+                ...compStyle,
+                justifyContent: btnJustify,
+                alignItems: btnAlign,
+                padding: margins 
+                    ? `${margins.marginTop}px ${margins.marginRight}px ${margins.marginBottom}px ${margins.marginLeft}px' `
+                    : '0',
+            } 
+        }
+        
+        let btnBackground = compStyle?.background 
+            ? compStyle.background as string 
+            : isCBOrRB 
+                ? "transparent" 
+                : window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
 
         return {
             ...compStyle,
