@@ -604,9 +604,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         /** set EstTableWidth for size reporting */
                         setEstTableWidth(tempWidth);
                     }
-                    else {
-                        setEstTableWidth(0);
-                    }
                 }
             }, 0);
         }
