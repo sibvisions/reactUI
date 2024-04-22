@@ -41,10 +41,7 @@ const useProperties = <T extends IBaseComponent>(id: string, init: T, isPopup?:b
         }
 
         return() => {
-            const comp = context.contentStore.getComponentById(id);
-            if (comp && (!comp.parent?.includes('-popup') || isPopup)) {
-                context.subscriptions.unsubscribeFromPropChange(id);
-            }
+            context.subscriptions.unsubscribeFromPropChange(id);
         };
     }, [id, context.subscriptions, props]);
 
