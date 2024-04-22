@@ -420,8 +420,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 return newCell
             }
             else if (selectedRow.index > -1) {
-                // Select a column, if there is a row selected but no column
-                sendSelectRequest(columnOrder[0], undefined, 0);
+                setTimeout(() => {
+                    // Select a column, if there is a row selected but no column
+                    sendSelectRequest(columnOrder[0], undefined, 0);
+                }, 0)
             }
         }
         return null
