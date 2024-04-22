@@ -491,7 +491,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor> = (props) => {
                     sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.currentTarget.value, props.context.server, props.topbar, props.rowNumber)
                 }
             },
-            onFocus: (event: React.FocusEvent) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor),
+            onFocus: (event: React.FocusEvent) => handleFocusGained(props.name, props.cellEditor?.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor),
             onBlur: (event:React.FocusEvent) => {
                 if (!props.isReadOnly) {
                     if (props.onBlur) {
