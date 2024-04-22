@@ -360,7 +360,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor> = (props) => {
             let eValue = event.target.value;
 
             const getDecimalValue = () => {
-                if (event.key !== "Backspace" && event.key !== "-") {
+                if (event.key !== "Backspace" && event.key !== "-" && ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(event.key)) {
                     eValue = eValue.replaceAll(numberSeperators.group, "").replaceAll(prefix, "").replaceAll(suffix, "");
                     if (event.key === "-") {
                         if (eValue.indexOf(numberSeperators.decimal) !== -1) {

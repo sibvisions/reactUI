@@ -60,7 +60,7 @@ export class InputNumber extends Component {
     }
 
     static propTypes = {
-        value: PropTypes.number,
+        value: PropTypes.string,
         inputRef: PropTypes.any,
         format: PropTypes.bool,
         showButtons: PropTypes.bool,
