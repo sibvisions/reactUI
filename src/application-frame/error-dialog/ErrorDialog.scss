@@ -110,7 +110,8 @@
     &.error-details-enabled {
         min-height: 260px;
         .p-dialog-content {
-            flex: 0 0 125px;
+            flex-grow: 0;
+            flex-shrink: 0;
         }
 
         .p-dialog-footer {
