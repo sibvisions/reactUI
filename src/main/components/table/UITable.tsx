@@ -415,7 +415,9 @@ const UITable: FC<TableProps & IExtendableTable> = (baseProps) => {
                 return newCell
             }
             else if (selectedRow.index > -1) {
-                sendSelectRequest(columnOrder[0], undefined, 0);
+                setTimeout(() => {
+                    sendSelectRequest(columnOrder[0], undefined, 0);
+                }, 0)
             }
         }
         return undefined
