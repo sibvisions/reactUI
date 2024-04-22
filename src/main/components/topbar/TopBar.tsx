@@ -48,9 +48,8 @@ export function showTopBar(promise: Promise<any>, topbar: TopBarContextType|unde
                 topbar.hide()
             }
         });
-    }
-    else {
-        console.error('topbar is undefined')
+    } else {
+        //console.error('topbar is undefined')
         return Promise.resolve();
     }
 };
