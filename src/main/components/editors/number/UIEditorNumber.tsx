@@ -337,7 +337,12 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
             // Returns the decimal value of the entered value
             const getDecimalValue = () => {
-                if (event.key !== "Backspace" && event.key !== "-" && event.key !== numberSeperators.decimal) {
+                if (
+                    event.key !== "Backspace" &&
+                    event.key !== "-" &&
+                    event.key !== numberSeperators.decimal &&
+                    ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(event.key)
+                ) {
                     eValue = eValue.replaceAll(numberSeperators.group, "").replaceAll(prefix, "").replaceAll(suffix, "");
                     if (event.key === "-") {
                         if (eValue.indexOf(numberSeperators.decimal) !== -1) {
