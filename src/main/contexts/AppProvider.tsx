@@ -869,11 +869,8 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 // if not preserve send exit for old application
                 if (!preserveOnReload) {
                     contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
-                    if(
-                        "currentUser" in contextState.contentStore &&
-                        contextState.contentStore.currentUser.userName != startUpRequest.userName &&
-                        "routeToHome" in contextState.server
-                    ) {
+                    contextState.contentStore.setActiveScreen();
+                    if("routeToHome" in contextState.server) {
                         contextState.server.routeToHome();
                     }
                 }
