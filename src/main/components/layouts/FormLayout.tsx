@@ -935,7 +935,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
             calculateAnchors();
             calculateTargetDependentAnchors();
             buildComponents();
-        }, [baseProps.preferredSize, isDesignerActive, formLayoutAssistant]
+        }, [baseProps.preferredSize?.width, baseProps.preferredSize?.height, isDesignerActive, formLayoutAssistant]
     );
 
     //XXX: maybe refactor so that this memo returns the actual style instead of setting a ref
