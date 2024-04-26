@@ -186,7 +186,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
             if (rndRef.current) {
                 if (bounds && (bounds.height || bounds.width)) {
                     rndRef.current.updateSize({ width: bounds.width + 8, height: bounds.height + 35 });
-                    setFrameStyle({ position: "absolute", width: bounds.width, height: bounds.height });
+                    setFrameStyle({ position: "absolute", width: bounds.width, height: bounds.height, left: bounds.left, top: bounds.top });
                     initFrame.current = false;
                 }
                 else {
@@ -316,7 +316,7 @@ const UIInternalFrame: FC<IInternalFrame> = (props) => {
                     style={style as CSSProperties}
                     onResize={handleResize}
                     onDragStop={(event) => {
-                        sendBoundsRequest({ width: frameStyle ? (frameStyle.width as number) : 0, height: frameStyle ? (frameStyle.height as number) : 0, x: rndRef.current?.draggable.state.x, y: rndRef.current?.draggable.state.y})
+                        sendBoundsRequest({ width: frameStyle ? (frameStyle.width as number) : 0, height: frameStyle ? (frameStyle.height as number) : 0, x: rndRef.current?.props.position?.x, y: rndRef.current?.props.position?.y})
                     }}
                     bounds={".xd"}
                     default={{
