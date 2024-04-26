@@ -57,9 +57,17 @@ export interface IEditorCheckBox extends IRCCellEditor {
  * @param value - the value of the field
  */
 export const getBooleanValueFromValue = (value: any, selectedValue: any) => {
+
+    if (selectedValue === null || selectedValue === undefined) {
+        if (typeof value === "boolean") {
+            return value;
+        }
+    }
+
     if (value === selectedValue) {
         return true;
     }
+
     return false;
 }
 
@@ -91,6 +99,7 @@ export const handleCheckboxOnChange = (
     isCellEditor?: boolean
 
 ) => {
+
     const doSendSetValues = () => {
         sendSetValues(
             dataRow,
@@ -145,6 +154,9 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
     /** Current state of whether the CheckBox is currently checked or not */
     const [checked, setChecked] = useState(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) : false);
 
+    /** True if focus is set */
+    const [isFocused, setIsFocused] = useState(false);
+    
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
 
@@ -174,6 +186,9 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
 
     // Sets the checked value based on the selectedRow data
     useEffect(() => {
+
+        console.log("useEffect " + props.selectedRow.data[props.columnName]);
+
         setChecked(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) : false);
     }, [props.selectedRow, props.cellEditor.selectedValue]);
 
@@ -182,15 +197,15 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
         if (props.onChange) {
             props.onChange({ 
                 value: props.selectedRow ? props.selectedRow.data[props.columnName] : undefined, 
-                selectedValue: props.cellEditor.selectedValue,
-                deselectedValue: props.cellEditor.deselectedValue 
+                selectedValue: props.cellEditor.selectedValue ?? undefined,
+                deselectedValue: props.cellEditor.deselectedValue ?? undefined 
             });
         }
     }, [props.selectedRow, props.onChange]);
 
 
-
     return (
+
         <span
             ref={props.forwardedRef}
             id={!props.isCellEditor ? props.name : undefined}
@@ -220,8 +235,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                         props.dataRow,
                         props.columnName, 
                         checked, 
-                        props.cellEditor.selectedValue, 
-                        props.cellEditor.deselectedValue, 
+                        props.cellEditor.selectedValue ?? undefined, 
+                        props.cellEditor.deselectedValue ?? undefined, 
                         props.context.server,
                         props.rowIndex,
                         props.selectedRow.index,
@@ -258,8 +273,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                         props.dataRow,
                         props.columnName, 
                         checked, 
-                        props.cellEditor.selectedValue, 
-                        props.cellEditor.deselectedValue, 
+                        props.cellEditor.selectedValue ?? undefined, 
+                        props.cellEditor.deselectedValue ?? undefined, 
                         props.context.server,
                         props.rowIndex,
                         props.selectedRow.index,
@@ -267,11 +282,13 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                         props.isCellEditor
                     )
                 }}
+                onFocus={() => setIsFocused(true) }
+                onBlur={() => setIsFocused(false) }
                 disabled={props.isReadOnly}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left", showDelay: 800 }}
-                className={props.focusable === false ? "no-focus-rect" : ""}
+                className={concatClassnames(props.focusable === false ? "no-focus-rect" : "", isFocused ? "p-focus" : "")}
             />
             {!props.isCellEditor &&
                 <label

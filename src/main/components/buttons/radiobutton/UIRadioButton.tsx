@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
 import tinycolor from 'tinycolor2';
 import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
@@ -53,6 +53,9 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable | IEditorCheck
 
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(getButtonText(props));
+
+    /** True if focus is set */
+    const [isFocused, setIsFocused] = useState(false);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -138,11 +141,13 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable | IEditorCheck
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={getChecked()}
                     onChange={onChange}
+                    onFocus={() => setIsFocused(true) }
+                    onBlur={() => setIsFocused(false) }
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left", showDelay: 800 }}
                     disabled={!isCheckboxCellEditor(props) ? isCompDisabled(props) : props.isReadOnly}
                     tabIndex={btnStyle.tabIndex}
-                    className={props.focusable === false ? "no-focus-rect" : ""}
+                    className={concatClassnames(props.focusable === false ? "no-focus-rect" : "", isFocused ? "p-focus" : "")}
                 />
                 {(!isCheckboxCellEditor(props) || (isCheckboxCellEditor(props) && !props.isCellEditor)) && <label 
                     ref={labelRef} 

@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useRef } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState} from "react";
 import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
 import tinycolor from 'tinycolor2';
 import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
@@ -53,6 +53,9 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
     /** True if the text is HTML */
     const isHTML = useIsHTMLText(props.text);
     
+    /** True if focus is set */
+    const [isFocused, setIsFocused] = useState(false);
+
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
         if (props.forwardedRef.current) {
@@ -75,6 +78,7 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
 
         sendSetValue(props.name, props.selected === undefined ? true : !props.selected, props.context.server, props.topbar)
     }
+    
 
     return (
         <span ref={props.forwardedRef} id={props.name} style={props.layoutStyle}>
@@ -109,11 +113,13 @@ const UICheckBox: FC<IButtonSelectable & IExtendableSelectable & IComponentConst
                     style={{ order: btnStyle.iconPos === 'left' ? 1 : 2 }}
                     checked={props.selected ? props.selected : false}
                     onChange={onChange}
+                    onFocus={() => setIsFocused(true) }
+                    onBlur={() => setIsFocused(false) }
                     tooltip={props.toolTipText}
                     tooltipOptions={{ position: "left", showDelay: 800 }}
                     disabled={isCompDisabled(props)}
                     tabIndex={btnStyle.tabIndex}
-                    className={props.focusable === false ? "no-focus-rect" : ""}
+                    className={concatClassnames(props.focusable === false ? "no-focus-rect" : "", isFocused ? "p-focus" : "")}
                 />
                 <label 
                     ref={labelRef} 
