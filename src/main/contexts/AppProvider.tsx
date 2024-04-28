@@ -870,9 +870,6 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 if (!preserveOnReload) {
                     contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
                     contextState.contentStore.setActiveScreen();
-                    if("routeToHome" in contextState.server) {
-                        contextState.server.routeToHome();
-                    }
                 }
                 sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload);
             } 
