@@ -168,27 +168,29 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
 
     /** True, if the overflow is hidden. */
     const isOverflowHidden = useMemo(() => {
-        let isHidden = true;
         if (props.parent) {
             let parentComp = props.context.contentStore.getComponentById(props.parent);
             if (parentComp) {
-                if (parentComp.className === COMPONENT_CLASSNAMES.TABSETPANEL || parentComp.className === COMPONENT_CLASSNAMES.SPLITPANEL) {
+                if ([
+                    COMPONENT_CLASSNAMES.TABSETPANEL,
+                    COMPONENT_CLASSNAMES.SPLITPANEL
+                ].includes(parentComp.className)) {
                     return true;
                 }
 
-                if (props.layout && props.layout.startsWith("FlowLayout") && props.layout.split(",")[11] === 'false') {
+                if (props.layout?.startsWith("FlowLayout") && props.layout?.split(",")[11] === 'false') {
                     return true;
                 }
+
                 while (parentComp) {
                     if (parentComp.className === COMPONENT_CLASSNAMES.SCROLLPANEL) {
-                        isHidden = false;
-                        break;
+                        return false;
                     }
                     parentComp = props.context.contentStore.getComponentById(parentComp.parent);
                 }
             }
         }
-        return isHidden;
+        return false
     }, [props.parent])
 
     /** 
