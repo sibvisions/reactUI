@@ -56,6 +56,7 @@
   --input-button-padding:0rem 0.125rem;
   --input-button-icon-size:12px;
   --button-padding:0.125rem 0.25rem;
+  --link-button-padding:0.125rem 0;
   --button-icon-only-padding:0.125rem 0.125rem;
   --menubtn-leftbtn-padding:0.125rem 0rem 0.125rem 0.25rem;
   --menubtn-rightbtn-padding:0rem 0.125rem 0rem 0.125rem;
@@ -257,6 +258,9 @@ body {
 }
 .basti_small .rc-button {
   padding: var(--btnPadding, var(--button-padding, 0.125rem 0.25rem));
+}
+.basti_small.p-button-link {
+  padding: var(--btnPadding, var(--link-button-padding, 0.125rem 0));
 }
 .basti_small .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button):not(.p-splitbutton-menubutton) {
   padding: var(--btnPadding, var(--button-icon-only-padding, 0.25rem 0.25rem));

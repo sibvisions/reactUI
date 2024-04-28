@@ -199,3 +199,7 @@
         pointer-events: none;
     }
 }
+
+.p-button-link {
+    padding: var(--btnPadding, 0.5rem 0);
+}

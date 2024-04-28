@@ -145,6 +145,9 @@
     /// Padding for normal buttons
     --button-padding:0.5rem 1rem;
 
+    /// Padding for hyperlink buttons
+    --hyperlink-button-padding:0.5rem 0;
+
     /// Padding for icon-only buttons
     --button-icon-only-padding:0.5rem 0.5rem;
 
@@ -514,6 +517,10 @@ body {
 
     .rc-button {
         padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem));
+    }
+
+    .p-button-link {
+        padding: var(--btnPadding, var(--link-button-padding, 0.5rem 0));
     }
     
     .p-button.p-button-icon-only {
