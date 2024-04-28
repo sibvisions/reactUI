@@ -126,9 +126,10 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
                 ...compStyle,
                 justifyContent: btnJustify,
                 alignItems: btnAlign,
-                padding: margins 
-                    ? `${margins.marginTop}px ${margins.marginRight}px ${margins.marginBottom}px ${margins.marginLeft}px' `
-                    : '0',
+                paddingTop: margins ? `${margins.marginTop}px` : undefined,
+                paddingLeft: margins ? `${margins.marginLeft}px` : 0,
+                paddingRight: margins ? `${margins.marginRight}px` : 0,
+                paddingBottom: margins ? `${margins.marginBottom}px` : undefined,
             } 
         }
         
