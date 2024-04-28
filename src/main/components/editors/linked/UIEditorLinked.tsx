@@ -788,14 +788,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }
 
     /**
-     * Returns the suggestions to display at the dropdownlist
-     * @param values - The values which should be suggested
-     * @returns the suggestions to display at the dropdownlist
+     * makes the suggestions to display at the dropdownlist
      */
-    const buildSuggestions = (values:any) => {
+    const suggestions = useMemo(() => {
         let suggestions:any = [];
-        if (values.length > 0) {
-            values.forEach((value:any, i: number) => {
+        if (providedData.length > 0) {
+            providedData.forEach((value:any, i: number) => {
                 const suggestion = {...value, __index: i}
                 suggestions.push(suggestion);
             });
@@ -803,14 +801,15 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
         // If the columnView should display a table with more than one column, return the label and items to build the table
         if (props.cellEditor.columnView?.columnCount > 1 && tableOptions) {
-            return [{
+            suggestions = [{
                 label: props.cellEditor.columnView.columnNames,
                 items: suggestions
             }]
         }
 
         return suggestions
-    }
+    }, [providedData]);
+    
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 100 new rows
     const handleLazyLoad = (event:any) => {
@@ -829,9 +828,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }
 
     // Creates an item-template when linked-overlay is displayed as table
-    const itemTemplate = useCallback((d:any[], index: number) => {
+    const itemTemplate = useCallback((d:any[], index: number) => {        
         if (props.cellEditor.displayReferencedColumnName) {
-            return providedData[index][props.cellEditor.displayReferencedColumnName];
+            return d[props.cellEditor.displayReferencedColumnName];
         }
         else if (!tableOptions && isDisplayRefColNameOrConcat) {
             return <div key={0}>{getDisplayValue(d, getExtractedObject(d, linkReference.referencedColumnNames), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow)}</div>
@@ -842,8 +841,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
  
-                if (providedData[index].__recordFormats && providedData[index].__recordFormats[props.name] && providedData[index].__recordFormats[props.name].size && providedData[index].__recordFormats[props.name].has(Object.keys(suggestionObj)[i])) {
-                    const format = providedData[index].__recordFormats[props.name].get(Object.keys(suggestionObj)[i]) as CellFormatting;
+                if (d.__recordFormats && d.__recordFormats[props.name] && d.__recordFormats[props.name].size && d.__recordFormats[props.name].has(Object.keys(suggestionObj)[i])) {
+                    const format = d.__recordFormats[props.name].get(Object.keys(suggestionObj)[i]) as CellFormatting;
 
                     if (format.background) {
                         cellStyle.background = format.background;
@@ -885,12 +884,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             })
         }
 
-    }, [providedData, metaData, tableOptions]);
+    }, [metaData, tableOptions]);
 
     // Creates a header for the table when linked-overlay is in table-mode
-    const groupedItemTemplate = useCallback((d:any) => {
-        return (d.label as string[]).map((d, i) => <div key={i}>{metaDataReferenced?.columns[i]?.label ?? props.columnMetaData?.label ?? d}</div>)
-    }, [props.columnMetaData, providedData, metaDataReferenced]);
+    const groupedItemTemplate = useCallback((labels:string[]) => {
+        return labels.map((d, i) => <div key={i}>{metaDataReferenced?.columns[i]?.label ?? props.columnMetaData?.label ?? d}</div>)
+    }, [props.columnMetaData, metaDataReferenced]);
 
     // Returns the scrollheight
     const getScrollHeight = () => {
@@ -960,7 +959,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 //disabled={props.isReadOnly}
                 dropdown
                 completeMethod={event => sendFilter(event.query, true)}
-                suggestions={buildSuggestions(providedData)}
+                suggestions={suggestions}
                 value={text}
                 onChange={event => {
                     startedEditing.current = true;
