@@ -828,7 +828,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }
 
     // Creates an item-template when linked-overlay is displayed as table
-    const itemTemplate = useCallback((d:any[], index: number) => {        
+    const itemTemplate = useCallback((d:any, index: number) => {
         if (props.cellEditor.displayReferencedColumnName) {
             return d[props.cellEditor.displayReferencedColumnName];
         }
@@ -836,13 +836,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             return <div key={0}>{getDisplayValue(d, getExtractedObject(d, linkReference.referencedColumnNames), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow)}</div>
         }
         else {
-            const suggestionObj = getExtractedObject(d, columnViewNames);
-            return Object.values(suggestionObj).map((d:any, i:number) => {
+            const suggestionObj:Record<string, any> = getExtractedObject(d, columnViewNames);
+            return Object.entries(suggestionObj).map(([key, value], i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
  
-                if (d.__recordFormats && d.__recordFormats[props.name] && d.__recordFormats[props.name].size && d.__recordFormats[props.name].has(Object.keys(suggestionObj)[i])) {
-                    const format = d.__recordFormats[props.name].get(Object.keys(suggestionObj)[i]) as CellFormatting;
+                if (d.__recordFormats?.[props.name]?.has(key)) {
+                    const format = d.__recordFormats[props.name].get(key) as CellFormatting;
 
                     if (format.background) {
                         cellStyle.background = format.background;
@@ -880,7 +880,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         }
                     }
                 }
-                return <div style={cellStyle} key={i}>{icon ?? d}</div>
+                return <div style={cellStyle} key={i}>{icon ?? value}</div>
             })
         }
 

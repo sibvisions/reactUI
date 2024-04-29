@@ -174,7 +174,7 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
                 if ([
                     COMPONENT_CLASSNAMES.TABSETPANEL,
                     COMPONENT_CLASSNAMES.SPLITPANEL
-                ].includes(parentComp.className)) {
+                ].includes(parentComp.className as COMPONENT_CLASSNAMES)) {
                     return true;
                 }
 
