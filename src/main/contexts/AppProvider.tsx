@@ -318,6 +318,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                                     relaunchArguments.current = jscmd.arguments;
                                     if (ws.current && ws.current.readyState !== WebSocket.CLOSED) {
                                         ws.current.close(1000);
+                                        ws.current = null;
                                     }
                                     contextState.server.isExiting = true;
                                     contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
@@ -869,6 +870,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 // if not preserve send exit for old application
                 if (!preserveOnReload) {
                     contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
+                    contextState.contentStore.navigationNames.clear();
                     contextState.contentStore.setActiveScreen();
                 }
                 sendStartup(preserveOnReload ? createUIRefreshRequest() : startUpRequest, preserveOnReload);
