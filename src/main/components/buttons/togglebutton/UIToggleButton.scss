@@ -19,14 +19,19 @@
     --btnJustify: center;
     --btnAlign: center;
 
-    height: inherit;
-    width: inherit;
+    &, & > .p-button {
+        height: inherit;
+        width: inherit;
+    
+        justify-content: var(--btnJustify);
+        align-items: var(--btnAlign);
+    }
 
-    justify-content: var(--btnJustify);
-    align-items: var(--btnAlign);
-    padding: var(--btnPadding, 0.5rem 1rem);
+    & > .p-button {
+        padding: var(--btnPadding, 0.5rem 1rem);
+    }
 
-    &.p-button.p-button-icon-only {
+    .p-button.p-button-icon-only {
         width: inherit;
         height: inherit;
     }

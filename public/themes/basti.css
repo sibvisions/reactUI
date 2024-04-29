@@ -300,7 +300,7 @@ body {
 .basti .p-button.p-splitbutton-menubutton {
   padding: var(--menubtn-rightbtn-padding);
 }
-.basti .rc-togglebutton {
+.basti .rc-togglebutton > .p-button {
   padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem));
 }
 .basti .p-tabview .p-tabview-nav li .p-tabview-nav-link {

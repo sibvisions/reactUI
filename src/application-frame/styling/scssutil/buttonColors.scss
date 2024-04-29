@@ -19,7 +19,8 @@
 }
 
 @mixin btnHover {
-    &.p-button:not(a):not(.p-disabled):not(.border-notpainted):hover, &.p-button-raised:not(a):not(.p-disabled):not(.border-notpainted):hover {
+    &.p-button:not(a):not(.p-disabled):not(.border-notpainted):hover, 
+    &.p-button-raised:not(a):not(.p-disabled):not(.border-notpainted):hover {
         background: var(--hoverBackground);
         border-color: var(--hoverBackground);
 
@@ -39,66 +40,75 @@
 }
 
 @mixin toggleBtnHover {
-    &.p-button {
-        &:not(.border-notpainted):not(.mouse-border) {
-            background: var(--background);
-            border-color: var(--background);
+    &:not(.border-notpainted):not(.mouse-border) > .p-button {
+        background: var(--background);
+        border-color: var(--background);
+    }
+
+    &.border-notpainted > .p-button {
+        background: transparent;
+        border-color: transparent;
+        color: var(--button-color-dark);
+    }
+
+    &:not(.p-disabled):not(.p-highlight):hover {
+        &:not(.border-notpainted) > .p-button {
+            background: var(--hoverBackground);
+            border-color: var(--hoverBackground);
         }
 
         &.border-notpainted {
-            background: transparent;
-            border-color: transparent;
-            color: var(--button-color-dark);
-        }
-
-        &:not(.p-disabled):not(.p-highlight):hover {
-            &:not(.border-notpainted) {
-                background: var(--hoverBackground);
-                border-color: var(--hoverBackground);
-            }
-
-            &.border-notpainted {
+            & > .p-button {
                 background: transparent;
                 border-color: transparent;
                 color: var(--button-color-dark);
+            }
 
-                &.mouse-border {
+            &.mouse-border {
+                & > .p-button {
                     background: var(--hoverBackground);
                     border-color: var(--hoverBackground);
                 }
             }
         }
+    }
 
-        &.bright-button:not(.rc-toolbar-button), &:not(.p-disabled):not(.p-highlight).bright-button:hover, &.p-highlight.bright-button:hover {
-            color: var(--button-color-bright);
+    &.bright-button:not(.rc-toolbar-button) > .p-button, 
+    &:not(.p-disabled):not(.p-highlight).bright-button:hover > .p-button, 
+    &.p-highlight.bright-button:hover > .p-button {
+        color: var(--button-color-bright);
 
-            .p-button-icon-left, .p-button-icon-right {
-                    color: var(--iconColor, --button-color-bright);
-            }
+        .p-button-icon-left, .p-button-icon-right {
+                color: var(--iconColor, --button-color-bright);
         }
+    }
 
-        &.dark-button:not(.rc-toolbar-button), &:not(.p-disabled):not(.p-highlight).dark-button:hover, &.p-highlight.dark-button:hover {
-            color: var(--button-color-dark);
+    &.dark-button:not(.rc-toolbar-button) > .p-button, 
+    &:not(.p-disabled):not(.p-highlight).dark-button:hover > .p-button, 
+    &.p-highlight.dark-button:hover > .p-button {
+        color: var(--button-color-dark);
 
-            .p-button-icon-left, .p-button-icon-right {
-                color: var(--iconColor, --button-color-dark);
-            }
+        .p-button-icon-left, .p-button-icon-right {
+            color: var(--iconColor, --button-color-dark);
         }
+    }
 
-        &.p-highlight {
-            &:not(.border-notpainted), &.border-notpainted.mouse-border {
+    &.p-highlight {
+        &:not(.border-notpainted), 
+        &.border-notpainted.mouse-border {
+            & > .p-button {
                 background: var(--selectedBackground);
                 border-color: var(--selectedBackground);
-        
-                &:hover {
-                    background: var(--background);
-                    border-color: var(--background);
-                }
             }
     
-            &:hover {
+            &:hover > .p-button {
                 background: var(--background);
+                border-color: var(--background);
             }
+        }
+
+        &:hover > .p-button {
+            background: var(--background);
         }
     }
 }

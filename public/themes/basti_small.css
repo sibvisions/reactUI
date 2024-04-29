@@ -173,8 +173,7 @@ body {
   padding: var(--std-menu-item-padding);
 }
 .basti_small .std-menu .p-panelmenu .p-panelmenu-icon {
-  right: 10px;
-/*  left: calc(var(--std-menu-width) - 30px); */
+  left: calc(var(--std-menu-width) - 30px);
 }
 .basti_small .std-menu .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {
   min-width: var(--menuicon-size);
@@ -300,7 +299,7 @@ body {
 .basti_small .p-button.p-splitbutton-menubutton {
   padding: var(--menubtn-rightbtn-padding);
 }
-.basti_small .rc-togglebutton {
+.basti_small .rc-togglebutton > .p-button {
   padding: var(--btnPadding, var(--button-padding, 0.125rem 0.25rem));
 }
 .basti_small .p-tabview .p-tabview-nav li .p-tabview-nav-link {

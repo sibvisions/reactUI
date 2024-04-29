@@ -136,6 +136,34 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton | IEditorCh
         return false;
     }
 
+    useLayoutEffect(() => {
+        const el = buttonRef.current?.getElement();
+        if(el) {
+            el.style = (
+                Object.entries(btnStyle.style).map(([k, v]) => {
+                    k = k.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`);
+                    return `${k}:${v}`
+                }).join(';')
+            );
+            el.style.background = null;
+            el.style.borderColor = null;
+            el.style.setProperty('--btnJustify', btnStyle.style.justifyContent ?? null);
+            el.style.setProperty('--btnAlign', btnStyle.style.alignItems ?? null);
+            el.style.setProperty('--btnPadding', btnStyle.style.padding ?? null);
+            el.style.setProperty('--background', btnStyle.style.background ?? null);
+            el.style.setProperty('--selectedBackground', tinycolor(btnStyle.style.background?.toString()).darken(10).toString());
+            el.style.setProperty('--hoverBackground', tinycolor(btnStyle.style.background?.toString()).darken(5).toString());
+            if(btnStyle.iconProps?.icon) {
+                el.style.setProperty('--iconWidth', `${btnStyle.iconProps.size?.width}px`);
+                el.style.setProperty('--iconHeight', `${btnStyle.iconProps.size?.height}px`);
+                el.style.setProperty('--iconColor', btnStyle.iconProps.color);
+                el.style.setProperty('--iconImage', `url(${props.context.server.RESOURCE_URL + btnStyle.iconProps.icon})`);
+                el.style.setProperty('--iconTextGap', `${!isCheckboxCellEditor(props) ? (props as IButtonSelectable).imageTextGap || 4 : 4}px`);
+                el.style.setProperty('--iconCenterGap', `${btnStyle.iconCenterGap}px`);
+            }
+        }
+    }, [buttonRef.current, btnStyle]);
+
     return (
         <span
             ref={props.forwardedRef}
@@ -159,25 +187,6 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton | IEditorCh
                     props.styleClassNames,
                     isCompDisabled(props) ? "togglebutton-disabled" : ""
                 )}
-                style={{
-                    ...btnStyle.style,
-                    background: undefined,
-                    borderColor: undefined,
-                    '--btnJustify': btnStyle.style.justifyContent,
-                    '--btnAlign': btnStyle.style.alignItems,
-                    '--btnPadding': btnStyle.style.padding,
-                    '--background': btnStyle.style.background,
-                    '--selectedBackground': tinycolor(btnStyle.style.background?.toString()).darken(10).toString(),
-                    '--hoverBackground': tinycolor(btnStyle.style.background?.toString()).darken(5).toString(),
-                    ...(btnStyle.iconProps?.icon ? {
-                        '--iconWidth': `${btnStyle.iconProps.size?.width}px`,
-                        '--iconHeight': `${btnStyle.iconProps.size?.height}px`,
-                        '--iconColor': btnStyle.iconProps.color,
-                        '--iconImage': `url(${props.context.server.RESOURCE_URL + btnStyle.iconProps.icon})`,
-                        '--iconTextGap': `${!isCheckboxCellEditor(props) ? (props as IButtonSelectable).imageTextGap || 4 : 4}px`,
-                        '--iconCenterGap': `${btnStyle.iconCenterGap}px`
-                    } : {})
-                } as CSSProperties}
                 onLabel={!isHTML ? getButtonText(props) : undefined}
                 offLabel={!isHTML ? getButtonText(props) : undefined}
                 offIcon={btnStyle.iconProps ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : undefined}

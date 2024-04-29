@@ -497,7 +497,7 @@ body {
         padding: var(--menubtn-rightbtn-padding);
     }
 
-    .rc-togglebutton {
+    .rc-togglebutton > .p-button {
         padding: var(--btnPadding, var(--button-padding, 0.125rem 0.25rem));
     }
 
