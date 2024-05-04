@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { InputNumber } from "./PrimeReactInputNumber";
 import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
@@ -188,7 +188,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     useRequestFocus(id, props.requestFocus, numberInput.current as HTMLElement|undefined, props.context);
 
     // The number seperator for the given locale
-    const numberSeperators = getNumberSeparators(props.context.appSettings.locale);
+    const numberSeparators = getNumberSeparators(props.context.appSettings.locale);
 
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
@@ -236,15 +236,19 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     const decimalLength = useMemo(() => props.columnMetaData ? getDecimalLength((props.columnMetaData as NumericColumnDescription).precision, (props.columnMetaData as NumericColumnDescription).scale) : undefined, [props.columnMetaData]);
 
     /** Returns true if the caret is before the comma */
-    const isSelectedBeforeComma = (value: string) => {
-        if (numberInput.current) {
-            //@ts-ignore
-            return numberInput.current.selectionStart <= (value && value.toString().indexOf(numberSeperators.decimal) !== -1 ? value.toString().indexOf(numberSeperators.decimal) : decimalLength)
-        }
-        else {
+    const isSelectedBeforeComma = useCallback((el: HTMLInputElement) => {
+        if (el) {
+            if(!el.value.includes(numberSeparators.decimal)) {
+                //if there is no number separator in the value the selection is technically in front of it
+                return true;
+            } else {
+                const separatorPos = el.value.indexOf(numberSeparators.decimal);
+                return (el.selectionStart ?? 0) < separatorPos && (el.selectionEnd ?? 0) < separatorPos;
+            }
+        } else {
             return false
         }
-    }
+    }, [numberSeparators.decimal]);
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -293,7 +297,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
             const pastedText = e.clipboardData.getData('text')
             const pastedValue = parseInt(pastedText);
             if (!isNaN(pastedValue)) {
-                if (isSelectedBeforeComma(e.target.value) && e.target.value.split('.')[0].length + pastedValue.toString().length > decimalLength) {
+                if (isSelectedBeforeComma(e.target) && e.target.value.split('.')[0].length + pastedValue.toString().length > decimalLength) {
                     e.stopPropagation();
                     e.preventDefault();
                 }
@@ -309,12 +313,11 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
     useEventHandler(numberInput.current ? numberInput.current : undefined, 'paste', (event:any) => handlePaste(event));
 
     // Add keydown eventHandler
-    useEventHandler(numberInput.current ? numberInput.current : undefined, 'keydown', (event:any) => {
+    useEventHandler(numberInput.current ? numberInput.current : undefined, 'keydown', (event:KeyboardEvent) => {
         // Don't allow value change on up and down arrow. Save and blur if "enter" or "tab" pressed. closed and not saved when "esc" is pressed
-        if (['ArrowUp', 'ArrowDown'].indexOf(event.key) >= 0) {
+        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
             event.stopPropagation();
-        }
-        else if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) < 0) {
+        } else if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) {
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             if (props.isCellEditor && props.stopCellEditing) {
                 if ((event as KeyboardEvent).key === "Tab") {
@@ -326,39 +329,30 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                 }
             }
 
-            let selectedLength = 0;
-
-            if (window.getSelection()?.toString()) {
-                selectedLength = window.getSelection()!.toString().replaceAll(".", "").replaceAll(",", "").length;
-            }
-
             // Checks if the decimal length limit is hit and when it is don't allow more inputs
-            let eValue = event.target.value;
+            const target = (event.target as HTMLInputElement);
+            let eValue: string = target.value;
 
             // Returns the decimal value of the entered value
             const getDecimalValue = () => {
                 if (
-                    event.key !== "Backspace" &&
-                    event.key !== "-" &&
-                    event.key !== numberSeperators.decimal &&
-                    ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(event.key)
+                    ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Backspace"].includes(event.key)
                 ) {
-                    eValue = eValue.replaceAll(numberSeperators.group, "").replaceAll(prefix, "").replaceAll(suffix, "");
-                    if (event.key === "-") {
-                        if (eValue.indexOf(numberSeperators.decimal) !== -1) {
-                            return BigInt(event.key + eValue.slice(0, eValue.indexOf(numberSeperators.decimal)));
-                        }
-                        else {
-                            return BigInt(event.key + eValue);
-                        }
-                    }
-                    else {
-                        if (eValue.indexOf(numberSeperators.decimal) !== -1) {
-                            return BigInt(eValue.slice(0, eValue.indexOf(numberSeperators.decimal)) + event.key);
-                        }
-                        else {
-                            return BigInt(eValue + event.key);
-                        }
+                    const start = Math.min(target.selectionStart ?? 0, target.selectionEnd ?? 0);
+                    const end = Math.max(target.selectionStart ?? 0, target.selectionEnd ?? 0);
+                    
+                    let insert = event.key === "Backspace" ? "" : event.key;
+
+                    let out = (eValue.slice(0, start) + insert + eValue.slice(end))
+                        .replaceAll("-", "")
+                        .replaceAll(numberSeparators.group, "")
+                        .slice(prefix.length)
+                        .slice(0, suffix.length ? -suffix.length : undefined);
+
+                    if (out.includes(numberSeparators.decimal)) {
+                        return BigInt(out.slice(0, out.indexOf(numberSeparators.decimal)));
+                    } else {
+                        return BigInt(out);
                     }
                 }
                 return parseInt(eValue);
@@ -366,7 +360,9 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
 
             // Returns true, if the decimal length is being exceeded
             const isExceedingDecimalLength = () => {
-                return decimalLength && isSelectedBeforeComma(event.target.value) && (getDecimalValue().toString().length - selectedLength) > decimalLength && !window.getSelection()?.toString()
+                return decimalLength && 
+                    isSelectedBeforeComma(target) && 
+                    getDecimalValue().toString().length > decimalLength;
             }
 
             // Returns true, if the entered key is - and the editor is signed
@@ -384,12 +380,11 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                 event.stopPropagation();
                 return false;
             }
-            else if (numberInput.current && typeof value === "string" && numberInput.current.value.indexOf(value) === numberInput.current.selectionStart && event.key === "-" && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
+            else if (event.key === "-" && typeof value === "string" && target.value.indexOf(value) === target.selectionStart && props.columnMetaData && (props.columnMetaData as NumericColumnDescription).signed !== false) {
                 startedEditing.current = true;
-                setValue(parseFloat("-" + value.replace(numberSeperators.decimal, ".")).toString());
+                setValue(parseFloat("-" + value.replace(numberSeparators.decimal, ".")).toString());
             }
-        }
-        else {
+        } else {
             event.stopPropagation();
         }
     });
@@ -432,7 +427,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                                 let stringCopy = numberInput.current.value.slice();
                                 stringCopy = stringCopy.replace(prefix, "").replace(suffix, "");
                                 // bigdecimal always without group and correct decimal seperator
-                                setValue(new bigDecimal(replaceGroupAndDecimal(stringCopy, numberSeperators)).getValue())
+                                setValue(new bigDecimal(replaceGroupAndDecimal(stringCopy, numberSeparators)).getValue())
                             }
                             //setValue(event.value.toString());
                         }
