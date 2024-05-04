@@ -186,9 +186,6 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
 
     // Sets the checked value based on the selectedRow data
     useEffect(() => {
-
-        console.log("useEffect " + props.selectedRow.data[props.columnName]);
-
         setChecked(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) : false);
     }, [props.selectedRow, props.cellEditor.selectedValue]);
 
