@@ -16,6 +16,9 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
+import { FloatLabel } from "primereact/floatlabel";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import React, { CSSProperties, FC, FormEvent, useContext, useMemo, useState } from "react";
 import { createLoginRequest } from "../../main/factories/RequestFactory";
 import tinycolor from "tinycolor2";
@@ -92,28 +95,33 @@ const LoginForm:FC<ILoginForm> = (props) => {
                             { translation.has(props.errorMessage) ? translation.get(props.errorMessage) : props.errorMessage}
                         </div>
                         }
-                        <div className="p-field p-float-label p-input-icon-left">
-                            <i className="pi pi-user" />
-                            <InputText
-                                value={username}
-                                className="login-inputtext"
-                                id="username"
-                                type="text"
-                                autoComplete="username"
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)} />
+                        <div className="login-input-group">
                             <label htmlFor="username">{translation.get("Username")} </label>
+                            <IconField iconPosition="left">
+                                <InputIcon className="pi pi-user" />
+                                <InputText
+                                    value={username}
+                                    className="login-inputtext"
+                                    id="username"
+                                    type="text"
+                                    autoComplete="username"
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)} />
+                            </IconField>
                         </div>
-                        <div className="p-field p-float-label p-input-icon-left">
-                            <i className="pi pi-key" />
-                            <InputText
-                                value={password}
-                                className="login-inputtext"
-                                id="password"
-                                type="password"
-                                autoComplete="current-password"
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} />
+                        <div className="login-input-group">
                             <label htmlFor="password">{translation.get("Password")} </label>
+                            <IconField iconPosition="left">
+                                <InputIcon className="pi pi-key" />
+                                <InputText
+                                    value={password}
+                                    className="login-inputtext"
+                                    id="password"
+                                    type="password"
+                                    autoComplete="current-password"
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} />
+                            </IconField>
                         </div>
+
                         {(context.appSettings.applicationMetaData.lostPasswordEnabled || context.appSettings.applicationMetaData.rememberMe) && 
                         <div className={concatClassnames(
                             "login-extra-options",
