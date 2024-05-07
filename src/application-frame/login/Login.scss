@@ -25,21 +25,11 @@
 .login-form .p-fluid {
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: 1.675rem;
 
   .lost-password-button {
     width: unset;
     padding: 0.5rem;
-  }
-
-  .login-input-group {
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
-
-    label {
-      padding-left: .125rem;
-    }
   }
 } 
 
@@ -54,13 +44,19 @@
 }
 
 .p-float-label {
-  /// Position and Size of floatlabel placeholder
-  input:focus ~label, input.p-filled ~label, 
-  textarea:focus ~label, textarea.p-filled ~label,
-  .p-inputwrapper-focus ~label, .p-inputwrapper-filled ~label {
-    top: 10px;
-    font-size: 8px;
-    margin-top: -0.5rem;
+  &:first-child {
+    margin-top: .5rem;
+  }
+
+  &:not(:has(input:focus)):has(input[value=""]) {
+    label {
+      left: 2rem;
+    }
+  }
+
+  label {
+    margin: 0;
+    transform: translateY(-50%);
   }
 }
 

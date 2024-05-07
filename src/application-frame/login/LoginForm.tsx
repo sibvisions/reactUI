@@ -95,8 +95,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                             { translation.has(props.errorMessage) ? translation.get(props.errorMessage) : props.errorMessage}
                         </div>
                         }
-                        <div className="login-input-group">
-                            <label htmlFor="username">{translation.get("Username")} </label>
+                        <FloatLabel>
                             <IconField iconPosition="left">
                                 <InputIcon className="pi pi-user" />
                                 <InputText
@@ -107,9 +106,9 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                     autoComplete="username"
                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)} />
                             </IconField>
-                        </div>
-                        <div className="login-input-group">
-                            <label htmlFor="password">{translation.get("Password")} </label>
+                            <label htmlFor="username">{translation.get("Username")} </label>
+                        </FloatLabel>
+                        <FloatLabel>
                             <IconField iconPosition="left">
                                 <InputIcon className="pi pi-key" />
                                 <InputText
@@ -120,7 +119,8 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                     autoComplete="current-password"
                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} />
                             </IconField>
-                        </div>
+                            <label htmlFor="password">{translation.get("Password")} </label>
+                        </FloatLabel>
 
                         {(context.appSettings.applicationMetaData.lostPasswordEnabled || context.appSettings.applicationMetaData.rememberMe) && 
                         <div className={concatClassnames(
