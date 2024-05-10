@@ -128,7 +128,7 @@ export const InputNumber = React.memo(
                 return new RegExp(`[${formatter.format(1).replace(/\s/g, '').replace(_numeral.current, '').replace(_group.current, '')}]`, 'g');
             }
 
-            return new RegExp(`[]`, 'g');
+            return new RegExp('[]', 'g');
         };
 
         const getPrefixExpression = () => {
@@ -174,12 +174,18 @@ export const InputNumber = React.memo(
                     let formatter = new Intl.NumberFormat(_locale, getOptions());
                     let _formattedValue = formatter.format(value);
 
-                    if (value.endsWith(".")) {
+                    //reactUI modification: add correct decimal number separator
+                    if (value.toString().endsWith(".")) {
                         _formattedValue = _formattedValue + numberSeperators.decimal;
                     }
 
                     if (props.prefix) {
-                        _formattedValue = props.prefix + _formattedValue;
+                        //reactUI modification: add minus sign in front of prefix
+                        if(_formattedValue.startsWith('-')) {
+                            _formattedValue = '-' + props.prefix + _formattedValue.slice(1)
+                        } else {
+                            _formattedValue = props.prefix + _formattedValue
+                        }
                     }
 
                     if (props.suffix) {
@@ -208,11 +214,12 @@ export const InputNumber = React.memo(
                 .replace(_numeral.current, _index.current);
 
             if (filteredText) {
-                if (filteredText === '-')
+                if (filteredText === '-') {
                     // Minus sign
                     return filteredText;
+                }
 
-                let parsedValue = filteredText;
+                let parsedValue = +filteredText;
 
                 return isNaN(parsedValue) ? null : parsedValue;
             }
@@ -320,13 +327,62 @@ export const InputNumber = React.memo(
 
             if (isSpecialChar.current) {
                 event.target.value = lastValue.current;
+                isSpecialChar.current = false;
             }
 
-            isSpecialChar.current = false;
+            if (DomHandler.isAndroid()) {
+                return;
+            }
+
+            // #6324 Chrome is allowing accent-dead characters through...
+            const inputType = event.nativeEvent.inputType;
+            const data = event.nativeEvent.data;
+
+            if (inputType === 'insertText' && /\D/.test(data)) {
+                event.target.value = lastValue.current;
+            }
+        };
+
+        const onInputAndroidKey = (event) => {
+            if (!DomHandler.isAndroid() || props.disabled || props.readOnly) {
+                return;
+            }
+
+            if (props.onKeyUp) {
+                props.onKeyUp(event);
+
+                // do not continue if the user defined event wants to prevent
+                if (event.defaultPrevented) {
+                    return;
+                }
+            }
+
+            const code = event.which || event.keyCode;
+
+            if (code !== 13) {
+                // to submit a form
+                event.preventDefault();
+            }
+
+            const char = String.fromCharCode(code);
+            const _isDecimalSign = isDecimalSign(char);
+            const _isMinusSign = isMinusSign(char);
+
+            if ((48 <= code && code <= 57) || _isMinusSign || _isDecimalSign) {
+                insert(event, char, { isDecimalSign: _isDecimalSign, isMinusSign: _isMinusSign });
+            } else {
+                updateValue(event, event.target.value, null, 'delete-single');
+            }
         };
 
         const onInputKeyDown = (event) => {
             if (props.disabled || props.readOnly) {
+                return;
+            }
+
+            if (event.altKey || event.ctrlKey || event.metaKey) {
+                isSpecialChar.current = true;
+
                 return;
             }
 
@@ -341,9 +397,8 @@ export const InputNumber = React.memo(
 
             lastValue.current = event.target.value;
 
-            if (event.shiftKey || event.altKey) {
-                isSpecialChar.current = true;
-
+            // Android is handled specially in onInputAndroidKey
+            if (DomHandler.isAndroid()) {
                 return;
             }
 
@@ -352,25 +407,21 @@ export const InputNumber = React.memo(
             let inputValue = event.target.value;
             let newValueStr = null;
 
-            if (event.altKey) {
-                event.preventDefault();
-            }
-
-            switch (event.which) {
+            switch (event.code) {
                 //up
-                case 38:
+                case 'ArrowUp':
                     spin(event, 1);
                     event.preventDefault();
                     break;
 
                 //down
-                case 40:
+                case 'ArrowDown':
                     spin(event, -1);
                     event.preventDefault();
                     break;
 
                 //left
-                case 37:
+                case 'ArrowLeft':
                     if (!isNumeralChar(inputValue.charAt(selectionStart - 1))) {
                         event.preventDefault();
                     }
@@ -378,7 +429,7 @@ export const InputNumber = React.memo(
                     break;
 
                 //right
-                case 39:
+                case 'ArrowRight':
                     if (!isNumeralChar(inputValue.charAt(selectionStart))) {
                         event.preventDefault();
                     }
@@ -386,8 +437,10 @@ export const InputNumber = React.memo(
                     break;
 
                 //enter and tab
-                case 13:
-                case 9:
+                case 'Tab':
+                case 'NumpadEnter':
+                case 'Enter':
+                case 'NumpadEnter':
                     newValueStr = validateValue(parseValue(inputValue));
                     inputRef.current.value = formatValue(newValueStr);
                     inputRef.current.setAttribute('aria-valuenow', newValueStr);
@@ -395,7 +448,7 @@ export const InputNumber = React.memo(
                     break;
 
                 //backspace
-                case 8:
+                case 'Backspace':
                     event.preventDefault();
 
                     if (selectionStart === selectionEnd) {
@@ -443,7 +496,7 @@ export const InputNumber = React.memo(
                     break;
 
                 // del
-                case 46:
+                case 'Delete':
                     event.preventDefault();
 
                     if (selectionStart === selectionEnd) {
@@ -484,46 +537,35 @@ export const InputNumber = React.memo(
 
                     break;
 
-                // End
-                case 35:
-                // Home/Pos1
-                case 36:
-                    setTimeout(() => {
-                        initCursor();
-                    });
+                case 'End':
+                    event.preventDefault();
+
+                    if (!ObjectUtils.isEmpty(props.max)) {
+                        updateModel(event, props.max);
+                    }
+
+                    break;
+                case 'Home':
+                    event.preventDefault();
+
+                    if (!ObjectUtils.isEmpty(props.min)) {
+                        updateModel(event, props.min);
+                    }
+
+                    break;
 
                 default:
+                    event.preventDefault();
+
+                    let char = event.key;
+                    const _isDecimalSign = isDecimalSign(char);
+                    const _isMinusSign = isMinusSign(char);
+
+                    if (((event.code.startsWith('Digit') || event.code.startsWith('Numpad')) && Number(char) >= 0 && Number(char) <= 9) || _isMinusSign || _isDecimalSign) {
+                        insert(event, char, { isDecimalSign: _isDecimalSign, isMinusSign: _isMinusSign });
+                    }
+
                     break;
-            }
-        };
-
-        const onInputKeyUp = (event) => {
-            if (props.disabled || props.readOnly) {
-                return;
-            }
-
-            if (props.onKeyUp) {
-                props.onKeyUp(event);
-
-                // do not continue if the user defined event wants to prevent
-                if (event.defaultPrevented) {
-                    return;
-                }
-            }
-
-            const code = event.which || event.keyCode;
-
-            if (code !== 13) {
-                // to submit a form
-                event.preventDefault();
-            }
-
-            const char = String.fromCharCode(code);
-            const _isDecimalSign = isDecimalSign(char);
-            const _isMinusSign = isMinusSign(char);
-
-            if ((48 <= code && code <= 57) || _isMinusSign || _isDecimalSign) {
-                insert(event, char, { isDecimalSign: _isDecimalSign, isMinusSign: _isMinusSign });
             }
         };
 
@@ -534,7 +576,7 @@ export const InputNumber = React.memo(
                 return;
             }
 
-            let data = (event.clipboardData || window['clipboardData']).getData('Text');
+            let data = (event.clipboardData || window.clipboardData).getData('Text');
 
             if (data) {
                 let filteredData = parseValue(data);
@@ -585,7 +627,9 @@ export const InputNumber = React.memo(
             let formatter = new Intl.NumberFormat(_locale, getOptions());
             let parseVal = parseValue(formatter.format(val));
 
-            if (parseVal === null) return false;
+            if (parseVal === null) {
+                return false;
+            }
 
             return parseVal % 1 !== 0;
         };
@@ -700,22 +744,27 @@ export const InputNumber = React.memo(
                 return text + value.slice(suffix);
             } else if (end === value.length) {
                 return value.slice(0, start) + text;
-            } else {
-                const selectionValue = value.slice(start, end);
-                // Fix: if the suffix starts with a space, the input will be cleared after pasting
-                const space = /\s$/.test(selectionValue) ? ' ' : '';
-
-                return value.slice(0, start) + text + space + value.slice(end);
             }
+
+            const selectionValue = value.slice(start, end);
+            // Fix: if the suffix starts with a space, the input will be cleared after pasting
+            const space = /\s$/.test(selectionValue) ? ' ' : '';
+
+            return value.slice(0, start) + text + space + value.slice(end);
         };
 
         const deleteRange = (value, start, end) => {
             let newValueStr;
 
-            if (end - start === value.length) newValueStr = '';
-            else if (start === 0) newValueStr = value.slice(end);
-            else if (end === value.length) newValueStr = value.slice(0, start);
-            else newValueStr = value.slice(0, start) + value.slice(end);
+            if (end - start === value.length) {
+                newValueStr = '';
+            } else if (start === 0) {
+                newValueStr = value.slice(end);
+            } else if (end === value.length) {
+                newValueStr = value.slice(0, start);
+            } else {
+                newValueStr = value.slice(0, start) + value.slice(end);
+            }
 
             return newValueStr;
         };
@@ -789,9 +838,9 @@ export const InputNumber = React.memo(
                 resetRegex();
 
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         };
 
         const resetRegex = () => {
@@ -932,9 +981,9 @@ export const InputNumber = React.memo(
                     let isGroupChar = _group.current.test(nextChar);
 
                     if (isGroupChar && diff === 1) {
-                        selectionEnd += 1;
+                        selectionEnd = selectionEnd + 1;
                     } else if (!isGroupChar && isNumeralChar(prevChar)) {
-                        selectionEnd += -1 * diff + 1;
+                        selectionEnd = selectionEnd + (-1 * diff + 1);
                     }
 
                     _group.current.lastIndex = 0;
@@ -1003,10 +1052,10 @@ export const InputNumber = React.memo(
                     originalEvent: event,
                     value: value,
                     stopPropagation: () => {
-                        event.stopPropagation();
+                        event?.stopPropagation();
                     },
                     preventDefault: () => {
-                        event.preventDefault();
+                        event?.preventDefault();
                     },
                     target: {
                         name: props.name,
@@ -1112,7 +1161,7 @@ export const InputNumber = React.memo(
         }, [props.disabled]);
 
         const createInputElement = () => {
-            const className = classNames('p-inputnumber-input', props.inputClassName);
+            const className = classNames(props.inputClassName, cx('input', { context }));
             const valueToRender = formattedValue(props.value);
 
             return (
@@ -1136,7 +1185,7 @@ export const InputNumber = React.memo(
                     name={props.name}
                     autoFocus={props.autoFocus}
                     onKeyDown={onInputKeyDown}
-                    onKeyPress={onInputKeyUp}
+                    onKeyPress={onInputAndroidKey}
                     onInput={onInput}
                     onClick={onInputClick}
                     onPointerDown={onInputPointerDown}
@@ -1271,7 +1320,7 @@ export const InputNumber = React.memo(
                     {inputElement}
                     {buttonGroup}
                 </span>
-                {hasTooltip && <Tooltip target={elementRef} content={props.tooltip} {...props.tooltipOptions} pt={ptm('tooltip')} />}
+                {hasTooltip && <Tooltip target={elementRef} content={props.tooltip} pt={ptm('tooltip')} {...props.tooltipOptions} />}
             </>
         );
     })
