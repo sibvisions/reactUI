@@ -71,22 +71,22 @@ export function getNumberSeparators(locale: string) {
  * @param useGrouping - true, if the number value should be grouped
  */
 export function getPrefix(numberFormat:string, data: any, isNumberRenderer:boolean, locale: string, useGrouping: boolean) {
+    const prefix = getPrimePrefix(numberFormat, data, locale, useGrouping);
     // add leading zeros
     if (numberFormat.startsWith('0') || numberFormat.startsWith('#')) {
-        return getPrimePrefix(numberFormat, data, locale, useGrouping);
-    }
-    else if (!numberFormat.startsWith('0') && !numberFormat.startsWith('#')) {
+        return prefix;
+    } else {
         const indexHash = numberFormat.indexOf('#');
         const index0 = numberFormat.indexOf('0');
         const indexPeriod = numberFormat.indexOf('.');
         if (indexPeriod !== 0) {
             // Add the prefix (no zero or #) and then add the leading zeros
-            if (indexHash < index0) {
-                return numberFormat.replaceAll("'", '').substring(0, indexHash) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
-            }
-            else if (index0 < indexHash) {
-                return numberFormat.replaceAll("'", '').substring(0, index0) + (getPrimePrefix(numberFormat, data, locale, useGrouping) && !isNumberRenderer ? getPrimePrefix(numberFormat, data, locale, useGrouping) : "");
-            }
+            const index = Math.min(
+                indexHash >= 0 ? indexHash : Number.MAX_SAFE_INTEGER, 
+                index0 >= 0 ? index0 : Number.MAX_SAFE_INTEGER
+            );
+            return numberFormat.replaceAll("'", '').substring(0, index) 
+                + (prefix && !isNumberRenderer ? prefix : "");
         }
     }
     return ""
@@ -224,7 +224,10 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
      * Returns a string which will be added before the number, if there is a minimum amount of digits and the value is too small,
      * 0s will be added
      */
-    const prefix = useMemo(() => getPrefix(props.cellEditor.numberFormat, props.selectedRow && props.selectedRow.data[props.columnName] !== undefined ? getNumberValueAsString(props.selectedRow.data[props.columnName], props.cellEditor.numberFormat) : undefined, false, props.context.appSettings.locale, useGrouping), [props.cellEditor.numberFormat, props.selectedRow, useGrouping]);
+    const prefix = useMemo(
+        () => getPrefix(props.cellEditor.numberFormat, getNumberValueAsString(value, props.cellEditor.numberFormat), false, props.context.appSettings.locale, useGrouping), 
+        [value, props.cellEditor.numberFormat, props.selectedRow, useGrouping]
+    );
 
     /** Returns a string which will be added behind the number, based on the numberFormat */
     const suffix = useMemo(() => getSuffix(props.cellEditor.numberFormat, props.context.appSettings.locale, props.columnMetaData ? (props.columnMetaData as NumericColumnDescription).scale : undefined), [props.cellEditor.numberFormat]);
