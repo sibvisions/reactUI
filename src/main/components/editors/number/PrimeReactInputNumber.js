@@ -140,7 +140,8 @@ export const InputNumber = React.memo(
                 prefixChar.current = formatter.format(1).split('1')[0];
             }
 
-            return new RegExp(`${escapeRegExp(prefixChar.current || '')}`, 'g');
+            //reactUI modification: only remove prefix at beginning of string
+            return new RegExp(`^\-?${escapeRegExp(prefixChar.current || '')}`, 'g');
         };
 
         const getSuffixExpression = () => {
