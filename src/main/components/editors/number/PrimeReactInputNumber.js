@@ -1012,8 +1012,12 @@ export const InputNumber = React.memo(
             const _formattedValue = formattedValue(newValue);
 
             if (value !== _formattedValue) {
+                const valueLength = value.length;
+                const formattedLength = _formattedValue.length;
+                let selectionEnd = inputEl.selectionEnd + (formattedLength - valueLength);
                 inputEl.value = _formattedValue;
                 inputEl.setAttribute('aria-valuenow', newValue);
+                inputEl.setSelectionRange(selectionEnd, selectionEnd);
             }
         };
 
