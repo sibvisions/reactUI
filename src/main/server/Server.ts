@@ -838,6 +838,7 @@ class Server extends BaseServer {
         let routeTo: string | undefined;
         let highestPriority = 0;
         const pathName = (this.history as History).location.pathname as string
+        let method: string = "push";
 
         responses.forEach(response => {
             if (response.name === RESPONSE_NAMES.USER_DATA) {
@@ -853,11 +854,15 @@ class Server extends BaseServer {
                             this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
                         }
                         else if (pathName === "/login" && this.linkOpen && this.contentStore.navigationNames.has(this.linkOpen)) {
+                            method = 'replace'
                             const req = createOpenScreenRequest();
                             req.componentId = this.contentStore.navigationNames.get(this.linkOpen)!.componentId;
                             this.sendRequest(req, REQUEST_KEYWORDS.OPEN_SCREEN);
                         }
                         else {
+                            if(pathName === "/login") {
+                                method = 'replace'
+                            }
                             routeTo = "home";
                         }
                     }
@@ -919,7 +924,11 @@ class Server extends BaseServer {
         });
         if (routeTo) {
             //window.location.hash = "/"+routeTo
-            this.history?.push(`/${routeTo}`);
+            if(method === "replace") {
+                this.history?.replace(`/${routeTo}`);
+            } else {
+                this.history?.push(`/${routeTo}`);
+            }
         }
     }
 }
