@@ -988,7 +988,6 @@ export default abstract class BaseServer {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = changedProvider.dataProvider;
             fetchReq.fromRow = 0;
-            fetchReq.rowCount = -1;
             if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
                 fetchReq.includeMetaData = true;
             }
