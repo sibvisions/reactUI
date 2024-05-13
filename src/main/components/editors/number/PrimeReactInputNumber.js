@@ -141,7 +141,7 @@ export const InputNumber = React.memo(
             }
 
             //reactUI modification: only remove prefix at beginning of string
-            return new RegExp(`^\-?${escapeRegExp(prefixChar.current || '')}`, 'g');
+            return new RegExp(`^(\-?)${escapeRegExp(prefixChar.current || '')}`, 'g');
         };
 
         const getSuffixExpression = () => {
@@ -205,7 +205,7 @@ export const InputNumber = React.memo(
         const parseValue = (text) => {
             let filteredText = text
                 .replace(_suffix.current, '')
-                .replace(_prefix.current, '')
+                .replace(_prefix.current, '$1')
                 .trim()
                 .replace(/\s/g, '')
                 .replace(_currency.current, '')
@@ -640,7 +640,7 @@ export const InputNumber = React.memo(
 
             _decimal.current.lastIndex = 0;
 
-            const filteredVal = val.replace(_prefix.current, '').trim().replace(/\s/g, '').replace(_currency.current, '');
+            const filteredVal = val.replace(_prefix.current, '$1').trim().replace(/\s/g, '').replace(_currency.current, '');
             const decimalCharIndexWithoutPrefix = filteredVal.search(_decimal.current);
 
             _decimal.current.lastIndex = 0;
@@ -779,7 +779,7 @@ export const InputNumber = React.memo(
             // remove prefix
             let prefixLength = (prefixChar.current || '').length;
 
-            inputValue = inputValue.replace(_prefix.current, '');
+            inputValue = inputValue.replace(_prefix.current, '$1');
             selectionStart = selectionStart - prefixLength;
 
             let char = inputValue.charAt(selectionStart);
