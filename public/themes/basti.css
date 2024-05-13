@@ -63,9 +63,9 @@
   --checkbox-size:20px;
   --radiobutton-size:20px;
   --tab-padding:0rem 1rem;
-  --table-header-padding:0.6rem 1rem;
-  --table-cell-padding-top-bottom:0.2rem;
-  --table-cell-padding-left-right:0.4rem;
+  --table-header-padding: 0.6rem 0.75rem;
+  --table-cell-padding-top-bottom: 0.2rem;
+  --table-cell-padding-left-right: 0.75rem;
   --table-data-height:27px;
   --label-padding:calc(var(--input-padding-tb) + var(--input-border-width));
   --menubar-height:40px;

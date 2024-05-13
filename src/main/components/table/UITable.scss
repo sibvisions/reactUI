@@ -159,15 +159,15 @@
                 caret-color: auto;
 
                     .cell-data.cancel-padding {
-                        width: calc(100% + 0.8rem);
-                        height: calc(100% + 0.4rem);
+                        width: calc(100% + calc(2 * var(--table-cell-padding-left-right, .4rem)));
+                        height: calc(100% + calc(2 * var(--table-cell-padding-top-bottom, .2rem)));
                     }
 
                 .cancel-padding {
-                    margin: -0.2rem -0.4rem;
+                    margin: calc(-1 * var(--table-cell-padding-top-bottom, .2rem)) calc(-1 * var(--table-cell-padding-left-right, .4rem));
 
                     &:empty {
-                        min-height: calc(100% + .4rem);
+                        min-height: calc(100% + calc(2 * var(--table-cell-padding-top-bottom, .2rem)));
                     }
                 }
 
@@ -209,7 +209,7 @@
                         text-overflow: ellipsis;
                     }
                     &.cancel-padding {
-                        padding: 0.2rem 0.4rem;
+                        padding: var(--table-cell-padding-top-bottom, .2rem) var(--table-cell-padding-left-right, .4rem);
                     }
                 }
 

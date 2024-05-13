@@ -91,9 +91,6 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
     let editor = <div>{props.cellData}</div>
     if (metaData) {
         const docStyle = window.getComputedStyle(document.documentElement);
-        // Add more than 100% so the editor takes up the whole width/height of the table-cell
-        const calcWidth = "calc(100% + " + docStyle.getPropertyValue('--table-cell-padding-left-right') + " + 0.1rem)";
-        const calcHeight = "calc(100% + " + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + ")";
 
         editor = <CellEditorWrapper
             {...{
@@ -104,8 +101,8 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 id: "",
                 cellEditor_editable_: true,
                 editorStyle: { 
-                    width: calcWidth, 
-                    height: calcHeight, 
+                    width: "100%", 
+                    height: "100%", 
                 },
                 autoFocus: true,
                 stopCellEditing: stopCellEditing,
@@ -117,8 +114,8 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 context: props.context,
                 topbar: props.topbar,
                 layoutStyle: { 
-                    width: calcWidth, 
-                    height: calcHeight, 
+                    width: "100%", 
+                    height: "100%",
                 }
             }} />
     }
@@ -156,12 +153,16 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Document style object */
     const docStyle = window.getComputedStyle(document.documentElement);
 
-    // Calculates the minus margin-left to display no gap when opening the cell-editor
-    const calcMarginLeft = useMemo(() => "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-left-right') + " / 2) - 0.05rem)", []);
+    const style = useMemo(() => ({ 
+        width: `calc(100% + calc(2 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')}))`, 
+        height: `calc(100% + calc(2 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')}))`, 
+        // Calculates the minus margin to display no gap when opening the cell-editor
+        marginTop: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')})`,
+        marginLeft: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')})`, 
+        marginRight: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')})`, 
+        marginBottom: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')})`,
+    }), []);
 
-    // Calculates the minus margin-top to display no gap when opening the cell-editor
-    const calcMarginTop = useMemo(() => "calc(0rem - calc(" + docStyle.getPropertyValue('--table-cell-padding-top-bottom') + " / 2) - 0.1rem)", []);
- 
     /** A stored click event to call when the table is done with selecting row/cell */
     const [storedClickEvent, setStoredClickEvent] = useState<Function|undefined>(undefined);
 
@@ -263,7 +264,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Either return the cellrenderer or a in-cell editor when readonly is true don't display an editor*/
     return (
         (edit && props.isEditable) ?
-            <div style={{ width: "100%", height: "100%", marginLeft: calcMarginLeft, marginTop: calcMarginTop }} ref={wrapperRef}>
+            <div style={style} ref={wrapperRef}>
                 {displayEditor(columnMetaData, { ...props, isReadOnly: !props.isEditable, context: context, forwardedRef: forwardedRef }, stopCellEditing, passRef.current)}
             </div> : <CellRenderer
                 name={props.name}
