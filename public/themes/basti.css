@@ -100,7 +100,7 @@ body {
 .basti .std-menu.menu-collapsed .menu-logo-wrapper {
   width: var(--std-menu-collapsed-width);
 }
-.basti .std-menu.menu-collapsed .menu-logo-wrapper .menu-logo {
+.basti .std-menu.menu-collapsed .menu-logo-wrapper .menu-logo--small {
   width: var(--std-logo-collapsed-width);
 }
 .basti .std-menu.menu-collapsed .menu-panelmenu-wrapper {
@@ -111,9 +111,6 @@ body {
 }
 .basti .std-menu.menu-collapsed:not(.design-std-menu) .menu-topbar {
   margin-left: var(--std-menu-collapsed-width);
-}
-.basti .std-menu.menu-collapsed .menu-logo-mini {
-  width: var(--std-logo-collapsed-width);
 }
 .basti .std-menu .menu-header {
   height: var(--std-header-height);
@@ -162,9 +159,6 @@ body {
 }
 .basti .std-menu:not(.design-std-menu) .menu-panelmenu-wrapper {
   padding-top: var(--std-header-height);
-}
-.basti .std-menu .menu-logo-mini {
-  width: var(--std-logo-width);
 }
 .basti .std-menu .p-panelmenu .p-panelmenu-header a {
   padding: var(--std-menu-header-padding);
@@ -377,7 +371,7 @@ body {
   .basti .std-menu .menu-logo-mini-wrapper {
     height: var(--std-logo-height);
   }
-  .basti .std-menu .menu-logo-mini-wrapper .menu-logo-mini {
+  .basti .std-menu .menu-logo-mini-wrapper .menu-logo {
     max-height: var(--std-logo-height);
     width: var(--std-logo-width);
   }

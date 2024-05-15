@@ -61,6 +61,26 @@
     @include menuTransitions();
     align-self: center;
     object-fit: contain;
+
+    &--big {
+        width: var(--std-logo-width);
+
+        .menu-collapsed & {
+            opacity: 0;
+        }
+    }
+
+    &--small {
+        width: var(--std-menu-collapsed-width);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        .std-menu:not(.menu-collapsed) & {
+            opacity: 0;
+        }
+    }
 }
 
 /// Styling for top bar part next to logo, flex-grow, so the profile is on the far right
@@ -260,7 +280,7 @@
 }
 
 /// Logo in Menu should only be displayed when screen < 600px, transition for smoothness
-.menu-logo-mini-wrapper, .menu-logo-mini {
+.menu-logo-mini-wrapper {
     @include menuTransitions();
 }
 
@@ -269,10 +289,10 @@
     align-items: center;
     height: 0;
     padding-left: 10px;
-}
 
-.menu-logo-mini {
-    max-height: 0px;
+    .menu-logo {
+        max-height: 0px;
+    }
 }
 
 .menu-collapsed.no-mini {

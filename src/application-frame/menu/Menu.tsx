@@ -389,9 +389,7 @@ const Menu: FC<IMenu> = (props) => {
                 const hoverExpand = () => {
                     if (menuOuter.classList.contains("menu-collapsed")) {
                         menuOuter.classList.remove("menu-collapsed");
-                        if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                            (menuLogoRef.current.getElementsByTagName("img")[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
-                            (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG;
+                        if (fadeRef.current) {
                             fadeRef.current.style.setProperty('display', 'none');
                         }
                     }
@@ -399,9 +397,7 @@ const Menu: FC<IMenu> = (props) => {
                 const hoverCollapse = () => {
                     if (!menuOuter.classList.contains("menu-collapsed")) {
                         menuOuter.classList.add("menu-collapsed");
-                        if (menuLogoRef.current && fadeRef.current && menuLogoMiniRef.current) {
-                            (menuLogoRef.current.getElementsByTagName("img")[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
-                            (menuLogoMiniRef.current.children[0] as HTMLImageElement).src = (process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_SMALL;
+                        if (fadeRef.current) {
                             fadeRef.current.style.removeProperty('display');
                         }
                         if (foldMenuOnCollapse) {
@@ -425,7 +421,7 @@ const Menu: FC<IMenu> = (props) => {
             }
         }
 
-    },[menuCollapsed, props.forwardedRef, context.appSettings.LOGO_BIG, context.appSettings.LOGO_SMALL, closeOpenedMenuPanel]);
+    },[menuCollapsed, props.forwardedRef, closeOpenedMenuPanel]);
 
     /** When the transition of the menu-opening starts, add the classname to the element so the text of active screen is blue */
     useEventHandler(document.getElementsByClassName("p-panelmenu")[0] as HTMLElement, "transitionstart", (event) => {
@@ -458,16 +454,16 @@ const Menu: FC<IMenu> = (props) => {
         }
     }
 
-    var imgLogo = (<img draggable="false" 
-                        className="menu-logo" 
-                        src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} 
-                        alt="logo" />);
-
-    var imgLogoMini = (<img draggable="false"
-                            className="menu-logo-mini" 
-                            src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + (menuCollapsed ? context.appSettings.LOGO_SMALL : context.appSettings.LOGO_BIG)} 
-                            alt="logo" />
-    )                        
+    var imgLogo = useMemo(() => <>
+        <img draggable="false" 
+            className="menu-logo menu-logo--big" 
+            src={`${(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '')}${context.appSettings.LOGO_BIG}`} 
+            alt="logo" />
+        <img draggable="false" 
+            className="menu-logo menu-logo--small" 
+            src={`${(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '')}${context.appSettings.LOGO_SMALL}`} 
+            alt="logo" />
+    </>, []);                    
 
     return (
         <>
@@ -503,8 +499,8 @@ const Menu: FC<IMenu> = (props) => {
                         <div ref={props.forwardedRef} className="menu-panelmenu-wrapper">
                             <div className="menu-logo-mini-wrapper" ref={menuLogoMiniRef}>
                             {context.appSettings.applicationMetaData.companyUrl !== undefined ? 
-                                <a href={context.appSettings.applicationMetaData.companyUrl} target="_blank">{imgLogoMini}</a> :
-                                imgLogoMini
+                                <a href={context.appSettings.applicationMetaData.companyUrl} target="_blank">{imgLogo}</a> :
+                                imgLogo
                             }
                             </div>
                             {/** @ts-ignore */}

@@ -224,7 +224,7 @@ body {
             .menu-logo-wrapper {
                 width: var(--std-menu-collapsed-width);
 
-                .menu-logo {
+                .menu-logo--small {
                     width: var(--std-logo-collapsed-width);
                 }
             }
@@ -239,10 +239,6 @@ body {
 
             &:not(.design-std-menu) .menu-topbar {
                 margin-left: var(--std-menu-collapsed-width);
-            }
-
-            .menu-logo-mini {
-                width: var(--std-logo-collapsed-width);
             }
         }
 
@@ -310,10 +306,6 @@ body {
 
         &:not(.design-std-menu) .menu-panelmenu-wrapper {
             padding-top: var(--std-header-height);
-        }
-
-        .menu-logo-mini {
-            width: var(--std-logo-width);
         }
 
         .p-panelmenu {
@@ -612,7 +604,7 @@ body {
             .menu-logo-mini-wrapper {
                 height: var(--std-logo-height);
 
-                .menu-logo-mini {
+                .menu-logo {
                     max-height: var(--std-logo-height);
                     width: var(--std-logo-width);
                 }
