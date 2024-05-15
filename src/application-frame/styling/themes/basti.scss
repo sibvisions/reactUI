@@ -305,7 +305,8 @@ body {
         }
 
         &:not(.design-std-menu) .menu-panelmenu-wrapper {
-            padding-top: var(--std-header-height);
+            margin-top: var(--std-header-height);
+            height: calc(var(--main-height) - var(--std-header-height));
         }
 
         .p-panelmenu {
