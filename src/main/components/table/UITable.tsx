@@ -1438,7 +1438,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         itemSize, 
                         lazy: true,
                         onLazyLoad: handleLazyLoad,
-                        loading: listLoading,
+                        //loading: listLoading,
                     } : undefined}
                     rows={rows}
                     totalRecords={providerData.length}
