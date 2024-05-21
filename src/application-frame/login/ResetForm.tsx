@@ -25,6 +25,9 @@ import { translation } from "../../main/util/other-util/Translation";
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 import { appContext } from "../../main/contexts/AppProvider";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
+import { FloatLabel } from "primereact/floatlabel";
 
 /**
  * Returns the reset-form to reset the password of a user.
@@ -68,16 +71,19 @@ const ResetForm:FC<ILoginForm> = (props) => {
                 <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }} >
                     {translation.get("Please enter your e-mail address.")}
                 </div>
-                <div className="p-field p-float-label p-input-icon-left">
-                    <i className="pi pi-inbox" />
-                    <InputText
-                        value={email}
-                        id="email"
-                        type="text"
-                        autoComplete="email"
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)} />
+                <FloatLabel>
+                    <IconField iconPosition="left">
+                        <InputIcon className="pi pi-inbox" />
+                        <InputText
+                            value={email}
+                            className="login-inputtext"
+                            id="email"
+                            type="text"
+                            autoComplete="email"
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)} />
+                    </IconField>
                     <label htmlFor="email">{translation.get("Email")} </label>
-                </div>
+                </FloatLabel>
                 <div className="change-password-button-wrapper">
                     <Button 
                         type="button" 
