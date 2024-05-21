@@ -98,12 +98,14 @@ const ErrorDialog:FC = () => {
 
     /** Set visibility to false and send a close frame request to the server */ 
     const handleOnHide = () => {
-        setVisible(false);
-        setShowDetails(false);
-        if (errorProps && errorProps.componentId) {
-            const closeFrameReq = createCloseFrameRequest();
-            closeFrameReq.componentId = errorProps.componentId
-            context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME);
+        if(visible) {
+            setVisible(false);
+            setShowDetails(false);
+            if (errorProps && errorProps.componentId) {
+                const closeFrameReq = createCloseFrameRequest();
+                closeFrameReq.componentId = errorProps.componentId
+                context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME);
+            }
         }
     }    
 
