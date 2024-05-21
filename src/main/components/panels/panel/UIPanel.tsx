@@ -178,7 +178,11 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
                     return true;
                 }
 
-                if (props.layout?.startsWith("FlowLayout") && props.layout?.split(",")[11] === 'false') {
+                if (
+                    props.classNameEventSourceRef !== "RadioButtonGroupEditor" 
+                    && props.layout?.startsWith("FlowLayout") 
+                    && props.layout?.split(",")[11] === 'false'
+                ) {
                     return true;
                 }
 
