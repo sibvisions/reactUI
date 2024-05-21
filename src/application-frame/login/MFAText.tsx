@@ -25,6 +25,9 @@ import { translation } from "../../main/util/other-util/Translation";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import { appContext } from "../../main/contexts/AppProvider";
+import { FloatLabel } from "primereact/floatlabel";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 
 /**
  * Returns the Multi-Factor-Authentication Mask for a TextInput authentication
@@ -73,17 +76,20 @@ const MFAText:FC<ILoginForm> = (props) => {
                 <div className="p-field" style={{ marginBottom: "1rem" }}>
                     {translation.get("Please enter your confirmation code.")}
                 </div>
-                <div className="p-field p-float-label p-input-icon-left" style={{ marginBottom: "2rem" }}>
-                    <i className="pi pi-key" />
-                    <InputText
-                        value={code}
-                        id="code"
-                        type="text"
-                        autoComplete="code"
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setCode(event.target.value)} />
+                <FloatLabel>
+                    <IconField iconPosition="left">
+                        <InputIcon className="pi pi-key" />
+                        <InputText
+                            value={code}
+                            className="login-inputtext"
+                            id="code"
+                            type="text"
+                            autoComplete="code"
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setCode(event.target.value)} />
+                    </IconField>
                     <label htmlFor="code">{translation.get("Code")} </label>
-                </div>
-                <div className="change-password-button-wrapper">
+                </FloatLabel>
+                <div className="change-password-button-wrapper" style={{ marginTop: "2rem" }}>
                     <Button 
                         type="button" 
                         className="lost-password-button rc-button" 
