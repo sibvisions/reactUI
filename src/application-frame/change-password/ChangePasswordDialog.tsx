@@ -28,6 +28,7 @@ import { appContext } from "../../main/contexts/AppProvider";
 import { FloatLabel } from "primereact/floatlabel";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
+import { useHistory } from "react-router";
 
 // Interface for the ChangePasswordDialog
 interface IChangePasswordDialog  {
@@ -121,6 +122,17 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
             }
         }
     }
+
+    //if there is a history change close the dialog
+    const history = useHistory();
+    useEffect(() => {
+        return history.block(() => {
+            if(visible) {
+                setVisible(false);
+            }
+            return !visible;
+        })
+    }, [history, visible, setVisible])
 
     return (
         <Dialog
