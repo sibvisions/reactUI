@@ -32,6 +32,8 @@ import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates"
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 import { appContext } from "../../main/contexts/AppProvider";
 
+const USERNAME_LSKEY = "@sibvisions/reactui/username";
+
 /** Interface for the default-login form */
 export interface ILoginForm extends ILoginCredentials {
     loginActive: boolean
@@ -49,7 +51,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
     const context = useContext(appContext);
 
     /** State for username field */
-    const [username, setUsername] = useState<string>((context.contentStore as ContentStore).currentUser.userName);
+    const [username, setUsername] = useState<string>((context.contentStore as ContentStore).currentUser.userName || (window.localStorage?.getItem(USERNAME_LSKEY) ?? ""));
 
     /** State for password field */
     const [password, setPassword] = useState<string>("");
@@ -71,7 +73,11 @@ const LoginForm:FC<ILoginForm> = (props) => {
      */
      const loginSubmit = (e: FormEvent<HTMLFormElement>) => {
         props.changeLoginData(username, password);
-        e.preventDefault()
+        e.preventDefault();
+
+        //store username in localstorage for use on reload
+        window.localStorage?.setItem(USERNAME_LSKEY, username);
+
         const loginReq = createLoginRequest();
         loginReq.username = username;
         loginReq.password = password;
@@ -104,7 +110,8 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                     id="username"
                                     type="text"
                                     autoComplete="username"
-                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)} />
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)}
+                                    autoFocus={!username} />
                             </IconField>
                             <label htmlFor="username">{translation.get("Username")} </label>
                         </FloatLabel>
@@ -117,7 +124,8 @@ const LoginForm:FC<ILoginForm> = (props) => {
                                     id="password"
                                     type="password"
                                     autoComplete="current-password"
-                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} />
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)} 
+                                    autoFocus={!!username && !password} />
                             </IconField>
                             <label htmlFor="password">{translation.get("Password")} </label>
                         </FloatLabel>
@@ -156,7 +164,8 @@ const LoginForm:FC<ILoginForm> = (props) => {
                             } as CSSProperties} 
                             label={translation.get("Login")}
                             icon="pi pi-lock-open"
-                            disabled={props.loginActive} />
+                            disabled={props.loginActive}
+                            autoFocus={!!username && !!password} />
                     </div>
             </form>
         </>
