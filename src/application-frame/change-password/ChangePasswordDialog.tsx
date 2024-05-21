@@ -25,6 +25,9 @@ import BaseResponse from "../../main/response/BaseResponse";
 import RESPONSE_NAMES from "../../main/response/RESPONSE_NAMES";
 import { translation } from "../../main/util/other-util/Translation";
 import { appContext } from "../../main/contexts/AppProvider";
+import { FloatLabel } from "primereact/floatlabel";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 
 // Interface for the ChangePasswordDialog
 interface IChangePasswordDialog  {
@@ -132,50 +135,62 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                     <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }}>
                         {isReset ? translation.get("Please enter your one-time password and set a new password") : translation.get("Please enter and confirm the new password.")}
                     </div>
-                    <div className="p-field p-float-label p-input-icon-left">
-                        <i className="pi pi-user" />
-                        <InputText
-                            value={changePWData.username}
-                            id="change-username"
-                            type="text"
-                            autoComplete="change-username"
-                            onChange={isReset ? (event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, username: event.target.value})) : undefined}
-                            disabled={!isReset} />
+                    <FloatLabel>
+                        <IconField iconPosition="left">
+                            <InputIcon className="pi pi-user" />
+                            <InputText
+                                value={changePWData.username}
+                                className="login-inputtext"
+                                id="change-username"
+                                type="text"
+                                autoComplete="change-username"
+                                onChange={isReset ? (event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, username: event.target.value})) : undefined}
+                                disabled={!isReset} />
+                        </IconField>
                         <label className="change-password-label" htmlFor="change-username">{translation.get("Username")} </label>
-                    </div>
-                    <div className="p-field p-float-label p-input-icon-left">
-                        <i className="pi pi-key" />
-                        <InputText
-                            value={changePWData.password}
-                            id="change-password"
-                            type="password"
-                            autoComplete="change-password"
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, password: event.target.value}))}
-                            disabled={!isReset && !props.loggedIn} />
+                    </FloatLabel>
+                    <FloatLabel>
+                        <IconField iconPosition="left">
+                            <InputIcon className="pi pi-key" />
+                            <InputText
+                                value={changePWData.password}
+                                className="login-inputtext"
+                                id="change-password"
+                                type="password"
+                                autoComplete="change-password"
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, password: event.target.value}))}
+                                disabled={!isReset && !props.loggedIn}
+                                autoFocus={isReset || props.loggedIn} />
+                        </IconField>
                         <label className="change-password-label" htmlFor="change-password">
                             {isReset ? translation.get("One-time password") : translation.get("Password")}
                         </label>
-                    </div>
-                    <div className="p-field p-float-label p-input-icon-left">
-                        <i className="pi pi-key" />
-                        <InputText
-                            value={changePWData.newPassword}
-                            id="change-password-new"
-                            type="password"
-                            autoComplete="change-password-new"
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, newPassword: event.target.value}))} />
+                    </FloatLabel>
+                    <FloatLabel>
+                        <IconField iconPosition="left">
+                            <InputIcon className="pi pi-key" />
+                            <InputText
+                                value={changePWData.newPassword}
+                                id="change-password-new"
+                                type="password"
+                                autoComplete="change-password-new"
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, newPassword: event.target.value}))} 
+                                autoFocus={!isReset && !props.loggedIn}/>
+                        </IconField>
                         <label className="change-password-label" htmlFor="change-password-new">{translation.get("New Password")} </label>
-                    </div>
-                    <div className="p-field p-float-label p-input-icon-left change-password-confirm">
-                        <i className="pi pi-check" />
-                        <InputText
-                            value={changePWData.confirmPassword}
-                            id="change-password-confirm"
-                            type="password"
-                            autoComplete="change-password-new"
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, confirmPassword: event.target.value}))} />
+                    </FloatLabel>
+                    <FloatLabel>
+                        <IconField iconPosition="left">
+                            <InputIcon className="pi pi-check" />
+                            <InputText
+                                value={changePWData.confirmPassword}
+                                id="change-password-confirm"
+                                type="password"
+                                autoComplete="change-password-new"
+                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => setChangePWData(prevState => ({...prevState, confirmPassword: event.target.value}))} />
+                        </IconField>
                         <label className="change-password-label" htmlFor="change-password-confirm">{translation.get("Confirm Password")} </label>
-                    </div>
+                    </FloatLabel>
                     <div className="change-password-button-wrapper">
                         <Button type="button" label={translation.get("Cancel")} icon="pi pi-times" onClick={() => setVisible(false)} />
                         <Button type="submit" label={translation.get(!isReset ? "Change" : "Login")} icon="pi pi-lock-open" />
