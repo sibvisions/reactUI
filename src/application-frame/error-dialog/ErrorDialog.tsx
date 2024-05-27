@@ -27,6 +27,7 @@ import REQUEST_KEYWORDS from '../../main/request/REQUEST_KEYWORDS'
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 import { appContext } from "../../main/contexts/AppProvider";
+import ContentStore from "src/main/contentstore/ContentStore";
 
 /** Displays an error-message as dialog */
 const ErrorDialog:FC = () => {
@@ -105,6 +106,12 @@ const ErrorDialog:FC = () => {
                 const closeFrameReq = createCloseFrameRequest();
                 closeFrameReq.componentId = errorProps.componentId
                 context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME);
+
+                //remove message from openMessages list
+                const foundIndex = (context.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === errorProps.componentId : false);
+                if (foundIndex > -1) {
+                    (context.contentStore as ContentStore).openMessages.splice(foundIndex, 1);
+                }
             }
         }
     }    

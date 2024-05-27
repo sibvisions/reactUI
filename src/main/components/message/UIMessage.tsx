@@ -27,6 +27,7 @@ import { concatClassnames } from '../../util/string-util/ConcatClassnames';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RequestQueueMode } from 'src/main/server/BaseServer';
+import ContentStore from 'src/main/contentstore/ContentStore';
 
 /** This component displays a popup to display a message, based on the severity the messages look different. */
 const UIMessage: FC<DialogResponse> = (props) => {
@@ -251,11 +252,17 @@ const UIMessage: FC<DialogResponse> = (props) => {
     }, [props.buttonType, props.okComponentId, props.cancelComponentId, props.notOkComponentId, footerContent]);
 
     // When pressing the 'x' or pressing esc send a close frame to the server
-    const handleOnHide = () => {
+    const handleOnHide = useMemo(() => async () => {
         const closeFrameReq = createCloseFrameRequest();
         closeFrameReq.componentId = props.componentId;
-        showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), context.server.topbar);
-    }
+        await showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), context.server.topbar);
+        
+        //remove message from openMessages list
+        const foundIndex = (context.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === props.componentId : false);
+        if (foundIndex > -1) {
+            (context.contentStore as ContentStore).openMessages.splice(foundIndex, 1);
+        }
+    }, [props.componentId, context]);
 
     return <ConfirmDialog
         visible={true}
