@@ -206,7 +206,7 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
         )
     }, [props.columnMetaData?.nullable, props.isReadOnly, props.isCellEditor, props.focusable, props.borderVisible, props.styleClassNames]);
 
-
+    const [focused, setFocused] = useState(false);
 
     /** 
     * Returns the minimum and maximum scaledigits for the NumberCellEditor
@@ -225,8 +225,8 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
      * 0s will be added
      */
     const prefix = useMemo(
-        () => getPrefix(props.cellEditor.numberFormat, getNumberValueAsString(value, props.cellEditor.numberFormat), false, props.context.appSettings.locale, useGrouping), 
-        [value, props.cellEditor.numberFormat, props.selectedRow, useGrouping]
+        () => focused ? '' : getPrefix(props.cellEditor.numberFormat, getNumberValueAsString(value, props.cellEditor.numberFormat), false, props.context.appSettings.locale, useGrouping), 
+        [value, props.cellEditor.numberFormat, props.selectedRow, useGrouping, focused]
     );
 
     /** Returns a string which will be added behind the number, based on the numberFormat */
@@ -443,9 +443,16 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                             sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.value, props.context.server, props.topbar, props.rowNumber);
                         }
                     }}
-                    onFocus={(event:any) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
+                    onFocus={(event:any) => {
+                        if(!props.isReadOnly) {
+                            setFocused(true);
+                        }
+                        handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)
+                    }}
                     onBlur={(event:any) => {
                         if (!props.isReadOnly) {
+                            setFocused(false);
+
                             if (props.onBlur) {
                                 props.onBlur(event)
                             }
