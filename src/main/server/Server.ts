@@ -861,7 +861,10 @@ class Server extends BaseServer {
                         }
                         else {
                             if(pathName === "/login") {
-                                method = 'replace'
+                                method = 'replace';
+                            }
+                            if(this.linkOpen && !this.contentStore.navigationNames.has(this.linkOpen)) {
+                                this.linkOpen = "";
                             }
                             routeTo = "home";
                         }
@@ -878,11 +881,13 @@ class Server extends BaseServer {
                 
                 if (!GResponse.update && firstComp && firstComp.screen_navigationName_ && !firstComp.screen_modal_) {
                     const increment = getNavigationIncrement(firstComp.screen_navigationName_, this.contentStore.navigationNames);
+                    const navName = `${firstComp.screen_navigationName_}${increment}`;
+                    
                     if (highestPriority < 2 
-                        && this.contentStore.navigationNames.has(firstComp.screen_navigationName_ + increment)
-                        && (!this.linkOpen || this.linkOpen === firstComp.screen_navigationName_ + increment)) {
+                        && this.contentStore.navigationNames.has(navName)
+                        && (!this.linkOpen || this.linkOpen === navName)) {
                         highestPriority = 2;
-                        routeTo = "screens/" + firstComp.screen_navigationName_ + increment;
+                        routeTo = `screens/${navName}`;
                     }
                 }
             }
