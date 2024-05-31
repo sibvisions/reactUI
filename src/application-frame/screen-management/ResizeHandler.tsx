@@ -169,10 +169,12 @@ const ResizeHandler:FC<any> = (props) => {
     }, [doResize]);
 
     /** When the collapse value changes, add menu-transition */
+    const lastCollapsed = useRef(resizeContext.menuCollapsed);
     useLayoutEffect(() => {
-        if (sizeRef.current) {
+        if (sizeRef.current && lastCollapsed.current != resizeContext.menuCollapsed) {
             sizeRef.current.classList.add('transition-disable-overflow');
-            sizeRef.current.parentElement?.classList.add("menu-transition")
+            sizeRef.current.parentElement?.classList.add("menu-transition");
+            lastCollapsed.current = resizeContext.menuCollapsed;
         }
     }, [resizeContext.menuCollapsed])
 
