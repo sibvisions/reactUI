@@ -914,6 +914,9 @@ body {
   color: var(--toolbar-color);
 }
 
+.rc-popup, .error-dialog {
+  border-radius: var(--dialog-border-radius);
+}
 .rc-popup .p-dialog-header, .error-dialog .p-dialog-header {
   background: var(--dialog-header-background);
   color: var(--dialog-header-text-color);
@@ -924,6 +927,8 @@ body {
 .rc-popup .p-dialog-content, .error-dialog .p-dialog-content {
   background: var(--dialog-content-background);
   color: var(--text-color);
+}
+.rc-popup .p-dialog-content:last-child, .error-dialog .p-dialog-content:last-child {
   border-bottom-left-radius: var(--dialog-border-radius);
   border-bottom-right-radius: var(--dialog-border-radius);
 }

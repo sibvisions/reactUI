@@ -1515,6 +1515,8 @@ body {
 
 /// Dialogs
 .rc-popup, .error-dialog {
+    border-radius: var(--dialog-border-radius);
+
     .p-dialog-header {
         background: var(--dialog-header-background);
         color: var(--dialog-header-text-color);
@@ -1526,8 +1528,11 @@ body {
     .p-dialog-content {
         background: var(--dialog-content-background);
         color: var(--text-color);
-        border-bottom-left-radius: var(--dialog-border-radius);
-        border-bottom-right-radius: var(--dialog-border-radius);
+        
+        &:last-child {
+            border-bottom-left-radius: var(--dialog-border-radius);
+            border-bottom-right-radius: var(--dialog-border-radius);
+        }
     }
 }
 
