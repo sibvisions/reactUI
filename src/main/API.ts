@@ -258,7 +258,12 @@ class API implements IAPI {
             const menuGroup = (this.#contentStore as ContentStore).menuItems.get(menuItem.menuGroup);
             const itemAction = () => {
                 this.#contentStore.setActiveScreen({ name: menuItem.id, id: "", className: undefined, navigationName: menuItem.navigationName });
-                this.history?.push("/screens/" + menuItem.id);
+                const path = `/screens/${menuItem.id}`;
+                if(this.history?.location.pathname != path) {
+                    this.history?.push(path);
+                } else {
+                    this.history?.replace(path);
+                }
                 return Promise.resolve(true);
             };
             const newItem: ServerMenuButtons = {
@@ -335,7 +340,12 @@ class API implements IAPI {
         const itemAction = () => {
             if (this.#contentStore.customScreens.has(toolbarItem.id)) {
                 this.#contentStore.setActiveScreen({name: toolbarItem.id, id: "", className: undefined, navigationName: toolbarItem.navigationName });
-                this.history?.push("/screens/" + toolbarItem.id);
+                const path = `/screens/${toolbarItem.id}`;
+                if(this.history?.location.pathname != path) {
+                    this.history?.push(path);
+                } else {
+                    this.history?.replace(path);
+                }
                 return Promise.resolve(true);
             }
             else {

@@ -512,7 +512,12 @@ export default class ContentStore extends BaseContentStore {
             image: icon ? icon.substring(0,2) + " " + icon : "",
             text: title,
             action: () => {
-                this.history?.push("/screens/" + title);
+                const path = `/screens/${title}`;
+                if(this.history?.location.pathname != path) {
+                    this.history?.push(path);
+                } else {
+                    this.history?.replace(path);
+                }
                 return Promise.resolve(true);
             },
             flat: false

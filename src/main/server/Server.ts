@@ -927,7 +927,12 @@ class Server extends BaseServer {
             if(method === "replace") {
                 this.history?.replace(`/${routeTo}`);
             } else {
-                this.history?.push(`/${routeTo}`);
+                const path = `/${routeTo}`;
+                if(this.history?.location.pathname != path) {
+                    this.history?.push(path);
+                } else {
+                    this.history?.replace(path);
+                }
             }
         }
     }
