@@ -173,31 +173,36 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                 (isCheckboxCellEditor(props) && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) && !props.style?.includes("hyperlink") ? "hyperlink" : "", 
                 props.styleClassNames
             ),
-            tabIndex: btnStyle.tabIndex,
-            onClick: (event:any) => onButtonPress(event),
             onFocus: (event:any) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.id, props.context),
             onBlur: () => {
                 if (props.eventFocusLost) {
                     onFocusLost(props.name, props.context.server)
                 }
-            }
+            },
+            tabIndex: btnStyle.tabIndex,
         }
 
         // If there is an url in props, render a hyperlink button
         if ((!isCheckboxCellEditor(props) && props.url) || (isCheckboxCellEditor(props) && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK))) {
             return (
-                <span className="hyperlink-wrapper">
-                    <a
-                        {...btnProps}
-                        href={!isCheckboxCellEditor(props) ? props.url : undefined}
-                        target={!isCheckboxCellEditor(props) ? props.target : undefined}
-                        layoutstyle-wrapper={props.name}
-                        aria-label={props.ariaLabel}
-                        {...popupMenu}>
-                        {isHTML ? <RenderButtonHTML text={getButtonText(props) || ""} /> : getButtonText(props)}
-                    </a>
-                </span>
-
+                <Button
+                    link
+                    onClick={(event: any) => { 
+                        onButtonPress(event);
+                        window.open(!isCheckboxCellEditor(props) ? props.url : undefined, !isCheckboxCellEditor(props) ? props.target : undefined) }
+                    }
+                    {...btnProps}
+                    label={!isHTML ? getButtonText(props) : undefined}
+                    aria-label={props.ariaLabel}
+                    icon={btnStyle.iconProps ? isFAIcon(btnStyle.iconProps.icon) ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : 'rc-button-icon' : undefined}
+                    iconPos={btnStyle.iconPos}
+                    disabled={!isCheckboxCellEditor(props) ? isCompDisabled(props) : props.isReadOnly}
+                    tooltip={props.toolTipText}
+                    tooltipOptions={{ position: "left", showDelay: 800 }}
+                    layoutstyle-wrapper={props.name}
+                    {...popupMenu}>
+                    {isHTML && <RenderButtonHTML text={getButtonText(props) || ""} />}
+                </Button>
             )
         }
         else {
@@ -205,6 +210,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                 <>
                     <Button
                         {...btnProps}
+                        onClick = {(event:any) => onButtonPress(event)}
                         label={!isHTML ? getButtonText(props) : undefined}
                         aria-label={props.ariaLabel}
                         icon={btnStyle.iconProps ? isFAIcon(btnStyle.iconProps.icon) ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : 'rc-button-icon' : undefined}

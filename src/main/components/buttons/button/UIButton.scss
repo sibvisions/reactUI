@@ -184,22 +184,11 @@
     }
 }
 
-.hyperlink-wrapper {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .hyperlink {
-        text-decoration: underline;
-    }
-
-    .hyperlink-disabled {
-        pointer-events: none;
-    }
+.rc-button.hyperlink-disabled {
+    pointer-events: none;
 }
 
 .p-button-link {
     padding: var(--btnPadding, 0.5rem 0);
+    border: 1px solid transparent;
 }
