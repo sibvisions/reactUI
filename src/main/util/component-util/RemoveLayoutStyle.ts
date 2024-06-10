@@ -16,12 +16,16 @@
 /**
  * Removes the top, left, width and height of the style from an element
  * @param ref - the element to remove the style properties from
+ * @return an object containing the removed values
  */
 export function removeLayoutStyle(ref:any) {
     if (ref) {
+        const { top, left, width, height } = ref.style;
         ref.style.removeProperty("top");
         ref.style.removeProperty("left");
         ref.style.removeProperty("width");
         ref.style.removeProperty("height");
+        return { top, left, width, height };
     }
+    return {}
 }

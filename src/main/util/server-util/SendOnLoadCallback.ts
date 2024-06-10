@@ -13,6 +13,7 @@
  * the License.
  */
 
+import { CSSProperties } from "react";
 import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
 import CELLEDITOR_CLASSNAMES from "../../components/editors/CELLEDITOR_CLASSNAMES";
 import { removeLayoutStyle } from "../component-util/RemoveLayoutStyle";
@@ -77,31 +78,35 @@ function measurePrefWidth(ref: any, className: string) {
  * @param preferredSize - the preferred size
  * @param maxSize - the maximum size
  * @param minSize - the minimum size
- * @param ref - the reference of the component
+ * @param element - the reference of the component
  * @param onLoadCallback - the onLoadCallback function
  */
-export function sendOnLoadCallback(id: string, className:string, preferredSize:Dimension|undefined, maxSize: Dimension|undefined, minSize: Dimension|undefined, ref: any, onLoadCallback: Function | undefined) {
+export function sendOnLoadCallback(id: string, className:string, preferredSize:Dimension|undefined, maxSize: Dimension|undefined, minSize: Dimension|undefined, element: any, onLoadCallback: Function | undefined) {
     let checkedSize:Dimension
     if (onLoadCallback) {
         if (preferredSize) {
             checkedSize = checkSizes(preferredSize, minSize, maxSize);
             onLoadCallback(id, checkedSize, minSize, maxSize);
         }
-        else {    
-            if (ref) {
+        else { 
+            if (element) {
                 let prefSize:Dimension;
+                let oldStyle: CSSProperties = {}; 
+                let styleEl = element;
                 if (className !== COMPONENT_CLASSNAMES.LABEL && className !== COMPONENT_CLASSNAMES.SPLITPANEL) {
-                    if (ref.getAttribute("layoutstyle-wrapper")) {
-                        removeLayoutStyle(document.getElementById(ref.getAttribute("layoutstyle-wrapper")));
+                    if (element.getAttribute("layoutstyle-wrapper")) {
+                        styleEl = document.getElementById(element.getAttribute("layoutstyle-wrapper"));
                     }
-                    else {
-                        removeLayoutStyle(ref)
-                    }
+                    oldStyle = removeLayoutStyle(styleEl);
                 }
                 /** Measure how big the component wants to be initially */
-                prefSize = {width: measurePrefWidth(ref, className), height: Math.max(ref.offsetHeight, Math.ceil(ref.getBoundingClientRect().height))};
+                prefSize = {width: measurePrefWidth(element, className), height: Math.max(element.offsetHeight, Math.ceil(element.getBoundingClientRect().height))};
                 checkedSize = checkSizes(prefSize, minSize, maxSize);
                 onLoadCallback(id, checkedSize, minSize, maxSize);
+                styleEl.style.top = oldStyle.top;
+                styleEl.style.left = oldStyle.left;
+                styleEl.style.width = oldStyle.width;
+                styleEl.style.height = oldStyle.height;
             }
         }
     }
