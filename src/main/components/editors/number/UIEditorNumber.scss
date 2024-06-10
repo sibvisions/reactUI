@@ -20,6 +20,10 @@
         height: inherit;
     }
 
+    .p-inputtext {
+        width: 100%;
+    }
+
     &.rc-input-readonly {
         >input {
             opacity: 0.6;
