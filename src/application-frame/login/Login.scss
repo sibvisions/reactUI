@@ -43,6 +43,10 @@
   display: block;
 }
 
+.login-inputtext {
+  font-size: var(--font-size);
+}
+
 .p-float-label {
   &:first-child {
     margin-top: .5rem;
@@ -57,6 +61,7 @@
   label {
     margin: 0;
     transform: translateY(-50%);
+    font-size: var(--font-size);
   }
 }
 
