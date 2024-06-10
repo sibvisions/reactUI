@@ -77,8 +77,7 @@ export const createCustomComponentWrapper: FC<ICustomComponentWrapper> = (props)
  * @returns an UIMessage component as popup
  */
 export const createUIMessage: FC<DialogResponse> = (props) => {
-    //add timestamp to key so that dialog isn't recycled for the same component id
-    return <UIMessage key={`${props.componentId}_${Date.now()}`} {...props} />
+    return <UIMessage key={props.componentId} {...props} />
 }
 
 /**
