@@ -214,7 +214,7 @@ export default abstract class BaseContentStore {
         let foundEntry:IBaseComponent|undefined;
         let entry = componentEntries.next();
         while (!entry.done) {
-            if (entry.value[1].name === componentName) {
+            if (entry.value[1].name === componentName && !entry.value[1].invalid) {
                 // Logs, if a components name isn't unique, this indicates either server issues, or issues with removing components
                 if (alreadyFound) {
                     console.warn("Component 'name' is not unique (" + componentName + ")");
