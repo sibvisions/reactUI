@@ -170,19 +170,12 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
     const isOverflowHidden = useMemo(() => {
         if (props.parent) {
             let parentComp = props.context.contentStore.getComponentById(props.parent);
+                        
             if (parentComp) {
                 if ([
                     COMPONENT_CLASSNAMES.TABSETPANEL,
                     COMPONENT_CLASSNAMES.SPLITPANEL
                 ].includes(parentComp.className as COMPONENT_CLASSNAMES)) {
-                    return true;
-                }
-
-                if (
-                    props.classNameEventSourceRef !== "RadioButtonGroupEditor" 
-                    && props.layout?.startsWith("FlowLayout") 
-                    && props.layout?.split(",")[11] === 'false'
-                ) {
                     return true;
                 }
 
@@ -196,6 +189,17 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
         }
         return false
     }, [props.parent])
+
+    /** True, if the overflow is clipped. */
+    const isOverflowClipped = useMemo(() => {
+        if (
+            props.layout?.startsWith("FlowLayout") 
+            && props.layout?.split(",")[11] === 'false'
+        ) {
+            return true;
+        }
+        return false
+    }, [props.layout])
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout
@@ -237,6 +241,7 @@ const UIPanel: FC<IPanel & IComponentConstants> = (props) => {
                     "rc-panel",
                     getToolBarClassName(),
                     isOverflowHidden ? "panel-hide-overflow" : "",
+                    isOverflowClipped ? "panel-clip-overflow" : "",
                     props.styleClassNames
                 )}
                 ref={props.forwardedRef}
