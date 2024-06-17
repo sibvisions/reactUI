@@ -147,6 +147,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                     <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }}>
                         {isReset ? translation.get("Please enter your one-time password and set a new password") : translation.get("Please enter and confirm the new password.")}
                     </div>
+                    {/*@ts-ignore*/}
                     <FloatLabel>
                         <IconField iconPosition="left">
                             <InputIcon className="pi pi-user" />
@@ -161,6 +162,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                         </IconField>
                         <label className="change-password-label" htmlFor="change-username">{translation.get("Username")} </label>
                     </FloatLabel>
+                    {/*@ts-ignore*/}
                     <FloatLabel>
                         <IconField iconPosition="left">
                             <InputIcon className="pi pi-key" />
@@ -178,6 +180,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                             {isReset ? translation.get("One-time password") : translation.get("Password")}
                         </label>
                     </FloatLabel>
+                    {/*@ts-ignore*/}
                     <FloatLabel>
                         <IconField iconPosition="left">
                             <InputIcon className="pi pi-key" />
@@ -191,6 +194,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                         </IconField>
                         <label className="change-password-label" htmlFor="change-password-new">{translation.get("New Password")} </label>
                     </FloatLabel>
+                    {/*@ts-ignore*/}
                     <FloatLabel>
                         <IconField iconPosition="left">
                             <InputIcon className="pi pi-check" />

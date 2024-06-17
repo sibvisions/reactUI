@@ -71,6 +71,7 @@ const ResetForm:FC<ILoginForm> = (props) => {
                 <div className="p-field" style={{ fontSize: "1rem", fontWeight: "bold" }} >
                     {translation.get("Please enter your e-mail address.")}
                 </div>
+                {/*@ts-ignore*/}
                 <FloatLabel>
                     <IconField iconPosition="left">
                         <InputIcon className="pi pi-inbox" />

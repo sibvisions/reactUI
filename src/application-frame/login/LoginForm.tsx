@@ -101,6 +101,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                             { translation.has(props.errorMessage) ? translation.get(props.errorMessage) : props.errorMessage}
                         </div>
                         }
+                        {/*@ts-ignore*/}
                         <FloatLabel>
                             <IconField iconPosition="left">
                                 <InputIcon className="pi pi-user" />
@@ -115,6 +116,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
                             </IconField>
                             <label htmlFor="username">{translation.get("Username")} </label>
                         </FloatLabel>
+                        {/*@ts-ignore*/}
                         <FloatLabel>
                             <IconField iconPosition="left">
                                 <InputIcon className="pi pi-key" />

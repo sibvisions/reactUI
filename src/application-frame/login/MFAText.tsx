@@ -76,6 +76,7 @@ const MFAText:FC<ILoginForm> = (props) => {
                 <div className="p-field" style={{ marginBottom: "1rem" }}>
                     {translation.get("Please enter your confirmation code.")}
                 </div>
+                {/*@ts-ignore*/}
                 <FloatLabel>
                     <IconField iconPosition="left">
                         <InputIcon className="pi pi-key" />
