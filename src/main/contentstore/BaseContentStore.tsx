@@ -234,17 +234,9 @@ export default abstract class BaseContentStore {
      */
     getComponentById(componentId?: string): IBaseComponent | undefined {
         if (componentId) {
-            const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
-            const componentEntries = mergedContent.entries();
-            let foundEntry: IBaseComponent | undefined;
-            let entry = componentEntries.next();
-            while (!entry.done && !foundEntry) {
-                if (entry.value[1].id === componentId) {
-                    foundEntry = entry.value[1];
-                }
-                entry = componentEntries.next();
-            }
-            return foundEntry;
+            return this.desktopContent.get(componentId) 
+                ?? this.replacedContent.get(componentId) 
+                ?? this.flatContent.get(componentId);
         }
         else {
             return undefined;
