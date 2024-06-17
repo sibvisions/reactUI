@@ -234,9 +234,9 @@ export default abstract class BaseContentStore {
      */
     getComponentById(componentId?: string): IBaseComponent | undefined {
         if (componentId) {
-            return this.desktopContent.get(componentId) 
+            return this.flatContent.get(componentId) 
                 ?? this.replacedContent.get(componentId) 
-                ?? this.flatContent.get(componentId);
+                ?? this.desktopContent.get(componentId);
         }
         else {
             return undefined;
