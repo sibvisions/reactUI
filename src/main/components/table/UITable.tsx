@@ -86,6 +86,11 @@ interface ISelectedCell {
     selectedCellId?:string
 }
 
+interface CellWidthData { 
+    widthPreSet: boolean;
+    width: number;
+}
+
 /** A Context which contains the currently selected cell */
 export const SelectedCellContext = createContext<ISelectedCell>({});
 
@@ -444,6 +449,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props
 
+    /** fallback column widths */
+    const [columnWidths, setColumnWidths] = useState<Array<CellWidthData>>();
+
     //Returns navtable classname
     const getNavTableClassName = (parent?:string) => {
         if (parent) {
@@ -519,7 +527,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** Determine the estimated width of the table */
     useLayoutEffect(() => {
         if (tableRef.current) {
-            let cellDataWidthList: Array<{ widthPreSet: boolean, width: number }> = [];
+            let cellDataWidthList: Array<CellWidthData> = [];
             /** Goes through the rows and their cellData and sets the widest value for each column in a list */
             const goThroughCellData = (trows: any, index: number) => {
                 const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > *:not(.p-column-title)");
@@ -591,16 +599,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                             tempWidth += cellDataWidth.width
                         });
     
-                        /** After finding the correct width set the width for the headers, the rows will get as wide as headers */
-                        for (let i = 0; i < theader.length; i++) {
-                            let w = cellDataWidthList[i].width as any;
-                            if (props.autoResize === false) {
-                                w = `${w}px`;
-                            } else {
-                                w = `${100 * w / tempWidth}%`;
-                            }
-                            theader[i].style.setProperty('width', w);
-                        }
+                        setColumnWidths(cellDataWidthList);
+
                         /** set EstTableWidth for size reporting */
                         setEstTableWidth(tempWidth);
                     }
@@ -608,6 +608,24 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }, 0);
         }
     }, [metaData?.columns, measureFlag]);
+
+    useLayoutEffect(() => {
+        if(columnWidths && tableRef.current && estTableWidth) {
+            const currentTable = tableRef.current.getTable();
+            if (currentTable) {
+                const theader = currentTable.querySelectorAll('th');
+                for (let i = 0; i < theader.length; i++) {
+                    let w = columnWidths[i].width as any;
+                    if (props.autoResize === false) {
+                        w = `${w}px`;
+                    } else {
+                        w = `${Math.round(100 * w / estTableWidth)}%`;
+                    }
+                    theader[i].style.setProperty('width', w);
+                }
+            }
+        }
+    }, [tableRef.current]);
 
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
