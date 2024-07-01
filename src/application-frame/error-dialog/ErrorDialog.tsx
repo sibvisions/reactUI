@@ -98,7 +98,7 @@ const ErrorDialog:FC = () => {
     }, [errorItems])
 
     /** Set visibility to false and send a close frame request to the server */ 
-    const handleOnHide = () => {
+    const handleOnHide = useCallback(() => {
         if(visible) {
             setVisible(false);
             setShowDetails(false);
@@ -114,11 +114,11 @@ const ErrorDialog:FC = () => {
                 }
             }
         }
-    }    
+    }, [visible, setVisible, setShowDetails, errorProps?.componentId, context.contentStore])
 
     /** Build footer based on showDetails */ 
     const errorFooter = useCallback(() => {
-        const showFooter = errorProps?.exceptions?.length;
+        const showFooter = errorProps?.exceptions?.length || context.appReady;
         return showFooter ? (
             <div className="error-dialog-footer">
                 <div className="error-dialog-footer-buttons">
@@ -134,8 +134,9 @@ const ErrorDialog:FC = () => {
                         onClick={() => {
                             setSelectedError(errorItems.length ? errorItems[0].items[0] : null);
                             setShowDetails(prevState => !prevState)
-                        }} />}
-                        {context.appReady && <Button
+                        }} />
+                    }
+                    {context.appReady && <Button
                         type="button"
                         className="rc-button error-dialog-footer-button"
                         style={{
@@ -143,7 +144,8 @@ const ErrorDialog:FC = () => {
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
                         label={translation.get("OK")}
-                        onClick={() => handleOnHide()} />}
+                        onClick={() => handleOnHide()} />
+                    }
                 </div>
                 {showDetails &&
                     <div className="error-dialog-footer-details">
@@ -173,7 +175,7 @@ const ErrorDialog:FC = () => {
                 }
             </div>
         ) : null
-    }, [showDetails, selectedError, errorProps, btnBgd]);
+    }, [showDetails, selectedError, errorProps, btnBgd, handleOnHide]);
 
     return (
         <Dialog
