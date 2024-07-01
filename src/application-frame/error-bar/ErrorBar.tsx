@@ -124,7 +124,7 @@ const ErrorBar:FC = () => {
      */
     const handleRestart = () => {
         context.server.isExiting = true;
-        context.server.timeoutRequest(fetch(context.server.BASE_URL + context.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), context.server.buildReqOpts(createAliveRequest())), context.server.timeoutMs);
+        context.server.timeoutRequest(fetch(context.server.BASE_URL + context.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), context.server.buildReqOpts(createAliveRequest())).catch(() => {}), context.server.timeoutMs);
         sessionStorage.clear();
         window.location.reload();
     }
