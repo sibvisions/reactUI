@@ -303,8 +303,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** Which cell has been clicked */
     const cellClickEvent = useRef<string>("");
 
-    const [scrollHeight, setScrollHeight] = useState(props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined);
-
     const contextMenuEventRef = useRef<any>();
 
     const popupMenu = usePopupMenu(props, contextMenuEventRef.current);
@@ -478,13 +476,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     useEffect(() => {
         setItemSize(tableRowHeight);
     }, [tableRowHeight]);
-
-    useEffect(() => {
-        if (props.layoutStyle?.height) {
-            const debounced = _.debounce(() => setScrollHeight(`${props.layoutStyle?.height}px`), 100);
-            debounced();
-        }
-    }, [props.layoutStyle?.height])
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
@@ -1372,7 +1363,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar);
         }
     }, [providerData])
-    
+
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
             <div
@@ -1450,7 +1441,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     selectionMode="single"
                     cellSelection
                     //scrollHeight="flex"
-                    scrollHeight={scrollHeight}
+                    scrollHeight={props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined}
                     scrollable={props.layoutStyle?.height && virtualEnabled ? true : false}
                     virtualScrollerOptions={ virtualEnabled ? { 
                         itemSize, 
