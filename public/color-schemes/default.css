@@ -927,6 +927,7 @@ body {
 .rc-popup .p-dialog-content, .error-dialog .p-dialog-content {
   background: var(--dialog-content-background);
   color: var(--text-color);
+  box-shadow: 0 1px 0 0 var(--dialog-content-background);
 }
 .rc-popup .p-dialog-content:last-child, .error-dialog .p-dialog-content:last-child {
   border-bottom-left-radius: var(--dialog-border-radius);
