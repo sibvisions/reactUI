@@ -177,11 +177,20 @@ const ErrorDialog:FC = () => {
         ) : null
     }, [showDetails, selectedError, errorProps, btnBgd, handleOnHide]);
 
+    const dialogHeader = useMemo(() => {
+        return <div className={concatClassnames("message-dialog-header", "error")}>
+            <div className="message-dialog-header-left">
+                <i className={concatClassnames("message-dialog-header-icon", "pi pi-times-circle")} />
+                <span className="message-dialog-header-text">{translation.get(errorProps?.title as string) || translation.get("Error")}</span>
+            </div>
+        </div>
+    }, [translation, errorProps?.title])
+
     return (
         <Dialog
             id="error-dialog"
             className={concatClassnames("error-dialog", showDetails ? "error-details-enabled" : "") }
-            header={translation.get(errorProps?.title as string) || translation.get("Error")} 
+            header={dialogHeader} 
             footer={errorFooter}
             visible={visible} 
             onHide={handleOnHide} 
@@ -189,7 +198,6 @@ const ErrorDialog:FC = () => {
             resizable
             closable={context.appReady}
             draggable={context.appReady} >
-            <i className="error-dialog-icon pi pi-times-circle" />
             <span style={{paddingTop: "4px"}}>{errorProps?.message}</span>
         </Dialog>
     )

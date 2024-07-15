@@ -36,13 +36,29 @@
                 box-shadow: none;
             }
         }
+
+        .message-dialog-header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .message-dialog-header-text {
+            align-self: center;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        .message-dialog-header-icon {
+            font-size: 2rem;
+        }
     }
 
     .p-dialog-content {
         display: flex;
         justify-content: flex-start;
         align-items: flex-start;
-        padding: 2rem 1.5rem 2rem 1.5rem;
+        padding: 1.5rem 1rem;
 
         .error-dialog-icon {
             min-width: 2rem;
@@ -56,13 +72,14 @@
         border-bottom-right-radius: 3px;
         background: #ffffff;
         color: #495057;
+        padding: 0;
     }
 
     .error-dialog-footer-buttons {
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        height: 50px;
+        padding: 0.5rem;
 
         .error-dialog-footer-button {
             height: auto;
@@ -140,6 +157,7 @@
                     display: flex;
                     flex-direction: column;
                     flex: 1;
+                    padding: 0 1rem 1.5rem;
                 }
             }
 
