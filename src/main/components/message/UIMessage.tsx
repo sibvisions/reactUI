@@ -14,7 +14,7 @@
  */
 
 import { ConfirmDialog, ConfirmDialogProps } from 'primereact/confirmdialog';
-import React, { CSSProperties, FC, useCallback, useContext, useMemo, useState, useRef } from 'react';
+import React, { CSSProperties, FC, useCallback, useContext, useMemo, useState, useRef, useEffect } from 'react';
 import DialogResponse from '../../response/ui/DialogResponse';
 import { translation } from '../../util/other-util/Translation';
 import { Button } from 'primereact/button';
@@ -28,6 +28,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RequestQueueMode } from 'src/main/server/BaseServer';
 import ContentStore from 'src/main/contentstore/ContentStore';
+import { useVisibleWithHistoryBlock } from 'src/main/hooks/components-hooks/useHistoryBlockClose';
 
 /** This component displays a popup to display a message, based on the severity the messages look different. */
 const UIMessage: FC<DialogResponse> = (props) => {
@@ -251,21 +252,31 @@ const UIMessage: FC<DialogResponse> = (props) => {
         </>)
     }, [props.buttonType, props.okComponentId, props.cancelComponentId, props.notOkComponentId, footerContent]);
 
+    const [visible, setVisible] = useVisibleWithHistoryBlock(true, () => {
+        handleOnHide();
+    }, !props.closable);
+
     // When pressing the 'x' or pressing esc send a close frame to the server
     const handleOnHide = useMemo(() => async () => {
-        const closeFrameReq = createCloseFrameRequest();
-        closeFrameReq.componentId = props.componentId;
-        await showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), context.server.topbar);
-        
-        //remove message from openMessages list
-        const foundIndex = (context.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === props.componentId : false);
-        if (foundIndex > -1) {
-            (context.contentStore as ContentStore).openMessages.splice(foundIndex, 1);
+        if(visible) {
+            const closeFrameReq = createCloseFrameRequest();
+            closeFrameReq.componentId = props.componentId;
+            await showTopBar(context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME), context.server.topbar);
+            
+            //remove message from openMessages list
+            const foundIndex = (context.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === props.componentId : false);
+            if (foundIndex > -1) {
+                (context.contentStore as ContentStore).openMessages.splice(foundIndex, 1);
+            }
         }
-    }, [props.componentId, context]);
+    }, [props.componentId, context, visible]);
+
+    useEffect(() => {
+        setVisible(true);
+    }, [props, setVisible])
 
     return <ConfirmDialog
-        visible={true}
+        visible={visible}
         header={dialogHeader}
         message={dialogMessage}
         footer={dialogFooter}

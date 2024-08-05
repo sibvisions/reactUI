@@ -28,20 +28,38 @@ import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates"
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 import { appContext } from "../../main/contexts/AppProvider";
 import ContentStore from "src/main/contentstore/ContentStore";
+import { useVisibleWithHistoryBlock } from "src/main/hooks/components-hooks/useHistoryBlockClose";
 
 /** Displays an error-message as dialog */
 const ErrorDialog:FC = () => {
     /** Returns utility variables */
     const context = useContext(appContext);
 
-    /** True, if the error-dialog is visible */
-    const [visible, setVisible] = useState<boolean>(false);
-
     /** State of the error-properties */
     const [errorProps, setErrorProps] = useState<ErrorResponse>();
 
+    const sendClose = useCallback(() => {
+        if (errorProps && errorProps.componentId) {
+            const closeFrameReq = createCloseFrameRequest();
+            closeFrameReq.componentId = errorProps.componentId
+            context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME);
+
+            //remove message from openMessages list
+            const foundIndex = (context.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === errorProps.componentId : false);
+            if (foundIndex > -1) {
+                (context.contentStore as ContentStore).openMessages.splice(foundIndex, 1);
+            }
+        }
+    }, [errorProps?.componentId, context.contentStore]);
+
     /** True, if the error-details should be displayed */
     const [showDetails, setShowDetails] = useState<boolean>(false);
+
+    /** True, if the error-dialog is visible */
+    const [visible, setVisible] = useVisibleWithHistoryBlock(false, () => {
+        setShowDetails(false);
+        sendClose();
+    }, !context.appReady);
 
     /** Subscribes to designer-changes so the components are updated live */
     useDesignerUpdates("default-button");
@@ -102,19 +120,9 @@ const ErrorDialog:FC = () => {
         if(visible) {
             setVisible(false);
             setShowDetails(false);
-            if (errorProps && errorProps.componentId) {
-                const closeFrameReq = createCloseFrameRequest();
-                closeFrameReq.componentId = errorProps.componentId
-                context.server.sendRequest(closeFrameReq, REQUEST_KEYWORDS.CLOSE_FRAME);
-
-                //remove message from openMessages list
-                const foundIndex = (context.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === errorProps.componentId : false);
-                if (foundIndex > -1) {
-                    (context.contentStore as ContentStore).openMessages.splice(foundIndex, 1);
-                }
-            }
+            sendClose();
         }
-    }, [visible, setVisible, setShowDetails, errorProps?.componentId, context.contentStore])
+    }, [visible, setVisible, setShowDetails, sendClose])
 
     /** Build footer based on showDetails */ 
     const errorFooter = useCallback(() => {

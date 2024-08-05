@@ -19,6 +19,7 @@ import { Dialog } from "primereact/dialog";
 import { translation } from "../../main/util/other-util/Translation";
 import { Button } from "primereact/button";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
+import { useVisibleWithHistoryBlock } from "src/main/hooks/components-hooks/useHistoryBlockClose";
 
 /** 
  * When an upload response takes too long, the file dialog can not be opened because a user gesture is needed.
@@ -29,7 +30,9 @@ const UploadDialog:FC = () => {
     const context = useContext(appContext);
 
     /** True, if the UploadDialog is visible */
-    const [visible, setVisible] = useState<boolean>(false);
+    const [visible, setVisible] = useVisibleWithHistoryBlock(false, () => {
+        setFileId("");
+    });
 
     /** The fileId to send in the upload request */
     const [fileId, setFileId] = useState<string>("");
