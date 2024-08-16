@@ -748,7 +748,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             lba.position = 0;
                             rba.position = minLayoutSize.width;
                         }
-                        else if(maxLayoutSize.width < calcSize.width) {
+                        else if(baseProps.alignChildrenIfOverflow != false && maxLayoutSize.width < calcSize.width) {
                             switch (horizontalAlignment) {
                                 case HORIZONTAL_ALIGNMENT.LEFT:
                                     lba.position = 0;
@@ -789,7 +789,7 @@ const FormLayout: FC<ILayout> = (baseProps) => {
                             tba.position = 0;
                             bba.position = minLayoutSize.height;
                         }
-                        else if(maxLayoutSize.height < calcSize.height){
+                        else if(baseProps.alignChildrenIfOverflow != false && maxLayoutSize.height < calcSize.height){
                             switch (verticalAlignment){
                                 case VERTICAL_ALIGNMENT.TOP:
                                     tba.position = 0;
