@@ -112,13 +112,13 @@ const UIScrollPanel: FC<IPanel & IComponentConstants> = (props) => {
                     ? {
                         height: (prefSize?.height as number),
                         width: prefSize?.width,
-                        overflow: 'auto',
+                        overflow: (minusHeight.current || minusWidth.current) ? 'auto' : 'visible',
                         ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
                     }
                     : {
                         ...props.layoutStyle,
                         ...props.compStyle,
-                        overflow: 'auto',
+                        overflow: (minusHeight.current || minusWidth.current) ? 'auto' : 'visible',
                         ...(props.backgroundImage ? { '--backgroundImage': `url(${props.context.server.RESOURCE_URL + props.backgroundImage.split(',')[0]})` } as CSSProperties : {})
                     }
                 }
