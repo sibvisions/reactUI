@@ -456,7 +456,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             props.screenName, 
             props.cellEditor.linkReference.referencedDataBook,
             props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data : undefined, 
-            props.cellEditor.displayReferencedColumnName,
+            props.cellEditor.displayReferencedColumnName ?? props.columnName,
             props.cellEditor.displayConcatMask,
             props.context.server, 
             props.context.contentStore, props.name);
@@ -831,6 +831,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     const itemTemplate = useCallback((d:any, index: number) => {
         if (props.cellEditor.displayReferencedColumnName) {
             return d[props.cellEditor.displayReferencedColumnName];
+        }
+        else if(props.columnName && !columnViewNames.length) {
+            return d[props.columnName];
         }
         else if (!tableOptions && isDisplayRefColNameOrConcat) {
             return <div key={0}>{getDisplayValue(d, getExtractedObject(d, linkReference.referencedColumnNames), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow)}</div>
