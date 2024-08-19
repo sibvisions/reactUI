@@ -193,8 +193,9 @@ const GridLayout: FC<ILayout> = (baseProps) => {
                 const totalGapsWidth = (targetColumns - 1) * gaps.horizontalGap;
                 const totalGapsHeight = (targetRows - 1) * gaps.verticalGap;
 
-                const totalWidth = size.width - margins.marginRight - totalGapsWidth;
-                const totalHeight = size.height - margins.marginBottom - totalGapsHeight;
+                const totalWidth = size.width - margins.marginLeft - margins.marginRight - totalGapsWidth;
+                const totalHeight = size.height - margins.marginTop - margins.marginBottom - totalGapsHeight;
+
 
                 columnSize = Math.floor(totalWidth / targetColumns);
                 rowSize = Math.floor(totalHeight / targetRows);
