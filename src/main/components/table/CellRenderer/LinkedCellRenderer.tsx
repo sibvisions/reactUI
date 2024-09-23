@@ -74,7 +74,14 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
             <span className="cell-data-content">
                 {props.icon ?? linkedDisplayValue}
             </span>
-            <div style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} tabIndex={-1} onClick={props.stateCallback !== undefined ? () => (props.stateCallback as Function)() : undefined} >
+            <div 
+                style={{ 
+                    display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, 
+                    marginLeft: "auto" 
+                }} 
+                tabIndex={-1} 
+                onClick={props.stateCallback !== undefined ? () => (props.stateCallback as Function)() : undefined} 
+            >
                 <i className="pi pi-chevron-down cell-editor-arrow" />
             </div>
         </>

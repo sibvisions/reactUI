@@ -916,6 +916,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         setTimeout(() => linkedInput.current.focus(), 0);
     })
 
+    const handleDropdownClick = useCallback(() => {
+        if(linkedRef.current?.getOverlay()) {
+            linkedRef.current?.hide();
+        }
+    }, [linkedRef]);
+
     return (
         <span 
             ref={props.forwardedRef}
@@ -961,6 +967,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 readOnly={props.isReadOnly}
                 //disabled={props.isReadOnly}
                 dropdown
+                onDropdownClick={handleDropdownClick}
                 completeMethod={event => sendFilter(event.query, true)}
                 suggestions={suggestions}
                 value={text}
