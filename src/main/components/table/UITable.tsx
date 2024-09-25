@@ -991,7 +991,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const getCellIsEditable = (rowData: any) => {
                 if (rowData && metaData && columnMetaData) {
                     if (columnMetaData?.cellEditor.className && [CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData.cellEditor.className as CELLEDITOR_CLASSNAMES) !== -1) {
-                        if (!columnMetaData.readonly 
+                        if (!columnMetaData.readOnly 
                             && ((!metaData.readOnly 
                             && (metaData.model_updateEnabled || rowData.recordStatus === "I")
                             && props.editable !== false) || columnMetaData.forcedStateless)
@@ -1001,7 +1001,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                             }
                     }
                     else {
-                        if (!columnMetaData.readonly 
+                        if (!columnMetaData.readOnly 
                             && ((!metaData.readOnly 
                             && (metaData.updateEnabled || rowData.recordStatus === "I")
                             && props.editable !== false) || columnMetaData.forcedStateless) 
@@ -1074,7 +1074,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                                     undefined
                             }
                             tableIsSelecting={tableIsSelecting}
-                            addReadOnlyClass={columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
+                            addReadOnlyClass={columnMetaData?.readOnly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
                             cellClickEvent={cellClickEvent.current}
                             setCellClickEvent={(cellId: string) => cellClickEvent.current = cellId}
                         />
@@ -1096,7 +1096,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                                 rowNumber={tableInfo.rowIndex}
                                 cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
                                 isHTML={typeof rowData[colName] === "string" && (rowData[colName] as string).includes("<html>")}
-                                addReadOnlyClass={columnMetaData?.readonly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
+                                addReadOnlyClass={columnMetaData?.readOnly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
                                 cellClickEvent={cellClickEvent.current}
                                 setCellClickEvent={(cellId: string) => cellClickEvent.current = cellId} />
                         )

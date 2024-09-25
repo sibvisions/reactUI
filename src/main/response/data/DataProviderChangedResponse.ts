@@ -21,7 +21,7 @@ import BaseResponse from "../BaseResponse"
 export type IChangedColumns = {
     name: string
     label?: string
-    readonly?: boolean
+    readOnly?: boolean
     movable?: boolean
     sortable?: boolean
     cellEditor?: ICellEditor

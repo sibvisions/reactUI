@@ -1290,8 +1290,8 @@ export default abstract class BaseContentStore {
                             changed = true;
                         }
 
-                        if (changedColumn.readonly !== undefined) {
-                            currentCol.readonly = changedColumn.readonly;
+                        if (changedColumn.readOnly !== undefined) {
+                            currentCol.readOnly = changedColumn.readOnly;
                             changed = true;
                         }
 

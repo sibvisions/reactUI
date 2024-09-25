@@ -39,6 +39,8 @@ export interface CellFormatting {
     background?: string;
     font?: string;
     image?: string;
+    style?: string;
+    leftIndent?: number;
 }
 
 // Interface for cell-renderer

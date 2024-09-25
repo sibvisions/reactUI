@@ -837,7 +837,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             startUpRequest.deviceMode = contextState.appSettings.deviceMode;
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
-            startUpRequest.serverVersion = "3.1.0";
+            startUpRequest.serverVersion = "4.0.0";
             startUpRequest.timeZoneCode = contextState.appSettings.timeZone;
             startUpRequest.readAheadLimit = 100;
             startUpRequest.option_bigdecimal_as_string = true;

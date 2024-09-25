@@ -40,7 +40,7 @@ export interface ColumnDescription {
                 ICellEditorNumber,
     dataTypeIdentifier: number,
     width: number,
-    readonly: boolean,
+    readOnly: boolean,
     nullable: boolean,
     resizable: boolean,
     sortable: boolean,

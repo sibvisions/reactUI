@@ -28,6 +28,9 @@ import IconProps from "../../comp-props/IconProps"
 import { CellFormatting } from "../CellEditor"
 import { getFont, parseIconData } from "../../comp-props/ComponentProperties"
 import { SelectedCellContext } from "../UITable"
+import { classNames } from "primereact/utils"
+import { concatClassnames } from "src/main/util/string-util/ConcatClassnames"
+import Margins from "../../layouts/models/Margins"
 
 /** Interfaces for cellrenderers */
 export interface ICellRenderer {
@@ -107,6 +110,18 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
                 if(cellFormat.image) {
                     cellIcon = parseIconData(cellFormat.foreground, cellFormat.image);
                 }
+
+                if (cellFormat.style) {
+                    cellClassNames.push(cellFormat.style);
+                }
+
+                if (cellFormat.leftIndent) {
+                    cellStyle = {
+                        ...cellStyle,
+                        marginLeft: cellFormat.leftIndent
+                    }
+                }
+
             }
         }
 
