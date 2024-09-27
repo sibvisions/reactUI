@@ -78,7 +78,9 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel & IComponentConsta
         }
         
         showTopBar(props.context.server.sendRequest(buildTabRequest(tabId), REQUEST_KEYWORDS.CLOSE_TAB), props.topbar);
-        closing.current = true
+        closing.current = true;
+
+        return false;
     }
 
     return (

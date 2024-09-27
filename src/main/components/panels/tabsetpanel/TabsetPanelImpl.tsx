@@ -189,7 +189,7 @@ const TabsetPanelImpl: FC<ITabsetImpl & IComponentConstants> = (props) => {
                     style={{"--nav-background": props.compStyle.background} as CSSProperties}
                     activeIndex={props.selectedIndex}
                     onTabChange={event => props.onTabChange(event.index)}
-                    onTabClose={event => props.onTabClose(event.index)}
+                    onBeforeTabClose={event => props.onTabClose(event.index)}
                     {...usePopupMenu(props)}>
                     {builtTabs}
                 </TabView>
