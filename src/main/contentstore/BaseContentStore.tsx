@@ -102,7 +102,7 @@ export default abstract class BaseContentStore {
     customScreens = new Map<string, Function>();
 
     /** A Map which stores custom components made by the user, the key is the components title and the value a function to build the component*/
-    customComponents = new Map<string, Function>();
+    customComponents = new Map<string, Map<string, Function>>();
 
     /** A Map which stores replace-screens made by the user, the key is the components title and the value a function to build the replace-screen*/
     replaceScreens = new Map<string, Function>();

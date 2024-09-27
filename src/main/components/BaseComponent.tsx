@@ -120,7 +120,7 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
                         }
                     }
                     else if ((props as IEditor).cellEditor!.className === CELLEDITOR_CLASSNAMES.NUMBER) {
-                        return forwardedRef.current.element
+                        return forwardedRef.current
                     }
                 }
             }

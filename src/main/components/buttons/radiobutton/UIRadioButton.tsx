@@ -52,7 +52,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable | IEditorCheck
     useRequestFocus(id, props.requestFocus, rbRef.current ? rbRef.current.inputRef ? rbRef.current.inputRef.current : undefined : undefined, props.context);
 
     /** True if the text is HTML */
-    const isHTML = useIsHTMLText(props.text);
+    const isHTML = useIsHTMLText(getButtonText(props));
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {

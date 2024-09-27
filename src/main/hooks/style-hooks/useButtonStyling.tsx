@@ -25,6 +25,15 @@ import { IEditorCheckBox } from "../../components/editors/checkbox/UIEditorCheck
 import { isCheckboxCellEditor } from "../../components/buttons/button/UIButton";
 import { IComponentConstants } from "../../components/BaseComponent";
 
+/** Constant for CellEditorButtons */
+export enum BUTTON_CELLEDITOR_STYLES {
+    BUTTON = "ui-button",
+    HYPERLINK = "ui-hyperlink",
+    RADIOBUTTON = "ui-radiobutton",
+    TOGGLEBUTTON = "ui-togglebutton",
+    SWITCH = "ui-switch"
+}
+
 // Interface for button-style
 export interface IButtonStyle {
     style: CSSProperties,
@@ -58,7 +67,7 @@ function hasSameValue(array1: string[], array2: string[]): boolean {
     return false;
 }
 
-const cbStyles = ["ui-switch", "ui-togglebutton", "ui-button"];
+const cbStyles = [BUTTON_CELLEDITOR_STYLES.BUTTON, BUTTON_CELLEDITOR_STYLES.TOGGLEBUTTON, BUTTON_CELLEDITOR_STYLES.SWITCH, BUTTON_CELLEDITOR_STYLES.HYPERLINK];
 
 /**
  * This hook returns style properties used by all button components
@@ -78,7 +87,7 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
     /** Various style properties which are set by the properties received from the server */
     const buttonStyle: CSSProperties = useMemo(() => {
         const isCB = isCheckboxCellEditor(props);
-        if (!isCB && props.url) { return {} }  
+        if ((!isCB && props.url) || (isCB && props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK))) { return {} }  
         
         const isCBOrRB = isCB ? 
                         !hasSameValue(cbStyles, props.cellEditor_style_ ? props.cellEditor_style_?.split(',') : props.cellEditor?.style?.split(',') || []) 
@@ -150,7 +159,7 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
             }
         }
         else {
-            if (ref) {
+            if (ref && ref.children.length) {
                 return (ref.children[1] as HTMLElement).offsetWidth / 2 - (iconProps.size?.width ? iconProps.size?.width / 2 : (ref.children[0] as HTMLElement).offsetWidth / 2);
             }
         }
@@ -193,7 +202,22 @@ const useButtonStyling = (props: IButton & IComponentConstants |IEditorCheckBox 
     }, [!isCheckboxCellEditor(props) ? props.horizontalTextPosition : undefined, !isCheckboxCellEditor(props) ? props.horizontalAlignment : undefined])
 
     /** True, if the border is painted */
-    const borderPainted = useMemo(() => isCheckboxCellEditor(props) || props.borderPainted !== false ? true : false, [!isCheckboxCellEditor(props) ? props.borderPainted : undefined]);
+    const borderPainted = useMemo(() => {
+        if (!isCheckboxCellEditor(props)) {
+            if (props.borderPainted !== false) {
+                return true;
+            }
+        }
+        else {
+            if (props.cellEditor.style?.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
+    }, [!isCheckboxCellEditor(props) ? props.borderPainted : undefined]);
 
     /** The parsed icon properties of the icon which is displayed when pressing the button */
     const pressedIconData = useMemo(() => parseIconData(compStyle?.color as string, !isCheckboxCellEditor(props) ? props.mousePressedImage : undefined), [compStyle?.color, !isCheckboxCellEditor(props) ? props.mousePressedImage: undefined]);

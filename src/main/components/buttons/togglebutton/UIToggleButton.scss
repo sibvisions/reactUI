@@ -26,6 +26,11 @@
     align-items: var(--btnAlign);
     padding: var(--btnPadding, 0.5rem 1rem);
 
+    &.p-button.p-button-icon-only {
+        width: inherit;
+        height: inherit;
+    }
+
     .p-button-icon-left {
         margin-right: 0;
     }

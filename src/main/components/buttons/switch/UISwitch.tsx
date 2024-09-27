@@ -27,7 +27,7 @@ import { getFocusComponent } from "../../../util/html-util/GetFocusComponent";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
-import { RenderButtonHTML } from "../button/UIButton";
+import { RenderButtonHTML, getButtonText } from "../button/UIButton";
 
 /** This component displays a switch, used when the CheckboxCellEditor style 'ui-switch' is used */
 const UISwitch: FC<IEditorCheckBox & IComponentConstants> = (props) => {
@@ -44,7 +44,7 @@ const UISwitch: FC<IEditorCheckBox & IComponentConstants> = (props) => {
     const { onLoadCallback, id } = props;
 
     /** True if the text is HTML */
-    const isHTML = useIsHTMLText(props.text);
+    const isHTML = useIsHTMLText(getButtonText(props));
 
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useLayoutEffect(() => {
@@ -148,8 +148,8 @@ const UISwitch: FC<IEditorCheckBox & IComponentConstants> = (props) => {
                         fontSize: props.cellStyle?.fontSize
                     }}
                     htmlFor={id}>
-                    {isHTML && (props.cellEditor_text_ || props.cellEditor.text) ? <RenderButtonHTML text={props.cellEditor_text_ ? props.cellEditor_text_ as string : props.cellEditor.text as string} />
-                        : props.cellEditor_text_ ? props.cellEditor_text_ : props.cellEditor?.text}
+                    {isHTML && (props.cellEditor_text_ || props.cellEditor.text) ? <RenderButtonHTML text={getButtonText(props)} />
+                        : getButtonText(props)}
                 </label>
             }
         </span>

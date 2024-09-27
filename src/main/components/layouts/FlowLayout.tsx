@@ -129,7 +129,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             id.includes("-tbMain") ? 
                 [...context.contentStore.getChildren(id, className)] 
             : 
-                [...context.contentStore.getChildren(panelType === "Frame-Toolbar" ? id : parent, className)].filter(child => child[1].className === COMPONENT_CLASSNAMES.TOOLBAR) 
+                [...context.contentStore.getChildren(panelType === "Frame-Toolbar" ? id : parent + "-tbMain", className)].filter(child => child[1].className === COMPONENT_CLASSNAMES.TOOLBAR) 
         : undefined;
 
         /** The children of the Panel, only the toolbars if it is a frame */
@@ -234,7 +234,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                         if (isRowOrientation) {
                             /** If this isn't the first component add the gap between components*/
                             if (!bFirst) {
-                                calcWidth += gaps.horizontalGap + toolbarGap;
+                                calcWidth += gaps.horizontalGap;
                             }
                             calcWidth += prefSize.width;
                             /** Check for the tallest component in row orientation */
@@ -416,7 +416,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                             bFirst = false;
                         }
 
-                        y += size.height + gaps.verticalGap
+                        y += size.height
                     }
                 }
             });
@@ -424,7 +424,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
             /** If reportSize is set and the layout has not received a size by their parent layout (if possible) or the size of the layout changed, report the size */
             if((reportSize && !style.width && !style.height) || (prefSize.height !== style.height || prefSize.width !== style.width)) {
                 runAfterLayout(() => {
-                    reportSize({ 
+                    reportSize({
                         height: prefSize.height + margins.marginTop + margins.marginBottom + (toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0), 
                         width: prefSize.width + margins.marginLeft + margins.marginRight + (toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0)
                     });
@@ -440,9 +440,11 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
                 });
             }
             else {
+                const height = (style?.height || prefSize.height + margins.marginTop + margins.marginBottom) as number;
+                const width = (style?.width || prefSize.width + margins.marginLeft + margins.marginRight) as number;
                 setCalculatedStyle({ 
-                    height: style?.height || prefSize.height + margins.marginTop + margins.marginBottom, 
-                    width: style?.width || prefSize.width + margins.marginLeft + margins.marginRight, 
+                    height: height - (toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0), 
+                    width: width - (toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0), 
                     position: 'relative', 
                     left: style?.left || toolBarsFiltered?.length ? (!isFirstToolBar(id) && isRowOrientation) ? 5 : 0 : 0, 
                     top: style?.top || toolBarsFiltered?.length ? (!isFirstToolBar(id) && !isRowOrientation) ? 5 : 0 : 0 

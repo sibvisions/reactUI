@@ -55,7 +55,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton | IEditorCh
     useRequestFocus(id, props.requestFocus, buttonRef.current ? buttonRef.current.getElement() : undefined, props.context);
 
     /** True if the text is HTML */
-    const isHTML = useIsHTMLText(props.text);
+    const isHTML = useIsHTMLText(getButtonText(props));
 
     /** Adding HTML-text to button manually */
     useLayoutEffect(() => {
@@ -140,7 +140,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton | IEditorCh
         <span
             ref={props.forwardedRef}
             id={props.name}
-            style={props.layoutStyle}
+            style={!props.id ? undefined: props.layoutStyle}
             aria-label={props.ariaLabel}
             aria-pressed={props.ariaPressed}
         >

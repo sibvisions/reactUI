@@ -60,7 +60,7 @@ import DialogResponse from "../response/ui/DialogResponse";
 import UIMessage from "../components/message/UIMessage";
 import UITreeV2 from "../components/tree/UITreeV2";
 import UISwitch from "../components/buttons/switch/UISwitch";
-
+import { BUTTON_CELLEDITOR_STYLES } from "../hooks/style-hooks/useButtonStyling";
 
 /**
  * Returns a CustomComponent wrapped in a Wrapper as component
@@ -103,16 +103,16 @@ const Editor = (props: any) => {
         }
         else if (props.cellEditor.className === CELLEDITOR_CLASSNAMES.CHECKBOX) {
             const editorStyle = props.cellEditor_style_ ? props.cellEditor_style_ : props.cellEditor.style || "" 
-            if (editorStyle.includes('ui-button')) {
+            if (editorStyle.includes(BUTTON_CELLEDITOR_STYLES.BUTTON) || editorStyle.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) {
                 return <UIButton {...props} />
             }
-            else if (editorStyle.includes('ui-radiobutton')) {
+            else if (editorStyle.includes(BUTTON_CELLEDITOR_STYLES.RADIOBUTTON)) {
                 return <UIRadioButton {...props} />
             }
-            else if (editorStyle.includes('ui-togglebutton')) {
+            else if (editorStyle.includes(BUTTON_CELLEDITOR_STYLES.TOGGLEBUTTON)) {
                 return <UIToggleButton {...props} />
             }
-            else if (editorStyle.includes('ui-switch')) {
+            else if (editorStyle.includes(BUTTON_CELLEDITOR_STYLES.SWITCH)) {
                 return <UISwitch {...props} />
             }
             return <UIEditorCheckBox {...props} />

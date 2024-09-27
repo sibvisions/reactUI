@@ -56,7 +56,7 @@ export interface IAPI {
     editToolbarItem: (editItem:EditableMenuItem) => void,
     removeToolbarItem: (id:string) => void,
     addStartupProperties: (startupProps:CustomStartupProps[]) => void,
-    addCustomComponent: (name:string, customComp:ReactElement) => void,
+    addCustomComponent: (screenName: string, name:string, customComp:ReactElement) => void,
     removeComponent: (name:string) => void
     getUser: () => UserData,
     addGlobalComponent: (name:string, comp:ReactElement) => void,
@@ -396,17 +396,25 @@ class API implements IAPI {
 
     /**
      * Replaces an existing component of a screen with a custom-component
+     * @param screenName - the name of the screen
      * @param name - the name of the component, which should be replaced
      * @param customComp - the custom-component
      */
-    addCustomComponent(name:string, customComp:ReactElement) {
+    addCustomComponent(screenName: string, name:string, customComp:ReactElement) {
         let component = this.#contentStore.getComponentByName(name);
         // Check for tables, because if they are in navigationtables, you have to also handle the toolbarpanel
         let tableFlag = component && component.className === COMPONENT_CLASSNAMES.TABLE && component.parent?.includes("TBP") && this.#contentStore.getComponentById(component.parent);
         
         if (component) {
             // If tableFlag, add the name of the parent instead, because of the toolbarpanel
-            this.#contentStore.customComponents.set(tableFlag ? this.#contentStore.getComponentById(component.parent)!.name : name, () => customComp);
+            const existingMap = this.#contentStore.customComponents.get(screenName);
+            if (existingMap) {
+                existingMap.set(tableFlag ? this.#contentStore.getComponentById(component.parent)!.name : name, () => customComp);
+            }
+            else {
+                this.#contentStore.customComponents.set(screenName, new Map().set(tableFlag ? this.#contentStore.getComponentById(component.parent)!.name : name, () => customComp))
+            }
+            
             const notifyList = new Array<string>();
             if (tableFlag) {
                 const parent = this.#contentStore.getComponentById(component.parent)
