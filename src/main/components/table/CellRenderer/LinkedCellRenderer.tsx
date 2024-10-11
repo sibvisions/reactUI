@@ -72,7 +72,9 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     return (
         <>
             <span className="cell-data-content">
-                {props.icon ?? linkedDisplayValue}
+                {props.icon != undefined && props.icon}
+                {props.icon && linkedDisplayValue && <span style={{marginRight: 5}}/>}
+                {linkedDisplayValue}
             </span>
             <div 
                 style={{ 

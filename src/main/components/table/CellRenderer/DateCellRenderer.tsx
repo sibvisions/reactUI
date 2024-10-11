@@ -46,7 +46,9 @@ const DateCellRenderer: FC<ICellRender> = (props) => {
     return (
         <>
             <span className="cell-data-content">
-                {props.icon ?? displayDateValue}
+                {props.icon != undefined && props.icon}
+                {props.icon && displayDateValue && <span style={{marginRight: 5}}/>}
+                {displayDateValue}
             </span>
             <div style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} tabIndex={-1} onClick={props.stateCallback !== undefined ? () => (props.stateCallback as Function)() : undefined} >
                 <i className="pi pi-chevron-down cell-editor-arrow" />

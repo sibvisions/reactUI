@@ -47,6 +47,7 @@ import GenericResponse from "../response/ui/GenericResponse";
 import { TopBarContextType, showTopBar } from "../components/topbar/TopBar";
 import IBaseComponent from "../util/types/IBaseComponent";
 import { toPageKey } from "../components/tree/UITreeV2";
+import { asList } from "../util/string-util/SplitWithQuote";
 
 /** An enum to know which type of request queue is currently active for the request */
 export enum RequestQueueMode {
@@ -636,21 +637,22 @@ export default abstract class BaseServer {
         if (fetchData.recordFormat) {
             for (const componentId in fetchData.recordFormat) {
                 const entry = fetchData.recordFormat[componentId];
-                const styleKeys = ['background', 'foreground', 'font', 'image'];
-                const format = entry.format.map(f => f ? f.split(';', 4).reduce((agg, v, i) => v ? {...agg, [styleKeys[i]]: v} : agg, {}) : f);
-                entry.records.forEach((r, index) => {
-                    if (r.length === 1 && r[0] === -1) {
+                const styleKeys = ['background', 'foreground', 'font', 'image', 'style', 'leftIndent'];
+                const format = entry.format.map(f => f ? asList(f).reduce((agg, v, i) => v ? {...agg, [styleKeys[i]]: v} : agg, {}) : f);
+
+                entry.records.forEach((record, index) => {
+                    if (record.length === 1 && record[0] === -1) {
                         return;
                     }
                     formattedRecords[index] = formattedRecords[index] || {};
                     formattedRecords[index][componentId] = new Map<String, CellFormatting>();
 
-                    for (let i = 0; i < r.length; i++) {
-                        formattedRecords[index][componentId].set(fetchData.columnNames[i], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+                    for (let colIndex = 0; colIndex < record.length; colIndex++) {
+                        formattedRecords[index][componentId].set(fetchData.columnNames[colIndex], format[Math.max(0, Math.min(record[colIndex], format.length - 1))]);
 
-                        if (i === r.length - 1 && fetchData.columnNames.length > r.length) {
-                            for (let j = i; j < fetchData.columnNames.length; j++) {
-                                formattedRecords[index][componentId].set(fetchData.columnNames[j], format[Math.max(0, Math.min(r[i], format.length - 1))]);
+                        if (colIndex === record.length - 1 && fetchData.columnNames.length > record.length) {
+                            for (let j = colIndex; j < fetchData.columnNames.length; j++) {
+                                formattedRecords[index][componentId].set(fetchData.columnNames[j], format[Math.max(0, Math.min(record[colIndex], format.length - 1))]);
                             }
                         }
                     }
@@ -876,8 +878,8 @@ export default abstract class BaseServer {
                 const formattedRecords: Record<string, any>[] = [];
                 for (const componentId in changedProvider.recordFormat) {
                     const entry = changedProvider.recordFormat[componentId];
-                    const styleKeys = ['background', 'foreground', 'font', 'image'];
-                    const format = entry.format.map(f => f ? f.split(';', 4).reduce((agg, v, i) => v ? { ...agg, [styleKeys[i]]: v } : agg, {}) : f);
+                    const styleKeys = ['background', 'foreground', 'font', 'image', 'style', 'leftIndent'];
+                    const format = entry.format.map(f => f ? asList(f).reduce((agg, v, i) => v ? { ...agg, [styleKeys[i]]: v } : agg, {}) : f);
                     entry.records.forEach((r, index) => {
                         if (r.length === 1 && r[0] === -1) {
                             return;

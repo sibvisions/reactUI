@@ -50,7 +50,9 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
     return (
         <>
             <span className="cell-data-content">
-                {props.icon ?? displayNumberValue}
+                {props.icon != undefined && props.icon}
+                {props.icon && displayNumberValue && <span style={{marginRight: 5}}/>}
+                <span className="cell-data-content-number">{displayNumberValue}</span>
             </span>
         </>
     )

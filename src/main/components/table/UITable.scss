@@ -179,6 +179,17 @@
                 &.NumberCellEditor {
                     .cell-data {
                         justify-content: flex-end;
+
+                        .cell-data-content {
+                            display: flex;
+                            width: 100%;
+                            
+                            .cell-data-content-number {
+                                width: 100%;
+                                display: flex;
+                                justify-content: flex-end;
+                            }
+                        }
                     }
                 }
                 &.ImageViewer {
@@ -190,6 +201,23 @@
                         .rc-table-image {
                             height: inherit;
                         }
+
+                        .cell-data-content {
+                            display: flex;
+                            width: 100%;
+
+                            .cell-data-profileimage {
+                                display: flex;
+                                align-items: center;
+                            }
+                            
+                            .cell-data-content-image {
+                                width: 100%;
+                                display: flex;
+                                justify-content: center;
+                            }
+                        }
+
                     }
                 }
                 &.LinkedCellEditor, &.DateCellEditor {

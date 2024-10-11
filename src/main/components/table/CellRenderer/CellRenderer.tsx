@@ -83,7 +83,13 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
     /** Contains the cell-style extracted from the cellformatting property */
     const cellStyles: { cellStyle: CSSProperties, cellClassNames: string[], cellIcon: IconProps | null } = useMemo(() => {
         let cellStyle:any = { };
-        const cellClassNames:string[] = ['cell-data', props.isHTML ? "html-cell" : ""];
+        const cellClassNames:string[] = [];
+        cellClassNames.push('cell-data');
+
+        if (props.isHTML) {
+            cellClassNames.push('html-cell');
+        }
+
         let cellIcon: IconProps | null = null;
     
         // Fills cell-classnames and cell-style based on the server-sent properties
@@ -101,13 +107,14 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
                     const font = getFont(cellFormat.font);
                     cellStyle = {
                         ...cellStyle,
-                        fontFamily: font ? font.fontFamily : undefined,
+                        fontFamily: font ? (font.fontFamily.length > 0 ? font.fontFamily : undefined) : undefined,
                         fontWeight: font ? font.fontWeight : undefined,
                         fontStyle: font ? font.fontStyle : undefined,
-                        fontSize: font ? font.fontSize : undefined
+                        fontSize: font ? (isNaN(font.fontSize) ? undefined : font.fontSize) : undefined
                     }
                 }
                 if(cellFormat.image) {
+
                     cellIcon = parseIconData(cellFormat.foreground, cellFormat.image);
                 }
 
@@ -115,10 +122,10 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
                     cellClassNames.push(cellFormat.style);
                 }
 
-                if (cellFormat.leftIndent) {
+                if (cellFormat.leftIndent && cellFormat.leftIndent > 0) {
                     cellStyle = {
                         ...cellStyle,
-                        marginLeft: cellFormat.leftIndent
+                        marginLeft: cellFormat.leftIndent + "px"
                     }
                 }
 
@@ -132,7 +139,7 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
     const icon = useMemo(() => {
         if (cellStyles.cellIcon?.icon) {
             if(isFAIcon(cellStyles.cellIcon.icon))
-                return <i className={cellStyles.cellIcon.icon} style={{ fontSize: cellStyles.cellIcon.size?.height, color: cellStyles.cellIcon.color}}/>
+                return <i className={cellStyles.cellIcon.icon} style={{ fontSize: cellStyles.cellIcon.size?.height ?? undefined, color: cellStyles.cellIcon.color ?? undefined}}/>
             else {
                 return <img
                     id={props.name}

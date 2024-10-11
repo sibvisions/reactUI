@@ -50,10 +50,7 @@ const ImageCellRenderer: FC<ICellRender> = (props) => {
 
     /** Returns either the icon if cellFormatting, an icon element if FontAwesome icon or an image element */
     const getImageElement = () => {
-        if (props.icon) {
-            return props.icon;
-        }
-        else if (props.cellData) {
+        if (props.cellData) {
             if (iconData) {
                 return (
                     <i
@@ -81,7 +78,9 @@ const ImageCellRenderer: FC<ICellRender> = (props) => {
     return (
         <>
             <span className="cell-data-content">
-                {getImageElement()}
+                {props.icon != undefined && <span className="cell-data-profileimage">{props.icon}</span>}
+                {props.icon && props.cellData && <span style={{marginRight: 5}}/>}
+                <span className="cell-data-content-image">{getImageElement()}</span>
             </span>
         </>
     )
