@@ -800,15 +800,22 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
 
         // If the columnView should display a table with more than one column, return the label and items to build the table
-        if (props.cellEditor.columnView?.columnCount > 1 && tableOptions) {
-            suggestions = [{
-                label: props.cellEditor.columnView.columnNames,
-                items: suggestions
-            }]
+        if (tableOptions) {
+            if(props.cellEditor.columnView?.columnCount > 1) {
+                suggestions = [{
+                    label: props.cellEditor.columnView.columnNames,
+                    items: suggestions
+                }]
+            } else if(metaDataReferenced.columnView_table_.length) {
+                suggestions = [{
+                    label: metaDataReferenced.columnView_table_,
+                    items: suggestions
+                }]
+            }
         }
 
         return suggestions
-    }, [providedData]);
+    }, [providedData, metaDataReferenced, tableOptions]);
     
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 100 new rows
