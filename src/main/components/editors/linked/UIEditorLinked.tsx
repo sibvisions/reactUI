@@ -579,17 +579,20 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     /**
      * When enter is pressed "submit" the value
      */
-    useEventHandler(linkedInput.current || undefined, "keydown", (event) => {
-        if((event as KeyboardEvent).key === "Enter" && !document.querySelector('.p-autocomplete-item.p-highlight')) {
+    useEventHandler(linkedInput.current || undefined, "keydown", (event: KeyboardEvent) => {
+        if (event.key === "ArrowDown") {
+            sendFilter(linkedInput.current?.value ?? "");
+            linkedRef.current?.show();
+        } else if(event.key === "Enter" && !document.querySelector('.p-autocomplete-item.p-highlight')) {
             linkedRef.current?.hide();
             handleEnterKey(event, event.target, props.name, props.stopCellEditing);
         }
         else if (props.isCellEditor && props.stopCellEditing) {
-            if ((event as KeyboardEvent).key === "Tab") {
+            if (event.key === "Tab") {
                 (event.target as HTMLElement).blur()
                 props.stopCellEditing(event);
             }
-            else if ((event as KeyboardEvent).key === "Escape") {
+            else if (event.key === "Escape") {
                 props.stopCellEditing(event)
             }
         }
