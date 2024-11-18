@@ -47,7 +47,7 @@ export interface ICellEditorWrapperProps {
 
 /** The complete interface for ReactUI CellEditors. It extends the server-sent properties, wrapper properties and in-table-properties */
 export interface IRCCellEditor extends IEditor, ICellEditorWrapperProps, IInTableEditor {
-
+    forwardedRef?: React.MutableRefObject<any>;
 }
 
 /**

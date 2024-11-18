@@ -46,6 +46,8 @@ import { SelectFilter } from "../../../request/data/SelectRowRequest";
 import { IComponentConstants } from "../../BaseComponent";
 import { CellFormatting } from "../../table/CellEditor";
 import { objectToString } from "../../../util/string-util/ObjectToString";
+import CELLEDITOR_CLASSNAMES from "../CELLEDITOR_CLASSNAMES";
+import { createEditor } from "../../../factories/UIFactory";
 
 interface ReferencedColumnNames {
     columnNames: string[]
@@ -356,7 +358,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     const callHandleInputCallback = useRef<boolean>(false);
 
     /** True, if the dropdown should be displayed as table */
-    const tableOptions = useMemo(() => {
+    const displayAsTable = useMemo(() => {
         if (!showTable && isDisplayRefColNameOrConcat) {
             return false;
         }
@@ -370,7 +372,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }, [props.cellEditor.columnView, metaDataReferenced]); 
 
     /** If the columnView of the celleditor is empty use "columnView_table of the referenced databook instead" */
-    const columnViewNames = useMemo(() => props.cellEditor.columnView ? props.cellEditor.columnView.columnNames : metaDataReferenced ? metaDataReferenced.columnView_table_ : [], [props.cellEditor.columnView, metaDataReferenced]);
+    const columnViewNames = useMemo(() => props.cellEditor.columnView 
+        ? props.cellEditor.columnView.columnNames 
+        : metaDataReferenced 
+            ? metaDataReferenced.columnView_table_ 
+            : []
+    , [props.cellEditor.columnView, metaDataReferenced]);
 
     // Helper to set the text on unmount
     const textCopy = useRef<any>(text);
@@ -800,7 +807,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
 
         // If the columnView should display a table with more than one column, return the label and items to build the table
-        if (tableOptions) {
+        if (displayAsTable) {
             if(props.cellEditor.columnView?.columnCount > 1) {
                 suggestions = [{
                     label: props.cellEditor.columnView.columnNames,
@@ -815,7 +822,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
 
         return suggestions
-    }, [providedData, metaDataReferenced, tableOptions]);
+    }, [providedData, metaDataReferenced, displayAsTable]);
     
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 100 new rows
@@ -842,15 +849,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         else if(props.columnName && !columnViewNames.length) {
             return d[props.columnName];
         }
-        else if (!tableOptions && isDisplayRefColNameOrConcat) {
+        else if (!displayAsTable && isDisplayRefColNameOrConcat) {
             return <div key={0}>{getDisplayValue(d, getExtractedObject(d, linkReference.referencedColumnNames), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow)}</div>
         }
         else {
             const suggestionObj:Record<string, any> = getExtractedObject(d, columnViewNames);
+
             return Object.entries(suggestionObj).map(([key, value], i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
- 
+                let column = metaDataReferenced?.columns.find((c) => c.name == key);
+                
                 if (d.__recordFormats?.[props.name]?.has(key)) {
                     const format = d.__recordFormats[props.name].get(key) as CellFormatting;
 
@@ -890,11 +899,38 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         }
                     }
                 }
+                
+                if([CELLEDITOR_CLASSNAMES.CHOICE, CELLEDITOR_CLASSNAMES.CHECKBOX].includes(column?.cellEditor.className as CELLEDITOR_CLASSNAMES)) {
+                    value = <div style={{ display: "grid" }}>{createEditor({
+                        id: `${key}-${i}`,
+                        name: key,
+                        className: '',
+                        cellEditor: column!.cellEditor,
+                        cellEditor_editable_: false,
+                        columnName: key,
+                        dataRow: d,
+                        text: value,
+                        readonly: true,
+                        context: props.context,
+                        topbar: props.topbar,
+                        translation: props.translation,
+                        screenName: props.screenName,
+                        columnMetaData: column,
+                        selectedRow: {index: i, data: d},
+                        cellStyle: {},
+                        isReadOnly: true,
+                        rowNumber: i,
+                        styleClassNames: [],
+                        isCellEditor: true,
+                        forwardedRef: React.createRef(),
+                    })}</div>
+                }
+
                 return <div style={cellStyle} key={i}>{icon ?? value}</div>
             })
         }
 
-    }, [metaData, tableOptions]);
+    }, [metaData, displayAsTable, metaDataReferenced]);
 
     // Creates a header for the table when linked-overlay is in table-mode
     const groupedItemTemplate = useCallback((labels:string[]) => {
@@ -903,7 +939,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     // Returns the scrollheight
     const getScrollHeight = () => {
-        if (tableOptions) {
+        if (displayAsTable) {
             if (props.cellEditor.tableHeaderVisible === false) {
                 return (providedData.length * 38 > 200) ? "200px" : `${providedData.length * 38}px`
             }
@@ -962,7 +998,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     "rc-editor-linked-dropdown",
                     "dropdown-" + props.name, props.isCellEditor ? "dropdown-celleditor" : "", 
                     props.cellEditor.tableHeaderVisible === false ? "no-table-header" : "",
-                    tableOptions ? "dropdown-table" : "",
+                    displayAsTable ? "dropdown-table" : "",
                     linkedInput.current?.offsetWidth < 120 ? "linked-min-width" : ""
                 )}
                 scrollHeight={getScrollHeight()}
@@ -1039,7 +1075,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left", showDelay: 800 }}
                 itemTemplate={itemTemplate}
-                {...(tableOptions ? {
+                {...(displayAsTable ? {
                     optionGroupLabel: "label",
                     optionGroupChildren: "items",
                     optionGroupTemplate: groupedItemTemplate
