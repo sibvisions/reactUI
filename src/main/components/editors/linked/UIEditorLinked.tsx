@@ -27,7 +27,7 @@ import { isFAIcon } from "../../../hooks/event-hooks/useButtonMouseImages";
 import { ICellEditor } from "../IEditor";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
-import { getTextAlignment } from "../../comp-props/GetAlignments";
+import { getTextAlignment, translateTextAlign } from "../../comp-props/GetAlignments";
 import MetaDataResponse from "../../../response/data/MetaDataResponse";
 import useMetaData from "../../../hooks/data-hooks/useMetaData";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
@@ -924,6 +924,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         isCellEditor: true,
                         forwardedRef: React.createRef(),
                     })}</div>
+                } else {
+                    cellStyle.textAlign = translateTextAlign(column?.cellEditor.horizontalAlignment).textAlign;
                 }
 
                 return <div style={cellStyle} key={i}>{icon ?? value}</div>
