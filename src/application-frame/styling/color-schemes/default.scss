@@ -893,18 +893,20 @@ body {
 }
 
 .p-radiobutton {
-    .p-radiobutton-box {
-        &:not(.p-disabled) {
-            .p-focus {
-                box-shadow: var(--focus-box-shadow);
-            }
+    &:not(.p-disabled) {
+        .p-radiobutton-box .p-focus {
+            box-shadow: var(--focus-box-shadow);
+        }
 
-            &:not(.p-highlight):hover {
+        &:not(.p-highlight):hover {
+            .p-radiobutton-box {
                 border-color: var(--radiobutton-border-hover-color);
             }
         }
+    }
 
-        &.p-highlight {
+    &.p-highlight {
+        .p-radiobutton-box {
             background: var(--radiobutton-selected-outer-background);
             border-color: var(--radiobutton-selected-outer-background);
 
@@ -912,12 +914,12 @@ body {
                 background: var(--radiobutton-selected-outer-hover-background);
                 border-color: var(--radiobutton-selected-outer-hover-background);
             }
+
+            .p-radiobutton-icon {
+                background: var(--radiobutton-inner-color);
+            }
         }
     }
-} 
-
-.p-radiobutton-box.p-highlight .p-radiobutton-icon {
-    background: var(--radiobutton-inner-color);
 }
 
 /// PopupMenuButton

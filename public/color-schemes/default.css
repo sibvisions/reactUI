@@ -473,22 +473,21 @@ body {
   color: var(--checkbox-color);
 }
 
-.p-radiobutton .p-radiobutton-box:not(.p-disabled) .p-focus {
+.p-radiobutton:not(.p-disabled) .p-radiobutton-box .p-focus {
   box-shadow: var(--focus-box-shadow);
 }
-.p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight):hover {
+.p-radiobutton:not(.p-disabled):not(.p-highlight):hover .p-radiobutton-box {
   border-color: var(--radiobutton-border-hover-color);
 }
-.p-radiobutton .p-radiobutton-box.p-highlight {
+.p-radiobutton.p-highlight .p-radiobutton-box {
   background: var(--radiobutton-selected-outer-background);
   border-color: var(--radiobutton-selected-outer-background);
 }
-.p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover {
+.p-radiobutton.p-highlight .p-radiobutton-box:not(.p-disabled):hover {
   background: var(--radiobutton-selected-outer-hover-background);
   border-color: var(--radiobutton-selected-outer-hover-background);
 }
-
-.p-radiobutton-box.p-highlight .p-radiobutton-icon {
+.p-radiobutton.p-highlight .p-radiobutton-box .p-radiobutton-icon {
   background: var(--radiobutton-inner-color);
 }
 

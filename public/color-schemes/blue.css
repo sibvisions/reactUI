@@ -450,44 +450,43 @@ body {
   border: var(--radiobutton-border);
 }
 
-.rc-editor-checkbox .p-checkbox:hover:not(.p-disabled) .p-checkbox-box, .rc-checkbox .p-checkbox:hover:not(.p-disabled) .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover, .rc-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover {
   border-color: var(--checkbox-border-hover-color);
 }
-.rc-editor-checkbox .p-checkbox.p-focus:not(.p-disabled) .p-checkbox-box, .rc-checkbox .p-checkbox.p-focus:not(.p-disabled) .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus, .rc-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus {
   box-shadow: var(--focus-box-shadow);
   border-color: var(--checkbox-selected-background);
 }
-.rc-editor-checkbox .p-checkbox.p-highlight:hover:not(.p-disabled) .p-checkbox-box, .rc-checkbox .p-checkbox.p-highlight:hover:not(.p-disabled) .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover, .rc-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
   background: var(--checkbox-selected-hover-background);
   border-color: var(--checkbox-selected-hover-background);
 }
 .rc-editor-checkbox .p-checkbox .p-checkbox-box, .rc-checkbox .p-checkbox .p-checkbox-box {
   border-radius: var(--checkbox-border-radius);
 }
-.rc-editor-checkbox .p-checkbox.p-highlight .p-checkbox-box, .rc-checkbox .p-checkbox.p-highlight .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox .p-checkbox-box.p-highlight, .rc-checkbox .p-checkbox .p-checkbox-box.p-highlight {
   background: var(--checkbox-selected-background);
   border-color: var(--checkbox-selected-background);
 }
 
-.rc-editor-checkbox .p-checkbox.p-highlight .p-checkbox-box .p-checkbox-icon, .rc-checkbox .p-checkbox.p-highlight .p-checkbox-box .p-checkbox-icon {
+.rc-editor-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon, .rc-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
   color: var(--checkbox-color);
 }
 
-.p-radiobutton.p-focus:not(.p-disabled) .p-radiobutton-box {
+.p-radiobutton:not(.p-disabled) .p-radiobutton-box .p-focus {
   box-shadow: var(--focus-box-shadow);
 }
-.p-radiobutton:hover:not(.p-highlight):not(.p-disabled) .p-radiobutton-box {
+.p-radiobutton:not(.p-disabled):not(.p-highlight):hover .p-radiobutton-box {
   border-color: var(--radiobutton-border-hover-color);
 }
 .p-radiobutton.p-highlight .p-radiobutton-box {
   background: var(--radiobutton-selected-outer-background);
   border-color: var(--radiobutton-selected-outer-background);
 }
-.p-radiobutton.p-highlight:hover:not(.p-disabled) .p-radiobutton-box {
+.p-radiobutton.p-highlight .p-radiobutton-box:not(.p-disabled):hover {
   background: var(--radiobutton-selected-outer-hover-background);
   border-color: var(--radiobutton-selected-outer-hover-background);
 }
-
 .p-radiobutton.p-highlight .p-radiobutton-box .p-radiobutton-icon {
   background: var(--radiobutton-inner-color);
 }
