@@ -119,7 +119,7 @@ export function fetchLinkedRefDatabook(screenName: string, databook: string, sel
         const fetchReq = createFetchRequest();
         fetchReq.dataProvider = databook;
         fetchReq.fromRow = 0;
-        fetchReq.rowCount = -1;
+        fetchReq.rowCount = 100;
         if (!refDataBookInfo?.metaData) {
             fetchReq.includeMetaData = true;
         }
@@ -1065,7 +1065,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         }
                     }
                 }}
-                virtualScrollerOptions={{ itemSize: 38, lazy: true, onLazyLoad: handleLazyLoad, className: props.isCellEditor ? "celleditor-dropdown-virtual-scroller" : "dropdown-virtual-scroller" }}
+                virtualScrollerOptions={{ 
+                    itemSize: 38, 
+                    lazy: true, 
+                    onLazyLoad: handleLazyLoad, 
+                    className: props.isCellEditor 
+                        ? "celleditor-dropdown-virtual-scroller" 
+                        : "dropdown-virtual-scroller" 
+                }}
                 onSelect={(event) => { 
                     if (props.onSelect) {
                         props.onSelect(event);
