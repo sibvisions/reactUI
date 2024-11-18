@@ -450,26 +450,31 @@ body {
   border: var(--radiobutton-border);
 }
 
-.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover, .rc-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled):hover .p-checkbox-box,
+.rc-checkbox .p-checkbox:not(.p-checkbox-disabled):hover .p-checkbox-box {
   border-color: var(--checkbox-border-hover-color);
 }
-.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus, .rc-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled).p-focus .p-checkbox-box,
+.rc-checkbox .p-checkbox:not(.p-checkbox-disabled).p-focus .p-checkbox-box {
   box-shadow: var(--focus-box-shadow);
   border-color: var(--checkbox-selected-background);
 }
-.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover, .rc-checkbox .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled).p-highlight:hover .p-checkbox-box,
+.rc-checkbox .p-checkbox:not(.p-checkbox-disabled).p-highlight:hover .p-checkbox-box {
   background: var(--checkbox-selected-hover-background);
   border-color: var(--checkbox-selected-hover-background);
 }
-.rc-editor-checkbox .p-checkbox .p-checkbox-box, .rc-checkbox .p-checkbox .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox .p-checkbox-box,
+.rc-checkbox .p-checkbox .p-checkbox-box {
   border-radius: var(--checkbox-border-radius);
 }
-.rc-editor-checkbox .p-checkbox .p-checkbox-box.p-highlight, .rc-checkbox .p-checkbox .p-checkbox-box.p-highlight {
+.rc-editor-checkbox .p-checkbox.p-highlight .p-checkbox-box,
+.rc-checkbox .p-checkbox.p-highlight .p-checkbox-box {
   background: var(--checkbox-selected-background);
   border-color: var(--checkbox-selected-background);
 }
-
-.rc-editor-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon, .rc-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
+.rc-editor-checkbox .p-checkbox.p-highlight .p-checkbox-box .p-checkbox-icon,
+.rc-checkbox .p-checkbox.p-highlight .p-checkbox-box .p-checkbox-icon {
   color: var(--checkbox-color);
 }
 
