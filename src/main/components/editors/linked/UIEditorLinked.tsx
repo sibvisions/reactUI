@@ -597,7 +597,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             if (event.key === "Enter") {
                 linkedRef.current?.hide(); 
                 if(suggestions.length) {
-                    handleSelect(suggestions[0]);
+                    const el = document.querySelector('.p-autocomplete-item.p-highlight');
+                    const index = Math.max(0, el ? Array.prototype.indexOf.call(el.parentElement?.children, el) : -1);
+                    handleSelect(suggestions[index]);
                 }
             }
         }
@@ -993,6 +995,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                 } as CSSProperties}
                 inputRef={linkedInput}
+                autoHighlight={true}
                 autoFocus={props.autoFocus ? true : props.isCellEditor ? true : false}
                 appendTo={document.body}
                 className={concatClassnames(
