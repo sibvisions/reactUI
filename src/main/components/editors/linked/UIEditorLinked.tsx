@@ -589,7 +589,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 props.stopCellEditing(event);
             } else if (event.key === "Escape") {
                 props.stopCellEditing(event)
-            } else if(event.key === "Enter" && !document.querySelector('.p-autocomplete-item.p-highlight')) {
+            } else if(event.key === "Enter" && !linkedRef.current?.getOverlay().querySelector('.p-autocomplete-item.p-highlight')) {
                 linkedRef.current?.hide();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             }
@@ -597,8 +597,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             if (event.key === "Enter") {
                 linkedRef.current?.hide(); 
                 if(suggestions.length) {
-                    const el = document.querySelector('.p-autocomplete-item.p-highlight');
-                    const index = Math.max(0, el ? Array.prototype.indexOf.call(el.parentElement?.children, el) : -1);
+                    const el = linkedRef.current?.getOverlay().querySelector('.p-autocomplete-item.p-highlight');
+                    const index = Math.max(0, el ? parseInt(el.getAttribute("index") ?? "-1") : -1);
                     handleSelect(suggestions[index]);
                 }
             }
@@ -1075,6 +1075,21 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                                 onFocusLost(props.name, props.context.server);
                             }
                             focused.current = false
+                        }
+                    }
+                }}
+                onShow={() => {
+                    //select currently selected suggestion
+                    if (suggestions.length && linkedRef.current?.getOverlay() && props.columnName) {
+                        console.log(suggestions, props.columnName);
+                        const index = suggestions.findIndex(
+                            (s:any) => s[props.columnName.split("_").slice(1).join("_")] == props.selectedRow?.data[props.columnName]
+                        );
+                        if(index >= 0) {
+                            const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index];
+                            el.classList.add('p-highlight');
+                            el.setAttribute('data-p-highlight', 'true');
+                            el.scrollIntoView({ behavior: "instant" });
                         }
                     }
                 }}
