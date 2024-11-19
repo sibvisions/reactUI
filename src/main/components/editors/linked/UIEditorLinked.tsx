@@ -581,7 +581,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
      */
     useEventHandler(linkedInput.current || undefined, "keydown", (event: KeyboardEvent) => {
         if (event.key === "ArrowDown") {
-            sendFilter(linkedInput.current?.value ?? "");
+            //sendFilter(linkedInput.current?.value ?? "");
             linkedRef.current?.show();
         } else if (props.isCellEditor && props.stopCellEditing) {
             if (event.key === "Tab") {
