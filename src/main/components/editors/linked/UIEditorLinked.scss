@@ -114,6 +114,14 @@
                 display: table-cell;
                 vertical-align: middle;
                 padding: 0.5rem 1rem;
+
+                .cancel-padding {
+                    margin: -.5rem -1rem;
+                    padding: 0.5rem 1rem;
+                    height: 38px;
+                    display: flex;
+                    align-items: center;
+                }
             }
 
             .p-ink {

@@ -48,6 +48,8 @@ import { CellFormatting } from "../../table/CellEditor";
 import { objectToString } from "../../../util/string-util/ObjectToString";
 import CELLEDITOR_CLASSNAMES from "../CELLEDITOR_CLASSNAMES";
 import { createEditor } from "../../../factories/UIFactory";
+import DateCellRenderer from "../../table/CellRenderer/DateCellRenderer";
+import CellRenderer from "../../table/CellRenderer/CellRenderer";
 
 interface ReferencedColumnNames {
     columnNames: string[]
@@ -868,73 +870,70 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             return Object.entries(suggestionObj).map(([key, value], i:number) => {
                 const cellStyle: CSSProperties = {}
                 let icon: JSX.Element | null = null;
-                let column = metaDataReferenced?.columns.find((c) => c.name == key);
+                let colIndex = metaDataReferenced?.columns.findIndex((c) => c.name == key);
+                let column = metaDataReferenced?.columns[colIndex];
                 
-                if (d.__recordFormats?.[props.name]?.has(key)) {
-                    const format = d.__recordFormats[props.name].get(key) as CellFormatting;
-
-                    if (format.background) {
-                        cellStyle.background = format.background;
-                    }
-
-                    if (format.foreground) {
-                        cellStyle.color = format.foreground;
-                    }
-
-                    if (format.font) {
-                        const font = getFont(format.font);
-                        if (font) {
-                            cellStyle.fontFamily = font.fontFamily;
-                            cellStyle.fontWeight = font.fontWeight;
-                            cellStyle.fontStyle = font.fontStyle;
-                            cellStyle.fontSize = font.fontSize;
+                if(column?.cellEditor.className) {
+                    value = <CellRenderer
+                        key={"cell-" + key + '-' + d.__index}
+                        name={props.name}
+                        screenName={props.screenName}
+                        cellData={d[key]}
+                        cellId={props.id + "-" + d.__index.toString() + "-" + colIndex.toString()}
+                        dataProvider={props.cellEditor.linkReference.referencedDataBook || ""}
+                        isEditable={false}
+                        colName={key}
+                        colIndex={colIndex}
+                        primaryKeys={primaryKeys}
+                        rowData={d}
+                        rowNumber={d.__index}
+                        cellFormatting={d.__recordFormats && d.__recordFormats[props.name]}
+                        isHTML={typeof d[key] === "string" && (d[key] as string).includes("<html>")}
+                        addReadOnlyClass={true}
+                        cellClickEvent={""}
+                        setCellClickEvent={() => {}}
+                    />
+                } else {
+                    if (d.__recordFormats?.[props.name]?.has(key)) {
+                        const format = d.__recordFormats[props.name].get(key) as CellFormatting;
+    
+                        if (format.background) {
+                            cellStyle.background = format.background;
                         }
-                    }
-
-                    if (format.image) {
-                        const iconData = parseIconData(format.foreground, format.image);
-                        if (iconData.icon) {
-                            if (isFAIcon(iconData.icon)) {
-                                icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+    
+                        if (format.foreground) {
+                            cellStyle.color = format.foreground;
+                        }
+    
+                        if (format.font) {
+                            const font = getFont(format.font);
+                            if (font) {
+                                cellStyle.fontFamily = font.fontFamily;
+                                cellStyle.fontWeight = font.fontWeight;
+                                cellStyle.fontStyle = font.fontStyle;
+                                cellStyle.fontSize = font.fontSize;
+                            }
+                        }
+    
+                        if (format.image) {
+                            const iconData = parseIconData(format.foreground, format.image);
+                            if (iconData.icon) {
+                                if (isFAIcon(iconData.icon)) {
+                                    icon = <i className={iconData.icon} style={{ fontSize: iconData.size?.height, color: iconData.color }} />
+                                }
+                                else {
+                                    icon = <img
+                                        alt="icon"
+                                        src={props.context.server.RESOURCE_URL + iconData.icon}
+                                        style={{ width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                                }
                             }
                             else {
-                                icon = <img
-                                    alt="icon"
-                                    src={props.context.server.RESOURCE_URL + iconData.icon}
-                                    style={{ width: `${iconData.size?.width}px`, height: `${iconData.size?.height}px` }} />
+                                icon = null;
                             }
                         }
-                        else {
-                            icon = null;
-                        }
                     }
-                }
-                
-                if([CELLEDITOR_CLASSNAMES.CHOICE, CELLEDITOR_CLASSNAMES.CHECKBOX].includes(column?.cellEditor.className as CELLEDITOR_CLASSNAMES)) {
-                    value = <div style={{ display: "grid" }}>{createEditor({
-                        id: `${key}-${i}`,
-                        name: key,
-                        className: '',
-                        cellEditor: column!.cellEditor,
-                        cellEditor_editable_: false,
-                        columnName: key,
-                        dataRow: d,
-                        text: value,
-                        readonly: true,
-                        context: props.context,
-                        topbar: props.topbar,
-                        translation: props.translation,
-                        screenName: props.screenName,
-                        columnMetaData: column,
-                        selectedRow: {index: i, data: d},
-                        cellStyle: {},
-                        isReadOnly: true,
-                        rowNumber: i,
-                        styleClassNames: [],
-                        isCellEditor: true,
-                        forwardedRef: React.createRef(),
-                    })}</div>
-                } else {
+
                     cellStyle.textAlign = translateTextAlign(column?.cellEditor.horizontalAlignment).textAlign;
                 }
 
