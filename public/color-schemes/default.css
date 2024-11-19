@@ -612,6 +612,14 @@ body {
   background: var(--linked-item-hover-background);
   color: var(--linked-item-hover-text-color);
 }
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight {
+  background: var(--linked-highlighted-color);
+  color: var(--linked-item-color);
+}
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight:hover {
+  background: var(--linked-item-hover-background);
+  color: var(--linked-item-hover-text-color);
+}
 .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd) {
   background: var(--table-row-even-background);
 }

@@ -1092,6 +1092,16 @@ body {
                 background: var(--linked-item-hover-background);
                 color: var(--linked-item-hover-text-color);
             }
+
+            &.p-highlight {
+                background: var(--linked-highlighted-color);
+                color: var(--linked-item-color);
+
+                &:hover {
+                    background: var(--linked-item-hover-background);
+                    color: var(--linked-item-hover-text-color);
+                }
+            }
         }
     }
 
