@@ -13,18 +13,22 @@
  * the License.
  */
 
-import React, { FC, useContext, useMemo } from "react";
+import React, { FC, useContext, useMemo, useRef } from "react";
 import { appContext } from "../../../contexts/AppProvider";
 import { NumericColumnDescription } from "../../../response/data/MetaDataResponse";
 import { formatNumber, getGrouping } from "../../../util/component-util/NumberProperties";
 import { getNumberValueAsString, getPrefix, getSuffix, ICellEditorNumber } from "../../editors/number/UIEditorNumber";
 import { ICellRender } from "../CellEditor";
+import { getAlignments } from "../../comp-props/GetAlignments";
 
 /**
  * Renders the number-cell when the column is a number-cell
  * @param props - the properties received from the table
  */
 const NumberCellRenderer: FC<ICellRender> = (props) => {
+    /** A reference to forward to the components */
+    const forwardedRef = useRef<any>();
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -47,9 +51,19 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
         }
     }, [props.cellData, castedMetaData, castedCellEditor]);
 
+    const alignments = useMemo(() => getAlignments({...castedCellEditor}), [castedCellEditor]);
+
     return (
         <>
-            <span className="cell-data-content">
+            <span 
+                className="cell-data-content" 
+                style={{ 
+                    display: "flex", 
+                    justifyContent: alignments.ha, 
+                    alignItems: alignments.va, 
+                    width: "100%" 
+                }}
+            >
                 {props.icon != undefined && props.icon}
                 {props.icon && displayNumberValue && <span style={{marginRight: 5}}/>}
                 <span className="cell-data-content-number">{displayNumberValue}</span>

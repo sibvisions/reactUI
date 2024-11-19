@@ -13,15 +13,23 @@
  * the License.
  */
 
-import React, { FC, useMemo } from "react";
+import React, { FC, useContext, useMemo, useRef } from "react";
 import { ICellEditor } from "../../editors/IEditor";
 import { ICellRender } from "../CellEditor";
+import { appContext } from "../../../contexts/AppProvider";
+import { getAlignments } from "../../comp-props/GetAlignments";
 
 /**
  * Renders the text-cell when the column is a text-cell
  * @param props - the properties received from the table
  */
 const TextCellRenderer: FC<ICellRender> = (props) => {
+    /** A reference to forward to the components */
+    const forwardedRef = useRef<any>();
+
+    /** Use context to gain access for contentstore and server methods */
+    const context = useContext(appContext);
+
     /** Casts the cell-editor property to ICellEditor because we can be sure it is a text-cell-editor */
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditor;
 
@@ -35,9 +43,19 @@ const TextCellRenderer: FC<ICellRender> = (props) => {
         return props.cellData
     }, [props.cellData, castedCellEditor.contentType]);
 
+    const alignments = useMemo(() => getAlignments({...castedCellEditor}), [castedCellEditor]);
+    
     return (
         <>
-            <span className="cell-data-content">
+            <span 
+                className="cell-data-content" 
+                style={{ 
+                    display: "flex", 
+                    justifyContent: alignments.ha, 
+                    alignItems: alignments.va, 
+                    width: "100%" 
+                }}
+            >
               {props.icon != undefined && props.icon}
               {props.icon && props.cellData && <span style={{marginRight: 5}}/>}
               {props.cellData?.includes("<html>") ? <span dangerouslySetInnerHTML={{ __html: props.cellData as string }}/> : displayTextValue}
