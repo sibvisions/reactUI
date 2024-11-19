@@ -1081,7 +1081,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 onShow={() => {
                     //select currently selected suggestion
                     if (suggestions.length && linkedRef.current?.getOverlay() && props.columnName) {
-                        console.log(suggestions, props.columnName);
                         const index = suggestions.findIndex(
                             (s:any) => s[props.columnName.split("_").slice(1).join("_")] == props.selectedRow?.data[props.columnName]
                         );
