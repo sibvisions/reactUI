@@ -64,7 +64,7 @@ export const getBooleanValueFromValue = (value: any, selectedValue: any) => {
         }
     }
 
-    if (value === selectedValue) {
+    if (value.toString() === selectedValue.toString()) {
         return true;
     }
 
@@ -152,7 +152,10 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
     const alignments = getAlignments(props);
 
     /** Current state of whether the CheckBox is currently checked or not */
-    const [checked, setChecked] = useState(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) : false);
+    const [checked, setChecked] = useState(props.selectedRow 
+        ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) 
+        : false
+    );
 
     /** True if focus is set */
     const [isFocused, setIsFocused] = useState(false);
