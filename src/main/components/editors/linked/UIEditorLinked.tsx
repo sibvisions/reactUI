@@ -1080,8 +1080,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 onShow={() => {
                     //select currently selected suggestion
                     if (suggestions.length && linkedRef.current?.getOverlay() && props.columnName) {
+                        const { linkReference } = props.cellEditor;
                         const index = suggestions.findIndex(
-                            (s:any) => s[props.columnName.split("_").slice(1).join("_")] == props.selectedRow?.data[props.columnName]
+                            (s:any) => s[linkReference.referencedColumnNames[linkReference.columnNames.indexOf(props.columnName)]] == props.selectedRow?.data[props.columnName]
                         );
                         if(index >= 0) {
                             const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index];
