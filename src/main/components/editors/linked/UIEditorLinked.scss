@@ -54,6 +54,17 @@
         border-top-left-radius: 0px;
         border-bottom-left-radius: 0px;
     }
+
+    .p-autocomplete-loader {
+        right: 1rem;
+        z-index: 2;
+        color: #ffffff;
+        margin-right: -7px;
+
+        & + .p-autocomplete-dropdown > * {
+            visibility: hidden;
+        }
+    }
 }
 
 .rc-editor-linked-dropdown .p-virtualscroller {
