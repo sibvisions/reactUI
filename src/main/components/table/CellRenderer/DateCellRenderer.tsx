@@ -50,9 +50,15 @@ const DateCellRenderer: FC<ICellRender> = (props) => {
                 {props.icon && displayDateValue && <span style={{marginRight: 5}}/>}
                 {displayDateValue}
             </span>
-            <div style={{ display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, marginLeft: "auto" }} tabIndex={-1} onClick={props.stateCallback !== undefined ? () => (props.stateCallback as Function)() : undefined} >
+            {props.isEditable ? <div style={{ 
+                    display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, 
+                    marginLeft: "auto" 
+                }} 
+                tabIndex={-1} 
+                onClick={props.stateCallback !== undefined ? () => (props.stateCallback as Function)() : undefined} 
+            >
                 <i className="pi pi-chevron-down cell-editor-arrow" />
-            </div>
+            </div> : null }
         </>
     )
 }
