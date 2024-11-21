@@ -298,6 +298,10 @@
         display: none;
     }
 
+    .p-virtualscroller {
+        contain: size layout paint;
+    }
+    
     .p-virtualscroller-content {
         contain: unset;
     }
