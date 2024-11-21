@@ -38,6 +38,7 @@ import { IComponentConstants } from "../../BaseComponent";
 import ServerFull from "../../../server/ServerFull";
 import Server from "../../../server/Server";
 import { SelectFilter } from "../../../request/data/SelectRowRequest";
+import { DataTypeIdentifier } from "src/main/response/data/MetaDataResponse";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
@@ -56,7 +57,7 @@ export interface IEditorCheckBox extends IRCCellEditor {
  * Returns true, if the given value is the selectedValue of the celleditor
  * @param value - the value of the field
  */
-export const getBooleanValueFromValue = (value: any, selectedValue: any) => {
+export const getBooleanValueFromValue = (value: any, selectedValue: any, dataTypeIdentifier?: number) => {
 
     if (selectedValue === null || selectedValue === undefined) {
         if (typeof value === "boolean") {
@@ -64,7 +65,14 @@ export const getBooleanValueFromValue = (value: any, selectedValue: any) => {
         }
     }
 
-    if (value.toString() === selectedValue.toString()) {
+    if (value === selectedValue) {
+        return true;
+    } 
+
+    if (
+        dataTypeIdentifier === DataTypeIdentifier.BigDecimal && 
+        value.toString() === selectedValue.toString()
+    ) {
         return true;
     }
 
@@ -153,8 +161,11 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
 
     /** Current state of whether the CheckBox is currently checked or not */
     const [checked, setChecked] = useState(props.selectedRow 
-        ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) 
-        : false
+        ? getBooleanValueFromValue(
+            props.selectedRow.data[props.columnName], 
+            props.cellEditor.selectedValue, 
+            props.columnMetaData?.dataTypeIdentifier
+        ) : false
     );
 
     /** True if focus is set */
@@ -189,8 +200,13 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
 
     // Sets the checked value based on the selectedRow data
     useEffect(() => {
-        setChecked(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) : false);
-    }, [props.selectedRow, props.cellEditor.selectedValue]);
+        setChecked(props.selectedRow 
+            ? getBooleanValueFromValue(
+                props.selectedRow.data[props.columnName], 
+                props.cellEditor.selectedValue,
+                props.columnMetaData?.dataTypeIdentifier
+            ) : false);
+    }, [props.selectedRow, props.cellEditor.selectedValue, props.columnMetaData?.dataTypeIdentifier, props.columnName]);
 
     // If the lib user extends the CheckboxCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {

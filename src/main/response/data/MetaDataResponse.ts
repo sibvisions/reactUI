@@ -21,6 +21,16 @@ import { ICellEditorLinked } from "../../components/editors/linked/UIEditorLinke
 import { ICellEditorNumber } from "../../components/editors/number/UIEditorNumber"
 import BaseResponse from "../BaseResponse"
 
+export enum DataTypeIdentifier {
+    Binary = -2,
+    BigDecimal = 3,
+    Boolean = 16,
+    Long = -5,
+    Object = 2000,
+    String = 12,
+    Timestamp = 93,
+}
+
 /** Type for MetaData of dataprovider referencing other dataprovider */
 export type MetaDataReference = {
     columnNames: string[],
