@@ -211,6 +211,10 @@
 
     /// Panelmenu styling, nesting needed because primereact nesting
     .p-panelmenu {
+        .p-menuitem-text {
+            line-height: 1.2;
+        }
+
         .single-group-item {
             .p-panelmenu-header-link {
                 font-weight: normal;
