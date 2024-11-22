@@ -277,8 +277,8 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
                             if (overlayElem) {
                                 const overlayRect = overlayElem.getBoundingClientRect();
                                 const rect = wrapperElem.getBoundingClientRect();
-                                overlayElem.style.left = `${rect.left}px`;
                                 if (rect.width > overlayRect.width) {
+                                    overlayElem.style.left = `${rect.left}px`;
                                     overlayElem.style.width = `${rect.width}px`;
                                 }
                             }
