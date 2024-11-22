@@ -46,9 +46,6 @@ import { SelectFilter } from "../../../request/data/SelectRowRequest";
 import { IComponentConstants } from "../../BaseComponent";
 import { CellFormatting } from "../../table/CellEditor";
 import { objectToString } from "../../../util/string-util/ObjectToString";
-import CELLEDITOR_CLASSNAMES from "../CELLEDITOR_CLASSNAMES";
-import { createEditor } from "../../../factories/UIFactory";
-import DateCellRenderer from "../../table/CellRenderer/DateCellRenderer";
 import CellRenderer from "../../table/CellRenderer/CellRenderer";
 
 interface ReferencedColumnNames {
@@ -819,7 +816,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
 
         // If the columnView should display a table with more than one column, return the label and items to build the table
-        if (displayAsTable) {
+        if (displayAsTable && props.cellEditor.tableHeaderVisible) {
             if(props.cellEditor.columnView?.columnCount > 1) {
                 suggestions = [{
                     label: props.cellEditor.columnView.columnNames,
@@ -1109,7 +1106,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left", showDelay: 800 }}
                 itemTemplate={itemTemplate}
-                {...(displayAsTable ? {
+                {...(displayAsTable && props.cellEditor.tableHeaderVisible ? {
                     optionGroupLabel: "label",
                     optionGroupChildren: "items",
                     optionGroupTemplate: groupedItemTemplate
