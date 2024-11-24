@@ -48,8 +48,9 @@ import { CellFormatting } from "../../table/CellEditor";
 import { objectToString } from "../../../util/string-util/ObjectToString";
 import CellRenderer from "../../table/CellRenderer/CellRenderer";
 import { formatCellEditorDateValue } from "../../table/CellRenderer/DateCellRenderer";
-import { AppContextType } from "src/main/contexts/AppProvider";
+import { AppContextType } from "../../../contexts/AppProvider";
 import { ICellEditorDate } from "../date/UIEditorDate";
+import useAppContext from "../../../hooks/app-hooks/useAppContext";
 
 interface ReferencedColumnNames {
     columnNames: string[]
@@ -312,6 +313,8 @@ export function getDisplayValue(
  * @param props - Initial properties sent by the server for this component
  */
 const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentConstants> = (props) => {
+    const context = useAppContext();
+    
     /** Reference for the LinkedCellEditor element */
     const linkedRef = useRef<AutoComplete>(null);
 
@@ -338,6 +341,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         return undefined
     }, [props.columnName, metaData]);
 
+    /** The metadata of the referenced column */
+    const linkedColumnMetaData = useMemo(() => {
+        if (metaDataReferenced && metaDataReferenced.columns.find(column => column.name === props.columnName)) {
+            return metaDataReferenced.columns.find(column => column.name === props.columnName)
+        }
+        return undefined
+    }, [props.columnName, metaDataReferenced]);
+
     /** True, if there is a displayReferencedColumnName or a displayConcatMask */
     const isDisplayRefColNameOrConcat = useMemo(() => props.cellEditor.displayReferencedColumnName || props.cellEditor.displayConcatMask, [props.cellEditor.displayReferencedColumnName, props.cellEditor.displayConcatMask])
 
@@ -356,7 +367,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     const [displayMapChanged, setDisplayMapChanged] = useState<boolean>(false);
 
     /** Current state of text value of input element */
-    const [text, setText] = useState(getDisplayValue(props.selectedRow ? props.selectedRow.data  : undefined, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
+    const [text, setText] = useState(getDisplayValue(props.selectedRow ? props.selectedRow.data  : undefined, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
 
     /** Extracting onLoadCallback and id from props */
     const {onLoadCallback, id} = props;
@@ -505,8 +516,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow*/
     useEffect(() => {
-        if (props.selectedRow) {            
-            setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
+        if (props.selectedRow) {
+            setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
         }
     }, [props.selectedRow, cellEditorMetaData, displayMapChanged]);
 
@@ -708,7 +719,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
         addAdditionalColumnToValue(valueToSend);
         // Set text, send selectrequest and setvalues if values are being found
-        setText(getDisplayValue(value, inputObj, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
+        setText(getDisplayValue(value, inputObj, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
         sendSelectRequest(value["__index"], filter);
         sendSetValues(props.dataRow, props.name, columnNames, props.columnName, valueToSend, props.context.server, props.topbar, -1)
         startedEditing.current = false;
@@ -736,8 +747,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             providedData.filter((data: any) => {
                 if (isDisplayRefColNameOrConcat) {
                     const extractedData = getExtractedObject(data, refColNames);
-                    if (getDisplayValue(data, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow)) {
-                        return getDisplayValue(data, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow).toString().includes(checkText);
+                    const displayValue = getDisplayValue(data, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context);
+                    if (displayValue) {
+                        return displayValue.toString().includes(checkText);
                     }
                     return !checkText;
                 }
@@ -818,13 +830,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     }
                 }
             }
-            setText(getDisplayValue(foundData, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow))
+            setText(getDisplayValue(foundData, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context))
             sendSelectRequest(-1, filter);
             sendSetValues(props.dataRow, props.name, columnNames, props.columnName, colNames.length > 1 ? tempValues : extractedData, props.context.server, props.topbar, -1);
         }
         /** If there is no match found set the old value */
         else {
-            setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
+            setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
         }
         startedEditing.current = false;
     }
@@ -1053,7 +1065,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     startedEditing.current = true;
                     sendFilter(event.value)
                     if (isDisplayRefColNameOrConcat && Array.isArray(event.target.value)) {
-                        setText(getDisplayValue(event.target.value, unpackValue(event.target.value), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow));
+                        setText(getDisplayValue(event.target.value, unpackValue(event.target.value), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
                     }
                     else {
                         setText(unpackValue(event.target.value));
