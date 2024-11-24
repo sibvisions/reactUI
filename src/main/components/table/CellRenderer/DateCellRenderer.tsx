@@ -22,7 +22,6 @@ import { ICellEditorDate } from "../../editors/date/UIEditorDate";
 import { ICellRender } from "../CellEditor";
 
 export function formatCellEditorDateValue(value: any, cellEditor: ICellEditorDate, defaultTimeZone: string, defaultLocale: string) : string | null {
-    console.log('valid?', value, cellEditor)
     if (isValid(value) && cellEditor) {
         const timeZone = cellEditor.timeZone 
             ? cellEditor.timeZone 
