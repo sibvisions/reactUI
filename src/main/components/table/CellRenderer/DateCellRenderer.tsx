@@ -21,6 +21,31 @@ import { getDateLocale, getGlobalLocale } from "../../../util/other-util/GetDate
 import { ICellEditorDate } from "../../editors/date/UIEditorDate";
 import { ICellRender } from "../CellEditor";
 
+export function formatCellEditorDateValue(value: any, cellEditor: ICellEditorDate, defaultTimeZone: string, defaultLocale: string) : string | null {
+    console.log('valid?', value, cellEditor)
+    if (isValid(value) && cellEditor) {
+        const timeZone = cellEditor.timeZone 
+            ? cellEditor.timeZone 
+            : defaultTimeZone;
+
+        return cellEditor.dateFormat 
+            ? formatInTimeZone( 
+                value, 
+                timeZone, 
+                cellEditor.dateFormat, 
+                { 
+                    locale: cellEditor.locale 
+                        ? getDateLocale(defaultLocale) 
+                        : getGlobalLocale() 
+                }
+            ) 
+            : formatISO(value);
+    }
+    else {
+        return null;
+    }
+}
+
 /**
  * Renders the date-cell when the column is a date-cell
  * @param props - the properties received from the table
@@ -33,15 +58,10 @@ const DateCellRenderer: FC<ICellRender> = (props) => {
     const castedCellEditor = props.columnMetaData.cellEditor as ICellEditorDate;
 
     /** Returns the date to display if the date is valid or null */
-    const displayDateValue = useMemo(() => {
-        if (isValid(props.cellData) && castedCellEditor) {
-            const timeZone = castedCellEditor.timeZone ? castedCellEditor.timeZone : context.appSettings.timeZone;
-            return castedCellEditor.dateFormat ? formatInTimeZone(props.cellData, timeZone, castedCellEditor.dateFormat, { locale: castedCellEditor.locale ? getDateLocale(context.appSettings.locale) : getGlobalLocale() }) : formatISO(props.cellData);
-        }
-        else {
-            return null;
-        }
-    }, [props.columnMetaData, castedCellEditor, props.cellData]);
+    const displayDateValue = useMemo(
+        () => formatCellEditorDateValue(props.cellData, castedCellEditor, context.appSettings.timeZone, context.appSettings.locale), 
+        [props.columnMetaData, castedCellEditor, props.cellData]
+    );
 
     return (
         <>

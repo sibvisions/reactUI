@@ -28,7 +28,7 @@ import { ICellEditor } from "../IEditor";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
 import { getTextAlignment, translateTextAlign } from "../../comp-props/GetAlignments";
-import MetaDataResponse from "../../../response/data/MetaDataResponse";
+import MetaDataResponse, { ColumnDescription, DataTypeIdentifier } from "../../../response/data/MetaDataResponse";
 import useMetaData from "../../../hooks/data-hooks/useMetaData";
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
@@ -47,6 +47,9 @@ import { IComponentConstants } from "../../BaseComponent";
 import { CellFormatting } from "../../table/CellEditor";
 import { objectToString } from "../../../util/string-util/ObjectToString";
 import CellRenderer from "../../table/CellRenderer/CellRenderer";
+import { formatCellEditorDateValue } from "../../table/CellRenderer/DateCellRenderer";
+import { AppContextType } from "src/main/contexts/AppProvider";
+import { ICellEditorDate } from "../date/UIEditorDate";
 
 interface ReferencedColumnNames {
     columnNames: string[]
@@ -246,8 +249,18 @@ export function generateDisplayMapKey(dataRow:any, referencedObject: any, linkRe
  * Usually take the bound column but when there is a displayReferencedColumnname or a concat-mask,
  * check the dataToDisplayMap in the linkReference and pick the correct value by stringifying the selected object.
  */
-export function getDisplayValue(value:any, referencedObject: any, linkReference: LinkReference, columnName: string, 
-                         isDisplayRefColNameOrConcat: string | undefined, cellEditorMetaData: ICellEditorLinked | undefined, dataProvider: string) {
+export function getDisplayValue(
+    value:any, 
+    referencedObject: any, 
+    linkReference: LinkReference, 
+    columnName: string, 
+    isDisplayRefColNameOrConcat: string | undefined, 
+    cellEditorMetaData: ICellEditorLinked | undefined, 
+    dataProvider: string,
+    dataTypeIdentifier?: DataTypeIdentifier,
+    linkedColumnMetaData?: ColumnDescription,
+    context?: AppContextType,
+) {
     if (value) {
         const index = linkReference.columnNames.findIndex(colName => colName === columnName);
         if (isDisplayRefColNameOrConcat) {
@@ -273,6 +286,19 @@ export function getDisplayValue(value:any, referencedObject: any, linkReference:
 
         if (referencedObject) {
             return referencedObject[linkReference.referencedColumnNames[index]]
+        }
+
+        if(
+            dataTypeIdentifier === DataTypeIdentifier.Timestamp && 
+            linkedColumnMetaData?.cellEditor &&
+            context
+        ) {
+            return formatCellEditorDateValue(
+                value[columnName],
+                linkedColumnMetaData?.cellEditor as ICellEditorDate,
+                context.appSettings.timeZone,
+                context.appSettings.locale,
+            );
         }
 
         return value[columnName];

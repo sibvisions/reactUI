@@ -18,6 +18,7 @@ import { appContext } from "../../../contexts/AppProvider";
 import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
 import { fetchLinkedRefDatabook, getDisplayValue, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
+import useMetaData from "../../../hooks/data-hooks/useMetaData";
 
 /**
  * Renders the linked-cell when the column is a linked-cell
@@ -29,6 +30,8 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
 
     /** The data provided by the databook */
     const [providedData] = useDataProviderData(props.screenName, cellEditorMetaData.linkReference.referencedDataBook||"");
+
+    const linkedColumnMetaData = useMetaData(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, props.colName);
 
     /** Flag to rerender when the displayMap changes */
     const [displayMapChanged, setDisplayMapChanged] = useState<boolean>(false);
@@ -67,7 +70,10 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     }, []);
 
     /** The displayValue to display */ 
-    const linkedDisplayValue = useMemo(() => getDisplayValue(props.rowData, undefined, cellEditorMetaData.linkReference, props.colName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataProvider), [props.cellData, linkRefFetchFlag, cellEditorMetaData, props.rowData, props.colName, displayMapChanged])
+    const linkedDisplayValue = useMemo(
+        () => getDisplayValue(props.rowData, undefined, cellEditorMetaData.linkReference, props.colName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataProvider, props.columnMetaData.dataTypeIdentifier, linkedColumnMetaData, context), 
+        [props.cellData, linkRefFetchFlag, cellEditorMetaData, props.rowData, props.colName, displayMapChanged, props.columnMetaData.dataTypeIdentifier, linkedColumnMetaData, context]
+    )
 
     return (
         <>
