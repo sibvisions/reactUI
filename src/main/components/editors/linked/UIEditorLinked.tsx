@@ -1131,7 +1131,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 }}
                 virtualScrollerOptions={{ 
                     itemSize: 38, 
-                    lazy: true, 
+                    lazy: true,
+                    scrollHeight: suggestions?.length ? `${Math.min(6.66, (suggestions[0].items?.length ?? (suggestions.length - 1)) + 1) * 38}px` : undefined,
                     onLazyLoad: handleLazyLoad, 
                     className: props.isCellEditor 
                         ? "celleditor-dropdown-virtual-scroller" 
