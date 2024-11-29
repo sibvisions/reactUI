@@ -1116,7 +1116,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     //select currently selected suggestion
                     if (suggestions.length && linkedRef.current?.getOverlay() && props.columnName) {
                         const { linkReference } = props.cellEditor;
-                        const index = suggestions.findIndex(
+                        const grouped = suggestions.length == 1 && suggestions[0].items?.length;
+                        const sugg = grouped ? suggestions[0].items : suggestions;
+                        const index = sugg.findIndex(
                             (s:any) => s[linkReference.referencedColumnNames[linkReference.columnNames.indexOf(props.columnName)]] == props.selectedRow?.data[props.columnName]
                         );
                         if(index >= 0) {
