@@ -465,11 +465,24 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 props.borderVisible === false ? "invisible-border" : "",
                 props.styleClassNames
             ),
-            style: { 
-                ...props.layoutStyle, 
-                ...textAlign, 
-                ...props.cellStyle
-            },
+            ...(fieldType === FieldTypes.PASSWORD 
+                ? {
+                    inputStyle: {
+                        ...textAlign, 
+                        ...props.cellStyle
+                    },
+                    style: { 
+                        ...props.layoutStyle, 
+                    }
+                } 
+                : {
+                    style: { 
+                        ...props.layoutStyle, 
+                        ...textAlign, 
+                        ...props.cellStyle
+                    }
+                }
+            ),
             maxLength: length,
             readOnly: props.isReadOnly,
             autoFocus: props.autoFocus ? true : props.isCellEditor ? true : false,
