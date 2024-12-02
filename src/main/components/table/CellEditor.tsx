@@ -92,8 +92,6 @@ export interface ICellEditor {
 function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDescription | undefined, props: any, stopCellEditing: Function, passedValues: string) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
-        const docStyle = window.getComputedStyle(document.documentElement);
-
         editor = <CellEditorWrapper
             {...{
                 ...metaData,
@@ -152,18 +150,19 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
 
-    /** Document style object */
-    const docStyle = window.getComputedStyle(document.documentElement);
+    const style = useMemo(() => {
+        const docStyle = window.getComputedStyle(document.documentElement);
 
-    const style = useMemo(() => ({ 
-        width: `calc(100% + calc(2 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')}))`, 
-        height: `calc(100% + calc(2 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')}))`, 
-        // Calculates the minus margin to display no gap when opening the cell-editor
-        marginTop: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')})`,
-        marginLeft: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')})`, 
-        marginRight: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')})`, 
-        marginBottom: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')})`,
-    }), []);
+        return { 
+            width: `calc(100% + calc(2 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')}))`, 
+            height: `calc(100% + calc(2 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')}))`, 
+            // Calculates the minus margin to display no gap when opening the cell-editor
+            marginTop: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')})`,
+            marginLeft: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')})`, 
+            marginRight: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-left-right')})`, 
+            marginBottom: `calc(-1 * ${docStyle.getPropertyValue('--table-cell-padding-top-bottom')})`,
+        }
+    }, []);
 
     /** A stored click event to call when the table is done with selecting row/cell */
     const [storedClickEvent, setStoredClickEvent] = useState<Function|undefined>(undefined);
