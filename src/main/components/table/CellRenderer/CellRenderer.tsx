@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react"
+import React, { CSSProperties, useCallback, useContext, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef } from "react"
 import CELLEDITOR_CLASSNAMES from "../../editors/CELLEDITOR_CLASSNAMES"
 import DirectCellRenderer from "./DirectCellRenderer"
 import ImageCellRenderer from "./ImageCellRenderer"
@@ -28,9 +28,6 @@ import IconProps from "../../comp-props/IconProps"
 import { CellFormatting } from "../CellEditor"
 import { getFont, parseIconData } from "../../comp-props/ComponentProperties"
 import { SelectedCellContext } from "../UITable"
-import { classNames } from "primereact/utils"
-import { concatClassnames } from "src/main/util/string-util/ConcatClassnames"
-import Margins from "../../layouts/models/Margins"
 
 /** Interfaces for cellrenderers */
 export interface ICellRenderer {
@@ -51,11 +48,10 @@ export interface ICellRenderer {
     decreaseCallback?: Function|undefined,
     isEditable: boolean,
     addReadOnlyClass: boolean,
-    cellClickEvent: string,
-    setCellClickEvent: (cellId: string) => void
+    cellClickEventRef?: React.MutableRefObject<string>,
 }
 
-const CellRenderer: FC<ICellRenderer> = (props) => {
+const CellRenderer = React.forwardRef<(HTMLDivElement), ICellRenderer>((props, forwardedRef) => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -65,8 +61,8 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
     /** Metadata of the columns */
     const columnMetaData = useMetaData(props.screenName, props.dataProvider, props.colName);
 
-    /** Reference for the cell element */
-    const cellRef = useRef<any>(null);
+    const cellRef = useRef<HTMLDivElement>(null);
+    useImperativeHandle(forwardedRef, () => cellRef.current!);
 
     /** adds or removes the readonly className to the cells parent */
     useLayoutEffect(() => {
@@ -200,9 +196,9 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
 
     // Wait for the selected cell switch and then call the click event
     useEffect(() => {
-        if (cellContext.selectedCellId === props.cellClickEvent && cellContext.selectedCellId === props.cellId) {
+        if (props.cellClickEventRef && cellContext.selectedCellId === props.cellClickEventRef.current && cellContext.selectedCellId === props.cellId) {
             handleClickEvent();
-            props.setCellClickEvent("");
+            props.cellClickEventRef.current = "";
         }
     }, [cellContext.selectedCellId]);
 
@@ -217,13 +213,13 @@ const CellRenderer: FC<ICellRenderer> = (props) => {
                     if (cellContext.selectedCellId === props.cellId) {
                         handleClickEvent();
                     }
-                    else {
-                        props.setCellClickEvent(props.cellId);
+                    else if(props.cellClickEventRef) {
+                        props.cellClickEventRef.current = props.cellId;
                     }
                 }
             }}>
             <Renderer columnMetaData={columnMetaData!} icon={icon} {...props} {...rendererProps} />
         </div>
     )
-}
+})
 export default CellRenderer

@@ -79,8 +79,7 @@ export interface ICellEditor {
     tableIsSelecting: boolean,
     isEditable: boolean,
     addReadOnlyClass: boolean,
-    cellClickEvent: string,
-    setCellClickEvent: (cellId: string) => void
+    cellClickEventRef: React.MutableRefObject<string>,
 }
 
 /** 
@@ -285,8 +284,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                 setEdit={setEdit}
                 decreaseCallback={(linkDatabook: string) => props.removeTableLinkRef ? props.removeTableLinkRef(linkDatabook) : undefined}
                 addReadOnlyClass={props.addReadOnlyClass}
-                cellClickEvent={props.cellClickEvent}
-                setCellClickEvent={props.setCellClickEvent}
+                cellClickEventRef={props.cellClickEventRef}
             />
     )
 }

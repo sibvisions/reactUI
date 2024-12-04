@@ -193,15 +193,28 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      * Get the set data-height, with the designer it's not possible to set lower than 16px (nothing will change below).
      * So set it to a minimum of 16 and add the usual 8 which is set by borders and padding.
      */
-    const tableRowHeight = useMemo(() => {
+    const [rowHeight, setRowHeight] = useState(24);
+    useEffect(() => {
         let rowHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height"))
         if (rowHeight < 16) {
-            return 24;
-        }
-        else {
-            return rowHeight + 8;
+            setRowHeight(24)
+        } else {
+            setRowHeight(rowHeight + 8);
         }
     }, [props.designerUpdate])
+
+    const cellHeights = useRef<Map<string, number>>(new Map());
+    const updateRowHeightTimeout = useRef<number>();
+    const updateRowHeight = useCallback(() => {
+        clearTimeout(updateRowHeightTimeout.current);
+        updateRowHeightTimeout.current = window.setTimeout(() => {
+            let max = 0;
+            for(let v of cellHeights.current.values()) {
+                max = Math.max(max, v);
+            }
+            setRowHeight(max);
+        }, 1);
+    }, [])
 
     /**
      * Returns the number of records visible based on row height.
@@ -216,8 +229,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
         }
 
-        return Math.floor((props.layoutStyle?.height as number - headerHeight) / tableRowHeight)
-    }, [props.layoutStyle?.height, props.designerUpdate, tableRowHeight])
+        return Math.floor((props.layoutStyle?.height as number - headerHeight) / rowHeight)
+    }, [props.layoutStyle?.height, props.designerUpdate, rowHeight])
 
     /** The amount of virtual rows loaded */
     const rows = useMemo(() => {
@@ -243,9 +256,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         out.splice(0, rows, ...providerData.slice(0, rows)); 
         return out;
     })());
-
-    /** the list row height */
-    const [itemSize, setItemSize] = useState(tableRowHeight);
 
     /** The current firstRow displayed in the table */
     const firstRowIndex = useRef(0);
@@ -301,7 +311,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const heldMouseEvents = useRef<Set<Function>>(new Set());
 
     /** Which cell has been clicked */
-    const cellClickEvent = useRef<string>("");
+    const cellClickEventRef = useRef<string>("");
 
     const contextMenuEventRef = useRef<any>();
 
@@ -371,10 +381,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table');
 
                 if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
-                    const moveDirections = isVisible(selectedElem, container, cell, tableRowHeight);
+                    const moveDirections = isVisible(selectedElem, container, cell, rowHeight);
                     if (pageKeyPressed.current !== false) {
                         pageKeyPressed.current = false;
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * tableRowHeight);
+                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * rowHeight);
                         container.focus();
                     }
                     else if (selectedElem !== null) {
@@ -386,15 +396,15 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         }
     
                         if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                            sTop = cell.rowIndex * tableRowHeight;
+                            sTop = cell.rowIndex * rowHeight;
                         }
                         else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                            sTop = container.scrollTop + (isNext ? tableRowHeight : -tableRowHeight);
+                            sTop = container.scrollTop + (isNext ? rowHeight : -rowHeight);
                         }
                         container.scrollTo(sLeft, sTop);
                     }
                     else {
-                        container.scrollTo(container.scrollLeft, cell.rowIndex * tableRowHeight);
+                        container.scrollTo(container.scrollLeft, cell.rowIndex * rowHeight);
                     }
                 }
             }
@@ -472,11 +482,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         return ""
     }
 
-    /** Sets the height of the items to the row size of the table. Used for virtual scrolling */
-    useEffect(() => {
-        setItemSize(tableRowHeight);
-    }, [tableRowHeight]);
-
     /** The component reports its preferred-, minimum-, maximum and measured-size to the layout */
     useEffect(() => {
         if(props.forwardedRef.current) {
@@ -496,7 +501,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                                 height += 50;
                             }
                             else {
-                                height += providerData.length * tableRowHeight
+                                height += providerData.length * rowHeight
                             }
 
                             // If the estimated table width is bigger than the available width set by the parent, add 17px for the scrollbar
@@ -963,6 +968,125 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const selectPreviousCallback = useCallback((key: string) => selectPrevious.current && selectPrevious.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectPrevious.current, props.enterNavigationMode, props.tabNavigationMode]);
 
     /** Building the columns */
+    const CellBody = useMemo(() => {
+        const Out:FC<{
+            rowData: any, 
+            tableInfo: any,
+            colName: string,
+            colIndex: number,
+            getCellIsEditable: (data: any) => boolean,
+            columnMetaData?: LengthBasedColumnDescription,
+            className?: string,
+        }> = ({
+            rowData, 
+            tableInfo, 
+            colName, 
+            colIndex,
+            getCellIsEditable,
+            columnMetaData,
+            className,
+        }) => {
+            const isEditable = getCellIsEditable(rowData);
+            const elementRef = useRef<any>(null);
+            useEffect(() => {
+                if (tableInfo.rowIndex < 100) {
+                    const h = (elementRef.current?.querySelector('.cell-data-content').scrollHeight ?? 0) + 8;
+                    const k = `${colName}-${tableInfo.rowIndex}`;
+                    cellHeights.current.set(k, h);
+                    updateRowHeight();
+                    return () => cellHeights.current.delete(k);
+                } 
+
+                return () => {}
+            }, [rowData?.[colName]])
+
+            const [selectedRow] = useRowSelect(screenName, props.dataBook);
+
+            // If there is no data, display empty, if the row is selected, render potential celleditors, 
+            //if the row isn't selected just diplay the formatted values to improve performance
+            if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
+            else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
+                return <CellEditor
+                    key={colName + '-' + tableInfo.rowIndex}
+                    rowData={rowData}
+                    primaryKeys={primaryKeys}
+                    screenName={screenName}
+                    name={props.name}
+                    colName={colName}
+                    dataProvider={props.dataBook}
+                    cellData={rowData[colName]}
+                    isEditable={isEditable}
+                    cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
+                    cellReadOnly={rowData.__recordReadOnly && rowData.__recordReadOnly}
+                    resource={props.context.server.RESOURCE_URL}
+                    cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
+                    tableContainer={props.forwardedRef.current ? props.forwardedRef.current : undefined}
+                    selectNext={selectNextCallback}
+                    selectPrevious={selectPreviousCallback}
+                    className={className}
+                    startEditing={props.startEditing}
+                    insertEnabled={metaData?.insertEnabled}
+                    deleteEnabled={metaData?.deleteEnabled}
+                    setIsEditing={setIsEditing}
+                    rowNumber={tableInfo.rowIndex}
+                    colIndex={colIndex}
+                    removeTableLinkRef={
+                        (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
+                            && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
+                            ?
+                            (linkedReferenceDatabook: string) => {
+                                if (linkedRefFetchList.current.includes(linkedReferenceDatabook)) {
+                                    linkedRefFetchList.current.splice(linkedRefFetchList.current.findIndex(linkedRef => linkedRef === linkedReferenceDatabook), 1);
+
+                                    if (linkedRefFetchList.current.length === 0) {
+                                        setMeasureFlag(prevState => !prevState);
+                                    }
+                                }
+                            }
+                            :
+                            undefined
+                    }
+                    tableIsSelecting={tableIsSelecting}
+                    addReadOnlyClass={columnMetaData?.readOnly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
+                    cellClickEventRef={cellClickEventRef}
+                />
+            }
+            else {
+                return (
+                    <CellRenderer
+                        key={"cell-" + colName + '-' + tableInfo.rowIndex}
+                        ref={elementRef}
+                        name={props.name}
+                        screenName={screenName}
+                        cellData={rowData[colName]}
+                        cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
+                        dataProvider={props.dataBook}
+                        isEditable={isEditable}
+                        colName={colName}
+                        colIndex={colIndex}
+                        primaryKeys={primaryKeys}
+                        rowData={rowData}
+                        rowNumber={tableInfo.rowIndex}
+                        cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
+                        isHTML={typeof rowData[colName] === "string" && (rowData[colName] as string).includes("<html>")}
+                        addReadOnlyClass={columnMetaData?.readOnly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
+                        cellClickEventRef={cellClickEventRef}
+                    />
+                )
+            }
+        }
+        return Out;
+    }, [
+        primaryKeys, 
+        cellClickEventRef, 
+        screenName, 
+        selectNextCallback, 
+        selectPreviousCallback, 
+        setIsEditing,
+        props.dataBook,
+        setMeasureFlag
+    ])
+
     const columns = useMemo(() => {
         const createColumnHeader = (colName: string, colIndex: number, isNullable?: boolean) => {
             let sortIndex = ""
@@ -1028,79 +1152,15 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     '--columnName': colName
                 } as CSSProperties}
                 body={(rowData: any|undefined, tableInfo: any) => {
-                    const isEditable = getCellIsEditable(rowData);
-                    // If there is no data, display empty, if the row is selected, render potential celleditors, 
-                    //if the row isn't selected just diplay the formatted values to improve performance
-                    if (!rowData || !providerData[tableInfo.rowIndex]) { return <div></div> }
-                    else if (selectedRow && tableInfo.rowIndex === selectedRow.index) {
-                        return <CellEditor
-                            key={colName + '-' + tableInfo.rowIndex}
-                            rowData={rowData}
-                            primaryKeys={primaryKeys}
-                            screenName={screenName}
-                            name={props.name}
-                            colName={colName}
-                            dataProvider={props.dataBook}
-                            cellData={rowData[colName]}
-                            isEditable={isEditable}
-                            cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
-                            cellReadOnly={rowData.__recordReadOnly && rowData.__recordReadOnly}
-                            resource={props.context.server.RESOURCE_URL}
-                            cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
-                            tableContainer={props.forwardedRef.current ? props.forwardedRef.current : undefined}
-                            selectNext={selectNextCallback}
-                            selectPrevious={selectPreviousCallback}
-                            className={className}
-                            startEditing={props.startEditing}
-                            insertEnabled={metaData?.insertEnabled}
-                            deleteEnabled={metaData?.deleteEnabled}
-                            setIsEditing={setIsEditing}
-                            rowNumber={tableInfo.rowIndex}
-                            colIndex={colIndex}
-                            removeTableLinkRef={
-                                (columnMetaData?.cellEditor.className === CELLEDITOR_CLASSNAMES.LINKED
-                                    && (columnMetaData.cellEditor as ICellEditorLinked).displayConcatMask)
-                                    ?
-                                    (linkedReferenceDatabook: string) => {
-                                        if (linkedRefFetchList.current.includes(linkedReferenceDatabook)) {
-                                            linkedRefFetchList.current.splice(linkedRefFetchList.current.findIndex(linkedRef => linkedRef === linkedReferenceDatabook), 1);
-
-                                            if (linkedRefFetchList.current.length === 0) {
-                                                setMeasureFlag(prevState => !prevState);
-                                            }
-                                        }
-                                    }
-                                    :
-                                    undefined
-                            }
-                            tableIsSelecting={tableIsSelecting}
-                            addReadOnlyClass={columnMetaData?.readOnly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
-                            cellClickEvent={cellClickEvent.current}
-                            setCellClickEvent={(cellId: string) => cellClickEvent.current = cellId}
-                        />
-                    }
-                    else {
-                        return (
-                            <CellRenderer
-                                key={"cell-" + colName + '-' + tableInfo.rowIndex}
-                                name={props.name}
-                                screenName={screenName}
-                                cellData={rowData[colName]}
-                                cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
-                                dataProvider={props.dataBook}
-                                isEditable={isEditable}
-                                colName={colName}
-                                colIndex={colIndex}
-                                primaryKeys={primaryKeys}
-                                rowData={rowData}
-                                rowNumber={tableInfo.rowIndex}
-                                cellFormatting={rowData.__recordFormats && rowData.__recordFormats[props.name]}
-                                isHTML={typeof rowData[colName] === "string" && (rowData[colName] as string).includes("<html>")}
-                                addReadOnlyClass={columnMetaData?.readOnly === true || metaData?.readOnly === true || rowData.__recordReadOnly?.get(colName) === 0}
-                                cellClickEvent={cellClickEvent.current}
-                                setCellClickEvent={(cellId: string) => cellClickEvent.current = cellId} />
-                        )
-                    }
+                    return <CellBody 
+                        rowData={rowData} 
+                        tableInfo={tableInfo}
+                        colIndex={colIndex}
+                        colName={colName}
+                        getCellIsEditable={getCellIsEditable}
+                        columnMetaData={columnMetaData}
+                        className={className}
+                    />
                 }}
                 style={{ whiteSpace: 'nowrap', '--colName': colName } as CSSProperties}
                 bodyClassName={concatClassnames(
@@ -1119,7 +1179,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
         metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled,
         primaryKeys, metaData?.deleteEnabled, props.startEditing, props.editable,
-        tableIsSelecting, columnOrder, providerData, selectedRow?.index
+        tableIsSelecting, columnOrder, providerData
     ]);
 
     // When a row is selected send a selectRow request to the server
@@ -1425,6 +1485,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 <DataTable
                     key="table"
                     ref={tableRef}
+                    style={{
+                        "--table-data-height": `${rowHeight - 8}px`,
+                    } as React.CSSProperties}
                     className={concatClassnames(
                         "rc-table",
                         props.autoResize === false ? "no-auto-resize" : "",
@@ -1444,7 +1507,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     scrollHeight={props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined}
                     scrollable={props.layoutStyle?.height && virtualEnabled ? true : false}
                     virtualScrollerOptions={ virtualEnabled ? { 
-                        itemSize, 
+                        itemSize: rowHeight, 
                         lazy: true,
                         onLazyLoad: handleLazyLoad,
                         //loading: listLoading,

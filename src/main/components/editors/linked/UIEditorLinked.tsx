@@ -925,8 +925,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         cellFormatting={d.__recordFormats && d.__recordFormats[props.name]}
                         isHTML={typeof d[key] === "string" && (d[key] as string).includes("<html>")}
                         addReadOnlyClass={true}
-                        cellClickEvent={""}
-                        setCellClickEvent={() => {}}
                     />
                 } else {
                     if (d.__recordFormats?.[props.name]?.has(key)) {
