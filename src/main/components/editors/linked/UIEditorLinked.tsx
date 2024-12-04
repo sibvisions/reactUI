@@ -1125,7 +1125,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                             const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index];
                             el.classList.add('p-highlight');
                             el.setAttribute('data-p-highlight', 'true');
-                            el.scrollIntoView({ behavior: "instant" });
+                            el.scrollIntoView({ behavior: "instant" as ScrollBehavior });
                         }
                     }
                 }}
