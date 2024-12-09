@@ -190,6 +190,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** The data provided by the databook */
     const [providerData] = useDataProviderData(screenName, props.dataBook);
 
+    const cellHeights = useRef<Map<string, number>>(new Map());
+
     /**
      * Get the set data-height, with the designer it's not possible to set lower than 16px (nothing will change below).
      * So set it to a minimum of 16 and add the usual 8 which is set by borders and padding.
@@ -202,9 +204,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         } else {
             setRowHeight(rowHeight + 8);
         }
+        cellHeights.current.set('initial', rowHeight);
     }, [props.designerUpdate])
 
-    const cellHeights = useRef<Map<string, number>>(new Map());
     const updateRowHeightTimeout = useRef<number>();
     const updateRowHeight = useCallback(() => {
         clearTimeout(updateRowHeightTimeout.current);
