@@ -259,6 +259,12 @@
                 }
             }
 
+            &:last-child {
+                & > td {
+                    border-bottom: 0 !important;
+                }
+            }
+
             &.p-row-odd {
                 &.p-highlight {
                     td {
