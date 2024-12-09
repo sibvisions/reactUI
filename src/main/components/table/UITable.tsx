@@ -201,10 +201,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         let rowHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height"))
         if (rowHeight < 16) {
             setRowHeight(24)
+            cellHeights.current.set('initial', 24);
         } else {
             setRowHeight(rowHeight + 8);
+            cellHeights.current.set('initial', rowHeight + 8);
         }
-        cellHeights.current.set('initial', rowHeight);
     }, [props.designerUpdate])
 
     const updateRowHeightTimeout = useRef<number>();
