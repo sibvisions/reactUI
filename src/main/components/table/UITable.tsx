@@ -1087,7 +1087,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         selectPreviousCallback, 
         setIsEditing,
         props.dataBook,
-        setMeasureFlag
+        setMeasureFlag,
+        providerData
     ])
 
     const columns = useMemo(() => {
