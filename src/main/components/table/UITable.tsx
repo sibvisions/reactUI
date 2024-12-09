@@ -64,8 +64,9 @@ export interface TableProps extends IBaseComponent {
     startEditing?: boolean,
     editable?: boolean,
     showFocusRect?:boolean,
-    showSelection?:boolean
-    sortOnHeaderEnabled?:boolean
+    showSelection?:boolean,
+    sortOnHeaderEnabled?:boolean,
+    sameRowHeight?: boolean,
 }
 
 enum Navigation {
@@ -989,7 +990,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const isEditable = getCellIsEditable(rowData);
             const elementRef = useRef<any>(null);
             useEffect(() => {
-                if (tableInfo.rowIndex < 100) {
+                if (tableInfo.rowIndex < 100 && props.sameRowHeight) {
                     const h = (elementRef.current?.querySelector('.cell-data-content').scrollHeight ?? 0) + 8;
                     const k = `${colName}-${tableInfo.rowIndex}`;
                     cellHeights.current.set(k, h);
