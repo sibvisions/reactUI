@@ -1089,7 +1089,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         setIsEditing,
         props.dataBook,
         setMeasureFlag,
-        providerData
+        providerData,
+        props.startEditing
     ])
 
     const columns = useMemo(() => {
