@@ -23,14 +23,17 @@ export function asList(value:string, delimiter:string = "'") {
     let first:number = 0;
     let last:number = 0;
     let quote:boolean = false;
+    let added:boolean = false;
 
     for (let i = 0; i < value.length; i++, last++) {
+      added = false;
       let char = value[i];
 
       if (char == ";") {
         if (!quote) {
           classes.push(value.substring(first, last).replaceAll("'", ""));
 
+          added = true;
           first = i + 1;
           last = i;
         }
@@ -38,6 +41,10 @@ export function asList(value:string, delimiter:string = "'") {
       else if (char == "'") {
         quote = !quote;
       }
+    }
+
+    if (!added) {
+      classes.push(value.substring(first, last).replaceAll("'", ""));
     }
 
     return classes;
