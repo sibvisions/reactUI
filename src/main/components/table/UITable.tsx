@@ -67,6 +67,8 @@ export interface TableProps extends IBaseComponent {
     showSelection?:boolean,
     sortOnHeaderEnabled?:boolean,
     sameRowHeight?: boolean,
+    minRowHeight?: number,
+    maxRowHeight?: number,
 }
 
 enum Navigation {
@@ -198,14 +200,13 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
     const [rowHeight, setRowHeight] = useState(24);
     useEffect(() => {
-        let rowHeight = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height"))
-        if (rowHeight < 16) {
-            setRowHeight(24)
-            cellHeights.current.set('initial', 24);
-        } else {
-            setRowHeight(rowHeight + 8);
-            cellHeights.current.set('initial', rowHeight + 8);
-        }
+        const rowHeight = Math.max(
+            parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
+            (props.minRowHeight ?? 0) - 8, 
+            16, 
+        ) + 8;
+        setRowHeight(rowHeight);
+        cellHeights.current.set('initial', rowHeight);
     }, [props.designerUpdate])
 
     const updateRowHeightTimeout = useRef<number>();
@@ -216,9 +217,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             for(let v of cellHeights.current.values()) {
                 max = Math.max(max, v);
             }
-            setRowHeight(max);
+            setRowHeight(Math.min(props.maxRowHeight ?? Number.POSITIVE_INFINITY, max));
         }, 1);
-    }, [])
+    }, [props.maxRowHeight])
 
     /**
      * Returns the number of records visible based on row height.
