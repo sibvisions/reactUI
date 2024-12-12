@@ -102,6 +102,10 @@ const useMouseListener = (
             pressReq.x = event.x;
             pressReq.y = event.y;
             pressReq.clickCount = event.detail;
+            if (isTable) {
+                pressReq.onSelectedCell = !!(event.target as HTMLElement)?.closest('.p-selectable-cell.p-highlight');
+                pressReq.onSelectedRow = !!(event.target as HTMLElement)?.closest('.p-selectable-row.p-highlight');
+            }
             const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_KEYWORDS.MOUSE_PRESSED), context.server.topbar);
             hold ? hold("pressed", release) : release();
         }
@@ -121,6 +125,10 @@ const useMouseListener = (
             clickReq.x = event.x;
             clickReq.y = event.y;
             clickReq.clickCount = event.detail;
+            if (isTable) {
+                clickReq.onSelectedCell = !!(event.target as HTMLElement)?.closest('.p-selectable-cell.p-highlight');
+                clickReq.onSelectedRow = !!(event.target as HTMLElement)?.closest('.p-selectable-row.p-highlight');
+            }
             const release = () => showTopBar(context.server.sendRequest(clickReq, REQUEST_KEYWORDS.MOUSE_CLICKED), context.server.topbar);
             hold ? hold("clicked", release) : release();
         } else if (hold) {
@@ -134,6 +142,10 @@ const useMouseListener = (
             releaseReq.x = event.x;
             releaseReq.y = event.y;
             releaseReq.clickCount = event.detail;
+            if (isTable) {
+                releaseReq.onSelectedCell = !!(event.target as HTMLElement)?.closest('.p-selectable-cell.p-highlight');
+                releaseReq.onSelectedRow = !!(event.target as HTMLElement)?.closest('.p-selectable-row.p-highlight');
+            }
             const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_KEYWORDS.MOUSE_RELEASED), context.server.topbar);
             hold ? hold("released", release) : release();
         }

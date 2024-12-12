@@ -457,7 +457,9 @@ export const createMouseRequest = (values?: MouseRequest): MouseRequest => {
         componentId: values?.componentId,
         button: values?.button,
         x: values?.x,
-        y: values?.y
+        y: values?.y,
+        onSelectedCell: values?.onSelectedCell,
+        onSelectedRow: values?.onSelectedRow,
     }
     return req;
 }

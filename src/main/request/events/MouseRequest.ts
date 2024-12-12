@@ -20,6 +20,8 @@ interface MouseRequest extends ComponentRequest {
     button?: "Left"|"Middle"|"Right",
     x?: number,
     y?: number,
-    clickCount?: number
+    clickCount?: number,
+    onSelectedCell?: boolean,
+    onSelectedRow?: boolean,
 }
 export default MouseRequest;
