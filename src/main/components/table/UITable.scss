@@ -105,6 +105,12 @@
                     .open-cell-editor {
                         box-shadow: none;
 
+                        .p-inputtext,
+                        &.p-inputtext {
+                            padding-top: 0;
+                            padding-bottom: 0;
+                        }
+
                         .p-button.p-button-icon-only:not(.rc-toolbar-button):not(.p-speeddial-button) {
                             padding: 0px;
                         }
