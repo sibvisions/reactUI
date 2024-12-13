@@ -267,6 +267,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     /** The current firstRow displayed in the table */
     const firstRowIndex = useRef(0);
+    const lastRowIndex = useRef(0);
 
     /** The current sort-definitions */
     const [sortDefinitions] = useSortDefinitions(screenName, props.dataBook);
@@ -1230,33 +1231,39 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
     const handleLazyLoad = useCallback((e: VirtualScrollerChangeEvent) => {
         let {first, last} = e;
-        if(typeof first === "number" && typeof last === "number" && firstRowIndex.current !== first) {
-            if (firstRowIndex.current !== first) {
-                last = Math.max(first, last);
-                const length = last - first + 1;
-                setListLoading(true);
-                if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
-                    const fetchReq = createFetchRequest();
-                    fetchReq.dataProvider = props.dataBook;
-                    fetchReq.fromRow = providerData.length;
-                    fetchReq.rowCount = 100;
-                    showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar).then((result) => {
-                        if (props.onLazyLoadFetch && result[0]) {
-                            props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))
-                        }
-    
-                        setListLoading(false);
-                    });
-                } 
-                else {
-                    const slicedProviderData = providerData.slice(first, last);
-                    const data = [...virtualRows];
-                    data.splice(first, slicedProviderData.length, ...slicedProviderData);
-                    setVirtualRows(data);
+        if (
+            typeof first === "number" && 
+            typeof last === "number" && 
+            (
+                firstRowIndex.current !== first || 
+                lastRowIndex.current !== last
+            ) 
+        ) {
+            last = Math.max(first, last);
+            const length = last - first + 1;
+            setListLoading(true);
+            if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
+                const fetchReq = createFetchRequest();
+                fetchReq.dataProvider = props.dataBook;
+                fetchReq.fromRow = providerData.length;
+                fetchReq.rowCount = 100;
+                showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar).then((result) => {
+                    if (props.onLazyLoadFetch && result[0]) {
+                        props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))
+                    }
+
                     setListLoading(false);
-                }
-                firstRowIndex.current = first;
+                });
+            } 
+            else {
+                const slicedProviderData = providerData.slice(first, last);
+                const data = [...virtualRows];
+                data.splice(first, slicedProviderData.length, ...slicedProviderData);
+                setVirtualRows(data);
+                setListLoading(false);
             }
+            firstRowIndex.current = first;
+            lastRowIndex.current = last;
         }
     }, [virtualRows]);
 
