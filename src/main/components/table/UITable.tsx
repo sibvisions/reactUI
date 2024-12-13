@@ -1517,6 +1517,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         itemSize: rowHeight, 
                         lazy: true,
                         onLazyLoad: handleLazyLoad,
+                        //the width has no effect on the actual table but causes a call of init() which measures
+                        //the scrollable area again.
+                        scrollWidth: `${props.layoutStyle?.height ?? tableRef.current?.getElement()?.offsetHeight ?? 0}px`
                         //loading: listLoading,
                     } : undefined}
                     rows={rows}
