@@ -67,6 +67,7 @@ export interface TableProps extends IBaseComponent {
     showSelection?:boolean,
     sortOnHeaderEnabled?:boolean,
     sameRowHeight?: boolean,
+    rowHeight?: number,
     minRowHeight?: number,
     maxRowHeight?: number,
 }
@@ -201,7 +202,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const [rowHeight, setRowHeight] = useState(24);
     useEffect(() => {
         const rowHeight = Math.max(
-            parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
+            props.rowHeight 
+                ? props.rowHeight - 8 
+                : parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
             (props.minRowHeight ?? 0) - 8, 
             16, 
         ) + 8;
@@ -217,7 +220,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             for(let v of cellHeights.current.values()) {
                 max = Math.max(max, v);
             }
-            setRowHeight(Math.min(props.maxRowHeight ?? Number.POSITIVE_INFINITY, max));
+            setRowHeight(Math.max(props.minRowHeight ?? 0, Math.min(props.maxRowHeight ?? Number.POSITIVE_INFINITY, max)));
         }, 1);
     }, [props.maxRowHeight])
 
@@ -994,7 +997,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const isEditable = getCellIsEditable(rowData);
             const elementRef = useRef<any>(null);
             useEffect(() => {
-                if (tableInfo.rowIndex < 100 && props.sameRowHeight) {
+                if (tableInfo.rowIndex < 100 && props.sameRowHeight && !props.rowHeight) {
                     const h = (elementRef.current?.querySelector('.cell-data-content').scrollHeight ?? 0) + 8;
                     const k = `${colName}-${tableInfo.rowIndex}`;
                     cellHeights.current.set(k, h);
