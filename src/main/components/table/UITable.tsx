@@ -267,7 +267,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     /** The current firstRow displayed in the table */
     const firstRowIndex = useRef(0);
-    const lastRowIndex = useRef(0);
+    const lastRowIndex = useRef(rows);
 
     /** The current sort-definitions */
     const [sortDefinitions] = useSortDefinitions(screenName, props.dataBook);
@@ -655,7 +655,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     useLayoutEffect(() => {
         setVirtualRows((() => { 
             const out = Array.from({ length: providerData.length });
-            out.splice(firstRowIndex.current, rows, ...providerData.slice(firstRowIndex.current, firstRowIndex.current + rows));
+            out.splice(firstRowIndex.current, lastRowIndex.current - firstRowIndex.current, ...providerData.slice(firstRowIndex.current, lastRowIndex.current));
             return out;
         })());
     }, [providerData, rows]);
@@ -1240,8 +1240,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             ) 
         ) {
             last = Math.max(first, last);
-            const length = last - first + 1;
-            setListLoading(true);
+            //setListLoading(true);
             if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = props.dataBook;
@@ -1252,7 +1251,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))
                     }
 
-                    setListLoading(false);
+                    //setListLoading(false);
                 });
             } 
             else {
@@ -1260,7 +1259,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 const data = [...virtualRows];
                 data.splice(first, slicedProviderData.length, ...slicedProviderData);
                 setVirtualRows(data);
-                setListLoading(false);
+                //setListLoading(false);
             }
             firstRowIndex.current = first;
             lastRowIndex.current = last;
