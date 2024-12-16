@@ -307,9 +307,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** A flag, which triggers when the table should remeasure itself */
     const [measureFlag, setMeasureFlag] = useState<boolean>(false);
 
-    // Fetches Data if dataprovider has not been fetched yet
-    useFetchMissingData(screenName, props.dataBook);
-
     /** True, if the table is currently selecting */
     const [tableIsSelecting, setTableIsSelecting] = useState<boolean>(false);
 
