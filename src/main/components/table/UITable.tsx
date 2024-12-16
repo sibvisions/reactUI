@@ -1428,14 +1428,23 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     // initially fetch more rows until you have 100
     useEffect(() => {
         const dataBook = props.context.contentStore.getDataBook(screenName, props.dataBook)
-        if (dataBook?.data && !dataBook.isAllFetched && providerData.length < rows) {
+        if (!dataBook?.isAllFetched && providerData.length < rows) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.dataBook;
             fetchReq.fromRow = providerData.length;
             fetchReq.rowCount = 100;
-            showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar);
+            const server = props.context.server;
+            if (!dataBook?.metaData) {
+                fetchReq.includeMetaData = true;
+            }
+            if (!dataBook?.data && !server.missingDataFetches.includes(props.dataBook)) {
+                server.missingDataFetches.push(props.dataBook);
+                showTopBar(server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), server.topbar);
+            } else if(dataBook?.data) {
+                showTopBar(server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), server.topbar);
+            }            
         }
-    }, [providerData])
+    }, [providerData, screenName, props.dataBook])
 
     return (
         <SelectedCellContext.Provider value={selectedCellId}>
