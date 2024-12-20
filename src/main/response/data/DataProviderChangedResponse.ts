@@ -25,6 +25,7 @@ export type IChangedColumns = {
     movable?: boolean
     sortable?: boolean
     cellEditor?: ICellEditor
+    width?: number
 }
 
 /** Interface for DataProviderChangedResponse */
