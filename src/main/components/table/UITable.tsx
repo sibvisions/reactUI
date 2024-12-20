@@ -609,7 +609,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 }
             }, 0);
         }
-    }, [metaData?.columns, measureFlag]);
+    }, [metaData, metaData?.columns, measureFlag]);
 
     useLayoutEffect(() => {
         if(columnWidths && tableRef.current && estTableWidth) {
@@ -667,7 +667,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 linkedRefFetchList.current.push((columnMetaData.cellEditor as ICellEditorLinked).linkReference.referencedDataBook);
             }
         })
-    }, [metaData?.columns, props.columnNames])
+    }, [metaData, metaData?.columns, props.columnNames])
 
     // Adds and removes the sort classnames to the headers for styling
     // If the lib user extends the Table with onSort, call it when the user sorts.
@@ -1184,7 +1184,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         })
     }, [
         props.columnNames, props.columnLabels, props.dataBook, props.enabled,
-        props.tableHeaderVisible, sortDefinitions, metaData?.readOnly,
+        props.tableHeaderVisible, sortDefinitions, metaData, metaData?.readOnly,
         metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled,
         primaryKeys, metaData?.deleteEnabled, props.startEditing, props.editable,
         tableIsSelecting, columnOrder, providerData
