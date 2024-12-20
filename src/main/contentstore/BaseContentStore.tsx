@@ -1305,6 +1305,11 @@ export default abstract class BaseContentStore {
                             changed = true;
                         }
 
+                        if (changedColumn.width !== undefined) {
+                            currentCol.width = changedColumn.width;
+                            changed = true;
+                        }
+
                         if (changedColumn.cellEditor !== undefined) {
                             currentCol.cellEditor = changedColumn.cellEditor;
                             // If there are linkedcelleditors in the metadata, create referencedCellEditors to build the dataToDisplayMap
