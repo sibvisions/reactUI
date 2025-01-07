@@ -59,7 +59,7 @@ const CellEditorWrapper:FC<any> = (props) => {
     const [screenName, columnMetaData, [selectedRow], cellStyle] = useEditorConstants<any>(props);
 
     // Fetches Data if dataprovider has not been fetched yet
-    useFetchMissingData(screenName, props.dataRow);
+    //useFetchMissingData(screenName, props.dataRow);
 
     /** If the CellEditor is read-only */
     const isReadOnly = useMemo(() => (props.isReadOnly !== undefined && props.isCellEditor) ? props.isReadOnly : isCellEditorReadOnly(props), [props.isCellEditor, props.readonly, props.cellEditor_editable_, props.enabled, props.isReadOnly]);
