@@ -30,7 +30,6 @@ import useDataProviderData from "../../hooks/data-hooks/useDataProviderData";
 import useSortDefinitions from "../../hooks/data-hooks/useSortDefinitions";
 import useRowSelect from "../../hooks/data-hooks/useRowSelect";
 import { SortDefinition } from "../../request/data/SortRequest";
-import useFetchMissingData from "../../hooks/data-hooks/useFetchMissingData";
 import useMouseListener from "../../hooks/event-hooks/useMouseListener";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
 import REQUEST_KEYWORDS from "../../request/REQUEST_KEYWORDS";

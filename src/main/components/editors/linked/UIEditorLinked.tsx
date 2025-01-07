@@ -448,9 +448,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     // Subscribes to displaymap change
     useEffect(() => {
-        props.context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
+        const onChange = () => setDisplayMapChanged(prevState => !prevState);
+        props.context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, onChange);
 
-        return () => props.context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
+        return () => props.context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, onChange);
     },[props.context.subscriptions])
 
     /** disable dropdownbutton tabIndex */
@@ -498,7 +499,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         fetchLinkedRefDatabook(
             props.screenName, 
             props.cellEditor.linkReference.referencedDataBook,
-            props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data : undefined, 
+            props.selectedRow?.data, 
             props.cellEditor.displayReferencedColumnName ?? props.columnName,
             props.cellEditor.displayConcatMask,
             props.context.server, 
@@ -519,7 +520,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         if (props.selectedRow) {
             setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
         }
-    }, [props.selectedRow, cellEditorMetaData, displayMapChanged]);
+    }, [props.selectedRow, cellEditorMetaData, linkReference?.dataToDisplayMap, displayMapChanged]);
 
     // If the lib user extends the LinkedCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
