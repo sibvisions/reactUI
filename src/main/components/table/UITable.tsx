@@ -617,9 +617,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             if (currentTable) {
                 const theader = currentTable.querySelectorAll('th');
                 for (let i = 0; i < theader.length; i++) {
-                    let w = columnWidths[i].width as any;
+                    const col = columnWidths[i];
+                    let w = col.width as any;
                     if (props.autoResize === false) {
-                        w = `${w}px`;
+                        w = col.widthPreSet ? `${w}px` : null;
                     } else {
                         w = `${Math.round(100 * w / estTableWidth)}%`;
                     }
