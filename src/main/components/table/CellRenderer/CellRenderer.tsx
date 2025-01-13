@@ -121,7 +121,7 @@ const CellRenderer = React.forwardRef<(HTMLDivElement), ICellRenderer>((props, f
                 if (cellFormat.leftIndent && cellFormat.leftIndent > 0) {
                     cellStyle = {
                         ...cellStyle,
-                        marginLeft: cellFormat.leftIndent + "px"
+                        paddingLeft: cellFormat.leftIndent + "px"
                     }
                 }
 
