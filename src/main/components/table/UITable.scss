@@ -310,8 +310,15 @@
         overflow-y: hidden !important;
     }
 
+    .p-column-header-content {
+        width: inherit;
+    }
+
     .p-column-title {
         user-select: none;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
 
     .p-datatable-emptymessage {
