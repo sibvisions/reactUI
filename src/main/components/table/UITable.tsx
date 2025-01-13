@@ -110,6 +110,19 @@ function convertRemToPixels(rem:number) {
     return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
+function getTableHeadHorizontalPadding() {
+    const splitPadding = window.getComputedStyle(document.documentElement).getPropertyValue('--table-header-padding').split(" ");
+    let padding = 16;
+    if (splitPadding[splitPadding.length > 1 ? 1 : 0].includes("rem")) {
+        const rem = splitPadding[1].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("r"));
+        padding = convertRemToPixels(parseFloat(rem)) * 2;
+    }
+    else {
+        padding = parseFloat(splitPadding[splitPadding.length > 1 ? 1 : 0].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("p"))) * 2;
+    }
+    return padding;
+}
+
 /**
  * Returns the next sort mode
  * @param mode - the current sort mode
@@ -564,7 +577,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     if (currentTable) {
                         const theader = currentTable.querySelectorAll('th');
                         const trows = currentTable.querySelectorAll('tbody > tr');
-    
+                        const padding = getTableHeadHorizontalPadding();
+
                         /** First set width of headers for columns then rows */
                         for (let i = 0; i < theader.length; i++) {
                             theader[i].style.removeProperty('width')
@@ -578,15 +592,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                             }
                             else {
                                 const title = theader[i].querySelector('.p-column-title > span');
-                                const splitPadding = window.getComputedStyle(document.documentElement).getPropertyValue('--table-header-padding').split(" ");
-                                let padding = 16;
-                                if (splitPadding[splitPadding.length > 1 ? 1 : 0].includes("rem")) {
-                                    const rem = splitPadding[1].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("r"));
-                                    padding = convertRemToPixels(parseFloat(rem)) * 2;
-                                }
-                                else {
-                                    padding = parseFloat(splitPadding[splitPadding.length > 1 ? 1 : 0].substring(0, splitPadding[splitPadding.length > 1 ? 1 : 0].indexOf("p"))) * 2;
-                                }
                                 newCellWidth.width = title ? (Math.max((title as HTMLElement).offsetWidth, Math.ceil(title.getBoundingClientRect().width)) + padding) : 0;
                             }
                             cellDataWidthList.push(newCellWidth);
@@ -618,15 +623,20 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const currentTable = tableRef.current.getTable();
             if (currentTable) {
                 const theader = currentTable.querySelectorAll('th');
+                let clearPrimeWidths = false;
                 for (let i = 0; i < theader.length; i++) {
                     const col = columnWidths[i];
                     let w = col.width as any;
                     if (props.autoResize === false) {
                         w = col.widthPreSet ? `${w}px` : null;
+                        if(col.widthPreSet) clearPrimeWidths = true;
                     } else {
                         w = `${Math.round(100 * w / estTableWidth)}%`;
                     }
                     theader[i].style.setProperty('width', w);
+                }
+                if(clearPrimeWidths) {
+                    tableRef.current.resetResizeColumnsWidth();
                 }
             }
         }
