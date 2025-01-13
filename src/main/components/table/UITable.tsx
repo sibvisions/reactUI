@@ -200,12 +200,15 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
     const [rowHeight, setRowHeight] = useState(24);
     useEffect(() => {
-        const rowHeight = Math.max(
-            props.rowHeight 
-                ? props.rowHeight - 8 
-                : parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
-            (props.minRowHeight ?? 0) - 8, 
-            16, 
+        const rowHeight = Math.min(
+            (props.maxRowHeight ?? Number.POSITIVE_INFINITY) - 8, 
+            Math.max(
+                props.rowHeight 
+                    ? props.rowHeight - 8 
+                    : parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
+                (props.minRowHeight ?? 8) - 8, 
+                16,
+            )
         ) + 8;
         setRowHeight(rowHeight);
         cellHeights.current.set('initial', rowHeight);
@@ -995,7 +998,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const isEditable = getCellIsEditable(rowData);
             const elementRef = useRef<any>(null);
             useEffect(() => {
-                if (tableInfo.rowIndex < 100 && props.sameRowHeight && !props.rowHeight) {
+                if (tableInfo.rowIndex < 100 && props.sameRowHeight) {
                     const h = (elementRef.current?.querySelector('.cell-data-content').scrollHeight ?? 0) + 8;
                     const k = `${colName}-${tableInfo.rowIndex}`;
                     cellHeights.current.set(k, h);
