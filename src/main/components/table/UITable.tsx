@@ -618,11 +618,15 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         }
     }, [metaData, metaData?.columns, measureFlag]);
 
+    const [columnWidthStyle, setColumnWidthStyle] = useState('');
+
     useLayoutEffect(() => {
         if(columnWidths && tableRef.current && estTableWidth) {
             const currentTable = tableRef.current.getTable();
+            let columnWidthStyle = '';
             if (currentTable) {
                 const theader = currentTable.querySelectorAll('th');
+                const padding = getTableHeadHorizontalPadding();
                 let clearPrimeWidths = false;
                 for (let i = 0; i < theader.length; i++) {
                     const col = columnWidths[i];
@@ -634,10 +638,20 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         w = `${Math.round(100 * w / estTableWidth)}%`;
                     }
                     theader[i].style.setProperty('width', w);
+                    if(w) {
+                        theader[i].style.setProperty('--innerWidth', `calc(${w.endsWith('%') ? "100%" : w} - ${padding}px)`);
+                        columnWidthStyle += `
+                            td:nth-of-type(${i + 1}) {
+                                width: ${w};
+                                --innerWidth: calc(${w.endsWith('%') ? "100%" : w} - ${padding}px);
+                            }
+                        `
+                    };
                 }
                 if(clearPrimeWidths) {
                     tableRef.current.resetResizeColumnsWidth();
                 }
+                setColumnWidthStyle(columnWidthStyle);
             }
         }
     }, [tableRef.current]);
@@ -1517,6 +1531,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 }}
                 //{...usePopupMenu(props)}
             >
+                <style>{`
+                    .rc-table {
+                        ${columnWidthStyle}
+                    }
+                `}</style>
                 <DataTable
                     key="table"
                     ref={tableRef}
