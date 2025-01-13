@@ -531,14 +531,12 @@ export default abstract class BaseServer {
                         this.contentDataBooksToDelete.get(contentId)!.push(castedResponse.dataProvider);
                     }
                 }
-                const mapper = this.dataResponseMap.get(response.name);
+                let mapper = this.dataResponseMap.get(response.name);
                 if (mapper) {
                     await mapper(response, request);
                 }
-            }
 
-            for (const [, response] of responses.entries()) {
-                const mapper = this.responseMap.get(response.name);
+                mapper = this.responseMap.get(response.name);
                 if (mapper) {
                     await mapper(response, request);
                 }
