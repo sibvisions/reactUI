@@ -106,7 +106,11 @@ const useMouseListener = (
                 pressReq.onSelectedCell = !!(event.target as HTMLElement)?.closest('.p-selectable-cell.p-highlight');
                 pressReq.onSelectedRow = !!(event.target as HTMLElement)?.closest('.p-selectable-row');
             }
-            const release = () => showTopBar(context.server.sendRequest(pressReq, REQUEST_KEYWORDS.MOUSE_PRESSED), context.server.topbar);
+            const release = () => {
+                if (context.contentStore.getComponentByName(pressReq.componentId!)) {
+                    showTopBar(context.server.sendRequest(pressReq, REQUEST_KEYWORDS.MOUSE_PRESSED), context.server.topbar)
+                }
+            };
             hold ? hold("pressed", release) : release();
         }
     }
@@ -129,7 +133,11 @@ const useMouseListener = (
                 clickReq.onSelectedCell = !!(event.target as HTMLElement)?.closest('.p-selectable-cell.p-highlight');
                 clickReq.onSelectedRow = !!(event.target as HTMLElement)?.closest('.p-selectable-row');
             }
-            const release = () => showTopBar(context.server.sendRequest(clickReq, REQUEST_KEYWORDS.MOUSE_CLICKED), context.server.topbar);
+            const release = () => {
+                if (context.contentStore.getComponentByName(clickReq.componentId!)) {
+                    showTopBar(context.server.sendRequest(clickReq, REQUEST_KEYWORDS.MOUSE_CLICKED), context.server.topbar);
+                }
+            };
             hold ? hold("clicked", release) : release();
         } else if (hold) {
             hold("cancelled", () => {});
@@ -146,7 +154,11 @@ const useMouseListener = (
                 releaseReq.onSelectedCell = !!(event.target as HTMLElement)?.closest('.p-selectable-cell.p-highlight');
                 releaseReq.onSelectedRow = !!(event.target as HTMLElement)?.closest('.p-selectable-row');
             }
-            const release = () => showTopBar(context.server.sendRequest(releaseReq, REQUEST_KEYWORDS.MOUSE_RELEASED), context.server.topbar);
+            const release = () => {
+                if (context.contentStore.getComponentByName(releaseReq.componentId!)) {
+                    showTopBar(context.server.sendRequest(releaseReq, REQUEST_KEYWORDS.MOUSE_RELEASED), context.server.topbar);
+                }
+            };
             hold ? hold("released", release) : release();
         }
 
