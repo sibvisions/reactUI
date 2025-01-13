@@ -19,6 +19,7 @@ import useDataProviderData from "../../../hooks/data-hooks/useDataProviderData";
 import { fetchLinkedRefDatabook, getDisplayValue, ICellEditorLinked } from "../../editors/linked/UIEditorLinked";
 import { ICellRender } from "../CellEditor";
 import useMetaData from "../../../hooks/data-hooks/useMetaData";
+import { getAlignments } from "../../comp-props/GetAlignments";
 
 /**
  * Renders the linked-cell when the column is a linked-cell
@@ -75,12 +76,19 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
         [props.cellData, linkRefFetchFlag, cellEditorMetaData, props.rowData, props.colName, displayMapChanged, props.columnMetaData.dataTypeIdentifier, linkedColumnMetaData, context]
     )
 
+    const alignments = useMemo(() => getAlignments({...cellEditorMetaData}), [cellEditorMetaData]);
+
     return (
         <>
             <span className="cell-data-content">
                 {props.icon != undefined && props.icon}
                 {props.icon && linkedDisplayValue && <span style={{marginRight: 5}}/>}
-                {linkedDisplayValue}
+                <div style={{
+                    display: "flex", 
+                    justifyContent: alignments.ha, 
+                    alignItems: alignments.va, 
+                    width: "100%" 
+                }}>{linkedDisplayValue}</div>
             </span>
             <div 
                 style={{ 

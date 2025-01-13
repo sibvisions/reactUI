@@ -233,6 +233,12 @@
                         padding: 0;
                     }
                 }
+                &.LinkedCellEditor {
+                    .cell-data-content {
+                        display: flex;
+                        width: 100%;
+                    }
+                }
 
                 &>.cell-data {
                     width: 100%;
@@ -242,6 +248,7 @@
                     &:not(.html-cell) .cell-data-content {
                         overflow: hidden;
                         text-overflow: ellipsis;
+                        flex-grow: 1;
                     }
                     &.cancel-padding {
                         padding: var(--table-cell-padding-top-bottom, .2rem) var(--table-cell-padding-left-right, .4rem);

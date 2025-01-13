@@ -66,7 +66,13 @@ const NumberCellRenderer: FC<ICellRender> = (props) => {
             >
                 {props.icon != undefined && props.icon}
                 {props.icon && displayNumberValue && <span style={{marginRight: 5}}/>}
-                <span className="cell-data-content-number">{displayNumberValue}</span>
+                <span 
+                    className="cell-data-content-number"
+                    style={{
+                        justifyContent: alignments.ha, 
+                        alignItems: alignments.va
+                    }}
+                >{displayNumberValue}</span>
             </span>
         </>
     )
