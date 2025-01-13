@@ -998,7 +998,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const isEditable = getCellIsEditable(rowData);
             const elementRef = useRef<any>(null);
             useEffect(() => {
-                if (tableInfo.rowIndex < 100 && props.sameRowHeight) {
+                if (tableInfo.rowIndex < 100 && props.sameRowHeight && !props.rowHeight) {
                     const h = (elementRef.current?.querySelector('.cell-data-content').scrollHeight ?? 0) + 8;
                     const k = `${colName}-${tableInfo.rowIndex}`;
                     cellHeights.current.set(k, h);
