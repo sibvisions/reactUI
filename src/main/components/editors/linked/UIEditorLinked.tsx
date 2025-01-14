@@ -51,6 +51,7 @@ import { formatCellEditorDateValue } from "../../table/CellRenderer/DateCellRend
 import { AppContextType } from "../../../contexts/AppProvider";
 import { ICellEditorDate } from "../date/UIEditorDate";
 import useAppContext from "../../../hooks/app-hooks/useAppContext";
+import { VirtualScroller } from "primereact/virtualscroller";
 
 interface ReferencedColumnNames {
     columnNames: string[]
@@ -875,7 +876,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 100 new rows
     const handleLazyLoad = (event:any) => {
-        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.isAllFetched) {
+                if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.isAllFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;
@@ -1112,7 +1113,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     }
                 }}
                 onShow={() => {
-                    //select currently selected suggestion
                     if (suggestions.length && linkedRef.current?.getOverlay() && props.columnName) {
                         const { linkReference } = props.cellEditor;
                         const grouped = suggestions.length == 1 && suggestions[0].items?.length;
@@ -1121,10 +1121,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                             (s:any) => s[linkReference.referencedColumnNames[linkReference.columnNames.indexOf(props.columnName)]] == props.selectedRow?.data[props.columnName]
                         );
                         if(index >= 0) {
-                            const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index];
-                            el.classList.add('p-highlight');
-                            el.setAttribute('data-p-highlight', 'true');
-                            el.scrollIntoView({ behavior: "instant" as ScrollBehavior });
+                            // Virtual scroller does not scroll, if index is smaller than last - 2
+                            // We want to show 2 items above the selected item, that the selected item is not the top one.
+                            const last = linkedRef.current?.getVirtualScroller().getRenderedRange().viewport.last;
+                            const scrollpos = index < last ? 0 : index - 2; 
+                            linkedRef.current?.getVirtualScroller().scrollToIndex(scrollpos, "auto");
+
+                            setTimeout(() => {
+                                const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index - linkedRef.current?.getVirtualScroller().getRenderedRange().first];
+                                el?.classList.add('p-highlight');
+                                el?.setAttribute('data-p-highlight', 'true');
+                            }, 50);
                         }
                     }
                 }}
