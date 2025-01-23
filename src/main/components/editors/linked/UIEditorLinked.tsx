@@ -1012,15 +1012,37 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
     }, [linkedRef]);
 
-    const alignOverlay = useCallback(() => {
+    /**
+     * manually align autocomplete overlay if the width of the overlay changed
+     */
+    const lastOverlayWidth = useRef(0);
+    const alignOverlay = useCallback((force:boolean = false) => {
         if(linkedRef.current) {
-            DomHandler.alignOverlay(
-                linkedRef.current.getOverlay(), 
-                linkedRef.current.getInput() as any, 
-                document.body as any
-            );
+            const w = linkedRef.current.getOverlay().clientWidth;
+            if(force || w !== lastOverlayWidth.current) {
+                DomHandler.alignOverlay(
+                    linkedRef.current.getOverlay(), 
+                    linkedRef.current.getInput() as any, 
+                    document.body as any
+                );
+            }
+            lastOverlayWidth.current = w;
         }
     }, [])
+
+    const keepCheckingAndAligningOverlay = useRef(false);
+    const checkAndAlignOverlay = useCallback((initial = false) => {
+        if (initial) {
+            lastOverlayWidth.current = 0;
+            keepCheckingAndAligningOverlay.current = true;
+        }
+        requestAnimationFrame(() => {
+            alignOverlay();
+            if (keepCheckingAndAligningOverlay.current) {
+                checkAndAlignOverlay();
+            }
+        });
+    }, [alignOverlay]);
 
     return (
         <span 
@@ -1043,6 +1065,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 autoHighlight={true}
                 autoFocus={props.autoFocus ? true : props.isCellEditor ? true : false}
                 appendTo={document.body}
+                transitionOptions={{
+                    onEntering: () => {
+                        checkAndAlignOverlay(true);
+                    },
+                    onEntered: () => {
+                        keepCheckingAndAligningOverlay.current = false;
+                    }
+                } as any}
                 className={concatClassnames(
                     "rc-editor-linked", 
                     props.columnMetaData?.nullable === false ? "required-field" : "",
@@ -1138,22 +1168,25 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                             const scrollpos = index < last ? 0 : index - 2; 
                             linkedRef.current?.getVirtualScroller().scrollToIndex(scrollpos, "auto");
 
+                            checkAndAlignOverlay(true);
                             setTimeout(() => {
                                 const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index - linkedRef.current?.getVirtualScroller().getRenderedRange().first];
                                 el?.classList.add('p-highlight');
                                 el?.setAttribute('data-p-highlight', 'true');
+                                keepCheckingAndAligningOverlay.current = false;
+                                alignOverlay(true);
                             }, 50);
                         }
                     }
 
-                    alignOverlay();
+                    alignOverlay(true);
                 }}
                 virtualScrollerOptions={{ 
                     itemSize: 38, 
                     lazy: true,
                     scrollHeight: suggestions?.length ? `${Math.min(6.66, (suggestions[0].items?.length ?? (suggestions.length - 1)) + 1) * 38}px` : undefined,
                     onLazyLoad: handleLazyLoad,
-                    onScroll: alignOverlay,
+                    onScroll: () => alignOverlay(),
                     className: props.isCellEditor 
                         ? "celleditor-dropdown-virtual-scroller" 
                         : "dropdown-virtual-scroller" 
