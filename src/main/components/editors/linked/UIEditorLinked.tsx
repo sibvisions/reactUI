@@ -52,6 +52,7 @@ import { AppContextType } from "../../../contexts/AppProvider";
 import { ICellEditorDate } from "../date/UIEditorDate";
 import useAppContext from "../../../hooks/app-hooks/useAppContext";
 import { VirtualScroller } from "primereact/virtualscroller";
+import { DomHandler } from "primereact/utils";
 
 interface ReferencedColumnNames {
     columnNames: string[]
@@ -876,7 +877,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 100 new rows
     const handleLazyLoad = (event:any) => {
-                if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.isAllFetched) {
+        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.isAllFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;
@@ -1011,6 +1012,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
     }, [linkedRef]);
 
+    const alignOverlay = useCallback(() => {
+        if(linkedRef.current) {
+            DomHandler.alignOverlay(
+                linkedRef.current.getOverlay(), 
+                linkedRef.current.getInput() as any, 
+                document.body as any
+            );
+        }
+    }, [])
+
     return (
         <span 
             ref={props.forwardedRef}
@@ -1134,12 +1145,15 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                             }, 50);
                         }
                     }
+
+                    alignOverlay();
                 }}
                 virtualScrollerOptions={{ 
                     itemSize: 38, 
                     lazy: true,
                     scrollHeight: suggestions?.length ? `${Math.min(6.66, (suggestions[0].items?.length ?? (suggestions.length - 1)) + 1) * 38}px` : undefined,
-                    onLazyLoad: handleLazyLoad, 
+                    onLazyLoad: handleLazyLoad,
+                    onScroll: alignOverlay,
                     className: props.isCellEditor 
                         ? "celleditor-dropdown-virtual-scroller" 
                         : "dropdown-virtual-scroller" 
