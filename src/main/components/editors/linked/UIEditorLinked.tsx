@@ -1031,14 +1031,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }, [])
 
     const keepCheckingAndAligningOverlay = useRef(false);
-    const checkAndAlignOverlay = useCallback((initial = false) => {
+    const checkAndAlignOverlay = useCallback((initial = false, check?: () => boolean) => {
         if (initial) {
             lastOverlayWidth.current = 0;
             keepCheckingAndAligningOverlay.current = true;
         }
         requestAnimationFrame(() => {
-            alignOverlay();
             if (keepCheckingAndAligningOverlay.current) {
+                if (!check || check()) {
+                    alignOverlay();
+                }
                 checkAndAlignOverlay();
             }
         });
@@ -1168,12 +1170,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                             const scrollpos = index < last ? 0 : index - 2; 
                             linkedRef.current?.getVirtualScroller().scrollToIndex(scrollpos, "auto");
 
-                            checkAndAlignOverlay(true);
                             setTimeout(() => {
                                 const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index - linkedRef.current?.getVirtualScroller().getRenderedRange().first];
                                 el?.classList.add('p-highlight');
                                 el?.setAttribute('data-p-highlight', 'true');
-                                keepCheckingAndAligningOverlay.current = false;
                                 alignOverlay(true);
                             }, 50);
                         }
@@ -1186,7 +1186,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     lazy: true,
                     scrollHeight: suggestions?.length ? `${Math.min(6.66, (suggestions[0].items?.length ?? (suggestions.length - 1)) + 1) * 38}px` : undefined,
                     onLazyLoad: handleLazyLoad,
-                    onScroll: () => alignOverlay(),
+                    onScroll: (ev) => {
+                        const range = linkedRef.current?.getVirtualScroller().getRenderedRange();
+                        if((range?.first ?? 0) < (range?.last ?? 1)) {
+                            alignOverlay();
+                        }
+                    },
                     className: props.isCellEditor 
                         ? "celleditor-dropdown-virtual-scroller" 
                         : "dropdown-virtual-scroller" 
