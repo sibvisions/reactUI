@@ -114,7 +114,17 @@ export interface IEditorLinked extends IRCCellEditor {
  * @param server - the server instance
  * @param contentStore - the contentStore instance
  */
-export function fetchLinkedRefDatabook(screenName: string, databook: string, selectedRecord: any, displayCol: string | null | undefined, concatMask: string | undefined, server: Server | ServerFull, contentStore: BaseContentStore, name?: string, decreaseCallback?: Function) {
+export function fetchLinkedRefDatabook(
+    screenName: string, 
+    databook: string, 
+    selectedRecord: any, 
+    displayCol: string | null | undefined, 
+    concatMask: string | undefined, 
+    server: Server | ServerFull, 
+    contentStore: BaseContentStore, 
+    name?: string, 
+    decreaseCallback?: Function
+) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook);
     if (selectedRecord !== undefined
         && (displayCol || concatMask)
@@ -502,10 +512,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             props.screenName, 
             props.cellEditor.linkReference.referencedDataBook,
             props.selectedRow?.data, 
-            props.cellEditor.displayReferencedColumnName ?? props.columnName,
+            props.cellEditor.displayReferencedColumnName,
             props.cellEditor.displayConcatMask,
             props.context.server, 
-            props.context.contentStore, props.name);
+            props.context.contentStore, 
+            props.name
+        );
     }, [props.selectedRow])
 
     // Add this editor as referencedCellEditor to it's referencedDatabook to update the displaymap
