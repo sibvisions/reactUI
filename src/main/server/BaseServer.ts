@@ -282,8 +282,13 @@ export default abstract class BaseServer {
                                     return
                                 }
             
-                                // If the dataprovider doesn't exist yet and it is not under the missingdatafetches array. It doesn't exist and the request is not to be sent
-                                if (!this.contentStore.dataBooks.get(dataProviderScreenName)?.has(request.dataProvider) && !this.missingDataFetches.includes(request.dataProvider)) {
+                                // If the dataprovider doesn't exist yet and it is not under the missingdatafetches array 
+                                // it doesn't exist and the request is not to be sent unless is a Filter Request
+                                if (
+                                    endpoint != REQUEST_KEYWORDS.FILTER &&
+                                    !this.contentStore.dataBooks.get(dataProviderScreenName)?.has(request.dataProvider) && 
+                                    !this.missingDataFetches.includes(request.dataProvider)
+                                ) {
                                     reject("Dataprovider doesn't exist: " + request.dataProvider);
                                     return
                                 }
