@@ -51,6 +51,8 @@ import { formatCellEditorDateValue } from "../../table/CellRenderer/DateCellRend
 import { AppContextType } from "../../../contexts/AppProvider";
 import { ICellEditorDate } from "../date/UIEditorDate";
 import useAppContext from "../../../hooks/app-hooks/useAppContext";
+import { VirtualScroller } from "primereact/virtualscroller";
+import { DomHandler } from "primereact/utils";
 
 interface ReferencedColumnNames {
     columnNames: string[]
@@ -112,7 +114,17 @@ export interface IEditorLinked extends IRCCellEditor {
  * @param server - the server instance
  * @param contentStore - the contentStore instance
  */
-export function fetchLinkedRefDatabook(screenName: string, databook: string, selectedRecord: any, displayCol: string | null | undefined, concatMask: string | undefined, server: Server | ServerFull, contentStore: BaseContentStore, name?: string, decreaseCallback?: Function) {
+export function fetchLinkedRefDatabook(
+    screenName: string, 
+    databook: string, 
+    selectedRecord: any, 
+    displayCol: string | null | undefined, 
+    concatMask: string | undefined, 
+    server: Server | ServerFull, 
+    contentStore: BaseContentStore, 
+    name?: string, 
+    decreaseCallback?: Function
+) {
     const refDataBookInfo = contentStore.getDataBook(screenName, databook);
     if (selectedRecord !== undefined
         && (displayCol || concatMask)
@@ -500,10 +512,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             props.screenName, 
             props.cellEditor.linkReference.referencedDataBook,
             props.selectedRow?.data, 
-            props.cellEditor.displayReferencedColumnName ?? props.columnName,
+            props.cellEditor.displayReferencedColumnName,
             props.cellEditor.displayConcatMask,
             props.context.server, 
-            props.context.contentStore, props.name);
+            props.context.contentStore, 
+            props.name
+        );
     }, [props.selectedRow])
 
     // Add this editor as referencedCellEditor to it's referencedDatabook to update the displaymap
@@ -1010,6 +1024,40 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
     }, [linkedRef]);
 
+    /**
+     * manually align autocomplete overlay if the width of the overlay changed
+     */
+    const lastOverlayWidth = useRef(0);
+    const alignOverlay = useCallback((force:boolean = false) => {
+        if(linkedRef.current) {
+            const w = linkedRef.current.getOverlay().clientWidth;
+            if(force || w !== lastOverlayWidth.current) {
+                DomHandler.alignOverlay(
+                    linkedRef.current.getOverlay(), 
+                    linkedRef.current.getInput() as any, 
+                    document.body as any
+                );
+            }
+            lastOverlayWidth.current = w;
+        }
+    }, [])
+
+    const keepCheckingAndAligningOverlay = useRef(false);
+    const checkAndAlignOverlay = useCallback((initial = false, check?: () => boolean) => {
+        if (initial) {
+            lastOverlayWidth.current = 0;
+            keepCheckingAndAligningOverlay.current = true;
+        }
+        requestAnimationFrame(() => {
+            if (keepCheckingAndAligningOverlay.current) {
+                if (!check || check()) {
+                    alignOverlay();
+                }
+                checkAndAlignOverlay();
+            }
+        });
+    }, [alignOverlay]);
+
     return (
         <span 
             ref={props.forwardedRef}
@@ -1031,6 +1079,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 autoHighlight={true}
                 autoFocus={props.autoFocus ? true : props.isCellEditor ? true : false}
                 appendTo={document.body}
+                transitionOptions={{
+                    onEntering: () => {
+                        checkAndAlignOverlay(true);
+                    },
+                    onEntered: () => {
+                        keepCheckingAndAligningOverlay.current = false;
+                    }
+                } as any}
                 className={concatClassnames(
                     "rc-editor-linked", 
                     props.columnMetaData?.nullable === false ? "required-field" : "",
@@ -1112,7 +1168,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     }
                 }}
                 onShow={() => {
-                    //select currently selected suggestion
                     if (suggestions.length && linkedRef.current?.getOverlay() && props.columnName) {
                         const { linkReference } = props.cellEditor;
                         const grouped = suggestions.length == 1 && suggestions[0].items?.length;
@@ -1121,18 +1176,34 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                             (s:any) => s[linkReference.referencedColumnNames[linkReference.columnNames.indexOf(props.columnName)]] == props.selectedRow?.data[props.columnName]
                         );
                         if(index >= 0) {
-                            const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index];
-                            el.classList.add('p-highlight');
-                            el.setAttribute('data-p-highlight', 'true');
-                            el.scrollIntoView({ behavior: "instant" as ScrollBehavior });
+                            // Virtual scroller does not scroll, if index is smaller than last - 2
+                            // We want to show 2 items above the selected item, that the selected item is not the top one.
+                            const last = linkedRef.current?.getVirtualScroller().getRenderedRange().viewport.last;
+                            const scrollpos = index < last ? 0 : index - 2; 
+                            linkedRef.current?.getVirtualScroller().scrollToIndex(scrollpos, "auto");
+
+                            setTimeout(() => {
+                                const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index - linkedRef.current?.getVirtualScroller().getRenderedRange().first];
+                                el?.classList.add('p-highlight');
+                                el?.setAttribute('data-p-highlight', 'true');
+                                alignOverlay(true);
+                            }, 50);
                         }
                     }
+
+                    alignOverlay(true);
                 }}
                 virtualScrollerOptions={{ 
                     itemSize: 38, 
                     lazy: true,
                     scrollHeight: suggestions?.length ? `${Math.min(6.66, (suggestions[0].items?.length ?? (suggestions.length - 1)) + 1) * 38}px` : undefined,
-                    onLazyLoad: handleLazyLoad, 
+                    onLazyLoad: handleLazyLoad,
+                    onScroll: (ev) => {
+                        const range = linkedRef.current?.getVirtualScroller().getRenderedRange();
+                        if((range?.first ?? 0) < (range?.last ?? 1)) {
+                            alignOverlay();
+                        }
+                    },
                     className: props.isCellEditor 
                         ? "celleditor-dropdown-virtual-scroller" 
                         : "dropdown-virtual-scroller" 

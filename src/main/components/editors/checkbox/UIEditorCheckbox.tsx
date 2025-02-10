@@ -71,7 +71,7 @@ export const getBooleanValueFromValue = (value: any, selectedValue: any, dataTyp
 
     if (
         dataTypeIdentifier === DataTypeIdentifier.BigDecimal && 
-        value.toString() === selectedValue.toString()
+        value?.toString() === selectedValue.toString()
     ) {
         return true;
     }
