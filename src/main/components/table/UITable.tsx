@@ -628,7 +628,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 const theader = currentTable.querySelectorAll('th');
                 const padding = getTableHeadHorizontalPadding();
                 let clearPrimeWidths = false;
-                const padding = getTableHeadHorizontalPadding();
                 for (let i = 0; i < theader.length; i++) {
                     const col = columnWidths[i];
                     let w = col.width as any;
