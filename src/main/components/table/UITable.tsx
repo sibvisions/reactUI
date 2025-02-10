@@ -632,7 +632,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     const col = columnWidths[i];
                     let w = col.width as any;
                     if (props.autoResize === false) {
-                        w = col.widthPreSet ? `${w - padding}px` : null;
+                        w = col.widthPreSet ? `${w}px` : null;
                         if(col.widthPreSet) clearPrimeWidths = true;
                     } else {
                         w = `${Math.round(100 * w / estTableWidth)}%`;
