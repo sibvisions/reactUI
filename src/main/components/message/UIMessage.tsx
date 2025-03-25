@@ -26,9 +26,9 @@ import REQUEST_KEYWORDS from '../../request/REQUEST_KEYWORDS';
 import { concatClassnames } from '../../util/string-util/ConcatClassnames';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { RequestQueueMode } from 'src/main/server/BaseServer';
-import ContentStore from 'src/main/contentstore/ContentStore';
-import { useVisibleWithHistoryBlock } from 'src/main/hooks/components-hooks/useHistoryBlockClose';
+import { RequestQueueMode } from '../../server/BaseServer';
+import ContentStore from '../../contentstore/ContentStore';
+import { useVisibleWithHistoryBlock } from '../../hooks/components-hooks/useHistoryBlockClose';
 
 /** This component displays a popup to display a message, based on the severity the messages look different. */
 const UIMessage: FC<DialogResponse> = (props) => {

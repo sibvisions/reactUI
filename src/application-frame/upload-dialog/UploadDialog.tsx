@@ -19,7 +19,7 @@ import { Dialog } from "primereact/dialog";
 import { translation } from "../../main/util/other-util/Translation";
 import { Button } from "primereact/button";
 import REQUEST_KEYWORDS from "../../main/request/REQUEST_KEYWORDS";
-import { useVisibleWithHistoryBlock } from "src/main/hooks/components-hooks/useHistoryBlockClose";
+import { useVisibleWithHistoryBlock } from "../../main/hooks/components-hooks/useHistoryBlockClose";
 
 /** 
  * When an upload response takes too long, the file dialog can not be opened because a user gesture is needed.
