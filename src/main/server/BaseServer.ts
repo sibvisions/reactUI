@@ -948,22 +948,25 @@ export default abstract class BaseServer {
         if (changedProvider.deletedRow !== undefined) {
             const compPanel = this.contentStore.getComponentByName(screenName) as IPanel;
             const rowToDelete = this.contentStore.getDataRow(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
-            this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
-            this.subManager.notifyDataChange(screenName, changedProvider.dataProvider);
-            this.subManager.notifyScreenDataChange(screenName);
-            if (dataBook?.metaData && dataBook.metaData.masterReference) {
-                const pageKey = toPageKey({
-                    columnNames: dataBook.metaData.masterReference.columnNames,
-                    values: dataBook.metaData.masterReference.columnNames.map((colName) => rowToDelete[colName])
-                });
-                const data = dataBook.data?.get(pageKey);
-                this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, data, pageKey)
-            }
+            if (rowToDelete !== undefined)
+            {
+                this.contentStore.deleteDataProviderData(screenName, changedProvider.dataProvider, changedProvider.deletedRow);
+                this.subManager.notifyDataChange(screenName, changedProvider.dataProvider);
+                this.subManager.notifyScreenDataChange(screenName);
+                if (dataBook?.metaData && dataBook.metaData.masterReference) {
+                    const pageKey = toPageKey({
+                        columnNames: dataBook.metaData.masterReference.columnNames,
+                        values: dataBook.metaData.masterReference.columnNames.map((colName) => rowToDelete[colName])
+                    });
+                    const data = dataBook.data?.get(pageKey);
+                    this.subManager.notifyTreeDataChanged(changedProvider.dataProvider, data, pageKey)
+                }
 
 
-            if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(changedProvider.dataProvider.split('/')[1])) {
-                this.subManager.notifyDataChange(changedProvider.dataProvider.split('/')[1], changedProvider.dataProvider);
-                this.subManager.notifyScreenDataChange(changedProvider.dataProvider.split('/')[1]);
+                if (compPanel && this.contentStore.isPopup(compPanel) && this.contentStore.getScreenDataproviderMap(changedProvider.dataProvider.split('/')[1])) {
+                    this.subManager.notifyDataChange(changedProvider.dataProvider.split('/')[1], changedProvider.dataProvider);
+                    this.subManager.notifyScreenDataChange(changedProvider.dataProvider.split('/')[1]);
+                }
             }
         }
 
@@ -991,12 +994,12 @@ export default abstract class BaseServer {
 
             this.contentStore.clearDataFromProvider(screenName, changedProvider.dataProvider);
             const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = changedProvider.dataProvider;
+            fetchReq.dataProvider = changedProvider.dataProvider; 
             fetchReq.fromRow = 0;
             if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
                 fetchReq.includeMetaData = true;
             }
-            showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH)
+            showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, RequestQueueMode.IMMEDIATE)
                 .then(() => {
                     this.requestQueue = this.requestQueue.filter(req => !((req.request as DataProviderRequest).dataProvider === changedProvider.dataProvider) || !(req.endpoint === REQUEST_KEYWORDS.SELECT_ROW));
                 }), this.topbar as TopBarContextType);
@@ -1013,7 +1016,7 @@ export default abstract class BaseServer {
             if (!getMetaData(screenName, changedProvider.dataProvider, this.contentStore)) {
                 fetchReq.includeMetaData = true;
             }
-            showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), this.topbar as TopBarContextType);
+            showTopBar(this.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH, undefined, RequestQueueMode.IMMEDIATE), this.topbar as TopBarContextType);
         }
         else {
             const selectedColumn = this.contentStore.getDataBook(screenName, changedProvider.dataProvider)?.selectedRow?.selectedColumn;
