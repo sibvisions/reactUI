@@ -1036,7 +1036,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     const lastOverlayWidth = useRef(0);
     const alignOverlay = useCallback((force:boolean = false) => {
         if(linkedRef.current) {
-            const w = linkedRef.current.getOverlay().clientWidth;
+            const w = linkedRef.current.getOverlay()?.clientWidth;
             if(force || w !== lastOverlayWidth.current) {
                 DomHandler.alignOverlay(
                     linkedRef.current.getOverlay(), 
@@ -1124,7 +1124,9 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 value={text}
                 onChange={event => {
                     startedEditing.current = true;
-                    sendFilter(event.value)
+                    if (event.value == "") {
+                        sendFilter(event.value);
+                    }
                     if (isDisplayRefColNameOrConcat && Array.isArray(event.target.value)) {
                         setText(getDisplayValue(event.target.value, unpackValue(event.target.value), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
                     }
