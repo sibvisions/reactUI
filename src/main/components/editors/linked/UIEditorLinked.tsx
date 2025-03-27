@@ -138,6 +138,9 @@ export function fetchLinkedRefDatabook(
         if (!refDataBookInfo?.metaData) {
             fetchReq.includeMetaData = true;
         }
+        if (refDataBookInfo?.isAllFetched) {
+            refDataBookInfo.isAllFetched = undefined;
+        }
         fetchReq.screenName = screenName;
         server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => decreaseCallback ? decreaseCallback(databook) : undefined)
     }
@@ -595,7 +598,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         if (!filterInProcess.current && !query) {
             filterInProcess.current = true;
         }
-        
+        if (refDataBookInfo?.isAllFetched) {
+            refDataBookInfo.isAllFetched = undefined;
+        }
+
         await props.context.server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => {
             if (!initialFilter) {
                 setInitialFilter(true);
