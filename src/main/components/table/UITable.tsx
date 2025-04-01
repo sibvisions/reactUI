@@ -957,11 +957,12 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 return selectNextCell(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-                selectNextRow(true);
+                return selectNextRow(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
-                selectNextCellAndRow(true);
+                return selectNextCellAndRow(true);
             }
+            return true;
         }
     }, [selectNextCell, selectNextRow, selectNextCellAndRow]);
 
@@ -972,20 +973,31 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     useEffect(() => {   
         selectPrevious.current = (navigationMode:number, row?:any) => {
             if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
-                selectPreviousCell(true);
+                return selectPreviousCell(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-                selectPreviousRow(true);
+                return selectPreviousRow(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
-                selectPreviousCellAndRow(true)
+                return selectPreviousCellAndRow(true);
             }
+            return true;
         }
     }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow]);
 
-    const selectNextCallback = useCallback((key: string) => selectNext.current && selectNext.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectNext.current, props.enterNavigationMode, props.tabNavigationMode]);
+    const selectNextCallback = useCallback((key: string) => { 
+        if (selectNext.current) {
+            return selectNext.current(key === "Enter" ? enterNavigationMode : tabNavigationMode); 
+        }
+        return true;
+    }, [selectNext.current, enterNavigationMode, tabNavigationMode]);
 
-    const selectPreviousCallback = useCallback((key: string) => selectPrevious.current && selectPrevious.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectPrevious.current, props.enterNavigationMode, props.tabNavigationMode]);
+    const selectPreviousCallback = useCallback((key: string) => {
+        if (selectPrevious.current) {
+            return selectPrevious.current(key === "Enter" ? enterNavigationMode : tabNavigationMode);
+        }
+        return true;
+    }, [selectPrevious.current, enterNavigationMode, tabNavigationMode]);
 
     /** Building the columns */
     const CellBody = useMemo(() => {
@@ -1040,7 +1052,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     cellReadOnly={rowData.__recordReadOnly && rowData.__recordReadOnly}
                     resource={props.context.server.RESOURCE_URL}
                     cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
-                    tableContainer={props.forwardedRef.current ? props.forwardedRef.current : undefined}
+                    tableContainer={props.forwardedRef.current}
                     selectNext={selectNextCallback}
                     selectPrevious={selectPreviousCallback}
                     className={className}
@@ -1106,7 +1118,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         props.dataBook,
         setMeasureFlag,
         providerData,
-        props.startEditing
+        props.startEditing,
+        props.forwardedRef.current
     ])
 
     const columns = useMemo(() => {

@@ -149,7 +149,7 @@
                 width: 100%;
             }
 
-            &.p-selectable-row.p-highlight > td.p-selectable-cell.p-highlight, &.p-selectable-row.p-highlight > td.p-selectable-cell:focus {
+            &.p-selectable-row.p-highlight > td.p-selectable-cell.p-highlight/*, &.p-selectable-row.p-highlight > td.p-selectable-cell:focus*/ {
                 outline: none;
                 outline-offset: 0;
                 box-shadow: inset 0 0 0 2px #7f7f7f;
