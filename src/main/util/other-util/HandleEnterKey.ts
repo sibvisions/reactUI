@@ -30,10 +30,10 @@ export function handleEnterKey(event:any, elem:any, name:string, stopEditing?:Fu
         }
         else {
             if (event.shiftKey) {
-                getFocusComponent(name, false);
+                getFocusComponent(name, false)?.focus();
             }
             else {
-                getFocusComponent(name, true)
+                getFocusComponent(name, true)?.focus();
             }
         }
     }

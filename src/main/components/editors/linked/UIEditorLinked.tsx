@@ -275,8 +275,7 @@ export function getDisplayValue(
     dataProvider: string,
     dataTypeIdentifier?: DataTypeIdentifier,
     linkedColumnMetaData?: ColumnDescription,
-    context?: AppContextType,
-) {
+    context?: AppContextType) {
     if (value) {
         const index = linkReference.columnNames.findIndex(colName => colName === columnName);
         if (isDisplayRefColNameOrConcat) {
@@ -321,6 +320,8 @@ export function getDisplayValue(
     }
     return ""
 };
+
+
 
 /**
  * This component displays an input field with a button which provides a dropdownlist with values of a databook
@@ -646,7 +647,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 props.stopCellEditing(event);
             } else if (event.key === "Escape") {
                 props.stopCellEditing(event)
-            } else if(event.key === "Enter" && !linkedRef.current?.getOverlay().querySelector('.p-autocomplete-item.p-highlight')) {
+            } else if(event.key === "Enter" && !linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight')) {
                 linkedRef.current?.hide();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             }
@@ -658,6 +659,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     const index = Math.max(0, el ? parseInt(el.getAttribute("index") ?? "-1") : -1);
                     handleSelect(suggestions[index]);
                 }
+                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             }
         }
     });
@@ -1020,10 +1022,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }
 
     // focus the input field when entering keys
-    useEventHandler(linkedInput.current && props.isCellEditor ? linkedInput.current : undefined, "keydown", () => {
+    useEventHandler(linkedInput.current && props.isCellEditor ? linkedInput.current : undefined, "keydown", (event: KeyboardEvent) => {
         setTimeout(() => linkedInput.current.focus(), 0);
     })
-
+    
     const handleDropdownClick = useCallback(() => {
         if(linkedRef.current?.getOverlay()) {
             linkedRef.current?.hide();
