@@ -609,6 +609,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             }
 
             if (callHandleInputCallback.current) {
+                callHandleInputCallback.current = false;
                 handleInput();
             }
             filterInProcess.current = false;
@@ -654,11 +655,24 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         } else if(!props.isCellEditor) {
             if (event.key === "Enter") {
                 linkedRef.current?.hide(); 
-                if(suggestions.length) {
-                    const el = linkedRef.current?.getOverlay().querySelector('.p-autocomplete-item.p-highlight');
-                    const index = Math.max(0, el ? parseInt(el.getAttribute("index") ?? "-1") : -1);
+
+                const el = linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight');
+                const index = el ? parseInt(el.getAttribute("index") ?? "-1") : -1;
+
+                if (suggestions.length && index >= 0)
+                {
                     handleSelect(suggestions[index]);
                 }
+                else if (startedEditing.current) {
+                    if (!filterInProcess.current) {
+                        handleInput();
+                    }
+                    else {
+                        // if a filter is in process wait for it and then call handleInput
+                        callHandleInputCallback.current = true;
+                    }
+                }
+
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             }
         }
