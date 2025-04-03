@@ -778,6 +778,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             checkText = value;
         }
 
+        let foundExactData = null;
+
         /** Returns the values, of the databook, that match the input of the user */
         // check if providedData has entries of the entered text
         let foundData = 
@@ -786,27 +788,37 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     const extractedData = getExtractedObject(data, refColNames);
                     const displayValue = getDisplayValue(data, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context);
                     if (displayValue) {
+                        if (displayValue == checkText) {
+                            foundExactData = data;
+                        }
                         return displayValue.toString().includes(checkText);
                     }
                     return !checkText;
                 }
-                else {
-                    if (data && data[refColNames[index]]) {
-                        if (typeof data[refColNames[index]] !== "string") {
-                            data[refColNames[index]].toString().includes(checkText);
+                else if (data) {
+                    const val = data[refColNames[index]];
+                    if (val) {
+                        if (typeof val !== "string") {
+                            if (val.toString() == checkText) {
+                                foundExactData = data;
+                            }
+                            return val.toString().includes(checkText);
                         }
                         else {
-                            return data[refColNames[index]].includes(checkText);
+                            if (val == checkText) {
+                                foundExactData = data;
+                            }
+                            return val.includes(checkText);
                         }
                     }
                     else {
                         return false;
                     }
                 }
-                return false
+                return false;
             });
 
-        foundData = Array.isArray(foundData) ? foundData : [foundData];
+        foundData = foundExactData ? [foundExactData] : Array.isArray(foundData) ? foundData : [foundData];
 
         /** If the text is empty, send null to the server to deselect */
         if (!checkText || props.cellEditor.validationEnabled === false) {
