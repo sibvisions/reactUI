@@ -1344,6 +1344,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         if (!isEditing) {
             switch (event.key) {
                 case "Enter":
+                    event.preventDefault();
                     if (event.shiftKey) {
                         selectPrevious.current && selectPrevious.current(enterNavigationMode);
                     }
