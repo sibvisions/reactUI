@@ -1147,7 +1147,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 //disabled={props.isReadOnly}
                 dropdown
                 onDropdownClick={handleDropdownClick}
-                completeMethod={event => sendFilter(event.query, true)}
+                completeMethod={event => {if (focused.current) { sendFilter(event.query, true); }}}
                 suggestions={suggestions}
                 value={text}
                 onChange={event => {
@@ -1169,6 +1169,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     }
                 }}
                 onBlur={event => {
+                    linkedRef.current?.hide();
                     if (!props.isReadOnly) {
                         if (props.onBlur) {
                             props.onBlur(event);
