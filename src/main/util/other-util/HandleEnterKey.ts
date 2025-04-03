@@ -24,6 +24,7 @@ import { getFocusComponent } from "../html-util/GetFocusComponent";
  */
 export function handleEnterKey(event:any, elem:any, name:string, stopEditing?:Function) {
     if (event.key === "Enter") {
+        event.preventDefault();
         elem.blur();
         if (stopEditing) {
             stopEditing(event)
