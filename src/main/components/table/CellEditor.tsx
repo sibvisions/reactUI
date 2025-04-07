@@ -206,11 +206,14 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         setEdit(false);
         stopEditing()
         if (event) {
-            if (event.shiftKey) {
-                focusTable = selectPrevious(event.key);
-            }
-            else {
-                focusTable = selectNext(event.key);
+            if (event.key !== 'Escape')
+            {
+                if (event.shiftKey) {
+                    focusTable = selectPrevious(event.key);
+                }
+                else {
+                    focusTable = selectNext(event.key);
+                }
             }
         }
         else {
@@ -219,7 +222,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         if (focusTable) {
             tableContainer.focus();
         }
-    }, [setEdit, selectNext, selectPrevious]);
+    }, [setEdit, selectNext, selectPrevious, tableContainer]);
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, () => { 

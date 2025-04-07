@@ -28,7 +28,7 @@ import { appContext } from "../../main/contexts/AppProvider";
 import { FloatLabel } from "primereact/floatlabel";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
-import { useVisibleWithHistoryBlock } from "src/main/hooks/components-hooks/useHistoryBlockClose";
+import { useVisibleWithHistoryBlock } from "../../main/hooks/components-hooks/useHistoryBlockClose";
 
 // Interface for the ChangePasswordDialog
 interface IChangePasswordDialog  {

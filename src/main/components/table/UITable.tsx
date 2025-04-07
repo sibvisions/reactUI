@@ -186,7 +186,17 @@ function isVisible(ele:HTMLElement, container:HTMLElement, cell:any, rowHeight:n
     }
 };
 
-
+function negotiateRowHeight(min?: number, height?: number, max?: number) {
+    return Math.min(
+        (max ?? Number.POSITIVE_INFINITY) - 8, 
+        Math.max(
+            height 
+                ? height - 8 
+                : parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
+            (min ?? 8) - 8
+        )
+    ) + 8
+}
 
 /**
  * This component displays a DataTable
@@ -213,16 +223,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
     const [rowHeight, setRowHeight] = useState(24);
     useEffect(() => {
-        const rowHeight = Math.min(
-            (props.maxRowHeight ?? Number.POSITIVE_INFINITY) - 8, 
-            Math.max(
-                props.rowHeight 
-                    ? props.rowHeight - 8 
-                    : parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
-                (props.minRowHeight ?? 8) - 8, 
-                16,
-            )
-        ) + 8;
+        const rowHeight = negotiateRowHeight(
+            props.minRowHeight,
+            props.rowHeight,
+            props.maxRowHeight
+        );
         setRowHeight(rowHeight);
         cellHeights.current.set('initial', rowHeight);
     }, [props.designerUpdate])
@@ -231,11 +236,28 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const updateRowHeight = useCallback(() => {
         clearTimeout(updateRowHeightTimeout.current);
         updateRowHeightTimeout.current = window.setTimeout(() => {
-            let max = 0;
-            for(let v of cellHeights.current.values()) {
-                max = Math.max(max, v);
+            if (props.sameRowHeight === false && !props.rowHeight) {
+                let sum = 0;
+                for(let v of cellHeights.current.values()) {
+                    sum += v;
+                }
+                const mean = Math.ceil(sum / cellHeights.current.size);
+                setRowHeight(negotiateRowHeight(
+                    props.minRowHeight,
+                    mean,
+                    props.maxRowHeight
+                ));
+            } else {
+                let max = 0;
+                for(let v of cellHeights.current.values()) {
+                    max = Math.max(max, v);
+                }
+                setRowHeight(negotiateRowHeight(
+                    props.minRowHeight,
+                    max,
+                    props.maxRowHeight
+                ));
             }
-            setRowHeight(Math.max(props.minRowHeight ?? 0, Math.min(props.maxRowHeight ?? Number.POSITIVE_INFINITY, max)));
         }, 1);
     }, [props.maxRowHeight])
 
@@ -970,11 +992,12 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 return selectNextCell(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-                selectNextRow(true);
+                return selectNextRow(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
-                selectNextCellAndRow(true);
+                return selectNextCellAndRow(true);
             }
+            return true;
         }
     }, [selectNextCell, selectNextRow, selectNextCellAndRow]);
 
@@ -985,20 +1008,31 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     useEffect(() => {   
         selectPrevious.current = (navigationMode:number, row?:any) => {
             if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
-                selectPreviousCell(true);
+                return selectPreviousCell(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_ROW_AND_FOCUS) {
-                selectPreviousRow(true);
+                return selectPreviousRow(true);
             }
             else if (navigationMode === Navigation.NAVIGATION_CELL_AND_ROW_AND_FOCUS) {
-                selectPreviousCellAndRow(true)
+                return selectPreviousCellAndRow(true);
             }
+            return true;
         }
     }, [selectPreviousCell, selectPreviousRow, selectPreviousCellAndRow]);
 
-    const selectNextCallback = useCallback((key: string) => selectNext.current && selectNext.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectNext.current, props.enterNavigationMode, props.tabNavigationMode]);
+    const selectNextCallback = useCallback((key: string) => { 
+        if (selectNext.current) {
+            return selectNext.current(key === "Enter" ? enterNavigationMode : tabNavigationMode); 
+        }
+        return true;
+    }, [selectNext.current, enterNavigationMode, tabNavigationMode]);
 
-    const selectPreviousCallback = useCallback((key: string) => selectPrevious.current && selectPrevious.current(key === "Enter" ? props.enterNavigationMode : props.tabNavigationMode), [selectPrevious.current, props.enterNavigationMode, props.tabNavigationMode]);
+    const selectPreviousCallback = useCallback((key: string) => {
+        if (selectPrevious.current) {
+            return selectPrevious.current(key === "Enter" ? enterNavigationMode : tabNavigationMode);
+        }
+        return true;
+    }, [selectPrevious.current, enterNavigationMode, tabNavigationMode]);
 
     /** Building the columns */
     const CellBody = useMemo(() => {
@@ -1022,7 +1056,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const isEditable = getCellIsEditable(rowData);
             const elementRef = useRef<any>(null);
             useEffect(() => {
-                if (tableInfo.rowIndex < 100 && props.sameRowHeight && !props.rowHeight) {
+                if (tableInfo.rowIndex < 100 && (props.sameRowHeight === true || props.sameRowHeight === false) && !props.rowHeight) {
                     const h = (elementRef.current?.querySelector('.cell-data-content').scrollHeight ?? 0) + 8;
                     const k = `${colName}-${tableInfo.rowIndex}`;
                     cellHeights.current.set(k, h);
@@ -1053,7 +1087,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     cellReadOnly={rowData.__recordReadOnly && rowData.__recordReadOnly}
                     resource={props.context.server.RESOURCE_URL}
                     cellId={props.id + "-" + tableInfo.rowIndex.toString() + "-" + colIndex.toString()}
-                    tableContainer={props.forwardedRef.current ? props.forwardedRef.current : undefined}
+                    tableContainer={props.forwardedRef.current}
                     selectNext={selectNextCallback}
                     selectPrevious={selectPreviousCallback}
                     className={className}
@@ -1119,7 +1153,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         props.dataBook,
         setMeasureFlag,
         providerData,
-        props.startEditing
+        props.startEditing,
+        props.forwardedRef.current
     ])
 
     const columns = useMemo(() => {
@@ -1133,12 +1168,12 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
             return (
                 <>
-                    <span onClick={() => handleSort(colName)} dangerouslySetInnerHTML={{
+                    <span /*onClick={() => handleSort(colName)}*/ dangerouslySetInnerHTML={{
                         __html: props.columnLabels[colIndex] + (isNullable === false ?
                             props.context.appSettings.applicationMetaData.mandatoryMarkVisible ? " " + (props.context.appSettings.applicationMetaData.mandatoryMark ?? " *") : "" : "")
                     }} />
-                    <span onClick={() => handleSort(colName)} className="p-sortable-column-icon pi pi-fw"></span>
-                    <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" onClick={() => handleSort(colName)}>{sortIndex}</span>
+                    <span /*onClick={() => handleSort(colName)}*/ className="p-sortable-column-icon pi pi-fw"></span>
+                    <span style={{ display: sortIndex ? "inline-block" : "none" }} className="sort-index" /*onClick={() => handleSort(colName)}*/>{sortIndex}</span>
                 </>)
         }
 
@@ -1300,6 +1335,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const widthReq = createWidthRequest();
             widthReq.dataProvider = props.dataBook;
             widthReq.columnName = e.column.props.field;
+            widthReq.width = e.element.clientWidth + 2;
             if (props.onColResizeEnd) {
                 props.onColResizeEnd(e);
             }
@@ -1344,6 +1380,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         if (!isEditing) {
             switch (event.key) {
                 case "Enter":
+                    event.preventDefault();
                     if (event.shiftKey) {
                         selectPrevious.current && selectPrevious.current(enterNavigationMode);
                     }
@@ -1541,9 +1578,12 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     ref={tableRef}
                     style={{
                         "--table-data-height": `${rowHeight - 8}px`,
+                        ...(props.minRowHeight ? {"--table-data-min-height": `${props.minRowHeight - 8}px`} : {}),
+                        ...(props.maxRowHeight ? {"--table-data-max-height": `${props.maxRowHeight - 8}px`} : {}),
                     } as React.CSSProperties}
                     className={concatClassnames(
                         "rc-table",
+                        props.sameRowHeight === false && !props.rowHeight ? "variable-row-height" : '',
                         props.autoResize === false ? "no-auto-resize" : "",
                         getNavTableClassName(props.parent),
                         props.styleClassNames

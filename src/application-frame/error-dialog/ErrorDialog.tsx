@@ -27,8 +27,8 @@ import REQUEST_KEYWORDS from '../../main/request/REQUEST_KEYWORDS'
 import useDesignerUpdates from "../../main/hooks/style-hooks/useDesignerUpdates";
 import useButtonBackground from "../../main/hooks/style-hooks/useButtonBackground";
 import { appContext } from "../../main/contexts/AppProvider";
-import ContentStore from "src/main/contentstore/ContentStore";
-import { useVisibleWithHistoryBlock } from "src/main/hooks/components-hooks/useHistoryBlockClose";
+import ContentStore from "../../main/contentstore/ContentStore";
+import { useVisibleWithHistoryBlock } from "../../main/hooks/components-hooks/useHistoryBlockClose";
 
 /** Displays an error-message as dialog */
 const ErrorDialog:FC = () => {

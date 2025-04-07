@@ -149,7 +149,7 @@
                 width: 100%;
             }
 
-            &.p-selectable-row.p-highlight > td.p-selectable-cell.p-highlight, &.p-selectable-row.p-highlight > td.p-selectable-cell:focus {
+            &.p-selectable-row.p-highlight > td.p-selectable-cell.p-highlight/*, &.p-selectable-row.p-highlight > td.p-selectable-cell:focus*/ {
                 outline: none;
                 outline-offset: 0;
                 box-shadow: inset 0 0 0 2px #7f7f7f;
@@ -260,6 +260,11 @@
                     }
                     &.cancel-padding {
                         padding: var(--table-cell-padding-top-bottom, .2rem) var(--table-cell-padding-left-right, .4rem);
+                    }
+
+                    @at-root .variable-row-height#{&} {
+                        min-height: var(--table-data-min-height);
+                        max-height: var(--table-data-max-height);
                     }
                 }
 

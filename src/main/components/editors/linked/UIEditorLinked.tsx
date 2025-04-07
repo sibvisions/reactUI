@@ -138,6 +138,9 @@ export function fetchLinkedRefDatabook(
         if (!refDataBookInfo?.metaData) {
             fetchReq.includeMetaData = true;
         }
+        if (refDataBookInfo?.isAllFetched) {
+            refDataBookInfo.isAllFetched = undefined;
+        }
         fetchReq.screenName = screenName;
         server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => decreaseCallback ? decreaseCallback(databook) : undefined)
     }
@@ -272,8 +275,7 @@ export function getDisplayValue(
     dataProvider: string,
     dataTypeIdentifier?: DataTypeIdentifier,
     linkedColumnMetaData?: ColumnDescription,
-    context?: AppContextType,
-) {
+    context?: AppContextType) {
     if (value) {
         const index = linkReference.columnNames.findIndex(colName => colName === columnName);
         if (isDisplayRefColNameOrConcat) {
@@ -318,6 +320,8 @@ export function getDisplayValue(
     }
     return ""
 };
+
+
 
 /**
  * This component displays an input field with a button which provides a dropdownlist with values of a databook
@@ -595,13 +599,17 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         if (!filterInProcess.current && !query) {
             filterInProcess.current = true;
         }
-        
+        if (refDataBookInfo?.isAllFetched) {
+            refDataBookInfo.isAllFetched = undefined;
+        }
+
         await props.context.server.sendRequest(filterReq, REQUEST_KEYWORDS.FILTER).then(() => {
             if (!initialFilter) {
                 setInitialFilter(true);
             }
 
             if (callHandleInputCallback.current) {
+                callHandleInputCallback.current = false;
                 handleInput();
             }
             filterInProcess.current = false;
@@ -640,18 +648,32 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 props.stopCellEditing(event);
             } else if (event.key === "Escape") {
                 props.stopCellEditing(event)
-            } else if(event.key === "Enter" && !linkedRef.current?.getOverlay().querySelector('.p-autocomplete-item.p-highlight')) {
+            } else if(event.key === "Enter" && !linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight')) {
                 linkedRef.current?.hide();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             }
         } else if(!props.isCellEditor) {
             if (event.key === "Enter") {
                 linkedRef.current?.hide(); 
-                if(suggestions.length) {
-                    const el = linkedRef.current?.getOverlay().querySelector('.p-autocomplete-item.p-highlight');
-                    const index = Math.max(0, el ? parseInt(el.getAttribute("index") ?? "-1") : -1);
+
+                const el = linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight');
+                const index = el ? parseInt(el.getAttribute("index") ?? "-1") : -1;
+
+                if (suggestions.length && index >= 0)
+                {
                     handleSelect(suggestions[index]);
                 }
+                else if (startedEditing.current) {
+                    if (!filterInProcess.current) {
+                        handleInput();
+                    }
+                    else {
+                        // if a filter is in process wait for it and then call handleInput
+                        callHandleInputCallback.current = true;
+                    }
+                }
+
+                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             }
         }
     });
@@ -756,6 +778,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             checkText = value;
         }
 
+        let foundExactData = null;
+
         /** Returns the values, of the databook, that match the input of the user */
         // check if providedData has entries of the entered text
         let foundData = 
@@ -764,27 +788,37 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     const extractedData = getExtractedObject(data, refColNames);
                     const displayValue = getDisplayValue(data, extractedData, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context);
                     if (displayValue) {
+                        if (displayValue == checkText) {
+                            foundExactData = data;
+                        }
                         return displayValue.toString().includes(checkText);
                     }
                     return !checkText;
                 }
-                else {
-                    if (data && data[refColNames[index]]) {
-                        if (typeof data[refColNames[index]] !== "string") {
-                            data[refColNames[index]].toString().includes(checkText);
+                else if (data) {
+                    const val = data[refColNames[index]];
+                    if (val) {
+                        if (typeof val !== "string") {
+                            if (val.toString() == checkText) {
+                                foundExactData = data;
+                            }
+                            return val.toString().includes(checkText);
                         }
                         else {
-                            return data[refColNames[index]].includes(checkText);
+                            if (val == checkText) {
+                                foundExactData = data;
+                            }
+                            return val.includes(checkText);
                         }
                     }
                     else {
                         return false;
                     }
                 }
-                return false
+                return false;
             });
 
-        foundData = Array.isArray(foundData) ? foundData : [foundData];
+        foundData = foundExactData ? [foundExactData] : Array.isArray(foundData) ? foundData : [foundData];
 
         /** If the text is empty, send null to the server to deselect */
         if (!checkText || props.cellEditor.validationEnabled === false) {
@@ -1014,10 +1048,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }
 
     // focus the input field when entering keys
-    useEventHandler(linkedInput.current && props.isCellEditor ? linkedInput.current : undefined, "keydown", () => {
+    useEventHandler(linkedInput.current && props.isCellEditor ? linkedInput.current : undefined, "keydown", (event: KeyboardEvent) => {
         setTimeout(() => linkedInput.current.focus(), 0);
     })
-
+    
     const handleDropdownClick = useCallback(() => {
         if(linkedRef.current?.getOverlay()) {
             linkedRef.current?.hide();
@@ -1030,7 +1064,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     const lastOverlayWidth = useRef(0);
     const alignOverlay = useCallback((force:boolean = false) => {
         if(linkedRef.current) {
-            const w = linkedRef.current.getOverlay().clientWidth;
+            const w = linkedRef.current.getOverlay()?.clientWidth;
             if(force || w !== lastOverlayWidth.current) {
                 DomHandler.alignOverlay(
                     linkedRef.current.getOverlay(), 
@@ -1113,12 +1147,14 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 //disabled={props.isReadOnly}
                 dropdown
                 onDropdownClick={handleDropdownClick}
-                completeMethod={event => sendFilter(event.query, true)}
+                completeMethod={event => {if (focused.current) { sendFilter(event.query, true); }}}
                 suggestions={suggestions}
                 value={text}
                 onChange={event => {
                     startedEditing.current = true;
-                    sendFilter(event.value)
+                    if (event.value == "") {
+                        sendFilter(event.value);
+                    }
                     if (isDisplayRefColNameOrConcat && Array.isArray(event.target.value)) {
                         setText(getDisplayValue(event.target.value, unpackValue(event.target.value), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
                     }
@@ -1133,6 +1169,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     }
                 }}
                 onBlur={event => {
+                    linkedRef.current?.hide();
                     if (!props.isReadOnly) {
                         if (props.onBlur) {
                             props.onBlur(event);

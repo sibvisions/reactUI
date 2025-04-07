@@ -1355,7 +1355,7 @@ export default abstract class BaseContentStore {
             return dataRow;
         }
         else {
-            return undefined
+            return undefined;
         }
             
     }

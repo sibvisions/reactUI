@@ -24,16 +24,17 @@ import { getFocusComponent } from "../html-util/GetFocusComponent";
  */
 export function handleEnterKey(event:any, elem:any, name:string, stopEditing?:Function) {
     if (event.key === "Enter") {
+        event.preventDefault();
         elem.blur();
         if (stopEditing) {
             stopEditing(event)
         }
         else {
             if (event.shiftKey) {
-                getFocusComponent(name, false);
+                getFocusComponent(name, false)?.focus();
             }
             else {
-                getFocusComponent(name, true)
+                getFocusComponent(name, true)?.focus();
             }
         }
     }

@@ -38,7 +38,7 @@ import { IComponentConstants } from "../../BaseComponent";
 import ServerFull from "../../../server/ServerFull";
 import Server from "../../../server/Server";
 import { SelectFilter } from "../../../request/data/SelectRowRequest";
-import { DataTypeIdentifier } from "src/main/response/data/MetaDataResponse";
+import { DataTypeIdentifier } from "../../../response/data/MetaDataResponse";
 
 /** Interface for cellEditor property of CheckBoxCellEditor */
 export interface ICellEditorCheckBox extends ICellEditor {
