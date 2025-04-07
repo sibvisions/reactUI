@@ -253,6 +253,11 @@
                     &.cancel-padding {
                         padding: var(--table-cell-padding-top-bottom, .2rem) var(--table-cell-padding-left-right, .4rem);
                     }
+
+                    @at-root .variable-row-height#{&} {
+                        min-height: var(--table-data-min-height);
+                        max-height: var(--table-data-max-height);
+                    }
                 }
 
                 &.ChoiceCellEditor, &.CheckBoxCellEditor {

@@ -236,15 +236,28 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const updateRowHeight = useCallback(() => {
         clearTimeout(updateRowHeightTimeout.current);
         updateRowHeightTimeout.current = window.setTimeout(() => {
-            let max = 0;
-            for(let v of cellHeights.current.values()) {
-                max = Math.max(max, v);
+            if (props.sameRowHeight === false && !props.rowHeight) {
+                let sum = 0;
+                for(let v of cellHeights.current.values()) {
+                    sum += v;
+                }
+                const mean = Math.ceil(sum / cellHeights.current.size);
+                setRowHeight(negotiateRowHeight(
+                    props.minRowHeight,
+                    mean,
+                    props.maxRowHeight
+                ));
+            } else {
+                let max = 0;
+                for(let v of cellHeights.current.values()) {
+                    max = Math.max(max, v);
+                }
+                setRowHeight(negotiateRowHeight(
+                    props.minRowHeight,
+                    max,
+                    props.maxRowHeight
+                ));
             }
-            setRowHeight(negotiateRowHeight(
-                props.minRowHeight,
-                max,
-                props.maxRowHeight
-            ));
         }, 1);
     }, [props.maxRowHeight])
 
@@ -1030,7 +1043,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const isEditable = getCellIsEditable(rowData);
             const elementRef = useRef<any>(null);
             useEffect(() => {
-                if (tableInfo.rowIndex < 100 && props.sameRowHeight && !props.rowHeight) {
+                if (tableInfo.rowIndex < 100 && (props.sameRowHeight === true || props.sameRowHeight === false) && !props.rowHeight) {
                     const h = (elementRef.current?.querySelector('.cell-data-content').scrollHeight ?? 0) + 8;
                     const k = `${colName}-${tableInfo.rowIndex}`;
                     cellHeights.current.set(k, h);
@@ -1546,9 +1559,12 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     ref={tableRef}
                     style={{
                         "--table-data-height": `${rowHeight - 8}px`,
+                        ...(props.minRowHeight ? {"--table-data-min-height": `${props.minRowHeight - 8}px`} : {}),
+                        ...(props.maxRowHeight ? {"--table-data-max-height": `${props.maxRowHeight - 8}px`} : {}),
                     } as React.CSSProperties}
                     className={concatClassnames(
                         "rc-table",
+                        props.sameRowHeight === false && !props.rowHeight ? "variable-row-height" : '',
                         props.autoResize === false ? "no-auto-resize" : "",
                         getNavTableClassName(props.parent),
                         props.styleClassNames

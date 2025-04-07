@@ -64,7 +64,7 @@
   --radiobutton-size:20px;
   --tab-padding:0rem 1rem;
   --table-header-padding: 0.6rem 0.75rem;
-  --table-cell-padding-top-bottom: 0.2rem;
+  --table-cell-padding-top-bottom: 0.25rem;
   --table-cell-padding-left-right: 0.75rem;
   --table-data-height:27px;
   --label-padding:calc(var(--input-padding-tb) + var(--input-border-width));
@@ -307,6 +307,11 @@ body {
 .basti .rc-table .p-datatable-tbody > tr > td {
   padding: var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right) var(--table-cell-padding-top-bottom) var(--table-cell-padding-left-right);
   height: calc(8px + var(--table-data-height));
+}
+.basti .rc-table.variable-row-height .p-datatable-tbody > tr > td {
+  min-height: calc(8px + var(--table-data-min-height));
+  max-height: calc(8px + var(--table-data-max-height));
+  height: auto;
 }
 .basti .rc-label > span {
   padding: var(--label-padding) 0px;
