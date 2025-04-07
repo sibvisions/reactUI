@@ -186,7 +186,17 @@ function isVisible(ele:HTMLElement, container:HTMLElement, cell:any, rowHeight:n
     }
 };
 
-
+function negotiateRowHeight(min?: number, height?: number, max?: number) {
+    return Math.min(
+        (max ?? Number.POSITIVE_INFINITY) - 8, 
+        Math.max(
+            height 
+                ? height - 8 
+                : parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
+            (min ?? 8) - 8
+        )
+    ) + 8
+}
 
 /**
  * This component displays a DataTable
@@ -213,16 +223,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
     const [rowHeight, setRowHeight] = useState(24);
     useEffect(() => {
-        const rowHeight = Math.min(
-            (props.maxRowHeight ?? Number.POSITIVE_INFINITY) - 8, 
-            Math.max(
-                props.rowHeight 
-                    ? props.rowHeight - 8 
-                    : parseInt(window.getComputedStyle(document.documentElement).getPropertyValue("--table-data-height")),
-                (props.minRowHeight ?? 8) - 8, 
-                16,
-            )
-        ) + 8;
+        const rowHeight = negotiateRowHeight(
+            props.minRowHeight,
+            props.rowHeight,
+            props.maxRowHeight
+        );
         setRowHeight(rowHeight);
         cellHeights.current.set('initial', rowHeight);
     }, [props.designerUpdate])
@@ -235,7 +240,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             for(let v of cellHeights.current.values()) {
                 max = Math.max(max, v);
             }
-            setRowHeight(Math.max(props.minRowHeight ?? 0, Math.min(props.maxRowHeight ?? Number.POSITIVE_INFINITY, max)));
+            setRowHeight(negotiateRowHeight(
+                props.minRowHeight,
+                max,
+                props.maxRowHeight
+            ));
         }, 1);
     }, [props.maxRowHeight])
 
