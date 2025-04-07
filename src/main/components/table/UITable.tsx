@@ -1322,6 +1322,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             const widthReq = createWidthRequest();
             widthReq.dataProvider = props.dataBook;
             widthReq.columnName = e.column.props.field;
+            widthReq.width = e.element.clientWidth + 2;
             if (props.onColResizeEnd) {
                 props.onColResizeEnd(e);
             }
