@@ -676,7 +676,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 setColumnWidthStyle(columnWidthStyle);
             }
         }
-    }, [tableRef.current]);
+    }, [tableRef.current, columnWidths]);
 
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
@@ -1341,6 +1341,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
             showTopBar(props.context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), props.topbar);
         }
+
+        if(columnWidths) {
+            columnWidths[[...e.element.parentElement!.children].indexOf(e.element)].width = e.element.clientWidth;
+            setColumnWidths([...columnWidths]);
+        }
     }
 
     /**
@@ -1351,18 +1356,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const handleColReorder = (e:any) => {
         const { dragIndex, dropIndex } = e;
         
-        //update primes' table css according to reordering
-        let colWidthCSS = (tableRef?.current as any).styleElement?.innerHTML;
-        if(colWidthCSS) {
-            const fromRegex = new RegExp(`(\\.p-datatable\\[${(tableRef?.current as any).attributeSelector}\\] \\.p-datatable-tfoot > tr > td:nth-child\\(${dragIndex + 1}\\) {)([^}]+)(})`);
-            const toRegex = new RegExp(`(\\.p-datatable\\[${(tableRef?.current as any).attributeSelector}\\] \\.p-datatable-tfoot > tr > td:nth-child\\(${dropIndex + 1}\\) {)([^}]+)(})`);
-            const from = colWidthCSS.match(fromRegex);
-            const to = colWidthCSS.match(toRegex);
-            if (from && to) {
-                colWidthCSS = colWidthCSS.replace(fromRegex, from[1] +   to[2] + from[3]);
-                colWidthCSS = colWidthCSS.replace(toRegex,     to[1] + from[2] +   to[3]);
-                //tableRef.current.styleElement.innerHTML = colWidthCSS;
-            }
+        if (columnWidths) {
+            const t = columnWidths[dragIndex];
+            columnWidths.splice(dropIndex + ((dropIndex > dragIndex) ? 1 : 0), 0, t);
+            columnWidths.splice(dragIndex + ((dropIndex <= dragIndex) ? 1 : 0), 1);
         }
 
         if (props.onColOrderChange) {
@@ -1370,6 +1367,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         }
 
         setColumnOrder(e.columns.map((column:any) => column.props.field));
+
+        if(columnWidths) {
+            setColumnWidths([...columnWidths]);
+        }
     }
     
     /**
