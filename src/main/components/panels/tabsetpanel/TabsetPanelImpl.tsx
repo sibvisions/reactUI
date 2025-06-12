@@ -186,7 +186,7 @@ const TabsetPanelImpl: FC<ITabsetImpl & IComponentConstants> = (props) => {
                 style={props.screen_modal_ || props.content_modal_ ? { height: (prefSize?.height as number), width: prefSize?.width } : { ...props.layoutStyle, ...props.compStyle }}>
                 <TabView
                     ref={panelRef}
-                    style={{"--nav-background": props.compStyle.background} as CSSProperties}
+                    //style={{"backgroundColor": props.compStyle.background} as CSSProperties}
                     activeIndex={props.selectedIndex}
                     onTabChange={event => props.onTabChange(event.index)}
                     onBeforeTabClose={event => props.onTabClose(event.index)}

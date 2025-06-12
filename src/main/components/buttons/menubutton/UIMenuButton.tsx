@@ -67,7 +67,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
 
     /** Returns the default button element (left button) of a menubutton */
     const getDefaultButton = (): HTMLElement|undefined => {
-        const defaultButton = buttonRef.current?.getElement().querySelector(".p-splitbutton-defaultbutton");
+        const defaultButton = buttonRef.current?.getElement()?.querySelector(".p-splitbutton-defaultbutton");
         if (defaultButton) {
             return defaultButton as HTMLElement;
         }
@@ -76,7 +76,7 @@ const UIMenuButton: FC<IMenuButton & IExtendableMenuButton> = (props) => {
 
     /** Returns the menu button element (right button with arrow) of a menubutton */
     const getMenuButton = (): HTMLElement|undefined => {
-        const menuButton = buttonRef.current?.getElement().querySelector(".p-splitbutton-menubutton");
+        const menuButton = buttonRef.current?.getElement()?.querySelector(".p-splitbutton-menubutton");
         if (menuButton) {
             return menuButton as HTMLElement;
         }

@@ -15,9 +15,11 @@
 
 import React, { FC, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useHistory } from "react-router-dom";
+import { Button } from 'primereact/button';
 import { SpeedDial } from "primereact/speeddial";
 import { Tooltip } from "primereact/tooltip";
 import { ReactUIDesigner } from "@sibvisions/reactui-designer";
+import { translation } from "./main/util/other-util/Translation";
 import { showTopBar } from "./main/components/topbar/TopBar";
 import { PopupContextProvider } from "./main/hooks/data-hooks/usePopupMenu";
 import COMPONENT_CLASSNAMES from "./main/components/COMPONENT_CLASSNAMES";
@@ -197,15 +199,16 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         const speeddialModel = [];
         if (context.appSettings.showDesigner) {
             speeddialModel.push({
-                label: 'Style-Designer',
+                label: translation.get("Style-Designer"),
                 icon: 'fas fa-palette',
                 command: () => setShowDesignerView(prevState => !prevState)
             });
         }
 
-        if (context.appSettings.showUIDesigner !== undefined) {
+        if (context.appSettings.showUIDesigner !== undefined)
+             {
             speeddialModel.push({
-                label: 'UI-Designer',
+                label: translation.get("UI-Designer"),
                 icon: 'fas fa-hammer',
                 command: () => (context.appSettings.showUIDesigner as Function)()
             })
@@ -219,6 +222,23 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
         <>
             {props.children}
             {(speeddialModel.length && !showDesignerView && !context.designer?.isVisible) ?
+               (speeddialModel.length === 1) ?
+                <>
+                   <Tooltip target={"#style-designer-button"} position="left" />
+                   <Button id={"style-designer-button"} 
+                           className='designer-topbar-buttons' 
+                           icon='fas fa-palette' 
+                           style={{
+                               position: "absolute",
+                               bottom: "30px",
+                               right: "30px",
+                               opacity: "0.7",
+//                               fontSize: "1.825rem"
+                           }} 
+                           onClick={() => setShowDesignerView(prevState => !prevState)} 
+                           data-pr-tooltip={translation.get("Style-Designer")} />
+                </>
+               : 
                 <>
                     <Tooltip target=".p-speeddial-linear .p-speeddial-action" position="left" />
                     <SpeedDial
@@ -227,13 +247,21 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         direction="up"
                         style={{
                             position: "absolute",
-                            top: speeddialModel.length === 1 ? "calc(100% - 165px)" : "calc(100% - 220px)",
-                            left: "calc(100% - 90px)",
+                            bottom: "30px",
+                            right: "30px",
                             opacity: "0.8",
                             fontSize: "1.825rem"
+                        }} 
+                        pt={{    // Workaround for bug in prime react, without, 2 clicks are necessary
+                            actionIcon: {
+                            style: {
+                                pointerEvents: "none"
+                            }
+                            }
                         }} />
                 </>
-                : undefined}
+                : undefined
+                }
         </>
 
     return (

@@ -714,7 +714,7 @@ const UIChart: FC<IChart> = (props) => {
                 onLoadCallback
             )
         }
-    },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize]);
+    },[onLoadCallback, id, props.preferredSize, props.minimumSize, props.maximumSize, props.className, props.forwardedRef.current]);
 
     return (
         <span ref={props.forwardedRef} className={concatClassnames("rc-chart-wrapper", props.styleClassNames)} style={props.layoutStyle} tabIndex={getTabIndex(props.focusable, props.tabIndex)}>

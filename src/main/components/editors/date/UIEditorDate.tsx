@@ -232,7 +232,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     // If the editor is readonly, disable the button to open the datepicker
     useEffect(() => {
         if (calendar.current) {
-            const btnElem = calendar.current.getElement().querySelector("button");
+            const btnElem = calendar.current.getElement()?.querySelector("button");
             if (btnElem) {
                 if (props.isReadOnly || hasError) {
                     if (!btnElem.disabled) {
@@ -332,8 +332,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     }
 
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
-    useMultipleEventHandler(calendar.current && calendarInput.current && calendar.current.getElement().querySelector("button") ?
-        [calendarInput.current, calendar.current.getElement().querySelector("button")!] : undefined, "keydown", (event: KeyboardEvent) => {
+    useMultipleEventHandler(calendar.current && calendarInput.current && calendar.current.getElement()?.querySelector("button") ?
+        [calendarInput.current, calendar.current.getElement()?.querySelector("button")!] : undefined, "keydown", (event: KeyboardEvent) => {
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab', 'Escape'].indexOf(event.key) === -1 && !startedEditing.current) {
                 startedEditing.current = true;
             }
@@ -449,7 +449,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     }
 
                     // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
-                    if (!visible && !calendar.current?.getElement().contains(event.relatedTarget)) {
+                    if (!visible && !calendar.current?.getElement()?.contains(event.relatedTarget)) {
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server);
                         }

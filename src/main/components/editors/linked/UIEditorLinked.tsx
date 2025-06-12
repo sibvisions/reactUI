@@ -450,7 +450,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     /** Returns the element of the dropdownbutton or null */
     const getDropDownButton = (): HTMLButtonElement|null => {
         if (linkedRef.current) {
-            return linkedRef.current.getElement().querySelector("button");
+            return linkedRef.current.getElement()?.querySelector("button");
         }
         return null;
     }
@@ -1065,7 +1065,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     const alignOverlay = useCallback((force:boolean = false) => {
         if(linkedRef.current) {
             const w = linkedRef.current.getOverlay()?.clientWidth;
-            if(force || w !== lastOverlayWidth.current) {
+            if(linkedRef.current.getOverlay() && (force || w !== lastOverlayWidth.current)) {
                 DomHandler.alignOverlay(
                     linkedRef.current.getOverlay(), 
                     linkedRef.current.getInput() as any, 

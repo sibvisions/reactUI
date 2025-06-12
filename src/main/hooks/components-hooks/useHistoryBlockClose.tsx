@@ -7,9 +7,10 @@ export function useVisibleWithHistoryBlock(
     disabled: boolean = false,
 ): [ boolean, Dispatch<SetStateAction<boolean>> ] {
     const [visible, setVisible] = useState<boolean>(initial);
-    
     const history = useHistory();
-    useEffect(() => {
+
+    // Old code causes Warning: A history supports only one prompt at a time Error Component Stack
+/*    useEffect(() => {
         return history.block(() => {
             if(visible && !disabled) {
                 setVisible(false);
@@ -17,6 +18,27 @@ export function useVisibleWithHistoryBlock(
             }
             return !visible;
         })
+*/
+
+    useEffect(() => {
+        let unblock: () => void;
+        if (visible)
+        {
+            unblock = history.block(() => {
+                if(visible && !disabled) {
+                    setVisible(false);
+                    onHideCallback?.();
+                }
+                return !visible;
+            })
+        }
+
+        return () => {
+            // This cleanup function runs when 'visible' changes or component unmounts
+            if (unblock) {
+                unblock();
+            }
+        }
     }, [history, visible, setVisible, onHideCallback, disabled])
 
     return [visible, setVisible]
