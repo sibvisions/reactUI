@@ -172,16 +172,16 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
         const prefSize = parsePrefSize(props.preferredSize);
         const sizeMap = new Map<string, CSSProperties>();
         const comp = context.contentStore.getComponentById(baseProps.id);
-        if (comp && popupRef.current) {
+        if (comp && popupRef.current && popupRef.current.getContent()) {
             if (componentSizes && componentSizes.has(comp.id)) {
                 if (prefSize) {
                     sizeMap.set(comp.id, { height: prefSize.height, width: prefSize.width });
                 }
                 else {
-                    let popupSize:Dimension = { height: popupRef.current.getContent().offsetHeight, width: popupRef.current.getContent().offsetWidth }
+                    let popupSize:Dimension = { height: popupRef.current.getContent()!.offsetHeight, width: popupRef.current.getContent()!.offsetWidth}
                     const compSize = componentSizes.get(comp.id);
-                    popupSize.height = popupRef.current.getContent().offsetHeight > compSize!.preferredSize.height ? popupRef.current.getContent().offsetHeight : compSize!.preferredSize.height;
-                    popupSize.width = popupRef.current.getContent().offsetWidth > compSize!.preferredSize.width ? popupRef.current.getContent().offsetWidth : compSize!.preferredSize.width;
+                    popupSize.height = popupSize.height > compSize!.preferredSize.height ? popupSize.height : compSize!.preferredSize.height;
+                    popupSize.width = popupSize.width > compSize!.preferredSize.width ? popupSize.width : compSize!.preferredSize.width;
                     sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
                 }
                 setComponentSize(sizeMap);
@@ -194,9 +194,9 @@ const UIPopupWrapper: FC<IPopup & IExtendablePopup> = (baseProps) => {
     /** When the popup is being resized update the size to resize the panel */
     const handlePopupResize = () => {
         const comp = context.contentStore.getComponentById(baseProps.id);
-        if (popupRef.current && popupRef.current.getContent() && comp) {
+        if (comp && popupRef.current && popupRef.current.getContent()) {
             const sizeMap = new Map<string, CSSProperties>();
-            const popupSize:Dimension = { height: popupRef.current.getContent().offsetHeight, width: popupRef.current.getContent().offsetWidth };
+            const popupSize:Dimension = { height: popupRef.current.getContent()!.offsetHeight, width: popupRef.current.getContent()!.offsetWidth };
             sizeMap.set(comp.id, { height: popupSize.height, width: popupSize.width });
             setComponentSize(sizeMap);
         }

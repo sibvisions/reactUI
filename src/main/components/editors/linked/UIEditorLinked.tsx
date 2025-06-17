@@ -15,6 +15,7 @@
 
 import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AutoComplete } from 'primereact/autocomplete';
+import { AutoCompleteChangeEvent } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
 import { createFetchRequest, createFilterRequest, createSelectRowRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
@@ -450,7 +451,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     /** Returns the element of the dropdownbutton or null */
     const getDropDownButton = (): HTMLButtonElement|null => {
         if (linkedRef.current) {
-            return linkedRef.current.getElement()?.querySelector("button");
+            const element = linkedRef.current.getElement();
+            if (element) {
+                return element.querySelector("button");
+            }
         }
         return null;
     }
@@ -1063,16 +1067,19 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
      */
     const lastOverlayWidth = useRef(0);
     const alignOverlay = useCallback((force:boolean = false) => {
-        if(linkedRef.current) {
-            const w = linkedRef.current.getOverlay()?.clientWidth;
-            if(linkedRef.current.getOverlay() && (force || w !== lastOverlayWidth.current)) {
-                DomHandler.alignOverlay(
-                    linkedRef.current.getOverlay(), 
-                    linkedRef.current.getInput() as any, 
-                    document.body as any
-                );
+        if (linkedRef.current) {
+            const overlay = linkedRef.current.getOverlay();
+            if (overlay) {
+                const w = overlay.clientWidth;
+                if(force || w !== lastOverlayWidth.current) {
+                    DomHandler.alignOverlay(
+                        overlay, 
+                        linkedRef.current.getInput() as any, 
+                        document.body as any
+                    );
+                }
+                lastOverlayWidth.current = w;
             }
-            lastOverlayWidth.current = w;
         }
     }, [])
 
@@ -1152,6 +1159,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 value={text}
                 onChange={event => {
                     startedEditing.current = true;
+
                     if (event.value == "") {
                         sendFilter(event.value);
                     }
@@ -1188,7 +1196,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         const dropDownElem = document.getElementsByClassName("dropdown-" + props.name)[0];
                         // Check if the relatedTarget isn't in the dropdown and only then send focus lost. Linked also wants to send blur when clicking the overlay.
                         if (dropDownElem) {
-                            if (!linkedRef.current?.getElement().contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
+                            if (!linkedRef.current?.getElement()?.contains(event.relatedTarget) && !dropDownElem.contains(event.relatedTarget as Node)) {
                                 if (props.eventFocusLost) {
                                     onFocusLost(props.name, props.context.server);
                                 }
@@ -1196,7 +1204,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                             }
                             
                         }
-                        else if (!linkedRef.current?.getElement().contains(event.relatedTarget)) {
+                        else if (!linkedRef.current?.getElement()?.contains(event.relatedTarget)) {
                             if (props.eventFocusLost) {
                                 onFocusLost(props.name, props.context.server);
                             }
@@ -1212,19 +1220,22 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         const index = sugg.findIndex(
                             (s:any) => s[linkReference.referencedColumnNames[linkReference.columnNames.indexOf(props.columnName)]] == props.selectedRow?.data[props.columnName]
                         );
-                        if(index >= 0) {
-                            // Virtual scroller does not scroll, if index is smaller than last - 2
-                            // We want to show 2 items above the selected item, that the selected item is not the top one.
-                            const last = linkedRef.current?.getVirtualScroller().getRenderedRange().viewport.last;
-                            const scrollpos = index < last ? 0 : index - 2; 
-                            linkedRef.current?.getVirtualScroller().scrollToIndex(scrollpos, "auto");
+                        if (index >= 0) {
+                            const virtualscroller = linkedRef.current?.getVirtualScroller();
+                            if (virtualscroller) {
+                                // Virtual scroller does not scroll, if index is smaller than last - 2
+                                // We want to show 2 items above the selected item, that the selected item is not the top one.
+                                const last = virtualscroller.getRenderedRange().viewport.last;
+                                const scrollpos = index < last ? 0 : index - 2; 
+                                virtualscroller.scrollToIndex(scrollpos, "auto");
 
-                            setTimeout(() => {
-                                const el = linkedRef.current?.getOverlay().querySelectorAll('.p-autocomplete-item')[index - linkedRef.current?.getVirtualScroller().getRenderedRange().first];
-                                el?.classList.add('p-highlight');
-                                el?.setAttribute('data-p-highlight', 'true');
-                                alignOverlay(true);
-                            }, 50);
+                                setTimeout(() => {
+                                    const el = linkedRef.current?.getOverlay()?.querySelectorAll('.p-autocomplete-item')[index - virtualscroller.getRenderedRange().first];
+                                    el?.classList.add('p-highlight');
+                                    el?.setAttribute('data-p-highlight', 'true');
+                                    alignOverlay(true);
+                                }, 50);
+                            }
                         }
                     }
 
@@ -1236,7 +1247,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     scrollHeight: suggestions?.length ? `${Math.min(6.66, (suggestions[0].items?.length ?? (suggestions.length - 1)) + 1) * 38}px` : undefined,
                     onLazyLoad: handleLazyLoad,
                     onScroll: (ev) => {
-                        const range = linkedRef.current?.getVirtualScroller().getRenderedRange();
+                        const range = linkedRef.current?.getVirtualScroller()?.getRenderedRange();
                         if((range?.first ?? 0) < (range?.last ?? 1)) {
                             alignOverlay();
                         }

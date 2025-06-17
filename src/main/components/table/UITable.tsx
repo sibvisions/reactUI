@@ -268,7 +268,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      const getNumberOfRowsPerPage = useCallback(() => {
         let headerHeight = 40;
         if (tableRef.current) {
-            const tableHead = tableRef.current.getTable().querySelector('.p-datatable-thead') as HTMLElement;
+            const tableHead = tableRef.current.getTable()?.querySelector('.p-datatable-thead') as HTMLElement;
             if (tableHead) {
                 headerHeight = tableHead.offsetHeight;
             }
@@ -419,35 +419,37 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         setTimeout(() => {
             if (tableRef.current) {
                 const table = tableRef.current.getElement();
-                const selectedElem = DomHandler.findSingle(table, 'tbody > tr.p-highlight td.p-highlight');
-                const container = DomHandler.findSingle(table, !virtualEnabled ? '.p-datatable-wrapper' : '.p-virtualscroller');
-                const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table');
+                if (table) {
+                    const selectedElem = DomHandler.findSingle(table, 'tbody > tr.p-highlight td.p-highlight');
+                    const container = DomHandler.findSingle(table, !virtualEnabled ? '.p-datatable-wrapper' : '.p-virtualscroller');
+                    const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table');
 
-                if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
-                    const moveDirections = isVisible(selectedElem, container, cell, rowHeight);
-                    if (pageKeyPressed.current !== false) {
-                        pageKeyPressed.current = false;
-                        container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * rowHeight);
-                        container.focus();
-                    }
-                    else if (selectedElem !== null) {
-                        let sLeft:number = container.scrollLeft
-                        let sTop:number = container.scrollTop
-    
-                        if (moveDirections.visLeft !== CellVisibility.FULL_VISIBLE) {
-                            sLeft = selectedElem.offsetLeft;
+                    if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
+                        const moveDirections = isVisible(selectedElem, container, cell, rowHeight);
+                        if (pageKeyPressed.current !== false) {
+                            pageKeyPressed.current = false;
+                            container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * rowHeight);
+                            container.focus();
                         }
-    
-                        if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                            sTop = cell.rowIndex * rowHeight;
+                        else if (selectedElem !== null) {
+                            let sLeft:number = container.scrollLeft
+                            let sTop:number = container.scrollTop
+        
+                            if (moveDirections.visLeft !== CellVisibility.FULL_VISIBLE) {
+                                sLeft = selectedElem.offsetLeft;
+                            }
+        
+                            if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
+                                sTop = cell.rowIndex * rowHeight;
+                            }
+                            else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
+                                sTop = container.scrollTop + (isNext ? rowHeight : -rowHeight);
+                            }
+                            container.scrollTo(sLeft, sTop);
                         }
-                        else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                            sTop = container.scrollTop + (isNext ? rowHeight : -rowHeight);
+                        else {
+                            container.scrollTo(container.scrollLeft, cell.rowIndex * rowHeight);
                         }
-                        container.scrollTo(sLeft, sTop);
-                    }
-                    else {
-                        container.scrollTo(container.scrollLeft, cell.rowIndex * rowHeight);
                     }
                 }
             }
@@ -619,11 +621,14 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                             cellDataWidthList.push(newCellWidth);
                         }
                         // adding "read-size" sets the table to table-layout auto and the td's to display inline block to correctly measure the width
-                        tableRef.current.getElement().classList.add("read-size");
-                        for (let i = 0; i < Math.min(trows.length, 10); i++) {
-                            goThroughCellData(trows, i);
+                        const tableElement = tableRef.current.getElement();
+                        if (tableElement) {
+                            tableElement.classList.add("read-size");
+                            for (let i = 0; i < Math.min(trows.length, 10); i++) {
+                                goThroughCellData(trows, i);
+                            }
+                            tableElement.classList.remove("read-size");
                         }
-                        tableRef.current.getElement().classList.remove("read-size");
     
                         let tempWidth: number = 0;
                         cellDataWidthList.forEach(cellDataWidth => {
@@ -668,8 +673,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
         if (tableRef.current) {
-            const colResizers = tableRef.current.getTable().getElementsByClassName("p-column-resizer") as HTMLCollectionOf<HTMLElement>;
-            if (colResizers.length) {
+            const colResizers = tableRef.current.getTable()?.getElementsByClassName("p-column-resizer") as HTMLCollectionOf<HTMLElement>;
+            if (colResizers && colResizers.length) {
                 for (const colResizer of colResizers) {
                     if (colResizer.parentElement) {
                         if (!colResizer.parentElement.classList.contains("cell-not-resizable") && colResizer.style.display === "none") {
@@ -708,13 +713,13 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     // Adds and removes the sort classnames to the headers for styling
     // If the lib user extends the Table with onSort, call it when the user sorts.
     useEffect(() => {
-        if (tableRef.current) {
+        const table = tableRef.current?.getTable();
+        if (table) {
             if (props.onSort) {
                 props.onSort(sortDefinitions);
             }
 
-            const table = tableRef.current;
-            const allTableColumns = DomHandler.find(table.getTable(), '.p-datatable-thead > tr > th');
+            const allTableColumns = DomHandler.find(table, '.p-datatable-thead > tr > th');
             if (sortDefinitions && sortDefinitions.length) {
                 sortDefinitions.forEach(sort => {
                     const el = allTableColumns.find(col => col.classList.contains(sort.columnName));
@@ -1463,8 +1468,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     /** Column-resize handler */
     useMultipleEventHandler(
-        tableRef.current ?
-            DomHandler.find(tableRef.current.getElement(), "th .p-column-resizer")
+        tableRef.current?.getElement() ?
+            DomHandler.find(tableRef.current.getElement()!, "th .p-column-resizer")
             : undefined,
         'mousedown',
         (elem:any) => {
