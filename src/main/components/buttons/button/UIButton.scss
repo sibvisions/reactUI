@@ -13,7 +13,8 @@
  * the License.
  */
 
-@import '../../../../application-frame/styling/scssutil/buttonColors.scss';
+@use '../../../../application-frame/styling/scssutil/buttonColors.scss';
+@use "sass:selector";
 
 /// Inherit height and width from parent who has set it by the layout
 .rc-button {
@@ -43,7 +44,7 @@
         border-color: transparent;
     }
 
-    @include btnHover
+    @include buttonColors.btnHover
 }
 
 .rc-button, .rc-togglebutton {
@@ -116,7 +117,7 @@
 .reactUI:not(.basti_mobile) {
     .p-button.p-button-icon-only {
         &.p-autocomplete-dropdown, &.p-datepicker-trigger {
-            @include btnHover;
+            @include buttonColors.btnHover;
         }
     }
 }
@@ -143,7 +144,7 @@
         margin-right: 4px;
     }
 
-    @at-root #{selector-unify(&, "span")} {
+    @at-root #{selector.unify(&, "span")} {
         .gap-top:not(.p-button-icon-only):not(.login-button):not(.lost-password-button) & {
             margin-top: var(--iconTextGap);
         }

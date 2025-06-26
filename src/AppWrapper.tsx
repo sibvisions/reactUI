@@ -273,9 +273,9 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                         changeImages={() => setImagesChanged(prevState => !prevState)}
                         uploadUrl={context.server.designerUrl}
                         isCorporation={isCorporation(appLayout, appTheme)}
-                        logoLogin={process.env.PUBLIC_URL + context.appSettings.LOGO_LOGIN}
-                        logoBig={process.env.PUBLIC_URL + context.appSettings.LOGO_BIG}
-                        logoSmall={process.env.PUBLIC_URL + context.appSettings.LOGO_SMALL}
+                        logoLogin={'.' + context.appSettings.LOGO_LOGIN}
+                        logoBig={'.' + context.appSettings.LOGO_BIG}
+                        logoSmall={'.' + context.appSettings.LOGO_SMALL}
                         designerSubscription={context.designerSubscriptions}
                         appName={context.appSettings.applicationMetaData.applicationName}
                         setShowDesigner={() => setShowDesignerView(prevState => !prevState)}

@@ -457,11 +457,11 @@ const Menu: FC<IMenu> = (props) => {
     var imgLogo = useMemo(() => <>
         <img draggable="false" 
             className="menu-logo menu-logo--big" 
-            src={`${(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '')}${context.appSettings.LOGO_BIG}`} 
+            src={`${'.' + context.appSettings.LOGO_BIG}`} 
             alt="logo" />
         <img draggable="false" 
             className="menu-logo menu-logo--small" 
-            src={`${(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '')}${context.appSettings.LOGO_SMALL}`} 
+            src={`${'.' + context.appSettings.LOGO_SMALL}`} 
             alt="logo" />
     </>, []);                    
 

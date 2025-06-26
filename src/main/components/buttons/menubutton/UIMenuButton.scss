@@ -13,7 +13,7 @@
  * the License.
  */
 
-@import '../../../../application-frame/styling/scssutil/buttonColors.scss';
+@use '../../../../application-frame/styling/scssutil/buttonColors.scss';
 
 .rc-popupmenubutton-wrapper {
     outline-width: 0;
@@ -39,7 +39,7 @@
         outline-width: 0;
         outline-style: none;
     }
-    @include btnHover;
+    @include buttonColors.btnHover;
 
     .p-splitbutton {
         --menuBtnJustify: center;
@@ -57,7 +57,7 @@
         border-color: inherit;
         color: inherit;
     
-        @include btnHover;
+        @include buttonColors.btnHover;
     }
 
     .p-button.p-splitbutton-menubutton, .p-button.p-splitbutton-defaultbutton {

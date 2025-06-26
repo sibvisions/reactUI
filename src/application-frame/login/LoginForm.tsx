@@ -93,7 +93,7 @@ const LoginForm:FC<ILoginForm> = (props) => {
         <>
             <form onSubmit={loginSubmit} className="login-form">
                 <div className="login-logo-wrapper">
-                    <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
+                    <img className="login-logo" src={'.' + context.appSettings.LOGO_LOGIN} alt="logo" />
                 </div>
                 <div className="p-fluid">
                         {props.errorMessage && 

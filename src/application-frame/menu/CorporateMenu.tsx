@@ -94,7 +94,7 @@ const CorporateMenu:FC<IMenu> = (props) => {
 
     var imgLogo = (<img draggable="false" 
                         className="menu-logo" 
-                        src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_BIG} 
+                        src={'.' + context.appSettings.LOGO_BIG} 
                         alt="logo" />);
 
     return (

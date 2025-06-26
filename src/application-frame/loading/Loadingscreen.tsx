@@ -286,7 +286,7 @@ const LoadingScreen: FC = () => {
                             className="loading-screen-image" 
                             alt="loading-screen-image" 
                             key="loading-screen-image" 
-                            src={process.env.PUBLIC_URL + loadingElem!.getAttribute("loading-image")}
+                            src={"./" + loadingElem!.getAttribute("loading-image")}
                             style={getLoadingElemStyle("image")} />;
             }
             else {
@@ -322,7 +322,7 @@ const LoadingScreen: FC = () => {
                             id="loading-screen-spinner" 
                             alt="loading-screen-spinner" 
                             key="loading-screen-spinner" 
-                            src={process.env.PUBLIC_URL + loadingElem!.getAttribute("loading-spinner")}
+                            src={"./" + loadingElem!.getAttribute("loading-spinner")}
                             style={getLoadingElemStyle("spinner")} />
             }
             else {
@@ -356,7 +356,7 @@ const LoadingScreen: FC = () => {
                 {context.appSettings.showDebug && <span className="loading-screen-progress-text">{progressionText}</span>}
             </div> 
             : 
-            <iframe className="html-loading-screen" src={process.env.PUBLIC_URL + loadingElem!.getAttribute("loading-html")} />}
+            <iframe className="html-loading-screen" src={"./" + loadingElem!.getAttribute("loading-html")} />}
         </>
     )
 }

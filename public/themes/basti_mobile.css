@@ -102,7 +102,7 @@ body {
 .basti_mobile .std-menu.menu-collapsed .menu-logo-wrapper {
   width: var(--std-menu-collapsed-width);
 }
-.basti_mobile .std-menu.menu-collapsed .menu-logo-wrapper .menu-logo {
+.basti_mobile .std-menu.menu-collapsed .menu-logo-wrapper .menu-logo--small {
   width: var(--std-logo-collapsed-width);
 }
 .basti_mobile .std-menu.menu-collapsed .menu-panelmenu-wrapper {
@@ -113,9 +113,6 @@ body {
 }
 .basti_mobile .std-menu.menu-collapsed:not(.design-std-menu) .menu-topbar {
   margin-left: var(--std-menu-collapsed-width);
-}
-.basti_mobile .std-menu.menu-collapsed .menu-logo-mini {
-  width: var(--std-logo-collapsed-width);
 }
 .basti_mobile .std-menu .menu-header {
   height: var(--std-header-height);
@@ -165,9 +162,6 @@ body {
 .basti_mobile .std-menu:not(.design-std-menu) .menu-panelmenu-wrapper {
   padding-top: var(--std-header-height);
 }
-.basti_mobile .std-menu .menu-logo-mini {
-  width: var(--std-logo-width);
-}
 .basti_mobile .std-menu .p-panelmenu .p-panelmenu-header a {
   padding: var(--std-menu-header-padding);
 }
@@ -175,8 +169,7 @@ body {
   padding: var(--std-menu-item-padding);
 }
 .basti_mobile .std-menu .p-panelmenu .p-panelmenu-icon {
-  right: 10px;
-/*  left: calc(var(--std-menu-width) - 30px); */
+  left: calc(var(--std-menu-width) - 30px);
 }
 .basti_mobile .std-menu .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {
   min-width: var(--menuicon-size);

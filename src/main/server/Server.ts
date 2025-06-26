@@ -13,7 +13,6 @@
  * the License.
  */
 
-import {parseString} from "xml2js"
 import ContentStore from "../contentstore/ContentStore"
 import BaseServer from "./BaseServer";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
@@ -691,24 +690,31 @@ class Server extends BaseServer {
                     }
                     return response.text()
                 })
-                .then(value => parseString(value, (err, result) => {
-                    if (result) {
-                        if (result.properties) {
-                            result.properties.entry.forEach((entry: any) => translationMap.set(entry.$.key, entry._));
-                        }
+                .then((value) => {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(value, "application/xml");
 
-                        if (!isCSSDesigner) {
-                            overwriteLocaleValues(langData.langCode ? langData.langCode : "en");
-                            setPrimeReactLocale();
-                            this.appSettings.setAppReadyParam("translation");
-                            this.translationFetched = true;
-                        }
-                        else {
-                            this.appSettings.setAppReadyParam("cssTranslation");
-                            this.cssDesignerTranslationFetched = true;
+                    const entries = xmlDoc.getElementsByTagName("entry");
+                    for (let i = 0; i < entries.length; i++) {
+                        const entry = entries[i];
+                        const key = entry.getAttribute("key");
+                        const value = entry.textContent;
+
+                        if (key && value) {
+                            translationMap.set(key, value);
                         }
                     }
-                }))
+
+                    if (!isCSSDesigner) {
+                        overwriteLocaleValues(langData.langCode ?? "en");
+                        setPrimeReactLocale();
+                        this.appSettings.setAppReadyParam("translation");
+                        this.translationFetched = true;
+                    } else {
+                        this.appSettings.setAppReadyParam("cssTranslation");
+                        this.cssDesignerTranslationFetched = true;
+                    }
+                });
             }
         }
 

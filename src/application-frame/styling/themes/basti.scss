@@ -490,8 +490,9 @@ body {
         padding: var(--menubtn-rightbtn-padding);
     }
 
-    .rc-togglebutton > .p-button {
-        padding: var(--btnPadding, var(--button-padding, 0.5rem 1rem));
+    .rc-togglebutton .p-button.p-button-icon-only {
+        width: unset;
+        height: unset;
     }
     
     .p-tabview .p-tabview-nav li .p-tabview-nav-link {

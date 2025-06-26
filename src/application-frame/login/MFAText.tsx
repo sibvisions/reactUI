@@ -67,7 +67,7 @@ const MFAText:FC<ILoginForm> = (props) => {
     return (
         <form onSubmit={sendAuthCode} className="login-form">
             <div className="login-logo-wrapper">
-                <img className="login-logo" src={(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '') + context.appSettings.LOGO_LOGIN} alt="logo" />
+                <img className="login-logo" src={'.' + context.appSettings.LOGO_LOGIN} alt="logo" />
             </div>
             <div className="p-fluid">
                 <div className="p-field" style={{ fontSize: "1.5rem", fontWeight: "bold" }} >

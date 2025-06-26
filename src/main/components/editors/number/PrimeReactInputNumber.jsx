@@ -10,8 +10,6 @@ import { Tooltip } from 'primereact/tooltip';
 import { DomHandler, IconUtils, ObjectUtils, classNames } from 'primereact/utils';
 import { InputNumberBase } from './PrimeReactInputNumberBase';
 import { getNumberSeparators } from './UIEditorNumber';
-import { InputNumberProps } from 'primereact/inputnumber';
-
 
 export const InputNumber = React.memo(
     React.forwardRef((inProps, ref) => {
@@ -439,7 +437,6 @@ export const InputNumber = React.memo(
 
                 //enter and tab
                 case 'Tab':
-                case 'NumpadEnter':
                 case 'Enter':
                 case 'NumpadEnter':
                     newValueStr = validateValue(parseValue(inputValue));
