@@ -180,7 +180,8 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
 
             // If there is only one menugroup, autoexpand this group
             if (menuGroup.size === 1) {
-                const singleGroup = menuGroup.entries().next().value[1];
+                const entry = menuGroup.entries().next();
+                const singleGroup = entry.value ? entry.value[1] : [];
                 primeMenu = getSubItems(singleGroup, true);
             }
             else {

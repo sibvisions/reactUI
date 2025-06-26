@@ -396,8 +396,10 @@ const UITreeV2: FC<ITree & IExtendableTree> = (props) => {
         });
 
         if (isLevelZeroData) {
-            setNodes(newNodesPerParent.entries().next().value[1]);
-            nodesRef.current = newNodesPerParent.entries().next().value[1];
+            const entry = newNodesPerParent.entries().next().value;
+            const value = entry ? entry[1] : [];
+            setNodes(value);
+            nodesRef.current = value;
         }
         else {
             for (let parentNode of parentNodes) {

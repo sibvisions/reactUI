@@ -67,7 +67,7 @@ export default abstract class BaseServer {
     appSettings:AppSettings;
     
     /** the react routers history object */
-    history?:History<any>;
+    history?:History;
     
     /** a map of still open requests */
     openRequests: Map<any, Promise<any>>;
@@ -159,7 +159,7 @@ export default abstract class BaseServer {
      * @param subManager - subscription-manager instance
      * @param history - the history
      */
-     constructor(store: ContentStore|ContentStoreFull, subManager:SubscriptionManager, appSettings:AppSettings, history?: History<any>) {
+     constructor(store: ContentStore|ContentStoreFull, subManager:SubscriptionManager, appSettings:AppSettings, history?: History) {
         this.contentStore = store;
         this.subManager = subManager;
         this.appSettings = appSettings;

@@ -73,7 +73,7 @@ class API implements IAPI {
      * @constructor constructs api instance
      * @param server - server instance
      */
-    constructor (server: BaseServer|Server|ServerFull, store:BaseContentStore|ContentStore|ContentStoreFull, appSettings:AppSettings, sub:SubscriptionManager, history?:History<any>) {
+    constructor (server: BaseServer|Server|ServerFull, store:BaseContentStore|ContentStore|ContentStoreFull, appSettings:AppSettings, sub:SubscriptionManager, history?:History) {
         this.#server = server;
         this.#contentStore = store;
         this.#appSettings = appSettings;
@@ -91,7 +91,7 @@ class API implements IAPI {
     #appSettings: AppSettings
 
     /** the react routers history object */
-    history?: History<any>;
+    history?: History;
 
     /** Subscription-Manager instance */
     #subManager: SubscriptionManager

@@ -223,7 +223,7 @@ const UIMapGoogle: FC<IMap & IExtendableMapGoogle & IComponentConstants> = (prop
 
                 if (selectedMarker && props.pointSelectionEnabled && !props.pointSelectionLockedOnCenter) {
                     selectedMarker.setPosition({lat: e.latLng.lat(), lng: e.latLng.lng()})
-                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "" || "LATITUDE", [e.latLng.lat(), e.latLng.lng()], props.context.server, props.topbar);
+                    sendSetValues(props.pointsDataBook, props.name, [props.latitudeColumnName || "LATITUDE", props.longitudeColumnName || "LONGITUDE"], "LATITUDE", [e.latLng.lat(), e.latLng.lng()], props.context.server, props.topbar);
                     showTopBar(sendSaveRequest(props.pointsDataBook, true, props.context.server), props.topbar)
                 }
             }

@@ -1160,14 +1160,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 onChange={event => {
                     startedEditing.current = true;
 
-                    if (event.value == "") {
-                        sendFilter(event.value);
+                    const value = event.value as unknown as string;
+                    if (value == "") {
+                        sendFilter(value);
                     }
                     if (isDisplayRefColNameOrConcat && Array.isArray(event.target.value)) {
                         setText(getDisplayValue(event.target.value, unpackValue(event.target.value), linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
                     }
                     else {
-                        setText(unpackValue(event.target.value));
+                        const targetValue = event.target.value as unknown as string;
+                        setText(unpackValue(targetValue));
                     }
                 }}
                 onFocus={(event) => {

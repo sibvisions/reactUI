@@ -135,7 +135,7 @@ export default abstract class BaseContentStore {
     inactiveScreens: string[] = [];
 
     /** the react routers history object */
-    history?:History<any>;
+    history?:History;
 
     /** Global components are extra components which are not available in VisionX but are displayable client-side */
     addedComponents:Map<string, Function> = new Map<string, Function>().set("SignaturePad", (props: ISignaturPad) => <SignaturePad {...props} />);
@@ -159,7 +159,7 @@ export default abstract class BaseContentStore {
      * Initiates a contentstore instance
      * @param history - the history
      */
-    constructor(history?:History<any>) {
+    constructor(history?:History) {
         this.history = history;
     }
 

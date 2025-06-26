@@ -51,14 +51,17 @@ enum FieldTypes {
 }
 
 /** custom divider blot to insert <hr> intro quill editor */
-let BlockEmbed = Quill.import('blots/block/embed');
-class DividerBlot extends BlockEmbed { }
+const BlockEmbed = Quill.import('blots/block/embed');
+
+class DividerBlot extends (BlockEmbed as any) { }
 DividerBlot.blotName = 'divider';
 DividerBlot.tagName = 'hr';
 Quill.register(DividerBlot);
 
 const Module = Quill.import('core/module')
 class DividerToolbar extends Module {
+    toolbar :any;
+
     constructor (quill: Quill, options: any) {
         super(quill, options)
         this.options = options
@@ -68,15 +71,15 @@ class DividerToolbar extends Module {
     }
 
     dividerHandler () {
-        const getSelection = this.quill.getSelection() || {}
-        let selection = getSelection.index || this.quill.getLength()
+        const getSelection = this.quill.getSelection()
+        let selection = getSelection ? getSelection.index : this.quill.getLength()
         const [leaf] = this.quill.getLeaf(selection - 1)
         if (leaf instanceof DividerBlot) {
             this.quill.insertText(selection, '\n', "user")
             selection++
         }
         this.quill.insertEmbed(selection, 'divider', this.options, "user")
-        if (getSelection.index === 0) {
+        if (getSelection && getSelection.index === 0) {
             selection++
             this.quill.insertText(selection, '\n', "user")
         }
