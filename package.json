@@ -11,6 +11,7 @@
     "build": "npm run scss && vite build && npm run remove-config && npm run create-build-date",
     "build-ci": "npm run build && zip -r reactBuild build",
     "bundle": "vite build -c vite.library.config.ts && npm run remove-config",
+    "devbundle": "vite build --mode development -c vite.library.config.ts && npm run remove-config",
     "remove-config": "rimraf build/config.json && rimraf build/altConfig.json",
     "clean": "rimraf dist",
     "scss": "npm run scss-schemes && npm run scss-themes",
