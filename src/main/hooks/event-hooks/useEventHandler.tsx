@@ -23,9 +23,9 @@ import COMPONENT_CLASSNAMES from "../../components/COMPONENT_CLASSNAMES";
  * @param handler - the function which should be executed
  */
 const useEventHandler = <K extends keyof HTMLElementEventMap>(target?: HTMLElement, event?: K, handler?: (e: HTMLElementEventMap[K]) => any, isTable?: boolean, className?: string) => {
-    const targetRef = useRef<HTMLElement>();
-    const handlerRef = useRef<(e: HTMLElementEventMap[K]) => any>();
-    const eventRef = useRef<K>();
+    const targetRef = useRef<HTMLElement>(undefined);
+    const handlerRef = useRef<(e: HTMLElementEventMap[K]) => any>(undefined);
+    const eventRef = useRef<K>(undefined);
 
     useEffect(() => {
         if (isTable || className !== COMPONENT_CLASSNAMES.TABLE) {

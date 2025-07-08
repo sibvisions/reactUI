@@ -36,7 +36,7 @@ const UIMessage: FC<DialogResponse> = (props) => {
     const context = useContext(appContext);
 
     /** The properties ConfirmDialog */
-    const feedback = useRef<string>();
+    const feedback = useRef<string>(null);
 
     const [confirmProps, setConfirmProps] = useState<ConfirmDialogProps>({});
 

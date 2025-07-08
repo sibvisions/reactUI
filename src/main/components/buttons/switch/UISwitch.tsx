@@ -32,7 +32,7 @@ import { RenderButtonHTML, getButtonText } from "../button/UIButton";
 /** This component displays a switch, used when the CheckboxCellEditor style 'ui-switch' is used */
 const UISwitch: FC<IEditorCheckBox & IComponentConstants> = (props) => {
     /** Reference for the switch component */
-    const switchRef = useRef<any>();
+    const switchRef = useRef<InputSwitch>(null);
 
     /** Current state of whether the CheckBox is currently checked or not */
     const [checked, setChecked] = useState(props.selectedRow ? getBooleanValueFromValue(props.selectedRow.data[props.columnName], props.cellEditor.selectedValue) : false);

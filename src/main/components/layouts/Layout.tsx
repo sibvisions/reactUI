@@ -21,6 +21,7 @@ import FlowLayout from "./FlowLayout";
 import FormLayout from "./FormLayout";
 import GridLayout from "./GridLayout";
 import NullLayout from "./NullLayout";
+import CustomProps from "../../util/types/custom-types/CustomProps";
 import { LayoutAssistant } from "../../util/types/designer/LayoutAssistant";
 import { FormLayoutInformation, LAYOUTS } from "../../util/types/designer/LayoutInformation";
 
@@ -42,7 +43,7 @@ export interface ILayout {
     popupSize?: Dimension,
     minimumSize?: Dimension,
     maximumSize?: Dimension,
-    components: Array<ReactElement>
+    components: Array<ReactElement<CustomProps>>
     compSizes: Map<string, ComponentSizes> | undefined
     style: CSSProperties,
     reportSize: Function,

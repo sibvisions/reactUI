@@ -25,6 +25,7 @@ import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { IExtendableSplitPanel } from "../../../extend-components/panels/ExtendSplitPanel";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { IComponentConstants } from "../../BaseComponent";
+import CustomProps from "../../../util/types/custom-types/CustomProps";
 
 /** Interface for UISplitPanel */
 export interface ISplit extends IBaseComponent {
@@ -46,7 +47,7 @@ const UISplitPanel: FC<ISplit & IExtendableSplitPanel & IComponentConstants> = (
      * @param constraint - the constraint of the child
      * @returns the child based on its constraint
      */
-    const getChildByConstraint = (constraint: string): ReactElement | undefined => {
+    const getChildByConstraint = (constraint: string): ReactElement<CustomProps> | undefined => {
         return components.find((component) => {
             const compProp = children.find(comp => comp.id === component.props.id);
             if(compProp) {

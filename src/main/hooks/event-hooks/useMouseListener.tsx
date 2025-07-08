@@ -61,10 +61,10 @@ const useMouseListener = (
     const pressedElement = useRef<boolean>(false);
 
     /** The x-position when clicking */
-    const pressedX = useRef<number>();
+    const pressedX = useRef<number>(undefined);
     
     /** The y-position when clicking */
-    const pressedY = useRef<number>();
+    const pressedY = useRef<number>(undefined);
 
     /** The className of the component */
     const componentClassName = useMemo(() => {

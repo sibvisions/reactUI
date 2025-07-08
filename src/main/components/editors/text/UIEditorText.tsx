@@ -247,7 +247,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     /** The popup-menu of the ImageViewer */
     const popupMenu = usePopupMenu(props);
 
-    const HTMLEditorRef = useRef<any>();
+    const HTMLEditorRef = useRef<any>(null);
 
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, props.forwardedRef.current, props.context)

@@ -232,7 +232,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         cellHeights.current.set('initial', rowHeight);
     }, [props.designerUpdate])
 
-    const updateRowHeightTimeout = useRef<number>();
+    const updateRowHeightTimeout = useRef<number>(undefined);
     const updateRowHeight = useCallback(() => {
         clearTimeout(updateRowHeightTimeout.current);
         updateRowHeightTimeout.current = window.setTimeout(() => {
@@ -327,10 +327,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const [listLoading, setListLoading] = useState(false);
 
     /** A helper variable which saves the rowselection event to then use the value when the mouse is released */
-    const rowSelectionHelper = useRef<{data: any, selectedColumn: string, index: number, filter: any, event: DataTableSelectionCellChangeEvent<any>}>()
+    const rowSelectionHelper = useRef<{data: any, selectedColumn: string, index: number, filter: any, event: DataTableSelectionCellChangeEvent<any>}>(undefined)
 
     // Cache for the sort-definitions
-    const sortDefinitionCache = useRef<SortDefinition[]>();
+    const sortDefinitionCache = useRef<SortDefinition[]>(undefined);
 
     /** The primary keys of a table */
     const primaryKeys:string[] = useMemo(() => getPrimaryKeys(metaData), [metaData]);
@@ -356,7 +356,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** Which cell has been clicked */
     const cellClickEventRef = useRef<string>("");
 
-    const contextMenuEventRef = useRef<any>();
+    const contextMenuEventRef = useRef<any>(null);
 
     const popupMenu = usePopupMenu(props, contextMenuEventRef.current);
 
@@ -977,7 +977,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /**
      * Chooses which next select function should be used based on the navigation mode
      */
-    const selectNext = useRef<Function>();
+    const selectNext = useRef<Function>(undefined);
     useEffect(() => {
         selectNext.current = (navigationMode:number) => {
             if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {
@@ -996,7 +996,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /**
      * Chooses which previous select function should be used based on the navigation mode
      */
-    const selectPrevious = useRef<Function>();
+    const selectPrevious = useRef<Function>(undefined);
     useEffect(() => {   
         selectPrevious.current = (navigationMode:number, row?:any) => {
             if (navigationMode === Navigation.NAVIGATION_CELL_AND_FOCUS) {

@@ -27,7 +27,7 @@ import { getAlignments } from "../../comp-props/GetAlignments";
  */
 const NumberCellRenderer: FC<ICellRender> = (props) => {
     /** A reference to forward to the components */
-    const forwardedRef = useRef<any>();
+    const forwardedRef = useRef<HTMLDivElement>(null);
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

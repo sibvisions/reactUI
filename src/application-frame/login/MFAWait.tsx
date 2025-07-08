@@ -35,7 +35,7 @@ const MFAWait:FC<ILoginForm> = (props) => {
     const context = useContext(appContext);
 
     /** Reference for the gauge component */
-    const gaugeRef = useRef<any>();
+    const gaugeRef = useRef<HTMLDivElement>(null);
 
     /** State of the code field */
     const [code, setCode] = useState<string>("");

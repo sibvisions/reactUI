@@ -261,7 +261,7 @@ const UIMapOSMConsumer: FC<IMap & IExtendableMap> = (props) => {
                     let iconData:string|IconProps = getMarkerIcon(point, props.markerImageColumnName, props.marker);
                     const pointValues = getLatAndLngValue(point, props.latitudeColumnName, props.longitudeColumnName);
                     return <Marker
-                        ref={el => markerRefs.current[i] = el}
+                        ref={el => { markerRefs.current[i] = el }}
                         key={props.id + "-Marker-" + i}
                         position={[pointValues.lat, pointValues.lng]}
                         icon={new L.Icon({

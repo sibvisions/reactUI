@@ -13,8 +13,8 @@
  * the License.
  */
 
-import CustomProps from "./CustomProps"
-
 /** Interface for CustomStartupProperties */
-type CustomStartupProps = CustomProps;
-export default CustomStartupProps
+interface CustomProps {
+    [key:string]: any
+}
+export default CustomProps

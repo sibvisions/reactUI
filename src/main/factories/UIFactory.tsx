@@ -144,7 +144,7 @@ export function createEditor(props: IRCCellEditor) {
  * @param element - The JSX Element to wrap
  * @returns The original or wrapped JSX Element
  */
-const maybePopup = (element: JSX.Element) => {
+const maybePopup = (element: React.JSX.Element) => {
     if (element.props.screen_modal_ || element.props.content_modal_) {
         return <UIPopupWrapper {...element.props} popupId={element.props.id + "-popup"} render={element} key={'PopupWrapper-' + element.props.id}/> 
     }

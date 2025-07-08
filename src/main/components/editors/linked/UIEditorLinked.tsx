@@ -957,7 +957,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
             return Object.entries(suggestionObj).map(([key, value], i:number) => {
                 const cellStyle: CSSProperties = {}
-                let icon: JSX.Element | null = null;
+                let icon: React.JSX.Element | null = null;
                 let colIndex = metaDataReferenced?.columns.findIndex((c) => c.name == key);
                 let column = metaDataReferenced?.columns[colIndex];
                 

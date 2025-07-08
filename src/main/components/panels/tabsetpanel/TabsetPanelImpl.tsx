@@ -65,7 +65,7 @@ const TabsetPanelImpl: FC<ITabsetImpl & IComponentConstants> = (props) => {
     const context = useContext(appContext);
 
     /** Reference for TabsetPanel element */
-    const panelRef = useRef<any>();
+    const panelRef = useRef<any>(null);
 
     /** Current state of componentSizes */
     const [componentSizes, setComponentSizes] = useState(new Map<string, CSSProperties>());
@@ -139,7 +139,7 @@ const TabsetPanelImpl: FC<ITabsetImpl & IComponentConstants> = (props) => {
         }
 
         /** Array for the built tabs */
-        let tempTabs: Array<JSX.Element> = [];
+        let tempTabs: Array<React.JSX.Element> = [];
         if (props.components) {
             props.components.forEach(component => {
                 if (component.props.className !== COMPONENT_CLASSNAMES.INTERNAL_FRAME) {

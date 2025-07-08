@@ -31,6 +31,7 @@ import CustomMenuItem from "./util/types/custom-types/CustomMenuItem";
 import { ServerMenuButtons } from "./response/data/MenuResponse";
 import EditableMenuItem from "./util/types/custom-types/EditableMenuItem";
 import CustomToolbarItem from "./util/types/custom-types/CustomToolbarItem";
+import CustomProps from "./util/types/custom-types/CustomProps";
 import CustomStartupProps from "./util/types/custom-types/CustomStartupProps";
 import UserData from "./model/UserData";
 import COMPONENT_CLASSNAMES from "./components/COMPONENT_CLASSNAMES";
@@ -48,7 +49,7 @@ export interface IAPI {
     deleteRecord: (id:string, dataProvider:string) => void,
     addCustomScreen: (id:string, screen:ReactElement) => void,
     addReplaceScreen: (id:string, screen:ReactElement) => void,
-    addScreenWrapper: (id:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) => void
+    addScreenWrapper: (id:string, wrapper:ReactElement<CustomProps>, pOptions?:ScreenWrapperOptions) => void
     addMenuItem: (menuItem: CustomMenuItem) => void,
     editMenuItem: (editItem: EditableMenuItem) => void,
     removeMenuItem: (id:string) => void,
@@ -62,7 +63,7 @@ export interface IAPI {
     addGlobalComponent: (name:string, comp:ReactElement) => void,
     addCSSToHeadBefore: (path:string) => void,
     addCSSToHeadAfter: (path:string) => void,
-    extendComponent: (name: string, component: ReactElement) => void,
+    extendComponent: (name: string, component: ReactElement<CustomProps>) => void,
     addCustomLogin: (defaultView:(props: ICustomDefaultLogin) => ReactElement, resetView?: (props: ICustomResetLogin) => ReactElement, mfaTextView?: (props: ICustomMFAText) => ReactElement, mfaWaitView?: (props: ICustomMFAWait) => ReactElement, mfaUrlView?: (props: ICustomMFAUrl) => ReactElement) => void
     getApplicationParameter: (key:string) => any
 }
@@ -245,7 +246,7 @@ class API implements IAPI {
      * @param wrapper - the screen-wrapper which will be added
      * @param pOptions - options of the screen-wrapper currently global:boolean
      */
-    addScreenWrapper(screenName:string, wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
+    addScreenWrapper(screenName:string, wrapper:ReactElement<CustomProps>, pOptions?:ScreenWrapperOptions) {
         this.#contentStore.screenWrappers.set(screenName, {wrapper: wrapper, options: pOptions ? pOptions : { global: true }});
     }
 
@@ -536,7 +537,7 @@ class API implements IAPI {
      * @param name - the name of the component
      * @param component - the component with the functions to be extended
      */
-    extendComponent(name: string, component: ReactElement) {
+    extendComponent(name: string, component: ReactElement<CustomProps>) {
         const existingComp = this.#contentStore.getComponentByName(name);
         if (existingComp) {
             for (let newPropName in component.props) {

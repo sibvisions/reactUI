@@ -17,6 +17,7 @@ import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useS
 import _ from "underscore";
 import { appContext } from "../../contexts/AppProvider";
 import { componentHandler, createCustomComponentWrapper } from "../../factories/UIFactory";
+import CustomProps from "../../util/types/custom-types/CustomProps";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import Dimension from "../../util/types/Dimension";
 
@@ -32,7 +33,7 @@ export type ComponentSizes = {
  * @param id - the id of the component
  * @param className - the className of the component
  */
-const useComponents = (id: string, className:string): [Array<IBaseComponent>, Array<ReactElement>, Map<string,ComponentSizes>| undefined] => {
+const useComponents = (id: string, className:string): [Array<IBaseComponent>, Array<ReactElement<CustomProps>>, Map<string,ComponentSizes>| undefined] => {
     /** Current state of the preferredSizes of a parents Childcomponents */
     const [preferredSizes, setPreferredSizes] = useState<Map<string, ComponentSizes>>();
 
@@ -53,7 +54,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
 
     
     /** Builds the Childcomponents of a parent and sets/updates their preferred size */
-    const buildComponents = useCallback((): Array<ReactElement> => {
+    const buildComponents = useCallback((): Array<ReactElement<CustomProps>> => {
         const children = context.contentStore.getChildren(id, className);
 
         // Deletes the components out of tempSizes if they are no longer visible/available
@@ -204,7 +205,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
     },[context.contentStore, id, preferredSizes, className, tempSizes.current, screenName]);
     
     /** Current state of a parents Childcomponents as reactchildren */
-    const [components, setComponents] = useState<Array<ReactElement>>([]);
+    const [components, setComponents] = useState<Array<ReactElement<CustomProps>>>([]);
 
     /** Initially build the components and set the state */
     useEffect(() => {
@@ -224,7 +225,7 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
             const newComponents = buildComponents();
             
             /** Contains the components */
-            const cl = new Array<ReactElement>();
+            const cl = new Array<ReactElement<CustomProps>>();
             newComponents.forEach(nc => {
                 let alreadyAdded = false
                 /** Checks if the new component is already added in the current components if yes add the old component else the new one */

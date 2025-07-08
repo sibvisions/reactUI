@@ -78,10 +78,10 @@ export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
     const context = useContext(appContext);
 
     /** Reference for the last event */
-    const lastEvent = useRef<SyntheticEvent>();
+    const lastEvent = useRef<SyntheticEvent>(undefined);
 
     /** Reference for the context menu */
-    const contextMenu = useRef<ContextMenu>();
+    const contextMenu = useRef<ContextMenu>(undefined);
 
     /** State of the popup-menu-item-model */
     const [model, setModel] = useState<any>([{
@@ -90,7 +90,7 @@ export const PopupContextProvider:FC<PropsWithChildren<{}>> = ({children}) => {
     }]);
 
     /** Reference which popup is currently opened */
-    const popup = useRef<string>();
+    const popup = useRef<string>(undefined);
 
     const setLastEvent = useCallback<SetLastEventFn>((e) => {
         lastEvent.current = e;

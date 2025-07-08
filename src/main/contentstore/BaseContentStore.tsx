@@ -27,6 +27,7 @@ import { IChangedColumns } from "../response/data/DataProviderChangedResponse";
 import MetaDataResponse, { LengthBasedColumnDescription, MetaDataReference } from "../response/data/MetaDataResponse";
 import { SortDefinition } from "../request/data/SortRequest";
 import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperType";
+import CustomProps from "../util/types/custom-types/CustomProps";
 import CustomStartupProps from "../util/types/custom-types/CustomStartupProps";
 import { IPanel } from "../components/panels/panel/UIPanel";
 import { getMetaData } from "../util/data-util/GetMetaData";
@@ -120,7 +121,7 @@ export default abstract class BaseContentStore {
     customProperties = new Map<string, any>();
 
     /** A Map which stores screeen-wrapper names for screens, key is the screen-name and the value is the object of the screen-wrapper */
-    screenWrappers = new Map<string, {wrapper: ReactElement, options: ScreenWrapperOptions}>();
+    screenWrappers = new Map<string, {wrapper: ReactElement<CustomProps>, options: ScreenWrapperOptions}>();
 
     //DataProvider Maps stores the data, selectedRow, selectedColumn etc. for databooks per screen.
     dataBooks = new Map<string, Map<string, IDataBook>>();

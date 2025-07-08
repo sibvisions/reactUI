@@ -36,7 +36,7 @@ const MFAURL: FC<ILoginForm> = (props) => {
     const context = useContext(appContext);
 
     /** Reference for the gauge component */
-    const gaugeRef = useRef<any>();
+    const gaugeRef = useRef<HTMLDivElement>(null);
 
     /** State of the link object */
     const [link, setLink] = useState<MFAURLType | string>({ width: 500, height: 300, url: "", target: "_self" });

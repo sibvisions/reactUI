@@ -24,7 +24,7 @@ interface IGMap {
  */
 
 export const GMap: React.ForwardRefExoticComponent<IGMap> = forwardRef((props, ref) => {
-    const map = useRef<any>();
+    const map = useRef<any>(null);
     const container = useRef<HTMLDivElement>(null);
     const [overlays, setOverlays] = useState<any>();
 

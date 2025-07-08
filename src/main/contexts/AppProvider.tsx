@@ -170,7 +170,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
     const [sessionExpired, setSessionExpired] = useState<boolean>(false);
 
     /** Reference for the interval at which alive requests are being sent */
-    const aliveInterval = useRef<any>();
+    const aliveInterval = useRef<any>(undefined);
 
     /**
      * Subscribes to session-expired, app-ready and restart

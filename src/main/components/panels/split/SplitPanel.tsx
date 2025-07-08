@@ -20,6 +20,7 @@ import { Tooltip } from "primereact/tooltip";
 import Dimension from "../../../util/types/Dimension";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { parseMaxSize, parseMinSize } from "../../../util/component-util/SizeUtil";
+import CustomProps from "../../../util/types/custom-types/CustomProps";
 
 /** Type for ResizeEvent */
 type onResizeEvent = (firstSize: Dimension, secondSize: Dimension) => void;
@@ -36,8 +37,8 @@ interface ISplitPanel extends IForwardRef {
     dividerPosition: number
     orientation: 0|1
     forwardedRef?: any
-    leftComponent?: ReactElement
-    rightComponent?: ReactElement
+    leftComponent?: ReactElement<CustomProps>
+    rightComponent?: ReactElement<CustomProps>
     onResizeStart?: onResizeEvent
     onResize?: onResizeEvent
     onResizeEnd?: onResizeEvent

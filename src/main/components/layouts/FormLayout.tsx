@@ -40,7 +40,7 @@ import { quickSort } from "../../util/other-util/QuickSort";
 const FormLayout: FC<ILayout> = (baseProps) => {
 
     /** Current state of the calculatedStyle by the FormLayout */
-    const calculatedStyle = useRef<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>();
+    const calculatedStyle = useRef<{ style?: CSSProperties, componentSizes?: Map<string, CSSProperties> }>(null);
 
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);

@@ -22,9 +22,9 @@ import { useEffect, useRef } from "react";
  * @param handler - the function which should be executed
  */
 const useMultipleEventHandler = (targets?: HTMLElement[], event?: keyof HTMLElementEventMap, handler?: any, paramTarget?:boolean) => {
-    const targetRef = useRef<HTMLElement[]>();
-    const handlerRef = useRef<EventListener>();
-    const eventRef = useRef<keyof HTMLElementEventMap>();
+    const targetRef = useRef<HTMLElement[]>(undefined);
+    const handlerRef = useRef<EventListener>(undefined);
+    const eventRef = useRef<keyof HTMLElementEventMap>(undefined);
 
     useEffect(() => {
         if (targetRef.current && handlerRef.current && eventRef.current) {

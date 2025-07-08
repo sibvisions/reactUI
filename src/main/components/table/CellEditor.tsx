@@ -46,7 +46,7 @@ export interface CellFormatting {
 // Interface for cell-renderer
 export interface ICellRender extends ICellRenderer {
     columnMetaData: ColumnDescription,
-    icon: JSX.Element|null,
+    icon: React.JSX.Element|null,
     filter?: SelectFilter
     stateCallback?: Function,
     decreaseCallback?: Function

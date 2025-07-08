@@ -22,6 +22,7 @@ import COMPONENT_CLASSNAMES from "../components/COMPONENT_CLASSNAMES";
 import BaseContentStore, { ActiveScreen } from "./BaseContentStore";
 import { BaseMenuButton, ServerMenuButtons } from "../response/data/MenuResponse";
 import { ScreenWrapperOptions } from "../util/types/custom-types/ScreenWrapperType";
+import CustomProps from "../util/types/custom-types/CustomProps";
 import AppSettings from "../AppSettings";
 import { getNavigationIncrement } from "../util/other-util/GetNavigationIncrement";
 import Server from "../server/Server";
@@ -557,7 +558,7 @@ export default class ContentStore extends BaseContentStore {
      * @param wrapper - the name of the screen-wrapper component
      * @param pOptions - the options for the screen-wrapper component
      */
-    registerScreenWrapper(screenName:string|string[], wrapper:ReactElement, pOptions?:ScreenWrapperOptions) {
+    registerScreenWrapper(screenName:string|string[], wrapper:ReactElement<CustomProps>, pOptions?:ScreenWrapperOptions) {
         if (Array.isArray(screenName))
             screenName.forEach(name => this.screenWrappers.set(name, {wrapper: wrapper, options: pOptions ? pOptions : {global: true}}));
         else 
