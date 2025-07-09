@@ -1,6 +1,6 @@
 {
   "name": "@sibvisions/reactui",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "type": "module",
   "main": "moduleIndex.cjs",
   "module": "moduleIndex.js",
