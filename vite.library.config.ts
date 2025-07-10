@@ -12,7 +12,7 @@ export default defineConfig({
       targets: [
         { src: 'public/color-schemes/*.css', dest: 'dist/resources/color-schemes' },
         { src: 'public/themes/*.css', dest: 'dist/resources/themes' },
-        { src: 'public/assets/**/*', dest: 'dist/resources/assets' },
+        { src: 'public/assets/*', dest: 'dist/resources/assets' },
         { src: 'public/fonts/roboto/*', dest: 'dist/resources/fonts/roboto' },
         { src: 'public/application.css', dest: 'dist/resources' },
         { src: 'src/SetupPackage.cjs', dest: 'dist' }
