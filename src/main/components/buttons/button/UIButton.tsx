@@ -35,7 +35,6 @@ import IBaseComponent from "../../../util/types/IBaseComponent";
 import { IComponentConstants } from "../../BaseComponent";
 import { IEditorCheckBox, handleCheckboxOnChange } from "../../editors/checkbox/UIEditorCheckbox";
 import CELLEDITOR_CLASSNAMES from "../../editors/CELLEDITOR_CLASSNAMES";
-import _ from "underscore";
 
 // If the Buttons text contains HTML, render it in a span, because the button on its own isn't able to render HTML.
 export const RenderButtonHTML: FC<{ text:string }> = (props) => {
@@ -106,7 +105,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
     }, [onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.text, props.designerUpdate, props.forwardedRef.current]);
 
     /** When the button is clicked, a pressButtonRequest is sent to the server with the buttons name as componentId */
-    const onButtonPress = useMemo(() => _.debounce((event: any) => {
+    const onButtonPress = (event:any) => {
         if (!isCheckboxCellEditor(props)) {
             // ReactUI as lib, execute given event
             if (props.onClick) {
@@ -136,7 +135,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
             )
         }
 
-    },800, true), [props]);
+    }
 
     /** Returns the correct Button element to render, hyperlink, "normal" button, uploadbutton */
     const getElementToRender = () => {
