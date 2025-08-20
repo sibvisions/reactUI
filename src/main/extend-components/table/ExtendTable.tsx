@@ -15,7 +15,7 @@
 
 import React, { FC } from "react";
 import { SortDefinition } from "../../request/data/SortRequest";
-import { DataTableColumnResizeEndEvent, DataTableSelectionCellChangeEvent } from "primereact/datatable";
+import { DataTableColumnResizeEndEvent, DataTableSelectionCellSingleChangeEvent } from "primereact/datatable";
 
 // Interface for extendable-table
 export interface IExtendableTable {
@@ -23,7 +23,7 @@ export interface IExtendableTable {
     onColOrderChange?(colOrder: string[]): void
     onColResizeEnd?(e: DataTableColumnResizeEndEvent): void
     onLazyLoadFetch?(records: any[]):void
-    onRowSelect?(e: {originalEvent: DataTableSelectionCellChangeEvent<any>, selectedRow: any}): void
+    onRowSelect?(e: {originalEvent: DataTableSelectionCellSingleChangeEvent<any>, selectedRow: any}): void
 }
 
 // This component is an empty substitute for the component UITable

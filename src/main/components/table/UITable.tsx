@@ -15,7 +15,7 @@
 
 import React, { createContext, CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Column } from "primereact/column";
-import { DataTable, DataTableCellSelection, DataTableColumnResizeEndEvent, DataTableSelectionCellChangeEvent } from "primereact/datatable";
+import { DataTable, DataTableCellSelection, DataTableColumnResizeEndEvent, DataTableSelectionCellSingleChangeEvent } from "primereact/datatable";
 import _ from "underscore";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { createFetchRequest, createInsertRecordRequest, createSelectRowRequest, createSortRequest, createWidthRequest } from "../../factories/RequestFactory";
@@ -327,7 +327,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const [listLoading, setListLoading] = useState(false);
 
     /** A helper variable which saves the rowselection event to then use the value when the mouse is released */
-    const rowSelectionHelper = useRef<{data: any, selectedColumn: string, index: number, filter: any, event: DataTableSelectionCellChangeEvent<any>}>(undefined)
+    const rowSelectionHelper = useRef<{data: any, selectedColumn: string, index: number, filter: any, event: DataTableSelectionCellSingleChangeEvent<any>}>(undefined)
 
     // Cache for the sort-definitions
     const sortDefinitionCache = useRef<SortDefinition[]>(undefined);
