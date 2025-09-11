@@ -499,12 +499,9 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 fetch('config.json')
                 .then((r) => r.json())
                 .then((data) => {
-                    const dataMap = new Map(Object.entries(data));
-                    dataMap.forEach((v, k) => {
-                        if (k === "appName") {
-                            startUpRequest.applicationName = v;
-                        }
-                    });
+                    if (data.appName) {
+                        startUpRequest.applicationName = data.appName;
+                    }
 
                     if (data.baseUrl) {
                         baseUrlToSet = data.baseUrl;

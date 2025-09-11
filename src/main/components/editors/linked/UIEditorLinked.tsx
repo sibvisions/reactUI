@@ -1179,7 +1179,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     }
                 }}
                 onBlur={event => {
-                    linkedRef.current?.hide();
                     if (!props.isReadOnly) {
                         if (props.onBlur) {
                             props.onBlur(event);
