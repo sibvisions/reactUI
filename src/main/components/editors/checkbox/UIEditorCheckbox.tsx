@@ -115,16 +115,7 @@ export const handleCheckboxOnChange = (
             columnName,
             columnName,
             // If checked false, send selectedValue if there is one, if not send true, if checked send deselectedValue if there is one if not send false
-            (typeof selected === "boolean" ? !selected : deselectedValue !== undefined ? deselectedValue === selected : selected === false) ? 
-                selectedValue !== undefined ? 
-                    selectedValue 
-                : 
-                    true
-            : 
-                deselectedValue !== undefined ? 
-                    deselectedValue 
-                : 
-                    false,
+            !selected ? selectedValue ?? null : deselectedValue ?? null,
             server,
             server.topbar,
             rowIndex ? rowIndex() : undefined,
@@ -251,8 +242,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                         props.dataRow,
                         props.columnName, 
                         checked, 
-                        props.cellEditor.selectedValue ?? undefined, 
-                        props.cellEditor.deselectedValue ?? undefined, 
+                        props.cellEditor.selectedValue, 
+                        props.cellEditor.deselectedValue, 
                         props.context.server,
                         props.rowIndex,
                         props.selectedRow.index,
@@ -289,8 +280,8 @@ const UIEditorCheckBox: FC<IEditorCheckBox & IExtendableCheckboxEditor & ICompon
                         props.dataRow,
                         props.columnName, 
                         checked, 
-                        props.cellEditor.selectedValue ?? undefined, 
-                        props.cellEditor.deselectedValue ?? undefined, 
+                        props.cellEditor.selectedValue, 
+                        props.cellEditor.deselectedValue, 
                         props.context.server,
                         props.rowIndex,
                         props.selectedRow.index,
