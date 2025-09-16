@@ -48,7 +48,7 @@ export function getColorProperties(color: string|undefined, isBackground: boolea
 
             // Either set Background or Textcolor
             if (isBackground) {
-                colorProperties.backgroundColor = setColor;
+                colorProperties.background = setColor;
             }
             else {
                 colorProperties.color = setColor;
@@ -56,7 +56,7 @@ export function getColorProperties(color: string|undefined, isBackground: boolea
         }
         else {
             if (isBackground) {
-                colorProperties.backgroundColor = color;
+                colorProperties.background = color;
             }
             else {
                 colorProperties.color = color;
