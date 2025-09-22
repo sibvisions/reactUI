@@ -756,7 +756,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
 
         // If there are more than one columnName to send, send the array, else take the value of the displayReferencedColumnName or the bound columnName
-        const valueToSend = colNames.length > 1 ? inputObj : props.cellEditor.displayReferencedColumnName ? inputObj[refColNames[0]] : inputObj[refColNames[index]];
+        const valueToSend = colNames.length > 1 ? inputObj : props.cellEditor.displayReferencedColumnName ? [ inputObj[refColNames[0]] ]: [ inputObj[refColNames[index]] ];
 
         addAdditionalColumnToValue(valueToSend);
         // Set text, send selectrequest and setvalues if values are being found
