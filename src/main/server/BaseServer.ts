@@ -81,6 +81,9 @@ export default abstract class BaseServer {
     /** Resource url for receiving images etc. */
     RESOURCE_URL = "";
 
+    /** the navigation.userAgentData as json. */
+    navUserAgentData?:string;
+
     /** the request queue */
     requestQueue: { request:BaseRequest, endpoint: string, reqFunc: Function}[] = [];
 
@@ -184,10 +187,35 @@ export default abstract class BaseServer {
      * @param request - the request to send
      * @returns - a request to send to the server
      */
-     buildReqOpts(request:any):RequestInit {
+     buildReqOpts(request:any, additionalHeaders?:boolean):RequestInit {
+        let headers: Record<string, string> = {}
+
+        if (additionalHeaders) {
+            const touchPoints = typeof navigator !== "undefined" && 'maxTouchPoints' in navigator && typeof navigator.maxTouchPoints === 'number' ? navigator.maxTouchPoints : 0;
+            const touchStart = 'ontouchstart' in window ? true : false;
+
+            headers["X-maxTouchPoints"] = String(touchPoints);
+            headers["X-touchStart"] = String(touchStart);
+
+            if (typeof navigator !== "undefined") {
+                if ('userAgent' in navigator) {
+                    headers["X-Navigator-UA"] = navigator.userAgent;
+                }
+
+                if ('platform' in navigator) {
+                    headers["X-Platform"] = navigator?.platform;
+                }
+
+                if (this.navUserAgentData != null){
+                    headers["X-userAgentData"] = this.navUserAgentData;
+                }
+            }
+        }
+
         if (request && request.upload) {
             return {
                 method: 'POST',
+                headers,
                 body: request.formData,
                 credentials:"include",
             };
@@ -195,6 +223,7 @@ export default abstract class BaseServer {
         else {
             return {
                 method: 'POST',
+                headers,
                 body: JSON.stringify(request),
                 credentials:"include",
             };
@@ -338,10 +367,36 @@ export default abstract class BaseServer {
                         }
                     }
                 }
+                
+                let fetchWithNavData:Promise<any> | undefined = undefined;
+                let headers: Record<string, string> | undefined = undefined;
+                let additionalHeaders:boolean = endpoint === REQUEST_KEYWORDS.STARTUP;
+
+                if (additionalHeaders) {
+                    //highentryprop values are async, so we send startup after result
+
+                    if (typeof navigator !== "undefined" && 'userAgentData' in navigator) {
+                        const uData = (navigator as any).userAgentData;
+
+                        //low prop values
+                        this.navUserAgentData = JSON.stringify(uData);
+
+                        //high prop values
+                        if (uData && typeof uData.getHighEntropyValues === "function") {
+                            fetchWithNavData = uData.getHighEntropyValues(['platform', 'platformVersion', 'architecture', 'model', 'uaFullVersion', 'bitness', 'formFactor', 'fullVersionList'])
+                            .then((data:any) => { 
+                                this.navUserAgentData = JSON.stringify(data); 
+
+                                return fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request, true))
+                            })
+                            .catch((error:any) => { return fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request, true))});
+                        }
+                    }
+                } 
 
                 this.lastRequestTimeStamp = Date.now();
                 this.timeoutRequest(
-                    fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request)), 
+                    fetchWithNavData ? fetchWithNavData : fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request, additionalHeaders)), 
                     this.timeoutMs, 
                     () => this.sendRequest(request, endpoint, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse), finalEndpoint
                 )
