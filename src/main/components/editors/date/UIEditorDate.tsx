@@ -461,6 +461,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                         handleDateInput();
                         isChanging.current = false;
                     }
+                    setViewDate(convertToTimeZone(true));
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 readOnlyInput={props.isReadOnly || hasError}
