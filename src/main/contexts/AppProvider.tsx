@@ -399,7 +399,25 @@ const AppProvider: FC<ICustomContent> = (props) => {
                     // sets startup property from the app ready properties to true
                     contextState.appSettings.setAppReadyParam("startup");
                     if (!preserve) {
-                        sessionStorage.setItem("startup", JSON.stringify(result));
+                        sessionStorage.removeItem("preserveOnReload");
+                        sessionStorage.removeItem("applicationName");
+                        sessionStorage.removeItem("applicationColorScheme");
+                        sessionStorage.removeItem("applicationTheme");
+
+                        (result as Array<any>).forEach((response) => {
+                            if (response.preserveOnReload) {
+                                sessionStorage.setItem("preserveOnReload", response.preserveOnReload);
+                            }
+                            if (response.applicationName) {
+                                sessionStorage.setItem("applicationName", response.applicationName);
+                            }
+                            if (response.applicationColorScheme) {
+                                sessionStorage.setItem("applicationColorScheme", response.applicationColorScheme);
+                            }
+                            if (response.applicationTheme) {
+                                sessionStorage.setItem("applicationTheme", response.applicationTheme);
+                            }
+                        });
                     }
     
                     // Creates an interval to send alive requests to the server
@@ -844,27 +862,21 @@ const AppProvider: FC<ICustomContent> = (props) => {
                 contextState.contentStore.customStartUpProperties.map(customProp => startUpRequest["custom_" + Object.keys(customProp)[0]] = Object.values(customProp)[0])
             }
             
-            const startupRequestCache = sessionStorage.getItem("startup");
-            if (startupRequestCache && startupRequestCache !== "null" && !relaunchArguments.current) {
+            if (sessionStorage.getItem("applicationName") && !relaunchArguments.current) {
                 let preserveOnReload = false;
-                (JSON.parse(startupRequestCache) as Array<any>).forEach((response) => {
-                    if (response.preserveOnReload) {
-                        preserveOnReload = true;
-                    }
-
-                    if (response.applicationName) {
-                        contextState.server.RESOURCE_URL = contextState.server.BASE_URL + "/resource/" + response.applicationName;
-                    }
-
-                    // Load css files into dom
-                    if (response.applicationColorScheme && !schemeToSet) {
-                        addCSSDynamically('color-schemes/' + response.applicationColorScheme + '.css', "schemeCSS", () => {});
-                    }
-
-                    if (response.applicationTheme && !themeToSet) {
-                        addCSSDynamically('themes/' + response.applicationTheme + '.css', "themeCSS", () => {});
-                    }
-                });
+                if (sessionStorage.getItem("preserveOnReload")) {
+                    preserveOnReload = true;
+                }
+                if (sessionStorage.getItem("applicationName")) {
+                    contextState.server.RESOURCE_URL = contextState.server.BASE_URL + "/resource/" + sessionStorage.getItem("applicationName");
+                }
+                // Load css files into dom
+                if (sessionStorage.getItem("applicationColorScheme") && !schemeToSet) {
+                    addCSSDynamically('color-schemes/' + sessionStorage.getItem("applicationColorScheme") + '.css', "schemeCSS", () => {});
+                }
+                if (sessionStorage.getItem("applicationTheme") && !themeToSet) {
+                    addCSSDynamically('themes/' + sessionStorage.getItem("applicationTheme") + '.css', "themeCSS", () => {});
+                }
                 // if not preserve send exit for old application
                 if (!preserveOnReload) {
                     contextState.server.timeoutRequest(fetch(contextState.server.BASE_URL + contextState.server.endpointMap.get(REQUEST_KEYWORDS.EXIT), contextState.server.buildReqOpts(createAliveRequest())), contextState.server.timeoutMs);
@@ -886,6 +898,12 @@ const AppProvider: FC<ICustomContent> = (props) => {
         else {
             // Build the correct baseURL in production if the url has a specific structure
             if (process.env.NODE_ENV === "production") {
+                // TODO for future optimatization, not the / should be counted, the parts should be counted
+                // VisionX starts with /app/ui/<projectname>/
+                // Normaly it's /<contextname>/ui, /<contextname>/ui/, /ui or /ui/
+                // in case the application is in an root container, and the application is in an subfolder (/en/ui), 
+                // the detection will fail anyway,
+                // .replace(/^\/+|\/(?:index\.(html?|js(p|f)))?$/g, "") to remove leading and trailing / and /index.htm, /index.html, /index.jsp, /index.jsf
                 const splitURLPath = window.location.pathname.split("/");
 
                 if (splitURLPath.length === 4) {

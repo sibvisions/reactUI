@@ -71,16 +71,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
                 label: translation.get("Restart"),
                 icon: "pi pi-refresh",
                 command() {
-                    const startupRequestCache = sessionStorage.getItem("startup");
-                    if (startupRequestCache) {
-                        const parsedCache = (JSON.parse(startupRequestCache) as Array<any>)
-                        parsedCache.forEach((response) => {
-                            if (response.preserveOnReload) {
-                                response.preserveOnReload = false;
-                            }
-                        });
-                        sessionStorage.setItem("startup", JSON.stringify(parsedCache));
-                    }
+                    sessionStorage.removeItem("preserveOnReload");
 
                     window.location.reload();
                 }

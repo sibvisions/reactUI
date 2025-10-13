@@ -612,11 +612,17 @@ export default abstract class BaseServer {
      applicationMetaData(metaData: ApplicationMetaDataResponse) {
         sessionStorage.setItem("clientId", metaData.clientId);
         this.RESOURCE_URL = this.BASE_URL + "/resource/" + metaData.applicationName;
+        this.preserveOnReload = metaData.preserveOnReload;
+
         if (metaData.aliveInterval !== undefined) {
             this.aliveInterval = metaData.aliveInterval;
         }
 
-        this.appSettings.setMenuOptions(undefined, undefined, undefined, undefined, metaData.userRestart);
+        if (metaData.wsPingInterval !== undefined) {
+            this.wsPingInterval = metaData.wsPingInterval;
+        }
+
+        this.appSettings.setMenuOptions(undefined, undefined, undefined, undefined, metaData.userRestart, metaData.foldMenuOnCollapse);
 
         this.appSettings.setApplicationMetaData(metaData);
 

@@ -317,28 +317,6 @@ class Server extends BaseServer {
     }
 
     /**
-     * Sets the clientId in the sessionStorage
-     * @param metaData - the applicationMetaDataResponse
-     */
-    applicationMetaData(metaData: ApplicationMetaDataResponse) {
-        sessionStorage.setItem("clientId", metaData.clientId);
-        this.RESOURCE_URL = this.BASE_URL + "/resource/" + metaData.applicationName;
-        this.preserveOnReload = metaData.preserveOnReload;
-
-        if (metaData.aliveInterval !== undefined) {
-            this.aliveInterval = metaData.aliveInterval;
-        }
-
-        if (metaData.wsPingInterval !== undefined) {
-            this.wsPingInterval = metaData.wsPingInterval;
-        }
-
-        this.appSettings.setMenuOptions(undefined, undefined, undefined, undefined, metaData.userRestart, metaData.foldMenuOnCollapse);
-
-        this.appSettings.setApplicationMetaData(metaData);
-    }
-
-    /**
      * Calls contentStores handleCustomProperties for every applicationParameter 
      * @param appParams - the applicationParametersResponse
      */
