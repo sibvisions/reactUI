@@ -175,6 +175,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton | IEditorCh
             <ToggleButton
                 ref={buttonRef}
                 className={concatClassnames(
+                    "rc-togglebutton",
                     !btnStyle.borderPainted ? "border-notpainted" : '',
                     btnStyle.borderPainted && tinycolor(btnStyle.style.background?.toString()).isDark() ? "bright-button" : "dark-button",
                     !isCheckboxCellEditor(props) ? (props as IButtonSelectable).borderOnMouseEntered ? "mouse-border" : "" : "",
