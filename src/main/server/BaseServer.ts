@@ -48,6 +48,7 @@ import { TopBarContextType, showTopBar } from "../components/topbar/TopBar";
 import IBaseComponent from "../util/types/IBaseComponent";
 import { toPageKey } from "../components/tree/UITreeV2";
 import { asList } from "../util/string-util/SplitWithQuote";
+import { ungzip } from "pako";
 
 /** An enum to know which type of request queue is currently active for the request */
 export enum RequestQueueMode {
@@ -400,7 +401,24 @@ export default abstract class BaseServer {
                     this.timeoutMs, 
                     () => this.sendRequest(request, endpoint, waitForOpenRequests, RequestQueueMode.IMMEDIATE, handleResponse), finalEndpoint
                 )
-                    .then((response: any) => response.headers.get("content-type") === "application/json" ? response.json() : Promise.reject("no valid json"))
+                    .then((response: any) => {
+                        const ctype = response.headers.get("content-type");
+
+                        if (ctype === "application/json") {
+                            return response.json();
+                        }
+                        else if (ctype === "application/octet-stream") {
+                            return response.arrayBuffer().then((buffer: any) => {
+                                const uint8 = new Uint8Array(buffer);
+                                const decompressed = ungzip(uint8, { to: 'string' });
+
+                                return JSON.parse(decompressed);
+                            });
+                        }
+                        else {
+                            return Promise.reject("no valid json");
+                        }
+                    })
                     .then(result => {
                         if (result.code) {
                             // If error reject
