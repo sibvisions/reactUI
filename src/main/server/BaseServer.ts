@@ -158,7 +158,7 @@ export default abstract class BaseServer {
     openedByClose = false;
 
     // True if request should be sent compressed
-    compression = false;
+    compress = false;
 
     /**
      * @constructor constructs server instance
@@ -218,7 +218,7 @@ export default abstract class BaseServer {
 
         var payload: any = JSON.stringify(request);
 
-        if (this.compression) {
+        if (this.compress) {
             headers['Content-Type'] = 'application/octet-stream';
 
             payload = gzip(payload);
@@ -419,7 +419,7 @@ export default abstract class BaseServer {
                             return response.json();
                         }
                         else if (ctype === "application/octet-stream") {
-                            this.compression = true;
+                            this.compress = true;
                             return response.arrayBuffer().then((buffer: any) => {
                                 const uint8 = new Uint8Array(buffer);
                                 const decompressed = ungzip(uint8, { to: 'string' });
