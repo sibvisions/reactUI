@@ -48,7 +48,7 @@ import { TopBarContextType, showTopBar } from "../components/topbar/TopBar";
 import IBaseComponent from "../util/types/IBaseComponent";
 import { toPageKey } from "../components/tree/UITreeV2";
 import { asList } from "../util/string-util/SplitWithQuote";
-import { ungzip } from "pako";
+import { ungzip, gzip } from "pako";
 
 /** An enum to know which type of request queue is currently active for the request */
 export enum RequestQueueMode {
@@ -157,6 +157,9 @@ export default abstract class BaseServer {
     // True if the screen has been opened by history close
     openedByClose = false;
 
+    // True if request should be sent compressed
+    compression = false;
+
     /**
      * @constructor constructs server instance
      * @param store - contentstore instance
@@ -213,6 +216,14 @@ export default abstract class BaseServer {
             }
         }
 
+        var payload: any = JSON.stringify(request);
+
+        if (this.compression) {
+            headers['Content-Type'] = 'application/octet-stream';
+
+            payload = gzip(payload);
+        }
+
         if (request && request.upload) {
             return {
                 method: 'POST',
@@ -225,7 +236,7 @@ export default abstract class BaseServer {
             return {
                 method: 'POST',
                 headers,
-                body: JSON.stringify(request),
+                body: payload,
                 credentials:"include",
             };
         }
@@ -408,6 +419,7 @@ export default abstract class BaseServer {
                             return response.json();
                         }
                         else if (ctype === "application/octet-stream") {
+                            this.compression = true;
                             return response.arrayBuffer().then((buffer: any) => {
                                 const uint8 = new Uint8Array(buffer);
                                 const decompressed = ungzip(uint8, { to: 'string' });
