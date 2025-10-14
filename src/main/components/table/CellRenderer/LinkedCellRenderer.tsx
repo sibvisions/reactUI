@@ -90,8 +90,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
                     width: "100%" 
                 }}>{linkedDisplayValue}</div>
             </span>
-            <div 
-                style={{ 
+            {props.isEditable ? <div style={{ 
                     display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, 
                     marginLeft: "auto" 
                 }} 
@@ -99,7 +98,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
                 onClick={props.stateCallback !== undefined ? () => (props.stateCallback as Function)() : undefined} 
             >
                 <i className="pi pi-chevron-down cell-editor-arrow" />
-            </div>
+            </div> : null }
         </>
     )
 }

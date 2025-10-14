@@ -20,6 +20,7 @@ import { appContext } from "../../../contexts/AppProvider";
 import { getDateLocale, getGlobalLocale } from "../../../util/other-util/GetDateLocale";
 import { ICellEditorDate } from "../../editors/date/UIEditorDate";
 import { ICellRender } from "../CellEditor";
+import { getAlignments } from "../../comp-props/GetAlignments";
 
 export function formatCellEditorDateValue(value: any, cellEditor: ICellEditorDate, defaultTimeZone: string, defaultLocale: string) : string | null {
     if (isValid(value) && cellEditor) {
@@ -50,6 +51,9 @@ export function formatCellEditorDateValue(value: any, cellEditor: ICellEditorDat
  * @param props - the properties received from the table
  */
 const DateCellRenderer: FC<ICellRender> = (props) => {
+    /** Casts the cell-editor property to ICellEditorLinked because we can be sure it is a linked-cell-editor */
+    const cellEditorMetaData = props.columnMetaData.cellEditor as ICellEditorDate
+
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
@@ -61,13 +65,20 @@ const DateCellRenderer: FC<ICellRender> = (props) => {
         () => formatCellEditorDateValue(props.cellData, castedCellEditor, context.appSettings.timeZone, context.appSettings.locale), 
         [props.columnMetaData, castedCellEditor, props.cellData]
     );
+    
+    const alignments = useMemo(() => getAlignments({...cellEditorMetaData}), [cellEditorMetaData]);
 
     return (
         <>
             <span className="cell-data-content">
                 {props.icon != undefined && props.icon}
                 {props.icon && displayDateValue && <span style={{marginRight: 5}}/>}
-                {displayDateValue}
+                <div style={{
+                    display: "flex", 
+                    justifyContent: alignments.ha, 
+                    alignItems: alignments.va, 
+                    width: "100%" 
+                }}>{displayDateValue}</div>
             </span>
             {props.isEditable ? <div style={{ 
                     display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, 

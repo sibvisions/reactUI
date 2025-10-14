@@ -57,8 +57,14 @@ const TextCellRenderer: FC<ICellRender> = (props) => {
                 }}
             >
               {props.icon != undefined && props.icon}
-              {props.icon && props.cellData && <span style={{marginRight: 5}}/>}
-              {props.cellData?.includes("<html>") ? <span dangerouslySetInnerHTML={{ __html: props.cellData as string }}/> : displayTextValue}
+              {props.icon && displayTextValue && <span style={{marginRight: 5}}/>}
+                <span 
+                    className="cell-data-content-text"
+                    style={{
+                        justifyContent: alignments.ha, 
+                        alignItems: alignments.va
+                    }}
+              >{displayTextValue?.includes("<html>") ? <span dangerouslySetInnerHTML={{ __html: props.cellData as string }}/> : displayTextValue}</span>
             </span>
         </>
     )

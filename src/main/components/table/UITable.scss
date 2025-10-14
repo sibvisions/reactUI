@@ -183,7 +183,7 @@
                     justify-content: center;
                     align-items: center;
                 }
-                &.NumberCellEditor {
+                &.NumberCellEditor, &.TextCellEditor {
                     .cell-data {
                         justify-content: flex-end;
 
@@ -191,7 +191,7 @@
                             display: flex;
                             width: 100%;
                             
-                            .cell-data-content-number {
+                            .cell-data-content-text {
                                 width: 100%;
                                 display: flex;
                                 justify-content: flex-end;
@@ -232,8 +232,6 @@
                         width: 24px;
                         padding: 0;
                     }
-                }
-                &.LinkedCellEditor {
                     .cell-data-content {
                         display: flex;
                         width: 100%;
