@@ -501,6 +501,10 @@ const AppProvider: FC<ICustomContent> = (props) => {
                         
                     }
 
+                    if (data.payloadCompress) {
+                        contextState.server.compress = data.payloadCompress === true;
+                    }
+
                     // url where the css files are being uploaded
                     if (data.designerUploadUrl) {
                         designerUrlToSet = data.designerUploadUrl;
