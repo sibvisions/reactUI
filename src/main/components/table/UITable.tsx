@@ -13,8 +13,8 @@
  * the License.
  */
 
-import React, { createContext, CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { Column } from "primereact/column";
+import React, { createContext, CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, ReactElement } from "react"
+import { Column, ColumnProps } from "primereact/column";
 import { DataTable, DataTableCellSelection, DataTableColumnResizeEndEvent, DataTableSelectionCellSingleChangeEvent } from "primereact/datatable";
 import _ from "underscore";
 import IBaseComponent from "../../util/types/IBaseComponent";
@@ -310,7 +310,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const [sortDefinitions] = useSortDefinitions(screenName, props.dataBook);
 
     /** The current order of the columns */
-    const [columnOrder, setColumnOrder] = useState<string[]|undefined>(props.columnNames);
+    const columnOrderRef = useRef<string[]>(props.columnNames);
 
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(screenName, props.dataBook);
@@ -458,6 +458,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     /** Creates and returns the selectedCell object */
     const selectedCell:DataTableCellSelection<any>|null = useMemo(() => {
+        const columnOrder = columnOrderRef.current;
         if (selectedRow && selectedRow.data && columnOrder) {
             if (selectedRow.selectedColumn) {
                 const newCell:DataTableCellSelection<any> = {
@@ -485,7 +486,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
         }
         return null
-    }, [selectedRow, columnOrder]);
+    }, [selectedRow, columnOrderRef]);
 
     /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
@@ -569,14 +570,14 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     useLayoutEffect(() => {
         if (tableRef.current) {
             let cellDataWidthList: Array<CellWidthData> = [];
-            /** Goes through the rows and their cellData and sets the widest value for each column in a list */
+            // Goes through the rows and their cellData and sets the widest value for each column in a list
             const goThroughCellData = (trows: any, index: number) => {
                 const cellDatas: NodeListOf<HTMLElement> = trows[index].querySelectorAll("td > *:not(.p-column-title)");
                 for (let j = 0; j < cellDatas.length; j++) {
                     if (!cellDataWidthList[j].widthPreSet) {
                         let tempWidth: number;
                         if (cellDatas[j] !== undefined) {
-                            /** If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly*/
+                            // If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly
                             if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor')) {
                                 tempWidth = (cellDatas[j].querySelector(".cell-data-content") as HTMLElement).offsetWidth + 30;
                             }
@@ -587,7 +588,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                                 tempWidth = (cellDatas[j].querySelector(".cell-data-content") as HTMLElement).offsetWidth;
                             }
 
-                            /** If the measured width is greater than the current widest width for the column, replace it */
+                            // If the measured width is greater than the current widest width for the column, replace it
                             if (tempWidth > cellDataWidthList[j].width) {
                                 cellDataWidthList[j].width = tempWidth;
                             }
@@ -603,16 +604,18 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         const trows = currentTable.querySelectorAll('tbody > tr');
                         const padding = getTableHeadHorizontalPadding();
 
-                        /** First set width of headers for columns then rows */
+                        // First set width of headers for columns then rows
                         for (let i = 0; i < theader.length; i++) {
-                            theader[i].style.removeProperty('width')
+                            // theader[i].style.removeProperty('width') // We use table internal width setting with header style
                             const newCellWidth = { widthPreSet: false, width: 0 }
                             const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
                             const columnMetaData = getColMetaData(colName, metaData?.columns);
-                            if (columnMetaData?.width) {
+                            if (columnMetaData?.width && columnMetaData.width > 0) {
                                 newCellWidth.width = columnMetaData.width;
                                 newCellWidth.widthPreSet = true;
-                                theader[i].setAttribute('column-width-set', "true");
+
+                                setWidth(colName, columnMetaData.width);
+                                // theader[i].setAttribute('column-width-set', "true"); // Never used?
                             }
                             else {
                                 const title = theader[i].querySelector('.p-column-title > span');
@@ -637,38 +640,15 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     
                         setColumnWidths(cellDataWidthList);
 
-                        /** set EstTableWidth for size reporting */
+                        // set EstTableWidth for size reporting
                         setEstTableWidth(tempWidth);
+
+                        writeColumnWidthsAndCreateStyle();
                     }
                 }
             }, 0);
         }
     }, [metaData, metaData?.columns, measureFlag]);
-
-    useLayoutEffect(() => {
-        if(columnWidths && tableRef.current && estTableWidth) {
-            const currentTable = tableRef.current.getTable();
-            if (currentTable) {
-                const theader = currentTable.querySelectorAll('th');
-                let clearPrimeWidths = false;
-                const padding = getTableHeadHorizontalPadding();
-                for (let i = 0; i < theader.length; i++) {
-                    const col = columnWidths[i];
-                    let w = col.width as any;
-                    if (props.autoResize === false) {
-                        w = col.widthPreSet ? `${w - padding}px` : null;
-                        if(col.widthPreSet) clearPrimeWidths = true;
-                    } else {
-                        w = `${Math.round(100 * w / estTableWidth)}%`;
-                    }
-                    theader[i].style.setProperty('width', w);
-                }
-                if(clearPrimeWidths) {
-                    tableRef.current.resetResizeColumnsWidth();
-                }
-            }
-        }
-    }, [tableRef.current]);
 
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
@@ -765,6 +745,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      * @param delegateFocus - true if the next component should be focused if there are no more cells
      */
     const selectNextCell = useCallback((delegateFocus:boolean) => {
+        const columnOrder = columnOrderRef.current;
         if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             if (newSelectedColumnIndex < columnOrder.length) {
@@ -781,13 +762,14 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             getFocusComponent(props.name, true)?.focus();
             return false;
         }
-    }, [selectedRow, columnOrder, sendSelectRequest])
+    }, [selectedRow, columnOrderRef, sendSelectRequest])
 
     /**
      * Selects the previous cell, if there is no cell anymore and delegateFocus is true, focus the previous component
      * @param delegateFocus - true if the previous component should be focused if there are no more cells
      */
     const selectPreviousCell = useCallback((delegateFocus:boolean) => {
+        const columnOrder = columnOrderRef.current;
         if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             if (newSelectedColumnIndex >= 0) {
@@ -804,7 +786,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             getFocusComponent(props.name, false)?.focus();
             return false;
         }
-    }, [selectedRow, columnOrder, sendSelectRequest])
+    }, [selectedRow, columnOrderRef, sendSelectRequest])
 
     /**
      * Selects the next row, if there is no row anymore and delegateFocus is true, focus the next component
@@ -863,6 +845,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      * @param delegateFocus - true if the next component should be focused if there are no more cells/rows
      */
     const selectNextCellAndRow = useCallback((delegateFocus:boolean) => {
+        const columnOrder = columnOrderRef.current;
         if (selectedRow !== undefined && columnOrder) {
             const newSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) + 1;
             const nextSelectedRowIndex = selectedRow.index + 1;
@@ -888,13 +871,14 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             getFocusComponent(props.name, true)?.focus();
             return false;
         }
-    }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
+    }, [selectedRow, primaryKeys, columnOrderRef, providerData, sendSelectRequest])
 
     /**
      * Selects the previous cell, if there is no cell anymore select the previous row and so on. If there is no more cells/rows and delegateFocus is true, focus the next component
      * @param delegateFocus - true if the previous component should be focused if there are no more cells/rows
      */
     const selectPreviousCellAndRow = useCallback((delegateFocus:boolean) => {
+        const columnOrder = columnOrderRef.current;
         if (selectedRow !== undefined && columnOrder) {
             const prevSelectedColumnIndex = columnOrder.findIndex(column => column === selectedRow.selectedColumn) - 1;
             const prevSelectedRowIndex = selectedRow.index - 1;
@@ -920,7 +904,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             getFocusComponent(props.name, false)?.focus();
             return false;
         }
-    }, [selectedRow, primaryKeys, columnOrder, providerData, sendSelectRequest])
+    }, [selectedRow, primaryKeys, columnOrderRef, providerData, sendSelectRequest])
 
     /** 
      * Selects a row which is further down based on the height of the table if there are no more rows and delegate Focus is true, focus the next component
@@ -1149,7 +1133,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         props.forwardedRef.current
     ])
 
-    const columns = useMemo(() => {
+    const columns = useMemo<ReactElement<ColumnProps>[]>(() => {
         const createColumnHeader = (colName: string, colIndex: number, isNullable?: boolean) => {
             let sortIndex = ""
             if (sortDefinitions && sortDefinitions.length) {
@@ -1241,7 +1225,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         props.tableHeaderVisible, sortDefinitions, metaData, metaData?.readOnly,
         metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled,
         primaryKeys, metaData?.deleteEnabled, props.startEditing, props.editable,
-        tableIsSelecting, columnOrder, providerData
+        tableIsSelecting, providerData
     ]);
 
     // When a row is selected send a selectRow request to the server
@@ -1317,20 +1301,168 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         }
     }, [virtualRows]);
 
+    /** fixedWidth for storing manual widths. */
+    const fixedWidthsRef = useRef<Record<string, number>>({});
+    /** The prId is an internal unique id used from data table, for writing width styles. */
+    const prIdRef = useRef<string | undefined>(null);
+
+    /**
+     * Initialize prIdRef on startup once.
+     */
+    useEffect(() => {
+        const tableElement = tableRef.current?.getElement() as HTMLElement;
+        prIdRef.current = Array.from(tableElement.attributes).map(a => a.name).find(name => name.startsWith("pr_id_")); 
+    }, []);
+
+    /**
+     * Sets the width of a column.
+     * A value <= 0 will reset it to preferred size.
+     * 
+     * @param pField the column name
+     * @param pWidth the width
+     */
+    const setWidth = (pField: string, pWidth: number) => {
+        const next = { ...fixedWidthsRef.current };
+        let refreshStyle = false;
+        if (pWidth > 0) {
+            next[pField] = pWidth;
+        } else {
+            delete next[pField];
+            refreshStyle = true;
+        }
+        fixedWidthsRef.current = next;
+        if (refreshStyle)
+        {
+            writeColumnWidthsToStyle(findStyle());
+        }
+    };    
+
+    /**
+     * Searches for a style element in head containing the width of this table.
+     * @param pStyle style to ignore in search
+     * @returns the found style or null
+     */
+    const findStyle = (pStyle?: HTMLStyleElement): HTMLStyleElement | null => {
+        const prId = prIdRef.current;
+        if (prId) {
+            for (const style of Array.from(document.head.querySelectorAll('style')) as HTMLStyleElement[]) {
+                if (style !== pStyle && style.textContent?.includes(`[data-pc-name="datatable"][${prId}]`)) {
+                    return style;
+                }
+            };
+        }
+        return null;
+    }
+
+    /**
+     * Writes the column widths to the given style.
+     * Only the manual widths are written, all other columns will be automatically calculated from data table.
+     * 
+     * @param pStyle the style where to write the widths.
+     */
+    const writeColumnWidthsToStyle = (pStyle: HTMLStyleElement | null) => {
+        const prId = prIdRef.current;
+        if (!pStyle || !prId) {
+            return;
+        }
+        let css = "";
+        const columnOrder = columnOrderRef.current;
+        const virtualScrollerStyle = virtualEnabled ? ' > [data-pc-name="virtualscroller"]' : '';
+        Object.entries(fixedWidthsRef.current).forEach(([field, width]) => {
+            const nth = columnOrder.indexOf(field) + 1;
+            css += `
+[data-pc-name="datatable"][${prId}] > [data-pc-section="wrapper"]${virtualScrollerStyle} > [data-pc-section="table"] > [data-pc-section="thead"] > tr > th:nth-child(${nth}),
+[data-pc-name="datatable"][${prId}] > [data-pc-section="wrapper"]${virtualScrollerStyle} > [data-pc-section="table"] > [data-pc-section="tbody"] > tr > td:nth-child(${nth}),
+[data-pc-name="datatable"][${prId}] > [data-pc-section="wrapper"]${virtualScrollerStyle} > [data-pc-section="table"] > [data-pc-section="tfoot"] > tr > td:nth-child(${nth}) {
+width: ${width}px !important; max-width: ${width}px !important; }`;
+        });
+        
+        if (css)
+        {
+            pStyle.textContent = css;
+        }
+        else{
+            pStyle.remove();
+        }
+    }
+
+    /**
+     * Writes the column widths. 
+     * If an existing style is found the widths are written into this style.
+     * If there is no style, a newone is created, and the mutation observer is forced to write the widths.
+     */
+    const writeColumnWidthsAndCreateStyle = () => {
+        let style = findStyle();
+        if (style)
+        {
+            writeColumnWidthsToStyle(style);
+        }else {
+            const prId = prIdRef.current;
+            if (prId) {
+                style = document.createElement('style');
+                style.textContent = `[data-pc-name="datatable"][${prId}] { }`;
+                document.head.appendChild(style);
+            }
+        }
+    }
+
+    /**
+     * MutationObserver observes the column width styles written by the data table.
+     * Only the fixed columns will be written. All other columns will be removed.
+     * The minWidth and width written on table element will also be removed.
+     * The bug duplicating the style tag in head, when moving columns is fixed.
+     */
+    useEffect(() => {
+        const observer = new MutationObserver(mutations => {
+            const prId = prIdRef.current;
+            if (!prId) {
+                return;
+            }
+            for (const m of mutations) {
+                for (const node of Array.from(m.addedNodes)) {
+                    if (node instanceof HTMLStyleElement 
+                        && node.textContent?.includes(`[data-pc-name="datatable"][${prId}]`)
+                        && !node.textContent?.includes("user-select:none")) {
+                        const style = node as HTMLStyleElement;
+
+                        findStyle(style)?.remove();
+                        writeColumnWidthsToStyle(style);
+                        
+                        // remove width style set on table element
+                        const table = tableRef.current?.getTable() as HTMLElement;
+                        if (table) {
+                            table.removeAttribute('style');
+                        }                        
+                    }
+                }
+            }
+        });
+        observer.observe(document.head, { childList: true });
+
+        return () => observer.disconnect();
+    }, [tableRef, prIdRef, fixedWidthsRef, columnOrderRef, virtualEnabled]);
+
     /**
      *  When column-resizing stops, adjust the width of resize
      *  If the lib user extends the Table with onColResizeEnd, call it when the column-resizing ends.
      *  @param e - the event
      */
-    const handleColResizeEnd = (e:DataTableColumnResizeEndEvent) => {
+    const handleColumnResizeEnd = (e:DataTableColumnResizeEndEvent) => {
         if (tableRef.current) {
+            const field = e.column.props.field;
+            const width = e.element.clientWidth + 2;
+
+            setWidth(field!, width);
+
             const widthReq = createWidthRequest();
             widthReq.dataProvider = props.dataBook;
-            widthReq.columnName = e.column.props.field;
-            widthReq.width = e.element.clientWidth + 2;
+            widthReq.columnName = field;
+            widthReq.width = width;
+
             if (props.onColResizeEnd) {
                 props.onColResizeEnd(e);
             }
+
             showTopBar(props.context.server.sendRequest(widthReq, REQUEST_KEYWORDS.WIDTH), props.topbar);
         }
     }
@@ -1357,11 +1489,13 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
         }
 
+        const columnOrder = e.columns.map((column:any) => column.props.field);
+
         if (props.onColOrderChange) {
-            props.onColOrderChange(e.columns.map((column:any) => column.props.field));
+            props.onColOrderChange(columnOrder);
         }
 
-        setColumnOrder(e.columns.map((column:any) => column.props.field));
+        columnOrderRef.current = columnOrder;
     }
     
     /**
@@ -1472,12 +1606,20 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             DomHandler.find(tableRef.current.getElement()!, "th .p-column-resizer")
             : undefined,
         'mousedown',
-        (elem:any) => {
+        (elem: HTMLElement, e: MouseEvent) => {
             clickedResizer.current = true;
             //elem instanceof Element ? (elem.parentElement as HTMLElement).style.setProperty('pointer-events', 'none') : undefined
+            const th = (elem as HTMLElement).closest('th') as HTMLTableCellElement | null;
+            if (th && e.detail === 2) {
+                const field = th.style.getPropertyValue('--colName');
+                if (field)
+                {
+                    setWidth(field, 0);
+                }
+            }
         },
-        true
-    )
+        true, true
+    );
 
     const focused = useRef<boolean>(false);
 
@@ -1526,6 +1668,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         if (!focused.current) {
                             handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)
                             focused.current = true;
+                            const columnOrder = columnOrderRef.current;
                             if (columnOrder && !focusIsClicked.current) {
                                 if (relatedTarget === getFocusComponent(props.name, false)) {
                                     sendSelectRequest(columnOrder[0], undefined, selectedRow.index || 0);
@@ -1602,7 +1745,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     columnResizeMode={props.autoResize !== false ? "fit" : "expand"}
                     reorderableColumns
                     onSelectionChange={handleRowSelection}
-                    onColumnResizeEnd={handleColResizeEnd}
+                    onColumnResizeEnd={handleColumnResizeEnd}
                     onColReorder={handleColReorder}
                     onSort={(event) => handleSort(event.sortField)}
                     rowClassName={(data:any) => {

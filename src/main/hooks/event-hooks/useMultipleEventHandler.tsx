@@ -21,31 +21,30 @@ import { useEffect, useRef } from "react";
  * @param event - the event
  * @param handler - the function which should be executed
  */
-const useMultipleEventHandler = (targets?: HTMLElement[], event?: keyof HTMLElementEventMap, handler?: any, paramTarget?:boolean) => {
-    const targetRef = useRef<HTMLElement[]>(undefined);
-    const handlerRef = useRef<EventListener>(undefined);
-    const eventRef = useRef<keyof HTMLElementEventMap>(undefined);
+const useMultipleEventHandler = (targets?: HTMLElement[], event?: keyof HTMLElementEventMap, handler?: any, paramTarget?:boolean, paramEvent?:boolean) => {
+    const savedHandler = useRef<(e: Event) => void | undefined>(undefined);
 
     useEffect(() => {
-        if (targetRef.current && handlerRef.current && eventRef.current) {
-            for (let target of targetRef.current) {
-                target.removeEventListener(eventRef.current, handlerRef.current);
+        if (!targets || !event || !handler) return;
+
+        savedHandler.current = (e: Event) => {
+            if (paramTarget && paramEvent) {
+                handler((e.currentTarget as HTMLElement) || undefined, e);
+            } else if (paramTarget) {
+                handler((e.currentTarget as HTMLElement) || undefined);
+            } else if (paramEvent) {
+                handler(e);
+            } else {
+                handler();
             }
-            
-        }
-        targetRef.current = targets;
-        handlerRef.current = handler;
-        eventRef.current = event;
-        if (targets) {
-            for (let target of targets) {
-                if (target && event && handler) {
-                    if (paramTarget) {
-                        target.addEventListener(event, () => handler(target))
-                    }
-                    target.addEventListener(event, handler);
-                }
-            }
-        }
-    }, [targets, event, handler])
+        };
+
+        targets.forEach(t => t.addEventListener(event, savedHandler.current!));
+
+        return () => {
+            // Listener sauber entfernen
+            targets.forEach(t => t.removeEventListener(event, savedHandler.current!));
+        };
+    }, [targets, event, handler, paramTarget])
 }
 export default useMultipleEventHandler
