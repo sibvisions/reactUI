@@ -1331,8 +1331,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             refreshStyle = true;
         }
         fixedWidthsRef.current = next;
-        if (refreshStyle)
-        {
+        if (refreshStyle) {
             writeColumnWidthsToStyle(findStyle());
         }
     };    
@@ -1377,11 +1376,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 width: ${width}px !important; max-width: ${width}px !important; }`;
         });
         
-        if (css)
-        {
+        if (css) {
             pStyle.textContent = css;
-        }
-        else{
+        }else {
             pStyle.remove();
         }
     }
@@ -1393,8 +1390,7 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
      */
     const writeColumnWidthsAndCreateStyle = () => {
         let style = findStyle();
-        if (style)
-        {
+        if (style) {
             writeColumnWidthsToStyle(style);
         }else {
             const prId = prIdRef.current;
