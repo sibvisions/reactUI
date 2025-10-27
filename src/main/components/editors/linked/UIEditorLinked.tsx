@@ -664,13 +664,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 setTimeout(() => {
                     const el = linkedRef.current?.getOverlay()?.querySelectorAll('.p-autocomplete-item')[index - virtualscroller.getRenderedRange().first];
                     if (el) {
-                        el.classList.add('p-highlight');
-                        el.setAttribute('data-p-highlight', 'true');
                         const oldEl = linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight');
                         if (oldEl) {
                             oldEl.classList.remove('p-highlight');
                             oldEl.removeAttribute('data-p-highlight');
                         }
+                        el.classList.add('p-highlight');
+                        el.setAttribute('data-p-highlight', 'true');
                     }
                     alignOverlay(true);
                 }, 50);
