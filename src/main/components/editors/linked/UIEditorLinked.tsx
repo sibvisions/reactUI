@@ -639,13 +639,70 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         }
     }, [initialFilter])
 
+    const getHighlightedIndex = () : number => {
+        const el = linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight');
+        const index = el ? parseInt(el.getAttribute("index") ?? "-1") : -1;
+
+        const virtualscroller = linkedRef.current?.getVirtualScroller();        
+        if (index < 0 || !virtualscroller) {
+            return index;
+        }else {
+            return index + virtualscroller.getRenderedRange().first;
+        }
+    }
+
+    const highlightIndex = (index: number) => {
+        if (index >= 0) {
+            const virtualscroller = linkedRef.current?.getVirtualScroller();
+            if (virtualscroller) {
+                // Virtual scroller does not scroll, if index is smaller than last - 2
+                // We want to show 2 items above the selected item, that the selected item is not the top one.
+                const last = virtualscroller.getRenderedRange().viewport.last;
+                const scrollpos = index < last ? 0 : index - 2; 
+                virtualscroller.scrollToIndex(scrollpos, "auto");
+
+                setTimeout(() => {
+                    const el = linkedRef.current?.getOverlay()?.querySelectorAll('.p-autocomplete-item')[index - virtualscroller.getRenderedRange().first];
+                    if (el) {
+                        el.classList.add('p-highlight');
+                        el.setAttribute('data-p-highlight', 'true');
+                        const oldEl = linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight');
+                        if (oldEl) {
+                            oldEl.classList.remove('p-highlight');
+                            oldEl.removeAttribute('data-p-highlight');
+                        }
+                    }
+                    alignOverlay(true);
+                }, 50);
+            }
+        }
+    }
+
     /**
      * When enter is pressed "submit" the value
      */
     useEventHandler(linkedInput.current || undefined, "keydown", (event: KeyboardEvent) => {
         if (event.key === "ArrowDown") {
-            //sendFilter(linkedInput.current?.value ?? "");
-            linkedRef.current?.show();
+            event.preventDefault();
+            event.stopPropagation();
+            if (linkedRef.current?.getOverlay()) {
+                highlightIndex(getHighlightedIndex() + 1);
+            }else {
+                sendFilter("");
+                linkedRef.current?.show();
+            }
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            event.stopPropagation();
+            if (linkedRef.current?.getOverlay()) {
+                highlightIndex(getHighlightedIndex() - 1);
+            }
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            event.preventDefault();
+            event.stopPropagation();
+        } else if (event.key === 'PageUp' || event.key === 'PageDown') {
+            event.preventDefault();
+            event.stopPropagation();
         } else if (props.isCellEditor && props.stopCellEditing) {
             if (event.key === "Tab") {
                 (event.target as HTMLElement).blur()
@@ -660,8 +717,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             if (event.key === "Enter") {
                 linkedRef.current?.hide(); 
 
-                const el = linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight');
-                const index = el ? parseInt(el.getAttribute("index") ?? "-1") : -1;
+                const index = getHighlightedIndex();
 
                 if (suggestions.length && index >= 0)
                 {
@@ -1117,7 +1173,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                 } as CSSProperties}
                 inputRef={linkedInput}
-                autoHighlight={true}
+//                autoHighlight={true}
                 autoFocus={props.autoFocus ? true : props.isCellEditor ? true : false}
                 appendTo={document.body}
                 transitionOptions={{
@@ -1221,25 +1277,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         const index = sugg.findIndex(
                             (s:any) => s[linkReference.referencedColumnNames[linkReference.columnNames.indexOf(props.columnName)]] == props.selectedRow?.data[props.columnName]
                         );
-                        if (index >= 0) {
-                            const virtualscroller = linkedRef.current?.getVirtualScroller();
-                            if (virtualscroller) {
-                                // Virtual scroller does not scroll, if index is smaller than last - 2
-                                // We want to show 2 items above the selected item, that the selected item is not the top one.
-                                const last = virtualscroller.getRenderedRange().viewport.last;
-                                const scrollpos = index < last ? 0 : index - 2; 
-                                virtualscroller.scrollToIndex(scrollpos, "auto");
-
-                                setTimeout(() => {
-                                    const el = linkedRef.current?.getOverlay()?.querySelectorAll('.p-autocomplete-item')[index - virtualscroller.getRenderedRange().first];
-                                    el?.classList.add('p-highlight');
-                                    el?.setAttribute('data-p-highlight', 'true');
-                                    alignOverlay(true);
-                                }, 50);
-                            }
-                        }
+                        highlightIndex(index);
                     }
-
                     alignOverlay(true);
                 }}
                 virtualScrollerOptions={{ 
