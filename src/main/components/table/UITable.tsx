@@ -1503,6 +1503,7 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
             switch (event.key) {
                 case "Enter":
                     event.preventDefault();
+                    event.stopPropagation();
                     if (event.shiftKey) {
                         selectPrevious.current && selectPrevious.current(enterNavigationMode);
                     }
@@ -1512,6 +1513,7 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
                     break;
                 case "Tab":
                     event.preventDefault();
+                    event.stopPropagation();
                     if (event.shiftKey) {
                         selectPrevious.current && selectPrevious.current(tabNavigationMode);
                     }
@@ -1520,28 +1522,40 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
                     }
                     break;
                 case "PageUp":
-                    pageKeyPressed.current = true;
                     event.preventDefault();
+                    event.stopPropagation();
+                    pageKeyPressed.current = true;
                     selectPreviousPage(false);
                     break;
                 case "PageDown":
-                    pageKeyPressed.current = true;
                     event.preventDefault();
+                    event.stopPropagation();
+                    pageKeyPressed.current = true;
                     selectNextPage(false);
                     break;
                 case "ArrowUp":
+                    event.preventDefault();
+                    event.stopPropagation();
                     selectPreviousRow(false);
                     break;
                 case "ArrowDown":
+                    event.preventDefault();
+                    event.stopPropagation();
                     selectNextRow(false);
                     break;
                 case "ArrowLeft":
+                    event.preventDefault();
+                    event.stopPropagation();
                     selectPreviousCell(false);
                     break;
                 case "ArrowRight":
+                    event.preventDefault();
+                    event.stopPropagation();
                     selectNextCell(false);
                     break;
                 case "Insert":
+                    event.preventDefault();
+                    event.stopPropagation();
                     if (metaData?.insertEnabled) {
                         props.context.contentStore.insertDataProviderData(screenName, props.dataBook);
                         const insertReq = createInsertRecordRequest();
@@ -1550,6 +1564,8 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
                     }
                     break;
                 case "Delete":
+                    event.preventDefault();
+                    event.stopPropagation();
                     if (metaData?.deleteEnabled) {
                         props.context.contentStore.deleteDataProviderData(screenName, props.dataBook);
                         const selectReq = createSelectRowRequest();
@@ -1602,10 +1618,10 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
             DomHandler.find(tableRef.current.getElement()!, "th .p-column-resizer")
             : undefined,
         'mousedown',
-        (elem: HTMLElement, e: MouseEvent) => {
+        (e: MouseEvent) => {
             clickedResizer.current = true;
             //elem instanceof Element ? (elem.parentElement as HTMLElement).style.setProperty('pointer-events', 'none') : undefined
-            const th = (elem as HTMLElement).closest('th') as HTMLTableCellElement | null;
+            const th = (e.currentTarget as HTMLElement).closest('th') as HTMLTableCellElement | null;
             if (th && e.detail === 2) {
                 const field = th.style.getPropertyValue('--colName');
                 if (field)
@@ -1613,9 +1629,7 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
                     setWidth(field, 0);
                 }
             }
-        },
-        true, true
-    );
+        });
 
     const focused = useRef<boolean>(false);
 
@@ -1687,7 +1701,7 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
                         focused.current = false;
                     }
                 }}
-                onKeyDown={(event) => handleTableKeys(event)}
+                onKeyDownCapture={(event) => handleTableKeys(event)}
                 onContextMenu={(e) => {
                     if (popupMenu.onContextMenu) {
                         popupMenu.onContextMenu(e);

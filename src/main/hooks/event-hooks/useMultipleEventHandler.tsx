@@ -21,30 +21,21 @@ import { useEffect, useRef } from "react";
  * @param event - the event
  * @param handler - the function which should be executed
  */
-const useMultipleEventHandler = (targets?: HTMLElement[], event?: keyof HTMLElementEventMap, handler?: any, paramTarget?:boolean, paramEvent?:boolean) => {
+const useMultipleEventHandler = (targets?: HTMLElement[], event?: keyof HTMLElementEventMap, handler?: any) => {
     const savedHandler = useRef<(e: Event) => void | undefined>(undefined);
 
     useEffect(() => {
         if (!targets || !event || !handler) return;
 
         savedHandler.current = (e: Event) => {
-            if (paramTarget && paramEvent) {
-                handler((e.currentTarget as HTMLElement) || undefined, e);
-            } else if (paramTarget) {
-                handler((e.currentTarget as HTMLElement) || undefined);
-            } else if (paramEvent) {
-                handler(e);
-            } else {
-                handler();
-            }
+            handler(e);
         };
 
         targets.forEach(t => t.addEventListener(event, savedHandler.current!));
 
         return () => {
-            // Listener sauber entfernen
             targets.forEach(t => t.removeEventListener(event, savedHandler.current!));
         };
-    }, [targets, event, handler, paramTarget])
+    }, [targets, event, handler])
 }
 export default useMultipleEventHandler
