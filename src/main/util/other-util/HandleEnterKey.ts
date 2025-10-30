@@ -27,7 +27,7 @@ export function handleEnterKey(event:any, elem:any, name:string, stopEditing?:Fu
         event.preventDefault();
         elem.blur();
         if (stopEditing) {
-            stopEditing(event)
+            stopEditing(event);
         }
         else {
             if (event.shiftKey) {
@@ -37,5 +37,8 @@ export function handleEnterKey(event:any, elem:any, name:string, stopEditing?:Fu
                 getFocusComponent(name, true)?.focus();
             }
         }
+    }
+    else if (stopEditing) {
+        stopEditing(null); // forces focus on table
     }
 }

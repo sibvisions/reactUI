@@ -1259,7 +1259,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                                 }
                                 focused.current = false;
                             }
-                            
                         }
                         else if (!linkedRef.current?.getElement()?.contains(event.relatedTarget)) {
                             if (props.eventFocusLost) {
@@ -1300,7 +1299,8 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                     if (props.onSelect) {
                         props.onSelect(event);
                     }
-                    handleSelect(event.value)
+                    handleSelect(event.value);
+                    setTimeout(() => handleEnterKey(event.originalEvent, event.originalEvent.target, props.name, props.stopCellEditing), 0);
                 }}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left", showDelay: 800 }}

@@ -216,9 +216,9 @@ export const CellEditor: FC<ICellEditor> = (props) => {
                 }
             }
         }
-        else {
-            focusTable = selectNext("Enter");
-        }
+//        else { // Only key events should change selected cell
+//            focusTable = selectNext("Enter");
+//        }
         if (focusTable) {
             tableContainer.focus();
         }
