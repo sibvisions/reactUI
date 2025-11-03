@@ -28,7 +28,8 @@ const useDesignerUpdates = (type:string) => {
     const [designerUpdate, setDesignerUpdate] = useState<boolean|undefined>(undefined);
     
     useEffect(() => {
-        const updateFunc = () => setTimeout(() => setDesignerUpdate(prevState => prevState === undefined ? prevState = true : !prevState), 1);
+//        const updateFunc = () => setTimeout(() => setDesignerUpdate(prevState => prevState === undefined ? prevState = true : !prevState), 1);
+        const updateFunc = () => setDesignerUpdate(prevState => prevState === undefined ? prevState = true : !prevState);
         switch (type) {
             case "std-menu":
                 context.designerSubscriptions.subscribeToStdHeader(updateFunc);
