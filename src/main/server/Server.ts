@@ -617,8 +617,8 @@ class Server extends BaseServer {
     showError(errData: ErrorResponse) {
         if (!errData.silentAbort) {
             this.subManager.emitErrorDialogProperties(errData);
+            console.error(errData.details)
         }
-        console.error(errData.details)
     }
 
     /** Shows an info toast */
