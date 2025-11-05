@@ -43,7 +43,7 @@ import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import BaseResponse from "../response/BaseResponse";
 import { translation } from "../util/other-util/Translation";
 import { initialURL } from "../util/InitialURL";
-import { LIB_VERSION } from "src/version";
+import { LIB_VERSION } from "../../version";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
