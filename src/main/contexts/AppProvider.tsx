@@ -43,6 +43,7 @@ import { DesignerSubscriptionManager } from "../DesignerSubscriptionManager";
 import BaseResponse from "../response/BaseResponse";
 import { translation } from "../util/other-util/Translation";
 import { initialURL } from "../util/InitialURL";
+import { LIB_VERSION } from "src/version";
 
 /** Checks if the contentstore is for transfermode full */
 export function isV2ContentStore(contentStore: ContentStore | ContentStoreFull): contentStore is ContentStore {
@@ -857,6 +858,7 @@ const AppProvider: FC<ICustomContent> = (props) => {
             startUpRequest.screenHeight = window.innerHeight;
             startUpRequest.screenWidth = window.innerWidth;
             startUpRequest.serverVersion = "4.0.0";
+            startUpRequest.appVersion = LIB_VERSION;
             startUpRequest.langCode = contextState.appSettings.language;
             startUpRequest.timeZoneCode = contextState.appSettings.timeZone;
             startUpRequest.readAheadLimit = 100;
