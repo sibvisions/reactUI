@@ -105,6 +105,7 @@
   --table-readonly-odd-background:rgb(239, 239, 239);
   --table-readonly-color:var(--text-color);
   --table-sort-color:var(--primary-color);
+  --table-selectedcellborder-color:rgb(127, 127, 127);
   --linked-panel-background:var(--backgrounds);
   --linked-item-color:var(--text-color);
   --linked-item-hover-background:var(--hover-backgrounds);
@@ -791,6 +792,10 @@ body {
 }
 .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-asc .p-sortable-column-icon, .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-des .p-sortable-column-icon {
   color: var(--table-sort-color);
+}
+.rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row.p-highlight > td.p-selectable-cell.p-highlight, .rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row > td.p-selectable-cell:focus {
+    outline: 2px solid var(--table-selectedcellborder-color); 
+    outline-offset: -2px;
 }
 .rc-table .p-datatable-tbody > tr {
   background: var(--table-row-even-background);

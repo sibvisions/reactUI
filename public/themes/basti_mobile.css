@@ -168,7 +168,8 @@ body {
 .basti_mobile .std-menu .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
   padding: var(--std-menu-item-padding);
 }
-.basti_mobile .std-menu .p-panelmenu .p-panelmenu-icon {
+.basti_mobile .std-menu .p-panelmenu .p-submenu-icon {
+  position: absolute;
   left: calc(var(--std-menu-width) - 30px);
 }
 .basti_mobile .std-menu .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {

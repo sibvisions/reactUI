@@ -248,6 +248,9 @@
     /// Default table-header sort color
     --table-sort-color:var(--primary-color);
 
+    /// Default selected cell border color
+    --table-selectedcellborder-color:rgb(127, 127, 127);
+
     /// Default LinkedCellEditor panel background
     --linked-panel-background:var(--backgrounds);
 
@@ -1363,6 +1366,11 @@ body {
                 color: var(--table-sort-color);
             }
         }
+    }
+
+    .rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row.p-highlight > td.p-selectable-cell.p-highlight, .rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row > td.p-selectable-cell:focus {
+        outline: 2px solid var(--table-selectedcellborder-color); 
+        outline-offset: -2px;
     }
 
     .p-datatable-tbody > tr {

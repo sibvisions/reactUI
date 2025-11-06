@@ -317,8 +317,9 @@ body {
                 padding: var(--std-menu-item-padding);
             }
 
-            .p-panelmenu-icon {
-                left: calc(var(--std-menu-width) - 30px)
+            .p-submenu-icon {
+                position: absolute;
+                left: calc(var(--std-menu-width) - 30px);
             }
         }
 

@@ -167,7 +167,8 @@ body {
 .basti .std-menu .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled) {
   padding: var(--std-menu-item-padding);
 }
-.basti .std-menu .p-panelmenu .p-panelmenu-icon {
+.basti .std-menu .p-panelmenu .p-submenu-icon {
+  position: absolute;
   left: calc(var(--std-menu-width) - 30px);
 }
 .basti .std-menu .p-menuitem-icon:not(.profile-image):not(.profile-image-null) {
