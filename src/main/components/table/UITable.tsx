@@ -312,6 +312,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** The current order of the columns */
     const columnOrderRef = useRef<string[]>(props.columnNames);
 
+    /** State trigger when column order changed */
+    const [columnOrderChanged, setColumnOrderChanged] = useState(false);
+
     /** The current state of either the entire selected row or the value of the column of the selectedrow of the databook sent by the server */
     const [selectedRow] = useRowSelect(screenName, props.dataBook);
 
@@ -486,7 +489,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
         }
         return null
-    }, [selectedRow, columnOrderRef]);
+    }, [selectedRow, columnOrderChanged]);
 
     /** The estimated table width */
     const [estTableWidth, setEstTableWidth] = useState(0);
@@ -648,7 +651,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 }
             }, 0);
         }
-    }, [metaData, metaData?.columns, measureFlag]);
+    }, [metaData?.columns, measureFlag]);
 
     // Disable resizable cells on non resizable, set column order of table
     useLayoutEffect(() => {
@@ -762,7 +765,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             getFocusComponent(props.name, true)?.focus();
             return false;
         }
-    }, [selectedRow, columnOrderRef, sendSelectRequest])
+    }, [selectedRow, columnOrderChanged, sendSelectRequest])
 
     /**
      * Selects the previous cell, if there is no cell anymore and delegateFocus is true, focus the previous component
@@ -786,7 +789,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             getFocusComponent(props.name, false)?.focus();
             return false;
         }
-    }, [selectedRow, columnOrderRef, sendSelectRequest])
+    }, [selectedRow, columnOrderChanged, sendSelectRequest])
 
     /**
      * Selects the next row, if there is no row anymore and delegateFocus is true, focus the next component
@@ -871,7 +874,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             getFocusComponent(props.name, true)?.focus();
             return false;
         }
-    }, [selectedRow, primaryKeys, columnOrderRef, providerData, sendSelectRequest])
+    }, [selectedRow, primaryKeys, columnOrderChanged, providerData, sendSelectRequest])
 
     /**
      * Selects the previous cell, if there is no cell anymore select the previous row and so on. If there is no more cells/rows and delegateFocus is true, focus the next component
@@ -904,7 +907,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             getFocusComponent(props.name, false)?.focus();
             return false;
         }
-    }, [selectedRow, primaryKeys, columnOrderRef, providerData, sendSelectRequest])
+    }, [selectedRow, primaryKeys, columnOrderChanged, providerData, sendSelectRequest])
 
     /** 
      * Selects a row which is further down based on the height of the table if there are no more rows and delegate Focus is true, focus the next component
@@ -1133,6 +1136,19 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         props.forwardedRef.current
     ])
 
+    useEffect(() => {
+        const newColumns = columnOrderRef.current.filter(col => props.columnNames.includes(col));
+        props.columnNames.forEach((col, i) => {
+            if (!newColumns.includes(col)) {
+                const pos = Math.min(i, newColumns.length);
+                newColumns.splice(pos, 0, col);
+            }
+        });
+
+        columnOrderRef.current = newColumns;
+        setColumnOrderChanged(refresh => !refresh);
+    }, [props.columnNames]);
+
     const columns = useMemo<ReactElement<ColumnProps>[]>(() => {
         const createColumnHeader = (colName: string, colIndex: number, isNullable?: boolean) => {
             let sortIndex = ""
@@ -1153,7 +1169,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 </>)
         }
 
-        return props.columnNames.map((colName, colIndex) => {
+        return columnOrderRef.current.map(colName => {
+            const colIndex = props.columnNames.indexOf(colName);
             const columnMetaData = getColMetaData(colName, metaData?.columns);
             const className = columnMetaData?.cellEditor?.className;
 
@@ -1221,11 +1238,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             />
         })
     }, [
-        props.columnNames, props.columnLabels, props.dataBook, props.enabled,
+        props.dataBook, props.enabled,
         props.tableHeaderVisible, sortDefinitions, metaData, metaData?.readOnly,
         metaData?.columns, metaData?.insertEnabled, metaData?.updateEnabled,
         primaryKeys, metaData?.deleteEnabled, props.startEditing, props.editable,
-        tableIsSelecting, providerData
+        tableIsSelecting, providerData, columnOrderChanged
     ]);
 
     // When a row is selected send a selectRow request to the server
@@ -1311,8 +1328,17 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
     useEffect(() => {
         const tableElement = tableRef.current?.getElement() as HTMLElement;
-        prIdRef.current = Array.from(tableElement.attributes).map(a => a.name).find(name => name.startsWith("pr_id_")); 
-    }, []);
+        const newPrId = Array.from(tableElement.attributes).map(a => a.name).find(name => name.startsWith("pr_id_"));
+
+        if (newPrId !== prIdRef.current)
+        {
+            findStyle()?.remove();
+
+            prIdRef.current = newPrId;
+
+            writeColumnWidthsAndCreateStyle();
+        }
+    }, [tableRef.current]);
 
     /**
      * Sets the width of a column.
@@ -1396,8 +1422,11 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
             const prId = prIdRef.current;
             if (prId) {
                 style = document.createElement('style');
-                style.textContent = `[data-pc-name="datatable"][${prId}] { }`;
+                style.textContent = `[data-pc-name="datatable"][${prId}] { }`; // causes mutation
+
                 document.head.appendChild(style);
+
+//                writeColumnWidthsToStyle(style);
             }
         }
     }
@@ -1436,7 +1465,7 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
         observer.observe(document.head, { childList: true });
 
         return () => observer.disconnect();
-    }, [tableRef, prIdRef, fixedWidthsRef, columnOrderRef, virtualEnabled]);
+    }, []);
 
     /**
      *  When column-resizing stops, adjust the width of resize
@@ -1490,10 +1519,10 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
         if (props.onColOrderChange) {
             props.onColOrderChange(columnOrder);
         }
-
         columnOrderRef.current = columnOrder;
+        setColumnOrderChanged(refresh => !refresh);
     }
-    
+   
     /**
      * Keylistener for the table
      * @param event - the keyboardevent
@@ -1714,7 +1743,7 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
                 //{...usePopupMenu(props)}
             >
                 <DataTable
-                    key="table"
+                    key={props.columnNames.join('-')}
                     ref={tableRef}
                     style={{
                         "--table-data-height": `${rowHeight - 8}px`,
