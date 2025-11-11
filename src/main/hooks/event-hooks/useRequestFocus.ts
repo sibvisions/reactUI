@@ -37,7 +37,7 @@ const useRequestFocus = (id: string, requestFocus: boolean|undefined, elem: HTML
                     existingComp.requestFocus = false;
                     context.subscriptions.propertiesSubscriber.get(id)?.apply(undefined, [existingComp]);
                 }
-            }, 0)
+            }, 10)
         }
     }, [requestFocus, elem])
 }
