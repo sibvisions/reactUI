@@ -134,7 +134,11 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
             });
             const preferredComp = tempSizes.current.get(compId);
             const tempSizeBefore = tempSizes.current.size;
-            tempSizes.current.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
+            const notDeleted = children.has(compId);
+            if (notDeleted)
+            {
+                tempSizes.current.set(compId, {preferredSize: prefSize, minimumSize: minSize, maximumSize: maxSize});
+            }
             const tempSizeAfter = tempSizes.current.size;
 
             /**
@@ -143,8 +147,8 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
              * got updated from children.size - 1 to children.size
              */
             const allowPreferredSizeChange = () => {
-                if (context.contentStore.getComponentById(compId)) {
-                    if ((tempSizes.current.size === children.size || id.includes('TP')) && 
+                if (context.contentStore.getComponentById(compId) && notDeleted) {
+                    if ((tempSizeAfter === children.size || id.startsWith('TP')) && 
                         (sizesChanged(preferredComp, prefSize, minSize, maxSize) 
                         || childrenChanged(compId) 
                         || componentsChanged.current 
@@ -161,7 +165,6 @@ const useComponents = (id: string, className:string): [Array<IBaseComponent>, Ar
                 setPreferredSizes(new Map(tempSizes.current));
                 componentsChanged.current = false;
             }
-                
 
             // Update the reference of componentsChildren, to know in later instances if there are children that have changed
             if (context.contentStore.componentChildren.get(compId)) {
