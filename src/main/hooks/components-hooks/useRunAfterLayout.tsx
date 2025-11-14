@@ -13,21 +13,21 @@
  * the License.
  */
 
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useState } from "react";
 
 /** Calls a function after layouting */
 export function useRunAfterLayout() {
-    let torun = useRef<Function[]>([]);
-    
-    useLayoutEffect(() => {
-        while(torun.current.length) {
-            const f = torun.current.pop();
-            f && f();
-        }
-        torun.current = [];
-    }, [torun.current]);
+    const [torun, setTorun] = useState<Function[]>([]);
 
-    return (r:Function) => {
-        torun.current.push(r)
+    useLayoutEffect(() => {
+        if (torun.length === 0) return;
+
+        torun.forEach(fn => fn());
+
+        setTorun([]);    
+    }, [torun]);
+
+    return (fn: Function) => {
+        setTorun(prev => [...prev, fn]);
     }
 } 

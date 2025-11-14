@@ -101,12 +101,13 @@ export function sendOnLoadCallback(id: string, className:string, preferredSize:D
                 }
                 /** Measure how big the component wants to be initially */
                 prefSize = {width: measurePrefWidth(element, className), height: Math.max(element.offsetHeight, Math.ceil(element.getBoundingClientRect().height))};
-                checkedSize = checkSizes(prefSize, minSize, maxSize);
-                onLoadCallback(id, checkedSize, minSize, maxSize);
                 styleEl.style.top = oldStyle.top;
                 styleEl.style.left = oldStyle.left;
                 styleEl.style.width = oldStyle.width;
                 styleEl.style.height = oldStyle.height;
+
+                checkedSize = checkSizes(prefSize, minSize, maxSize);
+                onLoadCallback(id, checkedSize, minSize, maxSize);
             }
         }
     }
