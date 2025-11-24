@@ -38,7 +38,9 @@ export function handleEnterKey(event:any, elem:any, name:string, stopEditing?:Fu
             }
         }
     }
-    else if (stopEditing) {
-        stopEditing(null); // forces focus on table
+    else if (event.type === "click") {
+        if (stopEditing) {
+            stopEditing(null);
+        }
     }
 }

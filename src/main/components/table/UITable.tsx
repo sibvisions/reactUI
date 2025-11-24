@@ -582,7 +582,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         if (cellDatas[j] !== undefined) {
                             // If it is a Linked- or DateCellEditor add 70 pixel to its measured width to display the editor properly
                             if (cellDatas[j].parentElement?.classList.contains('LinkedCellEditor') || cellDatas[j].parentElement?.classList.contains('DateCellEditor')) {
-                                tempWidth = (cellDatas[j].querySelector(".cell-data-content") as HTMLElement).offsetWidth + 30;
+                                tempWidth = (cellDatas[j].querySelector(".cell-data-content") as HTMLElement).offsetWidth + 32;
                             }
                             else if (cellDatas[j].parentElement?.classList.contains('ChoiceCellEditor') || cellDatas[j].parentElement?.classList.contains('CheckBoxCellEditor')) {
                                 tempWidth = 24;

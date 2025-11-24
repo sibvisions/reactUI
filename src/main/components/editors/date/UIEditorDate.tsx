@@ -24,7 +24,7 @@ import { getDateLocale, getGlobalLocale } from "../../../util/other-util/GetDate
 import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../../util/component-util/SizeUtil";
 import { sendSetValues } from "../../../util/server-util/SendSetValues";
-import useMultipleEventHandler from "../../../hooks/event-hooks/useMultipleEventHandler";
+import useEventHandler from "../../../hooks/event-hooks/useEventHandler";
 import { handleEnterKey } from "../../../util/other-util/HandleEnterKey";
 import usePopupMenu from "../../../hooks/data-hooks/usePopupMenu";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
@@ -331,9 +331,29 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
         startedEditing.current = false;
     }
 
+    // focus the input field when entering keys
+/*    useEventHandler(calendarInput.current && props.isCellEditor ? calendarInput.current : undefined, "keydown", (event: KeyboardEvent) => {
+        setTimeout(() => calendarInput.current!.focus(), 0);
+        console.log("keydown for focus ",event.target);
+    })
+*/
+
+    useEventHandler(calendar.current?.getOverlay() && visible && props.isCellEditor ? calendar.current.getOverlay()! : undefined, "focusin", (event: FocusEvent) => {
+        const oldSpan = event.target as HTMLElement;
+        setTimeout(() => {
+            if (!document.body.contains(oldSpan)) {
+                setTimeout(() => { focusSelectedDay(); }, 10);
+            }
+        }, 0);
+    })
+
+    const focusSelectedDay = () => {
+        const highlighted = calendar.current?.getOverlay()?.querySelector('.p-datepicker span[tabindex="0"]') as HTMLElement | null;
+        highlighted?.focus();
+    }
+
     // When "enter" or "tab" are pressed save the entry and close the editor, when escape is pressed don't save and close the editor
-    useMultipleEventHandler(calendar.current && calendarInput.current && calendar.current.getElement()?.querySelector("button") ?
-        [calendarInput.current, calendar.current.getElement()?.querySelector("button")!] : undefined, "keydown", (event: KeyboardEvent) => {
+    useEventHandler(calendarInput.current ? calendarInput.current : undefined, "keydown", (event: KeyboardEvent) => {
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab', 'Escape'].indexOf(event.key) === -1 && !startedEditing.current) {
                 startedEditing.current = true;
             }
@@ -374,6 +394,10 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             else if (event.key === "Escape" && props.isCellEditor && props.stopCellEditing) {
                 props.stopCellEditing(event);
             }
+            else if (event.key === "ArrowDown") {
+                event.preventDefault();
+                calendar.current?.show();
+            }
         });
 
     return (
@@ -383,6 +407,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             aria-label={props.ariaLabel}
             {...usePopupMenu(props)}
             aria-expanded={visible}
+            onKeyDown={(e) => { e.stopPropagation(); }} // Stop Propagation to DataTable
             style={{
                 ...props.layoutStyle
             } as CSSProperties}>
@@ -408,7 +433,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 } as CSSProperties}
                 monthNavigator
                 yearNavigator
-                yearRange="1900:2030"
+                yearRange="1900:2100"
                 dateFormat={dateFormat}
                 showTime={showTime}
                 showSeconds={showSeconds}
@@ -428,9 +453,11 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     //@ts-ignore
                     setDateValue(event.value ? event.value : null);
 
-                    if (event.originalEvent?.type === "click") {
+                    if (event.originalEvent?.type === "click" || event.originalEvent?.type === "keydown") {
                         onDateClicked.current = true;
                         setTimeout(() => handleDateInput(), 0);
+
+                        handleEnterKey(event.originalEvent, event.originalEvent.target, props.name, props.stopCellEditing);
                     }
                 }}
                 onFocus={(event) => {
@@ -456,12 +483,16 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                         focused.current = false;
                     }
                 }}
+                onShow={() => {
+                    focusSelectedDay();
+                }}
                 onHide={() => {
                     if (isChanging.current) {
                         handleDateInput();
                         isChanging.current = false;
                     }
                     setViewDate(convertToTimeZone(true));
+                    calendarInput.current?.focus();
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 readOnlyInput={props.isReadOnly || hasError}
@@ -519,7 +550,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 viewDate={viewDate}
                 onViewDateChange={(e) => {
                     viewDateChanged.current = true;
-                    setViewDate(e.value)
+                    setViewDate(e.value);
+                    setTimeout(() => { focusSelectedDay(); }, 100);
                 }}
                 placeholder={props.cellEditor_placeholder_}
                 formatDateTime={(date: Date) => {

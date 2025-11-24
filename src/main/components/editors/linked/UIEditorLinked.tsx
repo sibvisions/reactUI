@@ -15,7 +15,6 @@
 
 import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AutoComplete } from 'primereact/autocomplete';
-import { AutoCompleteChangeEvent } from 'primereact/autocomplete';
 import tinycolor from "tinycolor2";
 import { createFetchRequest, createFilterRequest, createSelectRowRequest } from "../../../factories/RequestFactory";
 import { showTopBar } from "../../topbar/TopBar";
@@ -52,7 +51,6 @@ import { formatCellEditorDateValue } from "../../table/CellRenderer/DateCellRend
 import { AppContextType } from "../../../contexts/AppProvider";
 import { ICellEditorDate } from "../date/UIEditorDate";
 import useAppContext from "../../../hooks/app-hooks/useAppContext";
-import { VirtualScroller } from "primereact/virtualscroller";
 import { DomHandler } from "primereact/utils";
 
 interface ReferencedColumnNames {
@@ -683,26 +681,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
      */
     useEventHandler(linkedInput.current || undefined, "keydown", (event: KeyboardEvent) => {
         if (event.key === "ArrowDown") {
-            event.preventDefault();
-            event.stopPropagation();
-            if (linkedRef.current?.getOverlay()) {
-                highlightIndex(getHighlightedIndex() + 1);
-            }else {
+            if (!linkedRef.current?.getOverlay()) {
+                event.preventDefault();
+                event.stopPropagation();
                 sendFilter("");
                 linkedRef.current?.show();
             }
-        } else if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            event.stopPropagation();
-            if (linkedRef.current?.getOverlay()) {
-                highlightIndex(getHighlightedIndex() - 1);
-            }
-        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-            event.preventDefault();
-            event.stopPropagation();
-        } else if (event.key === 'PageUp' || event.key === 'PageDown') {
-            event.preventDefault();
-            event.stopPropagation();
         } else if (props.isCellEditor && props.stopCellEditing) {
             if (event.key === "Tab") {
                 (event.target as HTMLElement).blur()
@@ -1161,6 +1145,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
             aria-label={props.ariaLabel} 
             id={!props.isCellEditor ? props.name : undefined}
             {...usePopupMenu(props)} 
+            onKeyDown={(e) => { e.stopPropagation(); }} // Stop Propagation to DataTable
             style={{
                 ...props.layoutStyle
             } as CSSProperties}>
