@@ -660,7 +660,10 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 virtualscroller.scrollToIndex(scrollpos, "auto");
 
                 setTimeout(() => {
-                    const el = linkedRef.current?.getOverlay()?.querySelectorAll('.p-autocomplete-item')[index - virtualscroller.getRenderedRange().first];
+                    const elList = linkedRef.current?.getOverlay()?.querySelectorAll('.p-autocomplete-item');
+                    const firstElIndex = elList?.[0].getAttribute("index");
+                    const firstIndex = firstElIndex ? parseInt(firstElIndex, 10) : 0;
+                    const el = elList?.[index - firstIndex];
                     if (el) {
                         const oldEl = linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight');
                         if (oldEl) {
