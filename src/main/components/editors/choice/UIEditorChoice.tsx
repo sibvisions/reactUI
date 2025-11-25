@@ -99,7 +99,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
             if (keys && values) {
                 for (let i = 0; i < keys.length; i++) {
                     let value: string | IconProps = values[i]
-                    if (value.includes("FontAwesome")) {
+                    if (typeof value === "string" && value.includes("FontAwesome")) {
                         value = parseIconData(undefined, value);
                     }
                     mergedObj[getValAsString(keys[i])] = value;
