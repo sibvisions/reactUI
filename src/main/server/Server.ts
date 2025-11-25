@@ -664,7 +664,10 @@ class Server extends BaseServer {
                 await this.timeoutRequest(fetch(resource), this.timeoutMs)
                 .then((response:any) => {
                     if (400 <= response.status && response.status <= 599) {
-                        return Promise.reject("Error fetching translation file " + (isCSSDesigner ? "CSS" : "default"))
+                        // No error bar, when no translation file exists!
+                        //return Promise.reject("Error fetching translation file " + (isCSSDesigner ? "CSS" : "default"))
+                        console.error("Error fetching translation file " + (isCSSDesigner ? "CSS" : "default"));
+                        return ""
                     }
                     return response.text()
                 })
@@ -701,8 +704,13 @@ class Server extends BaseServer {
             //fetchTranslation(this.RESOURCE_URL + "/com/sibvisions/apps/mobile/demo/translation_cssdesigner_de.xml", true).catch(() => this.appSettings.setAppReadyParam("cssTranslation"));
         }
         else {
-            this.subManager.emitErrorBarProperties(true, false, false, 5, translation.get("Could not load translation"), translation.get("An error occured while fetching the translation."));
-            this.subManager.emitErrorBarVisible(true);
+            // No error bar, when no translation file exists!
+//            this.subManager.emitErrorBarProperties(true, false, false, 5, translation.get("Could not load translation"), translation.get("An error occured while fetching the translation."));
+//            this.subManager.emitErrorBarVisible(true);
+            overwriteLocaleValues(langData.langCode ?? "en");
+            setPrimeReactLocale();
+            this.appSettings.setAppReadyParam("translation");
+            this.translationFetched = true;
         }
 
         if (langData.langCode) {
