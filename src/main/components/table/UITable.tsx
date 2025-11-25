@@ -1145,8 +1145,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
             }
         });
 
-        columnOrderRef.current = newColumns;
-        setColumnOrderChanged(refresh => !refresh);
+        if (JSON.stringify(columnOrderRef.current) !== JSON.stringify(newColumns)) {
+            columnOrderRef.current = newColumns;
+            setColumnOrderChanged(refresh => !refresh);
+        }
     }, [props.columnNames]);
 
     const columns = useMemo<ReactElement<ColumnProps>[]>(() => {
