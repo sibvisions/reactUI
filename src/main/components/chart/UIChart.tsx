@@ -620,7 +620,7 @@ const UIChart: FC<IChart> = (props) => {
                 return "linear";
             }
 
-            let axes:any[] = (overlapped ? yColumnNames : ["x"]).map((v, idx) => ({
+            let axes:any[] = (overlapped && yColumnNames ? yColumnNames : ["x"]).map((v, idx) => ({
                 id: `axis-${idx}`,
                 axis: horizontal ? 'y' : 'x',
                 display: !idx,
