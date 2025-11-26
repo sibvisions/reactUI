@@ -1295,7 +1295,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         ) {
             last = Math.max(first, last);
             //setListLoading(true);
-            if((providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
+            if(props.dataBook && (providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = props.dataBook;
                 fetchReq.fromRow = providerData.length;
@@ -1666,22 +1666,24 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
 
     // initially fetch more rows until you have 100
     useEffect(() => {
-        const dataBook = props.context.contentStore.getDataBook(screenName, props.dataBook)
-        if (!dataBook?.isAllFetched && providerData.length < rows) {
-            const fetchReq = createFetchRequest();
-            fetchReq.dataProvider = props.dataBook;
-            fetchReq.fromRow = providerData.length;
-            fetchReq.rowCount = 100;
-            const server = props.context.server;
-            if (!dataBook?.metaData) {
-                fetchReq.includeMetaData = true;
+        if (props.dataBook) {
+            const dataBook = props.context.contentStore.getDataBook(screenName, props.dataBook)
+            if (!dataBook?.isAllFetched && providerData.length < rows) {
+                const fetchReq = createFetchRequest();
+                fetchReq.dataProvider = props.dataBook;
+                fetchReq.fromRow = providerData.length;
+                fetchReq.rowCount = 100;
+                const server = props.context.server;
+                if (!dataBook?.metaData) {
+                    fetchReq.includeMetaData = true;
+                }
+                if (!dataBook?.data && !server.missingDataFetches.includes(props.dataBook)) {
+                    server.missingDataFetches.push(props.dataBook);
+                    showTopBar(server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), server.topbar);
+                } else if(dataBook?.data) {
+                    showTopBar(server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), server.topbar);
+                }
             }
-            if (!dataBook?.data && !server.missingDataFetches.includes(props.dataBook)) {
-                server.missingDataFetches.push(props.dataBook);
-                showTopBar(server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), server.topbar);
-            } else if(dataBook?.data) {
-                showTopBar(server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), server.topbar);
-            }            
         }
     }, [providerData, screenName, props.dataBook])
 

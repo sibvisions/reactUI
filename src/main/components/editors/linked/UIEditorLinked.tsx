@@ -124,24 +124,26 @@ export function fetchLinkedRefDatabook(
     name?: string, 
     decreaseCallback?: Function
 ) {
-    const refDataBookInfo = contentStore.getDataBook(screenName, databook);
-    if (selectedRecord !== undefined
-        && (displayCol || concatMask)
-        && (!refDataBookInfo?.data)
-        && !server.missingDataFetches.includes(databook)) {
-        server.missingDataFetches.push(databook);
-        const fetchReq = createFetchRequest();
-        fetchReq.dataProvider = databook;
-        fetchReq.fromRow = 0;
-        fetchReq.rowCount = 100;
-        if (!refDataBookInfo?.metaData) {
-            fetchReq.includeMetaData = true;
+    if (databook) {
+        const refDataBookInfo = contentStore.getDataBook(screenName, databook);
+        if (selectedRecord !== undefined
+            && (displayCol || concatMask)
+            && (!refDataBookInfo?.data)
+            && !server.missingDataFetches.includes(databook)) {
+            server.missingDataFetches.push(databook);
+            const fetchReq = createFetchRequest();
+            fetchReq.dataProvider = databook;
+            fetchReq.fromRow = 0;
+            fetchReq.rowCount = 100;
+            if (!refDataBookInfo?.metaData) {
+                fetchReq.includeMetaData = true;
+            }
+            if (refDataBookInfo?.isAllFetched) {
+                refDataBookInfo.isAllFetched = undefined;
+            }
+            fetchReq.screenName = screenName;
+            server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => decreaseCallback ? decreaseCallback(databook) : undefined)
         }
-        if (refDataBookInfo?.isAllFetched) {
-            refDataBookInfo.isAllFetched = undefined;
-        }
-        fetchReq.screenName = screenName;
-        server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH).then(() => decreaseCallback ? decreaseCallback(databook) : undefined)
     }
 }
 

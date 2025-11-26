@@ -413,20 +413,22 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
              * @returns the datarows of the root page
              */
             const fetchRoot = async () => {
-                const fetchReq = createFetchRequest();
-                fetchReq.dataProvider = firstLvlDataBook;
-                fetchReq.fromRow = 0;
-                fetchReq.rowCount = -1;
-                fetchReq.filter = {
-                    columnNames: [],
-                    values: []
-                }
-                fetchReq.rootKey = true;
-                const fetchResponse = await showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar);
-                if (fetchResponse && fetchResponse.length) {
-                    const rootKey = props.context.contentStore.getDataBook(screenName, firstLvlDataBook)?.rootKey;
-                    if (rootKey) {
-                        return providedData.get(firstLvlDataBook).get(rootKey)
+                if (firstLvlDataBook) {
+                    const fetchReq = createFetchRequest();
+                    fetchReq.dataProvider = firstLvlDataBook;
+                    fetchReq.fromRow = 0;
+                    fetchReq.rowCount = -1;
+                    fetchReq.filter = {
+                        columnNames: [],
+                        values: []
+                    }
+                    fetchReq.rootKey = true;
+                    const fetchResponse = await showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.topbar);
+                    if (fetchResponse && fetchResponse.length) {
+                        const rootKey = props.context.contentStore.getDataBook(screenName, firstLvlDataBook)?.rootKey;
+                        if (rootKey) {
+                            return providedData.get(firstLvlDataBook).get(rootKey)
+                        }
                     }
                 }
                 return []
