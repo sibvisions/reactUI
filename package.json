@@ -1,6 +1,6 @@
 {
   "name": "@sibvisions/reactui",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "type": "module",
   "main": "moduleIndex.cjs",
   "module": "moduleIndex.js",
@@ -93,5 +93,5 @@
   },
   "overrides": {
     "glob": "^11.1.0"
-  }  
+  }
 }
