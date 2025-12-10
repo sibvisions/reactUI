@@ -61,6 +61,7 @@ enum REQUEST_KEYWORDS {
 
     //comp
     SET_VALUE = "set_value",
+    ACTION = "action",
     SELECT_TAB = "select_tab",
     CLOSE_TAB = "close_tab",
     CLOSE_POPUP_MENU = "close_popup_menu",

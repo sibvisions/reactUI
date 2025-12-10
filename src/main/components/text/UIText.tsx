@@ -21,9 +21,8 @@ import { sendOnLoadCallback } from "../../util/server-util/SendOnLoadCallback";
 import { parseMaxSize, parseMinSize, parsePrefSize } from "../../util/component-util/SizeUtil";
 import { concatClassnames } from "../../util/string-util/ConcatClassnames";
 import { isCompDisabled } from "../../util/component-util/IsCompDisabled";
-import { sendSetValue } from "../../util/server-util/SendSetValues";
+import { sendSetValue, sendAction } from "../../util/server-util/SendSetValues";
 import usePopupMenu from "../../hooks/data-hooks/usePopupMenu";
-import { handleEnterKey } from "../../util/other-util/HandleEnterKey";
 import { getTabIndex } from "../../util/component-util/GetTabIndex";
 import { IExtendableText } from "../../extend-components/text/ExtendText";
 import useRequestFocus from "../../hooks/event-hooks/useRequestFocus";
@@ -51,6 +50,9 @@ const UIText: FC<ITextField & IExtendableText> = (props) => {
 
     /** Reference for the input element */
     const inputRef = useRef<any>(null);
+
+    /** Input timer to send text changes only all 300ms. */
+    const inputTimer = useRef<NodeJS.Timeout | null>(null);
     
     /** Hook for requesting focus */
     useRequestFocus(id, props.requestFocus, inputRef.current, props.context);
@@ -76,12 +78,21 @@ const UIText: FC<ITextField & IExtendableText> = (props) => {
                 style={{ ...props.compStyle, width: "100%", height: "100%" }}
                 onChange={event => {
                     startedEditing.current = true;
+                    const newValue = event.currentTarget.value;
+
+                    setText(newValue);
 
                     if (props.onChange) {
-                        props.onChange({ originalEvent: event, value: event.currentTarget.value });
+                        props.onChange({ originalEvent: event, value: newValue });
                     }
 
-                    setText(event.currentTarget.value)
+                    if (inputTimer.current) {
+                       clearTimeout(inputTimer.current);
+                    }
+                    inputTimer.current = setTimeout(() => {
+                        inputTimer.current = null;
+                        sendSetValue(props.name, newValue, props.context.server, props.topbar);
+                    }, 300);
                 }}
                 onFocus={(event) => handleFocusGained(props.name, props.className, props.eventFocusGained, props.focusable, event, props.name, props.context)}
                 onBlur={(event) => {
@@ -91,10 +102,12 @@ const UIText: FC<ITextField & IExtendableText> = (props) => {
                         }
 
                         if (startedEditing.current) {
-                            sendSetValue(props.name, text, props.context.server, props.topbar);
                             startedEditing.current = false;
+                            if (inputTimer.current) {
+                                clearTimeout(inputTimer.current);
+                            }
+                            sendAction(props.name, text, "FOCUS_LOST", props.context.server, props.topbar);
                         }
-
 
                         if (props.eventFocusLost) {
                             onFocusLost(props.name, props.context.server)
@@ -105,7 +118,19 @@ const UIText: FC<ITextField & IExtendableText> = (props) => {
                 tooltipOptions={{ position: "left", showDelay: 800 }}
                 {...usePopupMenu(props)}
                 size={props.columns !== undefined && props.columns >= 0 ? props.columns : 15}
-                onKeyDown={(e) => handleEnterKey(e, e.target, props.name)}
+                onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+
+                        if (startedEditing.current) {
+                            startedEditing.current = false;
+                            if (inputTimer.current) {
+                                clearTimeout(inputTimer.current);
+                            }
+                            sendAction(props.name, text, event.shiftKey ? "SHIFT_ENTER_KEY" : "ENTER_KEY", props.context.server, props.topbar);
+                        }
+                    }
+                }}
                 disabled={isCompDisabled(props)}
                 tabIndex={getTabIndex(props.focusable, props.tabIndex)}
             />

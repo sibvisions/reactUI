@@ -26,6 +26,7 @@ import BaseRequest from "../request/BaseRequest";
 import BoundsRequest from "../request/comp/BoundsRequest";
 import ComponentRequest from "../request/comp/ComponentRequest";
 import SetValueRequest from "../request/comp/SetValueRequest";
+import ActionRequest from "../request/comp/ActionRequest";
 import TabRequest from "../request/comp/TabRequest";
 import DALSaveRequest from "../request/data/DALSaveRequest";
 import DataProviderRequest from "../request/data/DataProviderRequest";
@@ -299,6 +300,21 @@ export const createSetValueRequest = (values?: SetValueRequest): SetValueRequest
         clientId: values?.clientId || getClientId(),
         componentId: values?.componentId,
         value: values?.value
+    };
+    return req;
+}
+
+/**
+ * Returns a setValueRequest object with either properties which can be overwritten or properties as parameters
+ * @param values - properties for the setValueRequest
+ * @returns a setValueRequest object
+ */
+export const createActionRequest = (values?: ActionRequest): ActionRequest => {
+    const req: ActionRequest = {
+        clientId: values?.clientId || getClientId(),
+        componentId: values?.componentId,
+        value: values?.value,
+        action: values?.action
     };
     return req;
 }

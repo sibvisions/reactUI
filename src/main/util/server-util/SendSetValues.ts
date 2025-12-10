@@ -14,7 +14,7 @@
  */
 
 import Server from "../../server/Server";
-import { createSetValueRequest, createSetValuesRequest } from "../../factories/RequestFactory";
+import { createSetValueRequest, createSetValuesRequest, createActionRequest } from "../../factories/RequestFactory";
 import { showTopBar, TopBarContextType } from "../../components/topbar/TopBar";
 import ServerFull from "../../server/ServerFull";
 import { SelectFilter } from "../../request/data/SelectRowRequest";
@@ -88,4 +88,24 @@ export async function sendSetValue(
         req.componentId = name;
         req.value = value;
         await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.SET_VALUE), topbar);
+}
+
+/**
+ * Sends a action-request to the server but only if the last-value has changed
+ * @param name - the name of the component
+ * @param value - the value to send to the server
+ * @param server - the server-class
+ * @param topbar - the topbar to show loading
+ */
+export async function sendAction(
+    name: string,
+    value: string | number | boolean | Array<any> | null,
+    action: string | null,
+    server: Server|ServerFull,
+    topbar:TopBarContextType|undefined) {
+        const req = createActionRequest();
+        req.componentId = name;
+        req.value = value;
+        req.action = action;
+        await showTopBar(server.sendRequest(req, REQUEST_KEYWORDS.ACTION), topbar);
 }
