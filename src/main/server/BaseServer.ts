@@ -267,13 +267,12 @@ export default abstract class BaseServer {
     ) {
         let promise = new Promise<any>((resolve, reject) => {
             // If the component/dataproviders don't exist or an error is displayed, don't send the request
-            if (
-                request.componentId 
+            if (request.componentId 
                 && endpoint !== REQUEST_KEYWORDS.OPEN_SCREEN 
                 && endpoint !== REQUEST_KEYWORDS.CLOSE_FRAME 
                 && endpoint !== REQUEST_KEYWORDS.CLOSE_SCREEN
                 && endpoint !== REQUEST_KEYWORDS.CREATE_NEW_COMPONENT
-                && !(endpoint !== REQUEST_KEYWORDS.SET_LAYOUT || request.componentId.startsWith("new_"))
+                && !(endpoint == REQUEST_KEYWORDS.SET_LAYOUT || request.componentId.startsWith("new_"))
                 && !this.componentExists(request.componentId)
             ) {
                 reject("Component doesn't exist: " + request.componentId);
@@ -405,7 +404,17 @@ export default abstract class BaseServer {
                         }
                     }
                 } 
-
+                if (request.componentId 
+                    && endpoint !== REQUEST_KEYWORDS.OPEN_SCREEN 
+                    && endpoint !== REQUEST_KEYWORDS.CLOSE_FRAME 
+                    && endpoint !== REQUEST_KEYWORDS.CLOSE_SCREEN
+                    && endpoint !== REQUEST_KEYWORDS.CREATE_NEW_COMPONENT
+                    && !(endpoint == REQUEST_KEYWORDS.SET_LAYOUT || request.componentId.startsWith("new_"))
+                    && !this.componentExists(request.componentId)
+                ) {
+                    reject("Component doesn't exist: " + request.componentId);
+                    return;
+                }
                 this.lastRequestTimeStamp = Date.now();
                 this.timeoutRequest(
                     fetchWithNavData ? fetchWithNavData : fetch(this.BASE_URL + finalEndpoint, this.buildReqOpts(request, additionalHeaders)), 
