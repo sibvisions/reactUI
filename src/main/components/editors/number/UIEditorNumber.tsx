@@ -321,7 +321,21 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
         if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
             event.stopPropagation();
         } else if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) {
-            handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+            // Checks if the decimal length limit is hit and when it is don't allow more inputs
+            const target = (event.target as HTMLInputElement);
+            let eValue: string = target.value;
+
+            if (event.key === "Enter") {
+                if (props.enterNavigationMode == 0 && !props.isCellEditor) {
+                    if (startedEditing.current) {
+                        event.preventDefault();
+                        sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, eValue, props.context.server, props.topbar, props.rowNumber);
+                        startedEditing.current = false;
+                    }
+                } else {
+                    handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+                }
+            }
             if (props.isCellEditor && props.stopCellEditing) {
                 if ((event as KeyboardEvent).key === "Tab") {
                     (event.target as HTMLElement).blur();
@@ -331,10 +345,6 @@ const UIEditorNumber: FC<IEditorNumber & IExtendableNumberEditor & IComponentCon
                     props.stopCellEditing(event);
                 }
             }
-
-            // Checks if the decimal length limit is hit and when it is don't allow more inputs
-            const target = (event.target as HTMLInputElement);
-            let eValue: string = target.value;
 
             // Returns the decimal value of the entered value
             const getDecimalValue = () => {

@@ -498,10 +498,10 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
     /** The navigation-mode for the enter key sent by the server default: cell and focus */
-    const enterNavigationMode = props.enterNavigationMode || Navigation.NAVIGATION_CELL_AND_FOCUS;
+    const enterNavigationMode = props.enterNavigationMode ?? Navigation.NAVIGATION_CELL_AND_FOCUS;
 
     /** The navigation-mode for the tab key sent by the server default: cell and focus */
-    const tabNavigationMode = props.tabNavigationMode || Navigation.NAVIGATION_CELL_AND_FOCUS;
+    const tabNavigationMode = props.tabNavigationMode ?? Navigation.NAVIGATION_CELL_AND_FOCUS;
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props

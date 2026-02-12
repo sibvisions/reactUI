@@ -163,8 +163,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     /** True, if the user has changed the value via keyboard */
     const startedEditing = useRef<boolean>(false);
 
-    /** True, if the user has changed the value */
-    const isChanging = useRef<boolean>(false);
+    // Has no functionality anymore, as Max has removed the code setting it true in onChange.
+//    /** True, if the user has changed the value */
+//    const isChanging = useRef<boolean>(false);
 
     /** Extracting onLoadCallback and id from props */
     const { onLoadCallback, id } = props;
@@ -183,9 +184,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
 
     /** Wether the DateCellEditor should only show time and no date */
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
-
-    /** Reference if the date has already been save to avoid multiple setValue calls */
-    const alreadySaved = useRef<boolean>(false);
 
     /** Reference if the DateCellEditor is already focused */
     const focused = useRef<boolean>(false);
@@ -327,7 +325,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             props.context.server,
             props.topbar,
             props.rowNumber);
-        isChanging.current = false;
+//        isChanging.current = false;
         startedEditing.current = false;
     }
 
@@ -365,8 +363,18 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
 
             if (event.key === "Enter") {
                 handleDateInput();
-                alreadySaved.current = true;
-                handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+                if (props.enterNavigationMode == 0 && !props.isCellEditor) {
+                    event.preventDefault();
+                    const input = calendar.current?.getInput();
+                    if (input) {
+                        input.blur();
+                        setTimeout(() => {
+                            input.focus();
+                        }, 0);
+                    }
+                } else {
+                    handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+                }
                 if (calendar.current) {
                     setVisible(false);
                     if ((event.target as HTMLElement).tagName === "BUTTON") {
@@ -378,7 +386,6 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
             }
             else if (event.key === "Tab") {
                 handleDateInput();
-                alreadySaved.current = true;
                 if (props.isCellEditor && props.stopCellEditing) {
                     props.stopCellEditing(event);
                 }
@@ -452,7 +459,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 onChange={event => {               
                     //@ts-ignore
                     setDateValue(event.value ? event.value : null);
-
+                    // isChanging.current = true; // removed by Max for some reason. So Hide will never send values.
                     if (event.originalEvent?.type === "click" || event.originalEvent?.type === "keydown") {
                         onDateClicked.current = true;
                         setTimeout(() => handleDateInput(), 0);
@@ -472,7 +479,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     }
 
                     if (startedEditing.current) {
-                        !alreadySaved.current ? handleDateInput() : alreadySaved.current = false
+                        handleDateInput();
                     }
 
                     // Check if the relatedTarget isn't in the dropdown and only then send focus lost. DateEditor also wants to send blur when clicking the overlay.
@@ -487,10 +494,10 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     focusSelectedDay();
                 }}
                 onHide={() => {
-                    if (isChanging.current) {
-                        handleDateInput();
-                        isChanging.current = false;
-                    }
+//                    if (isChanging.current) {
+//                        handleDateInput();
+//                        isChanging.current = false;
+//                    }
                     setViewDate(convertToTimeZone(true));
                     calendarInput.current?.focus();
                 }}

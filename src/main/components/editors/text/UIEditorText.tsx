@@ -321,7 +321,17 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     // Textfield onkeydown handling, Saving on "enter" and "tab" not saving on "esc"
     const tfOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
-        handleEnterKey(event, event.target, name, stopCellEditing);
+        if (event.key === "Enter") {
+            if (props.enterNavigationMode == 0 && !props.isCellEditor) {
+                if (startedEditing.current) {
+                    event.preventDefault();
+                    sendSetValues(dataRow, name, columnName, columnName, text, props.context.server, props.topbar, props.rowNumber);
+                    startedEditing.current = false;
+                }
+            } else {
+                handleEnterKey(event, event.target, name, stopCellEditing);
+            }
+        }
         if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Tab") {
                 (event.target as HTMLElement).blur();
@@ -332,13 +342,21 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 stopCellEditing(event);
             }
         }
-    }, [name, stopCellEditing, props.isCellEditor]);
+    }, [name, stopCellEditing, props.isCellEditor, props.enterNavigationMode, startedEditing.current, dataRow, columnName, text, props.context.server, props.topbar, props.rowNumber]);
 
     // TextArea onkeydown handling, Saving on "enter + shift" and "tab" not saving on "esc". Normal enter is next line
     const taOnKeyDown = useCallback((event:any) => {
         event.stopPropagation();
-        if (event.key === "Enter" && event.shiftKey) {
-            handleEnterKey(event, event.target, name, stopCellEditing);
+        if (event.key === "Enter" && event.ctrlKey) {
+            if (props.enterNavigationMode == 0 && !props.isCellEditor) {
+                if (startedEditing.current) {
+                    event.preventDefault();
+                    sendSetValues(dataRow, name, columnName, columnName, text, props.context.server, props.topbar, props.rowNumber);
+                    startedEditing.current = false;
+                }
+            } else {
+                handleEnterKey(event, event.target, name, stopCellEditing);
+            }
         }
         if (props.isCellEditor && stopCellEditing) {
             if (event.key === "Tab") {
@@ -350,23 +368,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 stopCellEditing(event);
             }
         }
-    },[name, stopCellEditing, props.isCellEditor]);
-
-    // Similar to tfOnKeyDown but blurring doesn't work like in textfield
-    const pwOnKeyDown = useCallback((event:any) => {
-        event.stopPropagation();
-        if (props.isCellEditor && stopCellEditing) {
-            if ((event.key === "Enter" || event.key === "Tab") && startedEditing.current) {
-                sendSetValues(dataRow, name, columnName, columnName, text, props.context.server, props.topbar, props.rowNumber);
-                startedEditing.current = false;
-                stopCellEditing(event);
-            }
-            else if (event.key === "Escape") {
-                escapePressed.current = true;
-                stopCellEditing(event);
-            }
-        }
-    }, [props, stopCellEditing, dataRow, columnName, name, text, props.isCellEditor, props.context.server]);
+    },[name, stopCellEditing, props.isCellEditor, props.enterNavigationMode, startedEditing.current, dataRow, columnName, text, props.context.server, props.topbar, props.rowNumber]);
 
     const [htmlInitial, setHtmlInitial] = useState<boolean>(true);
 
@@ -518,13 +520,13 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                     }
                 }
             },
-            onKeyDown: (e:any) => fieldType === FieldTypes.TEXTFIELD ? tfOnKeyDown(e) : (fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : pwOnKeyDown(e)),
+            onKeyDown: (e:any) => fieldType === FieldTypes.TEXTAREA ? taOnKeyDown(e) : tfOnKeyDown(e),
             tooltip: props.toolTipText,
             tooltipOptions:{ position: "left", showDelay: 800 },
             placeholder: props.cellEditor_placeholder_,
             tabIndex: props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)
         }
-    }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, pwOnKeyDown, 
+    }, [props, props.context.server, fieldType, props.isCellEditor, props.layoutStyle, tfOnKeyDown, taOnKeyDown, 
         length, props.autoFocus, props.cellEditor_background_, props.isReadOnly, 
         props.columnName, props.dataRow, props.id, props.name, text, textAlign, showSource]);
 

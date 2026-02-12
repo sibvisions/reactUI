@@ -42,7 +42,8 @@ export interface ICellEditorWrapperProps {
     rowNumber: number
     cellFormatting?: CellFormatting[]
     colIndex?: number,
-    styleClassNames: string[]
+    styleClassNames: string[],
+    enterNavigationMode?: number
 }
 
 /** The complete interface for ReactUI CellEditors. It extends the server-sent properties, wrapper properties and in-table-properties */
