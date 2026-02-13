@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
@@ -40,7 +40,7 @@ export interface ITextField extends IBaseComponent, IComponentConstants {
  */
 const UIText: FC<ITextField & IExtendableText> = (props) => {
     /** Current state of the text value */
-    const [text, setText] = useState(props.text || "");
+    const [text, setText] = useState(props.text ?? "");
 
     /** True, if the user has changed the value */
     const startedEditing = useRef<boolean>(false);
@@ -64,6 +64,10 @@ const UIText: FC<ITextField & IExtendableText> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
 
+    useEffect(() => {        
+        setText(props.text ?? "");    
+    }, [props.text]); 
+
     return (
         <span ref={props.forwardedRef} id={props.name} style={props.layoutStyle}>
             <InputText
@@ -74,7 +78,7 @@ const UIText: FC<ITextField & IExtendableText> = (props) => {
                     isCompDisabled(props) ? "rc-input-readonly" : "",
                     props.styleClassNames
                 )}
-                value={text || ""}
+                value={text ?? ""}
                 style={{ ...props.compStyle, width: "100%", height: "100%" }}
                 onChange={event => {
                     startedEditing.current = true;

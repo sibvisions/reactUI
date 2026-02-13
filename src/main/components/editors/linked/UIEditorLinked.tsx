@@ -339,16 +339,16 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     const linkedInput = useRef<any>(null);
 
     /** The data provided by the databook */
-    const [providedData] = useDataProviderData(props.screenName, props.cellEditor.linkReference.referencedDataBook||"");
+    const [providedData] = useDataProviderData(props.screenName, props.cellEditor.linkReference.referencedDataBook ?? "");
 
     /** True, if the user has changed the value */
     const startedEditing = useRef<boolean>(false);
 
     /** Metadata for the linkreferenced databook */
-    const metaDataReferenced:MetaDataResponse = useMetaData(props.screenName, props.cellEditor.linkReference.referencedDataBook||"") as MetaDataResponse;
+    const metaDataReferenced:MetaDataResponse = useMetaData(props.screenName, props.cellEditor.linkReference.referencedDataBook ?? "") as MetaDataResponse;
 
     /** Metadata for the 'normal' bound databook */
-    const metaData:MetaDataResponse = useMetaData(props.screenName, props.dataRow||"") as MetaDataResponse;
+    const metaData:MetaDataResponse = useMetaData(props.screenName, props.dataRow ?? "") as MetaDataResponse;
 
     /** The metadata of the celleditor */
     const cellEditorMetaData = useMemo(() => {
@@ -581,7 +581,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
      */
     const sendFilter = useCallback(async (value:any, query?:boolean) => {
         const refDataBookInfo = props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook);
-        props.context.contentStore.clearDataFromProvider(props.screenName, props.cellEditor.linkReference.referencedDataBook||"")
+        props.context.contentStore.clearDataFromProvider(props.screenName, props.cellEditor.linkReference.referencedDataBook ?? "")
         const filterReq = createFilterRequest();
         filterReq.dataProvider = props.cellEditor.linkReference?.referencedDataBook;
         filterReq.editorComponentId = props.name;
@@ -972,7 +972,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     // Handles the lazy-load, if the linked is at the end but not every row is fetched, it fetches 100 new rows
     const handleLazyLoad = (event:any) => {
-        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook || "")?.isAllFetched) {
+        if (event.last >= providedData.length && !props.context.contentStore.getDataBook(props.screenName, props.cellEditor.linkReference.referencedDataBook ?? "")?.isAllFetched) {
             const fetchReq = createFetchRequest();
             fetchReq.dataProvider = props.cellEditor.linkReference.referencedDataBook;
             fetchReq.fromRow = providedData.length;
@@ -1013,7 +1013,7 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                         screenName={props.screenName}
                         cellData={d[key]}
                         cellId={props.id + "-" + d.__index.toString() + "-" + colIndex.toString()}
-                        dataProvider={props.cellEditor.linkReference.referencedDataBook || ""}
+                        dataProvider={props.cellEditor.linkReference.referencedDataBook ?? ""}
                         isEditable={false}
                         colName={key}
                         colIndex={colIndex}

@@ -31,7 +31,7 @@ const ScreenWrapperManager:FC = () => {
     const screenId = getScreenIdFromNavigation(screenName, context.contentStore);
 
     return context.contentStore.screenWrappers.has(screenId) ? 
-        context.contentStore.screenWrappers.get(screenId || "")?.wrapper as ReactElement : 
+        context.contentStore.screenWrappers.get(screenId ?? "")?.wrapper as ReactElement : 
         <WorkScreen/>
 }
 export default ScreenWrapperManager;

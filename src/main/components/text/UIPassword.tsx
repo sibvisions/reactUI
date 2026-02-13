@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Password } from "primereact/password";
 import {  handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import { ITextField } from "./UIText";
@@ -33,7 +33,7 @@ import useRequestFocus from "../../hooks/event-hooks/useRequestFocus";
  */
 const UIPassword: FC<ITextField & IExtendableText> = (props) => {
     /** Current state of password value */
-    const [pwValue, setPwValue] = useState(props.text || "");
+    const [pwValue, setPwValue] = useState(props.text ?? "");
 
     /** True, if the user has changed the value */
     const startedEditing = useRef<boolean>(false);
@@ -57,6 +57,10 @@ const UIPassword: FC<ITextField & IExtendableText> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
 
+    useEffect(() => {        
+        setPwValue(props.text ?? "");    
+    }, [props.text]); 
+
     return (
         <span ref={props.forwardedRef} id={props.name} style={props.layoutStyle}>
             <Password
@@ -67,7 +71,7 @@ const UIPassword: FC<ITextField & IExtendableText> = (props) => {
                     isCompDisabled(props) ? "rc-input-readonly" : "",
                     props.styleClassNames
                 )}
-                value={pwValue||""} 
+                value={pwValue  ?? ""} 
                 feedback={false} 
                 style={{ ...props.compStyle, width: "100%", height: "100%" }} 
                 onChange={event => {

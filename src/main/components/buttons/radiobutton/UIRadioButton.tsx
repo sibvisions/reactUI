@@ -170,7 +170,7 @@ const UIRadioButton: FC<IButtonSelectable & IExtendableSelectable | IEditorCheck
                     {btnStyle.iconProps.icon !== undefined &&
                         <i className={concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon')}/>
                     }
-                    {isHTML && getButtonText(props) ? <RenderButtonHTML text={getButtonText(props) || ""} /> : getButtonText(props)}
+                    {isHTML && getButtonText(props) ? <RenderButtonHTML text={getButtonText(props) ?? ""} /> : getButtonText(props)}
                 </label>}
             </span>
         </span>

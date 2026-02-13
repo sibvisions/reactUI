@@ -72,7 +72,7 @@ const UploadDialog:FC = () => {
                     if (inputRef.current) {
                         if (fileId) {
                             const formData = new FormData();
-                            formData.set("clientId", sessionStorage.getItem("clientId") || "")
+                            formData.set("clientId", sessionStorage.getItem("clientId") ?? "")
                             // @ts-ignore
                             formData.set("data", e.target.files[0])
                             formData.set("fileId", fileId)

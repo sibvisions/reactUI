@@ -102,7 +102,7 @@ const Editor = (props: any) => {
             return <UIEditorChoice {...props} />
         }
         else if (props.cellEditor.className === CELLEDITOR_CLASSNAMES.CHECKBOX) {
-            const editorStyle = props.cellEditor_style_ ? props.cellEditor_style_ : props.cellEditor.style || "" 
+            const editorStyle = props.cellEditor_style_ ? props.cellEditor_style_ : props.cellEditor.style ?? "" 
             if (editorStyle.includes(BUTTON_CELLEDITOR_STYLES.BUTTON) || editorStyle.includes(BUTTON_CELLEDITOR_STYLES.HYPERLINK)) {
                 return <UIButton {...props} />
             }

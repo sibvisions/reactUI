@@ -200,7 +200,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                     tooltipOptions={{ position: "left", showDelay: 800 }}
                     layoutstyle-wrapper={props.name}
                     {...popupMenu}>
-                    {isHTML && <RenderButtonHTML text={getButtonText(props) || ""} />}
+                    {isHTML && <RenderButtonHTML text={getButtonText(props) ?? ""} />}
                 </Button>
             )
         }
@@ -218,7 +218,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                         tooltipOptions={{ position: "left", showDelay: 800 }}
                         layoutstyle-wrapper={props.name}
                         {...popupMenu}>
-                        {isHTML && <RenderButtonHTML text={getButtonText(props) || ""} />}
+                        {isHTML && <RenderButtonHTML text={getButtonText(props) ?? ""} />}
                     </Button>
                     {props.classNameEventSourceRef === "UploadButton" &&
                         // render an additional invisible input element to open the file dialog and upload files
@@ -230,7 +230,7 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                             onChange={(e) => {
                                 if (inputRef.current) {
                                     const formData = new FormData();
-                                    formData.set("clientId", sessionStorage.getItem("clientId") || "")
+                                    formData.set("clientId", sessionStorage.getItem("clientId") ?? "")
                                     formData.set("fileId", inputRef.current.getAttribute("upload-file-id") as string)
                                     // @ts-ignore
                                     formData.set("data", e.target.files[0])

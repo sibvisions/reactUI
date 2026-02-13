@@ -284,7 +284,7 @@ export const createFilterRequest = (values?: FilterRequest): FilterRequest => {
         clientId: values?.clientId || getClientId(),
         dataProvider: values?.dataProvider,
         editorComponentId: values?.editorComponentId,
-        value: values?.value||"",
+        value: values?.value ?? "",
         filterCondition: values?.filterCondition
     }
     return req;

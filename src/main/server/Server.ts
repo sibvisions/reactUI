@@ -548,7 +548,7 @@ class Server extends BaseServer {
                 inputElem.showPicker();
                 inputElem.onchange = (e) => {
                     const formData = new FormData();
-                    formData.set("clientId", sessionStorage.getItem("clientId") || "")
+                    formData.set("clientId", sessionStorage.getItem("clientId") ?? "")
                     formData.set("fileId", uploadData.fileId)
                     // @ts-ignore
                     formData.set("data", e.target.files[0])

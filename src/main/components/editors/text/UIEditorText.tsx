@@ -387,7 +387,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 startedEditing.current = true;
                 setText(transformHTMLFromQuill(value.htmlValue))
             },
-            value: transformHTMLToQuill(text) || "",
+            value: transformHTMLToQuill(text) ?? "",
             formats: ["bold", "color", "font", "background", "italic", "underline", "size", "strike", "align", "list", "script", "divider"],
             modules: {
                 divider: true,
@@ -491,7 +491,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
             maxLength: length,
             readOnly: props.isReadOnly,
             autoFocus: props.autoFocus ? true : props.isCellEditor ? true : false,
-            value: text || "",
+            value: text ?? "",
             "aria-label": props.ariaLabel,
             onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
                 startedEditing.current = true;
@@ -629,7 +629,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 <Editor {...primeProps} />
                 {showSource ? <InputTextarea
                     onChange={event => setText(event.currentTarget.value)}
-                    value={ text || "" }  
+                    value={ text ?? "" }  
                 /> : null}
             </div>
             :

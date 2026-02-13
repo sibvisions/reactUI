@@ -42,11 +42,11 @@ class UserData implements UserDataResponse {
      * @param newUser - the user data
      */
     constructor(newUser?: UserDataResponse) {
-        this.displayName = newUser?.displayName || "";
-        this.email = newUser?.email || "";
-        this.name = newUser?.name || "";
+        this.displayName = newUser?.displayName ?? "";
+        this.email = newUser?.email ?? "";
+        this.name = newUser?.name ?? "";
         this.profileImage = newUser?.profileImage;
-        this.userName = newUser?.userName || "";
+        this.userName = newUser?.userName ?? "";
         this.roles = newUser?.roles || [];
     }
 

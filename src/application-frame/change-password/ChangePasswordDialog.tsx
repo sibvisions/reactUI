@@ -52,7 +52,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
     const context = useContext(appContext);
 
     /** Contains data of the change-password mask */
-    const [changePWData, setChangePWData] = useState<IChangePasswordType>({username: props.username, password: props.password || "", newPassword: "", confirmPassword: ""});
+    const [changePWData, setChangePWData] = useState<IChangePasswordType>({username: props.username, password: props.password ?? "", newPassword: "", confirmPassword: ""});
 
     /** Whether to show the change password dialog */
     const [visible, setVisible] = useVisibleWithHistoryBlock(false);
@@ -117,7 +117,7 @@ const ChangePasswordDialog:FC<IChangePasswordDialog> = (props) => {
                 loginReq.mode = context.appSettings.loginMode;
                 loginReq.createAuthKey = false;
                 showTopBar(context.server.sendRequest(loginReq, REQUEST_KEYWORDS.LOGIN), context.server.topbar);
-                setChangePWData(prevState => ({...prevState, password: props.password || "", newPassword: "", confirmPassword: ""}));
+                setChangePWData(prevState => ({...prevState, password: props.password ?? "", newPassword: "", confirmPassword: ""}));
                 context.subscriptions.emitMenuUpdate();
             }
         }

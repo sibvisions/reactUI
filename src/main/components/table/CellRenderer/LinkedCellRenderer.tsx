@@ -30,7 +30,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
     const cellEditorMetaData = props.columnMetaData.cellEditor as ICellEditorLinked
 
     /** The data provided by the databook */
-    const [providedData] = useDataProviderData(props.screenName, cellEditorMetaData.linkReference.referencedDataBook||"");
+    const [providedData] = useDataProviderData(props.screenName, cellEditorMetaData.linkReference.referencedDataBook ?? "");
 
     const linkedColumnMetaData = useMetaData(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, props.colName);
 

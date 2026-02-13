@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { FC, useLayoutEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 import { handleFocusGained, onFocusLost } from "../../util/server-util/FocusUtil";
 import { ITextField } from "./UIText";
@@ -38,7 +38,7 @@ interface ITextArea extends ITextField {
  */
 const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
     /** Current state of the textarea value */
-    const [text, setText] = useState(props.text || "");
+    const [text, setText] = useState(props.text ?? "");
 
     /** True, if the user has changed the value */
     const startedEditing = useRef<boolean>(false);
@@ -62,6 +62,10 @@ const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
         }
     },[onLoadCallback, id, props.preferredSize, props.maximumSize, props.minimumSize, props.forwardedRef.current]);
 
+    useEffect(() => {        
+        setText(props.text ?? "");    
+    }, [props.text]); 
+
     return (
         <span ref={props.forwardedRef} id={props.name} style={props.layoutStyle}>
             <InputTextarea 
@@ -73,7 +77,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
                     isCompDisabled(props) ? "rc-input-readonly" : "",
                     props.styleClassNames
                 )}
-                value={text||""}
+                value={text ?? ""}
                 style={{ ...props.compStyle, resize: 'none', width: "100%", height: "100%" }} 
                 onChange={event => {
                     startedEditing.current = true;

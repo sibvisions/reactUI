@@ -195,7 +195,7 @@ const UIToggleButton: FC<IButtonSelectable & IExtendableToggleButton | IEditorCh
                 onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
                 tooltip={props.toolTipText}
                 tooltipOptions={{ position: "left", showDelay: 800 }}>
-                    {isHTML && props.text && <RenderButtonHTML text={getButtonText(props) || ""} />}
+                    {isHTML && props.text && <RenderButtonHTML text={getButtonText(props) ?? ""} />}
                 </ToggleButton>
         </span>
     )
