@@ -522,7 +522,7 @@ body {
   color: var(--text-color);
 }
 
-.rc-togglebutton:focus {
+.rc-togglebutton:focus-within .p-button {
   box-shadow: var(--focus-box-shadow);
 }
 

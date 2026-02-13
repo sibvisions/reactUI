@@ -970,8 +970,12 @@ body {
 }
 
 /// Togglebutton
-.rc-togglebutton:focus {
-    box-shadow: var(--focus-box-shadow);
+.rc-togglebutton {
+    &:focus-within {
+        .p-button {
+            box-shadow: var(--focus-box-shadow);
+        }
+    }
 }
 
 /// ChoiceCellEditor
