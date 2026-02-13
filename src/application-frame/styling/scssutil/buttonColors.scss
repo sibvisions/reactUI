@@ -25,11 +25,11 @@
         border-color: var(--hoverBackground);
 
         &.bright-button {
-            color: var(--button-color-bright);
+            color: var(--labelColor, --button-color-bright);
         }
 
         &.dark-button {
-            color: var(--button-color-dark);
+            color: var(--labelColor, --button-color-dark);
         }
     }
 
@@ -48,7 +48,7 @@
     &.border-notpainted > .p-button {
         background: transparent;
         border-color: transparent;
-        color: var(--button-color-dark);
+        color: var(--labelColor, --button-color-dark);
     }
 
     &:not(.p-disabled):not(.p-highlight):hover {
@@ -61,7 +61,7 @@
             & > .p-button {
                 background: transparent;
                 border-color: transparent;
-                color: var(--button-color-dark);
+                color: var(--labelColor, --button-color-dark);
             }
 
             &.mouse-border {
@@ -76,7 +76,7 @@
     &.bright-button:not(.rc-toolbar-button) > .p-button, 
     &:not(.p-disabled):not(.p-highlight).bright-button:hover > .p-button, 
     &.p-highlight.bright-button:hover > .p-button {
-        color: var(--button-color-bright);
+        color: var(--labelColor, --button-color-bright);
 
         .p-button-icon-left, .p-button-icon-right {
                 color: var(--iconColor, --button-color-bright);
@@ -86,7 +86,7 @@
     &.dark-button:not(.rc-toolbar-button) > .p-button, 
     &:not(.p-disabled):not(.p-highlight).dark-button:hover > .p-button, 
     &.p-highlight.dark-button:hover > .p-button {
-        color: var(--button-color-dark);
+        color: var(--labelColor, --button-color-dark);
 
         .p-button-icon-left, .p-button-icon-right {
             color: var(--iconColor, --button-color-dark);

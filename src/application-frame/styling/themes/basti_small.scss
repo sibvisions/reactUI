@@ -425,9 +425,10 @@ body {
         }
     }
 
-    .p-component, .rc-label {
-        font-size: var(--font-size);
-    }
+/// Font attributes should be inherited from parent.
+///    .p-component, .rc-label {
+///        font-size: var(--font-size);
+///    }
 
     .p-inputtext:not(.login-inputtext) {
         padding: var(--input-padding-tb) var(--input-padding-lr);

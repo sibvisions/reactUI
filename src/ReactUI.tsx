@@ -23,7 +23,7 @@ import AppWrapper from './AppWrapper';
 import UIManagerFull from './application-frame/screen-management/ui-manager/UIManagerFull';
 import { appContext } from './main/contexts/AppProvider';
 import Login from './application-frame/login/Login';
-import {ErrorBoundary} from 'react-error-boundary'
+import {ErrorBoundary, FallbackProps} from 'react-error-boundary'
 import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import tinycolor from 'tinycolor2';
@@ -35,9 +35,11 @@ import ErrorBar from './application-frame/error-bar/ErrorBar';
 import UploadDialog from './application-frame/upload-dialog/UploadDialog';
 
 /** This component is displayed when the application would crash based on a runtime error */
-const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unknown>) => void }> = ({ error, resetErrorBoundary }) => {
+const ErrorFallback: FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
     /** True, if the details of the error should be shown */
     const [showDetails, setShowDetails] = useState<boolean>();
+
+    const stack = error instanceof Error ? error.stack : String(error);
 
     return (
         <div className='crash-main'>
@@ -52,7 +54,7 @@ const ErrorFallback: FC<{ error: Error, resetErrorBoundary: (...args: Array<unkn
                         <div className={'crash-input-stack ' + (showDetails ? 'show-crash-details' : '')}  style={{ transition: "max-height 1s ease-out" }}>
                             <InputTextarea
                                 className='crash-input-stack-textarea rc-input'
-                                value={error.stack}
+                                value={stack}
                                 style={{ resize: 'none' }}
                                 readOnly />
                         </div>}

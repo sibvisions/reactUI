@@ -82,21 +82,33 @@
     min-width: 0;
     min-height: 0;
     outline-color: unset;
-    font-family: var(--font-family);
+/// This is the solution in case font is set in index.scss with * {...} for all elements
+/// It is removed and set on body, because the font should be inherited from parent
+///    font-family: var(--font-family);
 
     &:focus-visible {
         outline: unset;
     }
 }
 
+/// This is the solution in case font is set in index.scss with * {...} for all elements
+/// It is removed and set on body, because the font should be inherited from parent
+///.p-component, .p-inputtext {
+///    font-family: var(--font-family);
+///}
 .p-component, .p-inputtext {
-    font-family: var(--font-family);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 /// setting standard values for body
 body {
     background: var(--background);
     color: var(--text-color);
+/// The font should be inherited from parent
+    font-family: var(--font-family);
+    font-size: var(--font-size);
     font-weight: 400;
     font-style: normal;
     margin: 0;

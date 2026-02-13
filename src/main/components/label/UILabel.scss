@@ -28,6 +28,11 @@
         padding-top: 9px;
         padding-bottom: 9px;
         caret-color: transparent;
+/// This is the solution in case font is set in index.scss with * {...} for all elements
+///        font-family: inherit;
+///        font-size: inherit;
+///        font-weight: inherit;
+///        font-style: inherit;
     }
 
     &:not(.rc-label-html) > span {

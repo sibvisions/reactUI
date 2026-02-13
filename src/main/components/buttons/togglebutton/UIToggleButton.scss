@@ -53,5 +53,19 @@
         pointer-events: none;
     }
 
+/// This is the solution in case font is set in index.scss with * {...} for all elements
+///    & > .rc-togglebutton.p-button.p-component {
+///        font-family: inherit;
+///        font-size: inherit;
+///        font-weight: inherit;
+///        font-style: inherit;
+///    }
+///    & > .rc-togglebutton.p-button.p-component > .p-button-label {
+///        font-family: inherit;
+///        font-size: inherit;
+///        font-weight: inherit;
+///        font-style: inherit;
+///    }
+
     @include buttonColors.toggleBtnHover;
 }

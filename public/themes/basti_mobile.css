@@ -246,9 +246,6 @@ body {
 .basti_mobile .corp-menu .p-speeddial .p-speeddial-action .p-speeddial-action-icon {
   font-size: calc(var(--corp-speeddial-size) / 2);
 }
-.basti_mobile .p-component, .basti_mobile .rc-label {
-  font-size: var(--font-size);
-}
 .basti_mobile .corp-menu .corp-menu-menubar .p-menubar {
   height: unset;
 }

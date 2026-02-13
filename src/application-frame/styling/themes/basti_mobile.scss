@@ -431,9 +431,10 @@ body {
         }
     }
 
-    .p-component, .rc-label {
-        font-size: var(--font-size);
-    }
+/// Font attributes should be inherited from parent.
+///    .p-component, .rc-label {
+///        font-size: var(--font-size);
+///    }
 
     .corp-menu {
         .corp-menu-menubar .p-menubar {

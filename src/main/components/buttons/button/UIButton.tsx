@@ -193,7 +193,6 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                     }
                     {...btnProps}
                     label={!isHTML ? getButtonText(props) : undefined}
-                    aria-label={props.ariaLabel}
                     icon={btnStyle.iconProps ? isFAIcon(btnStyle.iconProps.icon) ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : 'rc-button-icon' : undefined}
                     iconPos={btnStyle.iconPos}
                     disabled={!isCheckboxCellEditor(props) ? isCompDisabled(props) : props.isReadOnly}
@@ -212,7 +211,6 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
                         {...btnProps}
                         onClick = {(event:any) => onButtonPress(event)}
                         label={!isHTML ? getButtonText(props) : undefined}
-                        aria-label={props.ariaLabel}
                         icon={btnStyle.iconProps ? isFAIcon(btnStyle.iconProps.icon) ? concatClassnames(btnStyle.iconProps.icon, 'rc-button-icon') : 'rc-button-icon' : undefined}
                         iconPos={btnStyle.iconPos}
                         disabled={!isCheckboxCellEditor(props) ? isCompDisabled(props) : props.isReadOnly}
@@ -247,7 +245,10 @@ const UIButton: FC<IButton & IExtendableButton | IEditorCheckBox & IComponentCon
     }
     
     return (
-        <span id={props.name} ref={props.forwardedRef} style={!props.id ? undefined : props.layoutStyle}>
+        <span id={props.name} 
+              ref={props.forwardedRef} 
+              style={!props.id ? undefined : props.layoutStyle}
+              aria-label={props.ariaLabel}>
             {getElementToRender()}
         </span> 
     )

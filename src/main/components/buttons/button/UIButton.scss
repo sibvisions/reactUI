@@ -47,7 +47,7 @@
     @include buttonColors.btnHover
 }
 
-.rc-button, .rc-togglebutton {
+.rc-button {
     &.p-button.p-button-icon-only {
         width: unset;
         padding: var(--btnPadding, 0.5rem 0.5rem);
@@ -64,6 +64,14 @@
             display: none;
         }
     }
+
+/// This is the solution in case font is set in index.scss with * {...} for all elements
+///    & > .p-button-label {
+///        font-family: inherit;
+///        font-size: inherit;
+///        font-weight: inherit;
+///        font-style: inherit;
+///    }
 }
 
 .rc-editor-linked .p-button.p-button-icon-only, .rc-editor-date .p-button.p-button-icon-only {
