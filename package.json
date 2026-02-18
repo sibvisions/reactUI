@@ -48,7 +48,7 @@
     "primeicons": "^7.0.0",
     "primereact": "^10.9.4",
     "query-string": "^9.1.1",
-    "quill": "^2.0.3",
+    "quill": "2.0.2",
     "react-error-boundary": "^6.0.0",
     "react-helmet": "^6.1.0",
     "react-leaflet": "^5.0.0",
@@ -92,6 +92,7 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "overrides": {
-    "glob": "^11.1.0"
+    "glob": "^11.1.0",
+    "ajv": "^8.18.0"
   }
 }
