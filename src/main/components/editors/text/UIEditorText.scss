@@ -48,23 +48,16 @@
 
     .p-editor-container {
         height: 100%;
-        //display: flex;
-        //flex-direction: column;
-
-        .p-editor-content.ql-snow {
-            border-top: 0px;
-            height: auto;
-        }
     }
 
     .p-inputtextarea {
         position: absolute; 
-        top: 40px;
+        top: 63px;
         left: 0;
         right: 0;
         resize: none;
         width: 100%;
-        height: calc(100% - 40px);
+        height: calc(100% - 63px);
         font-family: monospace;
 
         &:enabled:focus {

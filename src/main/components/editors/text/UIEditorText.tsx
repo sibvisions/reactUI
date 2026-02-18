@@ -376,6 +376,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
             ref: HTMLEditorRef,
+            class: "p-editor-container",
             onLoad: () => {
                 // HTML Editor size sending works best during onLoad
                 if (props.forwardedRef.current && onLoadCallback) {
