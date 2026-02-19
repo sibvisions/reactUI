@@ -11,6 +11,7 @@
     "build": "npm run scss && vite build && npm run remove-config && npm run create-build-date",
     "build-ci": "npm run build && zip -r reactBuild build",
     "bundle": "vite build -c vite.library.config.ts && npm run remove-config",
+    "audit": "npm audit --omit=dev", 
     "devbundle": "vite build --mode development -c vite.library.config.ts && npm run remove-config",
     "remove-config": "rimraf build/config.json && rimraf build/altConfig.json",
     "clean": "rimraf dist",
@@ -93,7 +94,6 @@
   },
   "overrides": {
     "glob": "^11.1.0",
-    "ajv": "^8.18.0",
-    "minimatch": "^10.2.1"
+    "ajv": "^8.18.0"
   }
 }
