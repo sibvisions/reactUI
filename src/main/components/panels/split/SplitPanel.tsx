@@ -147,6 +147,8 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     /** When dragging, calcuate the new separator position based on mouseposition and set it, resize is also called debounced while dragging */
     const dragging = (event: MouseEvent) => {
+        event.stopPropagation();
+        event.preventDefault();
         if (props.onResizeExtend) {
             props.onResizeExtend(event);
         }
@@ -161,11 +163,13 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
             _.debounce(callOnResize, 50)()
             setFirstPosition(newSeparatorPosition);
         }
-        event.preventDefault()
     }
 
     /** Removes the dragging eventListeners */
     const stopDrag = (event:any) => {
+        document.body.style.userSelect = "";
+        event.stopPropagation();
+        event.preventDefault();
         if (props.onResizeEndExtend) {
             if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
                 props.onResizeEndExtend({ originalEvent: event, delta: event.clientX - deltaRef.current });
@@ -181,7 +185,10 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     /** sets absolute position and adds eventListeners */
     const dragStart = (event: React.MouseEvent<HTMLDivElement>) => {
-        if(props.forwardedRef.current){
+        document.body.style.userSelect = "none";
+        event.stopPropagation();
+        event.preventDefault();
+        if (props.forwardedRef.current) {
             const size:DOMRect = props.forwardedRef.current.getBoundingClientRect();
             const separatorRect:DOMRect = event.currentTarget.getBoundingClientRect();
             if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
@@ -202,6 +209,9 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     /** Removes touch eventlisteners */
     const stopTouchDrag = (event:any) => {
+        document.body.style.userSelect = "";
+        event.stopPropagation();
+        event.preventDefault();
         if (props.onResizeEndExtend) {
             if (props.orientation === ORIENTATIONSPLIT.HORIZONTAL) {
                 props.onResizeEndExtend({ originalEvent: event, delta: event.targetTouches[0].clientX - deltaRef.current });
@@ -217,6 +227,8 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     /** When touch-dragging, calcuate the new separator position based on mouseposition and set it, resize is also called debounced while dragging */
     const touchDragging = (event: TouchEvent) => {
+        event.stopPropagation();
+        event.preventDefault();
         if (props.onResizeExtend) {
             props.onResizeExtend(event);
         }
@@ -230,6 +242,9 @@ const SplitPanel: FC<ISplitPanel> = (props) => {
 
     /** sets absolute position and adds eventListeners */
     const dragTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        document.body.style.userSelect = "none";
+        event.stopPropagation();
+        event.preventDefault();
         if(props.forwardedRef.current){
             const size:DOMRect = props.forwardedRef.current.getBoundingClientRect();
             const separatorRect:DOMRect = event.currentTarget.getBoundingClientRect();
