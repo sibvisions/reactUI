@@ -553,6 +553,20 @@ body {
   color: var(--input-placeholder-color);
 }
 
+.rc-editor-html {
+  background: var(--input-background);
+  border: var(--input-border-width) solid var(--input-border-color);
+  border-radius: var(--editor-border-radius);
+}
+.rc-editor-html:focus-within {
+  box-shadow: var(--focus-box-shadow);
+  border-color: var(--input-border-hover-color) !important;
+  outline: none;
+}
+.rc-editor-html:hover {
+  border-color: var(--input-border-hover-color);
+}
+
 .p-float-label > label {
   color: var(--input-placeholder-color);
 }
@@ -672,10 +686,10 @@ body {
 .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg polygon, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg line, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg rect, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg polyline, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg polygon, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg line, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg rect, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg polyline {
   stroke: var(--html-toolbar-button-background);
 }
-.p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.ql-source svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.ql-source svg path {
+.p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.custom-source svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.custom-source svg path {
   fill: var(--html-toolbar-button-background);
 }
-.p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.ql-source:hover svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.ql-source:hover svg path {
+.p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.custom-source:hover svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.custom-source:hover svg path {
   fill: var(--html-toolbar-button-hover-background);
 }
 .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker.ql-expanded .ql-picker-options {

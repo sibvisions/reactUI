@@ -44,7 +44,7 @@ export interface ICellRenderer {
     cellFormatting?: Map<string, CellFormatting>,
     isHTML: boolean,
     setStoredClickEvent?: (value: React.SetStateAction<Function | undefined>) => void
-    setEdit?: (value: React.SetStateAction<boolean>) => void,
+    setEdit?: (value: React.SetStateAction<number>) => void,
     decreaseCallback?: Function|undefined,
     isEditable: boolean,
     addReadOnlyClass: boolean,
@@ -160,7 +160,7 @@ const CellRenderer = React.forwardRef<(HTMLDivElement), ICellRenderer>((props, f
                     stateCallback: () => {
                         if (props.setEdit) {
                             //setWaiting(true);
-                            props.setEdit(true)
+                            props.setEdit(2)
                         }
                     }
                 }]
@@ -171,7 +171,7 @@ const CellRenderer = React.forwardRef<(HTMLDivElement), ICellRenderer>((props, f
                     stateCallback: () => {
                         if (props.setEdit) {
                             //setWaiting(true);
-                            props.setEdit(true)
+                            props.setEdit(2)
                         }
                     }, 
                     decreaseCallback: props.decreaseCallback }]
@@ -189,7 +189,7 @@ const CellRenderer = React.forwardRef<(HTMLDivElement), ICellRenderer>((props, f
         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1 &&
             props.setStoredClickEvent && props.setEdit) {
             props.setStoredClickEvent(() => {
-                props.setEdit!(true);
+                props.setEdit!(1);
             })
         }
     }, []);

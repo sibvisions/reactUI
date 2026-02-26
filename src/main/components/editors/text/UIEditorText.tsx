@@ -204,8 +204,6 @@ function transformHTMLToQuill(html: string = ''):string {
     }
 
     html = d.body.innerHTML;
-
-
     return html;
 }
 
@@ -238,9 +236,6 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     /** The horizontal- and vertical alignments */
     const textAlign = useMemo(() => getTextAlignment(props), [props]);
 
-    /** Reference if escape has been pressed */
-    const escapePressed = useRef<boolean>(false)
-
     /** True, if HTML-Editor should display source */
     const [showSource, setShowSource] = useState<boolean>(false);
 
@@ -248,6 +243,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     const popupMenu = usePopupMenu(props);
 
     const HTMLEditorRef = useRef<any>(null);
+    const TextAreaRef = useRef<any>(null);
 
     /** Handles the requestFocus property */
     useRequestFocus(id, props.requestFocus, props.forwardedRef.current, props.context)
@@ -301,7 +297,6 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow */
     useLayoutEffect(() => {
         setText(props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data[props.columnName] : undefined);
-        
     },[props.selectedRow]);
 
     // If the lib user extends the TextCellEditor with onChange, call it when selectedRow changes.
@@ -312,9 +307,9 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     }, [props.selectedRow, props.onChange])
 
     // If the CellEditor is in a table and a button was pressed to open it, set "" as value
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (props.isCellEditor && props.passedKey) {
-            setText("");
+            setText(fieldType === FieldTypes.HTML ? props.passedKey : "");
         }
     }, [])
 
@@ -331,14 +326,15 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
             } else {
                 handleEnterKey(event, event.target, name, stopCellEditing);
             }
-        }
-        if (props.isCellEditor && stopCellEditing) {
-            if (event.key === "Tab") {
+        } else if (event.key === "Tab") {
+            if (props.isCellEditor && stopCellEditing) {
                 (event.target as HTMLElement).blur();
                 stopCellEditing(event);
             }
-            else if (event.key === "Escape") {
-                escapePressed.current = true;
+        } else if (event.key === "Escape") {
+            setText(props.selectedRow && props.selectedRow.data !== undefined ? props.selectedRow.data[props.columnName] : undefined);
+            startedEditing.current = false;
+            if (props.isCellEditor && stopCellEditing) {
                 stopCellEditing(event);
             }
         }
@@ -357,18 +353,45 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
             } else {
                 handleEnterKey(event, event.target, name, stopCellEditing);
             }
-        }
-        if (props.isCellEditor && stopCellEditing) {
-            if (event.key === "Tab") {
+        } else if (event.key === "Tab") {
+            if (props.isCellEditor && stopCellEditing) {
                 (event.target as HTMLElement).blur();
                 stopCellEditing(event);
             }
-            else if (event.key === "Escape") {
-                escapePressed.current = true;
+        } else if (event.key === "Escape") {
+            event.preventDefault();
+            const originalValue = props.selectedRow?.data?.[props.columnName] ?? "";
+            setText(originalValue);
+            if (!showSource && HTMLEditorRef.current) {
+                const quill = HTMLEditorRef.current.getQuill();
+                if (quill) {
+                    quill.clipboard.dangerouslyPasteHTML(originalValue, 'silent');
+//                    quill.setSelection(quill.getLength(), 0); // optional set caret to end
+                }
+            }
+            
+            startedEditing.current = false;
+            if (props.isCellEditor && stopCellEditing) {
                 stopCellEditing(event);
             }
         }
     },[name, stopCellEditing, props.isCellEditor, props.enterNavigationMode, startedEditing.current, dataRow, columnName, text, props.context.server, props.topbar, props.rowNumber]);
+
+    useEffect(() => {
+        if (HTMLEditorRef.current) {
+            const quill = HTMLEditorRef.current.getQuill();
+            if (quill && quill.root) {
+                // quill.root ist das div.ql-editor
+                if (showSource) {
+                    quill.root.setAttribute('tabindex', '-1');
+                    TextAreaRef.current.focus();
+                } else {
+                    quill.root.setAttribute('tabindex', '0');
+                    quill.root.focus();
+                }
+            }
+        }
+    }, [showSource]);
 
     const [htmlInitial, setHtmlInitial] = useState<boolean>(true);
 
@@ -376,13 +399,32 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
     const primeProps: any = useMemo(() => {
         return fieldType === FieldTypes.HTML ? {
             ref: HTMLEditorRef,
-            class: "p-editor-container",
+            className: "p-editor-container",
             onLoad: () => {
                 // HTML Editor size sending works best during onLoad
                 if (props.forwardedRef.current && onLoadCallback) {
                     sendOnLoadCallback(id, props.cellEditor?.className ? props.cellEditor.className : CELLEDITOR_CLASSNAMES.TEXT, parsePrefSize(props.preferredSize), parseMaxSize(props.maximumSize), parseMinSize(props.minimumSize), props.forwardedRef.current, onLoadCallback)
                 }
+                // prevent tab jumps to the toolbar. this would be confusing, as focus is not visible on toolbar elements.
+                const toolbar = document.querySelector('.ql-toolbar');
+                if (toolbar) {
+                    const focusable = toolbar.querySelectorAll('span[tabindex="0"], button, select');
+                    focusable.forEach(el => {
+                        el.setAttribute('tabindex', '-1');
+                    });
+                }
                 setHtmlInitial(false);
+                if (props.isCellEditor && HTMLEditorRef.current) { // give initial focus on html editor
+                    const quill = HTMLEditorRef.current.getQuill();
+                    if (quill && quill.root) {
+                        if (!showSource) {
+                            quill.root.focus();
+                            if (props.passedKey) {
+                                quill.setSelection(quill.getLength(), 0);
+                            }
+                        }
+                    }
+                }
             },
             onTextChange: showSource || props.isReadOnly ? () => {} : (value: any) => {
                 startedEditing.current = true;
@@ -451,7 +493,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                         <button type="button" className="ql-clean" aria-label="Remove Styles"></button>
                     </span>
                     <span className="ql-formats">
-                        <button type="button" className="ql-source" aria-label="Source" onClick={() => setShowSource(!showSource)}>
+                        <button type="button" className="custom-source" aria-label="Source" onClick={() => setShowSource(!showSource)}>
                             <svg width="18" height="18" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
                                 <path className="ql-fill" d="M58.059,14.795C55.938,14.23 53.676,15.502 53.11,17.764L36.71,80.254C36.145,82.375 37.417,84.637 39.679,85.202C39.962,85.344 40.386,85.344 40.669,85.344C42.507,85.344 44.203,84.071 44.628,82.233L61.028,19.602C61.593,17.482 60.321,15.361 58.059,14.795ZM30.49,26.247C28.934,24.692 26.248,24.692 24.693,26.247L3.91,47.171C2.355,48.726 2.355,51.413 3.91,52.968L24.552,73.892C25.4,74.74 26.39,75.164 27.521,75.164C28.51,75.164 29.641,74.74 30.348,74.033C31.903,72.478 31.903,69.792 30.348,68.237L12.676,49.999L30.49,32.044C32.045,30.347 32.045,27.802 30.49,26.247ZM96.09,47.171L75.307,26.247C73.752,24.692 71.066,24.692 69.51,26.247C67.955,27.802 67.955,30.488 69.51,32.044L87.324,49.999L69.51,67.954C67.955,69.509 67.955,72.196 69.51,73.751C70.359,74.599 71.348,74.882 72.338,74.882C73.328,74.882 74.459,74.458 75.307,73.609L96.09,52.826C97.645,51.271 97.645,48.726 96.09,47.171Z" />
                             </svg>
@@ -501,7 +543,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 }
                 setText(event.currentTarget.value);
 
-                if (props.savingImmediate && !escapePressed.current) {
+                if (props.savingImmediate) {
                     sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, event.currentTarget.value, props.context.server, props.topbar, props.rowNumber)
                 }
             },
@@ -512,7 +554,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                         props.onBlur(event)
                     }
 
-                    if (!escapePressed.current && startedEditing.current) {
+                    if (startedEditing.current) {
                         sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber);
                         startedEditing.current = false;
                     }
@@ -614,9 +656,10 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 ].filter(Boolean).join(' ')}
                 tabIndex={getTabIndex(props.focusable, props.tabIndex)}
                 onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
+                onKeyDown={(event) => taOnKeyDown(event)}
                 onBlur={() => {
                     if (!props.isReadOnly) {
-                        if (!escapePressed.current && startedEditing.current) {
+                        if (startedEditing.current) {
                             sendSetValues(props.dataRow, props.name, props.columnName, props.columnName, text, props.context.server, props.topbar, props.rowNumber);
                             startedEditing.current = false;
                         }
@@ -629,6 +672,7 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
             >
                 <Editor {...primeProps} />
                 {showSource ? <InputTextarea
+                    ref={TextAreaRef}
                     onChange={event => setText(event.currentTarget.value)}
                     value={ text ?? "" }  
                 /> : null}

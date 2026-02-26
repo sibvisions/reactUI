@@ -25,7 +25,9 @@ export function getFocusComponent(name:string, next:boolean):HTMLElement|undefin
             || (e.getAttribute("tabindex") && parseInt(e.getAttribute("tabindex")) < 0) 
             || e.tagName === "TD" || e.tagName === "TH" 
             || e.classList.contains("designer-button") 
-            || e.classList.contains("navtable")) {
+            || e.classList.contains("navtable")
+            || Array.from(e.classList).some((cls: any) => cls.startsWith('ql-') && cls != "ql-editor") // quill Editor check
+            || e.dataset.link) {  // quill Editor check
             return false;                
         }
         else

@@ -474,25 +474,6 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
         return () => props.context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, onChange);
     },[props.context.subscriptions])
 
-    /** disable dropdownbutton tabIndex */
-    useEffect(() => {
-        const dropDownButton = getDropDownButton();
-        if (dropDownButton) {
-            dropDownButton.tabIndex = -1;
-        }
-
-        if (props.isCellEditor && props.passedKey) {
-            setText("");
-        }
-
-        //on unmount save the value, use textcopy because text would be empty
-        return () => {
-            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && linkedInput.current && props.isCellEditor && startedEditing.current) {
-                handleInput(textCopy.current)
-            }
-        }
-    }, []);
-
     // Disable the dropdown-button if the editor is set to readonly
     useEffect(() => {
         const dropdownButton = getDropDownButton();
@@ -538,11 +519,37 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
     }, [])
 
     /** When props.selectedRow changes set the state of inputfield value to props.selectedRow*/
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (props.selectedRow) {
             setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
         }
-    }, [props.selectedRow, cellEditorMetaData, linkReference?.dataToDisplayMap, displayMapChanged]);
+    }, [props.selectedRow, cellEditorMetaData, displayMapChanged]);
+    // A hook to linkReference?.dataToDisplayMap will cause a possible update of text after edit because of lazy fetch.
+//    }, [props.selectedRow, cellEditorMetaData, linkReference?.dataToDisplayMap, displayMapChanged]);
+
+    /** disable dropdownbutton tabIndex */
+    useLayoutEffect(() => {
+        const dropDownButton = getDropDownButton();
+        if (dropDownButton) {
+            dropDownButton.tabIndex = -1;
+        }
+
+        if (props.isCellEditor && props.passedKey) {
+            setText("");
+        }
+
+        if (props.isCellEditor && props.openPopup) {
+            sendFilter("");
+            linkedRef.current?.show();
+        }
+        
+        //on unmount save the value, use textcopy because text would be empty
+        return () => {
+            if (props.context.contentStore.activeScreens.map(screen => screen.name).indexOf(props.screenName) !== -1 && linkedInput.current && props.isCellEditor && startedEditing.current) {
+                handleInput(textCopy.current)
+            }
+        }
+    }, []);
 
     // If the lib user extends the LinkedCellEditor with onChange, call it when slectedRow changes.
     useEffect(() => {
@@ -697,8 +704,12 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 (event.target as HTMLElement).blur()
                 props.stopCellEditing(event);
             } else if (event.key === "Escape") {
+                startedEditing.current = false;
+                if (props.selectedRow) {
+                    setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
+                }
                 props.stopCellEditing(event)
-            } else if(event.key === "Enter" && !linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight')) {
+            } else if (event.key === "Enter" && !linkedRef.current?.getOverlay()?.querySelector('.p-autocomplete-item.p-highlight')) {
                 linkedRef.current?.hide();
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
             }
@@ -723,7 +734,13 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
                 }
 
                 handleEnterKey(event, event.target, props.name, props.stopCellEditing);
+            } else if (event.key === "Escape") {
+                startedEditing.current = false;
+                if (props.selectedRow) {
+                    setText(getDisplayValue(props.selectedRow.data, undefined, linkReference, props.columnName, isDisplayRefColNameOrConcat, cellEditorMetaData, props.dataRow, linkedColumnMetaData?.dataTypeIdentifier, linkedColumnMetaData, context));
+                }
             }
+
         }
     });
 

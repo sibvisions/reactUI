@@ -322,7 +322,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     const pageKeyPressed = useRef<boolean>(false);
 
     /** Reference of the last selected row used for scrolling */
-    const lastSelectedRowIndex = useRef<number|undefined>(selectedRow ? selectedRow.index : undefined);
+    const lastSelectedCell = useRef<{rowIndex: number; column: string} | undefined>(selectedRow ? {rowIndex: selectedRow.index, column: selectedRow.selectedColumn}  : undefined);
 
     const focusIsClicked = useRef<boolean>(false);
 
@@ -475,10 +475,11 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     props: {}
                 }
                 setSelectedCellId({selectedCellId: props.id + "-" + newCell.rowIndex!.toString() + "-" + newCell.cellIndex.toString()});
-                if (selectedRow && (lastSelectedRowIndex.current !== selectedRow.index || lastSelectedRowIndex.current === undefined)) {
-                    scrollToSelectedCell(newCell, lastSelectedRowIndex.current !== undefined ? lastSelectedRowIndex.current < selectedRow.index : false);
+                const currentSelectedCell = {rowIndex: selectedRow.index, column: selectedRow.selectedColumn};
+                if (selectedRow && (lastSelectedCell.current !== currentSelectedCell || lastSelectedCell.current === undefined)) {
+                    scrollToSelectedCell(newCell, lastSelectedCell.current !== undefined ? lastSelectedCell.current.rowIndex < selectedRow.index : false);
                 }    
-                lastSelectedRowIndex.current = selectedRow.index;
+                lastSelectedCell.current = currentSelectedCell;
                 return newCell
             }
             else if (selectedRow.index > -1) {
@@ -505,9 +506,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     /** Extracting onLoadCallback and id from baseProps */
     const {onLoadCallback, id} = props
-
-    /** fallback column widths */
-    const [columnWidths, setColumnWidths] = useState<Array<CellWidthData>>();
 
     //Returns navtable classname
     const getNavTableClassName = (parent?:string) => {
@@ -640,8 +638,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                         cellDataWidthList.forEach(cellDataWidth => {
                             tempWidth += cellDataWidth.width
                         });
-    
-                        setColumnWidths(cellDataWidthList);
 
                         // set EstTableWidth for size reporting
                         setEstTableWidth(tempWidth);
