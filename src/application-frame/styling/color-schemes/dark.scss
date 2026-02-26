@@ -1014,6 +1014,23 @@ body {
     }
 }
 
+/// Html editor wrapper
+.rc-editor-html {
+    background: var(--input-background);
+    border: var(--input-border-width) solid var(--input-border-color);
+    border-radius: var(--editor-border-radius);
+
+    &:focus-within {
+        box-shadow: var(--focus-box-shadow);
+        border-color: var(--input-border-hover-color) !important;
+        outline: none;
+    }
+
+    &:hover {
+        border-color: var(--input-border-hover-color);
+    }
+}
+
 .p-float-label > label {
     color: var(--input-placeholder-color);
 }
@@ -1184,7 +1201,7 @@ body {
                         }
                     }
 
-                    &.ql-source {
+                    &.custom-source {
                         svg path {
                             fill: var(--html-toolbar-button-background);
                         }

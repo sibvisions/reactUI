@@ -217,6 +217,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                 if (props.passedKey) {
                     calendarInput.current.value = props.passedKey
                 }
+                if (props.openPopup) {
+                    calendar.current?.show();
+                }
             }
         }, 0);
 
@@ -246,6 +249,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
 
     // Sets the date-value and the view-date when the selectedRow changes
     useEffect(() => {
+        startedEditing.current = false;
         setDateValue(convertToTimeZone(false));
         setViewDate(convertToTimeZone(true));
     }, [props.selectedRow]);
@@ -398,8 +402,19 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     }
                 }
             }
-            else if (event.key === "Escape" && props.isCellEditor && props.stopCellEditing) {
-                props.stopCellEditing(event);
+            else if (event.key === "Escape") {
+                event.preventDefault();
+                startedEditing.current = false;
+                const resetDate = convertToTimeZone(false);
+                setDateValue(resetDate);
+                setViewDate(convertToTimeZone(true));
+                if (calendarInput.current && calendar.current) {
+                    calendarInput.current.value = resetDate ? dateFormat ? format(resetDate, dateFormat, { locale: locale ? locale : getGlobalLocale() }) : formatISO(resetDate) : "";
+                }
+
+                if (props.isCellEditor && props.stopCellEditing) {
+                    props.stopCellEditing(event);
+                }
             }
             else if (event.key === "ArrowDown") {
                 event.preventDefault();

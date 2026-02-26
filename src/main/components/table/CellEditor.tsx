@@ -30,6 +30,7 @@ export interface IInTableEditor {
     stopCellEditing?: Function
     passedKey?: string,
     isCellEditor: boolean,
+    openPopup: boolean,
     editorStyle?: CSSProperties,
 }
 
@@ -91,6 +92,9 @@ export interface ICellEditor {
 function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDescription | undefined, props: any, stopCellEditing: Function, passedValues: string) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
+        const headerElement = props.tableContainer.querySelector(`th[style*="--columnName: ${props.colName}"]`);
+        const colWidth = headerElement?.getBoundingClientRect().width; // We set the editor to colWidth, to avoid jumping column sizes.
+        
         editor = <CellEditorWrapper
             {...{
                 ...metaData,
@@ -101,11 +105,12 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 cellEditor_editable_: true,
                 editorStyle: { 
                     width: "100%", 
-                    height: "100%", 
+                    height: "100%"
                 },
                 autoFocus: true,
                 stopCellEditing: stopCellEditing,
                 passedKey: passedValues,
+                openPopup: props.openPopup,
                 isCellEditor: true,
                 rowNumber: props.rowNumber,
                 isReadOnly: props.isReadOnly,
@@ -113,8 +118,8 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 context: props.context,
                 topbar: props.topbar,
                 layoutStyle: { 
-                    width: "100%", 
-                    height: "100%",
+                    width: colWidth+"px", 
+                    height: "100%"
                 }
             }} />
     }
@@ -129,7 +134,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     const { selectNext, selectPrevious, tableContainer } = props;
     
     /** State if editing is currently possible */
-    const [edit, setEdit] = useState(false);
+    const [edit, setEdit] = useState(0);
 
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
@@ -185,7 +190,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Whenn the selected cell changes and the editor is editable close it */
     useEffect(() => {
         if (edit && cellContext.selectedCellId !== props.cellId) {
-            setEdit(false);
+            setEdit(0);
             stopEditing()
         }
     }, [cellContext.selectedCellId]);
@@ -193,7 +198,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     // If the selected-cell id is this cell-editors id and startEditing is true, set the edit-state to true
     useEffect(() => {
         if (cellContext.selectedCellId === props.cellId && props.startEditing) {
-            setEdit(true);
+            setEdit(1);
         }
     },[props.startEditing]);
 
@@ -203,7 +208,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
      */
     const stopCellEditing = useCallback(async (event?:KeyboardEvent) => {
         let focusTable = true;
-        setEdit(false);
+        setEdit(0);
         stopEditing()
         if (event) {
             if (event.key !== 'Escape')
@@ -226,7 +231,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, () => { 
-        setEdit(false); 
+        setEdit(0); 
         stopEditing();
     }, columnMetaData);
 
@@ -237,12 +242,12 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         if (cellContext.selectedCellId === props.cellId) {
             switch (event.key) {
                 case "F2":
-                    setEdit(true);
+                    setEdit(1);
                     break;
                 default:
                     if (event.key.length === 1 && !event.ctrlKey) {
                         passRef.current = event.key;
-                        setEdit(true);
+                        setEdit(1);
                     }
             }
         }
@@ -268,7 +273,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     return (
         (edit && props.isEditable) ?
             <div style={style} ref={wrapperRef}>
-                {displayEditor(columnMetaData, { ...props, isReadOnly: !props.isEditable, context: context, forwardedRef: forwardedRef }, stopCellEditing, passRef.current)}
+                {displayEditor(columnMetaData, { ...props, openPopup: edit === 2, isReadOnly: !props.isEditable, context: context, forwardedRef: forwardedRef }, stopCellEditing, passRef.current)}
             </div> : <CellRenderer
                 name={props.name}
                 screenName={props.screenName}

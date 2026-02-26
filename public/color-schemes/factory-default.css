@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
- :root {
+:root {
   --primary-color:#2196F3;
   --frame-hover-backgrounds:#62666a;
   --checkbox-radio-selected-hover-background:#0d8aee;
@@ -345,7 +345,7 @@ body {
 .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled):hover .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text {
   color: var(--std-menu-item-hover-text-color);
 }
-.p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link .p-menuitem-text, .p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link .p-menuitem-icon {
+.p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link .p-menuitem-text, .p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link .p-menuitem-icon, .p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text, .p-panelmenu .p-panelmenu-content .p-menuitem.p-menuitem--active .p-menuitem-link:not(.p-disabled):hover .p-menuitem-icon {
   color: var(--std-menu-activeitem-color);
 }
 
@@ -451,44 +451,48 @@ body {
   border: var(--radiobutton-border);
 }
 
-.rc-editor-checkbox .p-checkbox:hover:not(.p-disabled) .p-checkbox-box, .rc-checkbox .p-checkbox:hover:not(.p-disabled) .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled):hover .p-checkbox-box,
+.rc-checkbox .p-checkbox:not(.p-checkbox-disabled):hover .p-checkbox-box {
   border-color: var(--checkbox-border-hover-color);
 }
-.rc-editor-checkbox .p-checkbox.p-focus:not(.p-disabled) .p-checkbox-box, .rc-checkbox .p-checkbox.p-focus:not(.p-disabled) .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled).p-focus .p-checkbox-box,
+.rc-checkbox .p-checkbox:not(.p-checkbox-disabled).p-focus .p-checkbox-box {
   box-shadow: var(--focus-box-shadow);
   border-color: var(--checkbox-selected-background);
 }
-.rc-editor-checkbox .p-checkbox.p-highlight:hover:not(.p-disabled) .p-checkbox-box, .rc-checkbox .p-checkbox.p-highlight:hover:not(.p-disabled) .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox:not(.p-checkbox-disabled).p-highlight:hover .p-checkbox-box,
+.rc-checkbox .p-checkbox:not(.p-checkbox-disabled).p-highlight:hover .p-checkbox-box {
   background: var(--checkbox-selected-hover-background);
   border-color: var(--checkbox-selected-hover-background);
 }
-.rc-editor-checkbox .p-checkbox .p-checkbox-box, .rc-checkbox .p-checkbox .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox .p-checkbox-box,
+.rc-checkbox .p-checkbox .p-checkbox-box {
   border-radius: var(--checkbox-border-radius);
 }
-.rc-editor-checkbox .p-checkbox.p-highlight .p-checkbox-box, .rc-checkbox .p-checkbox.p-highlight .p-checkbox-box {
+.rc-editor-checkbox .p-checkbox.p-highlight .p-checkbox-box,
+.rc-checkbox .p-checkbox.p-highlight .p-checkbox-box {
   background: var(--checkbox-selected-background);
   border-color: var(--checkbox-selected-background);
 }
-
-.rc-editor-checkbox .p-checkbox.p-highlight .p-checkbox-box .p-checkbox-icon, .rc-checkbox .p-checkbox.p-highlight .p-checkbox-box .p-checkbox-icon {
+.rc-editor-checkbox .p-checkbox.p-highlight .p-checkbox-box .p-checkbox-icon,
+.rc-checkbox .p-checkbox.p-highlight .p-checkbox-box .p-checkbox-icon {
   color: var(--checkbox-color);
 }
 
-.p-radiobutton.p-focus:not(.p-disabled) .p-radiobutton-box {
+.p-radiobutton:not(.p-disabled) .p-radiobutton-box .p-focus {
   box-shadow: var(--focus-box-shadow);
 }
-.p-radiobutton:hover:not(.p-highlight):not(.p-disabled) .p-radiobutton-box {
+.p-radiobutton:not(.p-disabled):not(.p-highlight):hover .p-radiobutton-box {
   border-color: var(--radiobutton-border-hover-color);
 }
 .p-radiobutton.p-highlight .p-radiobutton-box {
   background: var(--radiobutton-selected-outer-background);
   border-color: var(--radiobutton-selected-outer-background);
 }
-.p-radiobutton.p-highlight:hover:not(.p-disabled) .p-radiobutton-box {
+.p-radiobutton.p-highlight .p-radiobutton-box:not(.p-disabled):hover {
   background: var(--radiobutton-selected-outer-hover-background);
   border-color: var(--radiobutton-selected-outer-hover-background);
 }
-
 .p-radiobutton.p-highlight .p-radiobutton-box .p-radiobutton-icon {
   background: var(--radiobutton-inner-color);
 }
@@ -518,7 +522,7 @@ body {
   color: var(--text-color);
 }
 
-.rc-togglebutton:focus {
+.rc-togglebutton:focus-within .p-button {
   box-shadow: var(--focus-box-shadow);
 }
 
@@ -547,6 +551,20 @@ body {
 }
 .p-inputtext:not(.designer-panel-inputtext):not(.style-editor-textinput):not(.express-scheme-editor):not(.designer-search-editor):not(.p-dropdown-label)::placeholder {
   color: var(--input-placeholder-color);
+}
+
+.rc-editor-html {
+  background: var(--input-background);
+  border: var(--input-border-width) solid var(--input-border-color);
+  border-radius: var(--editor-border-radius);
+}
+.rc-editor-html:focus-within {
+  box-shadow: var(--focus-box-shadow);
+  border-color: var(--input-border-hover-color) !important;
+  outline: none;
+}
+.rc-editor-html:hover {
+  border-color: var(--input-border-hover-color);
 }
 
 .p-float-label > label {
@@ -609,6 +627,14 @@ body {
   background: var(--linked-item-hover-background);
   color: var(--linked-item-hover-text-color);
 }
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight {
+  background: var(--linked-highlighted-color);
+  color: var(--linked-item-color);
+}
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight:hover {
+  background: var(--linked-item-hover-background);
+  color: var(--linked-item-hover-text-color);
+}
 .p-autocomplete-panel.dropdown-table .p-autocomplete-items li:nth-child(odd) {
   background: var(--table-row-even-background);
 }
@@ -668,10 +694,10 @@ body {
 .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg polygon, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg line, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg rect, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label svg polyline, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg polygon, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg line, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg rect, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button svg polyline {
   stroke: var(--html-toolbar-button-background);
 }
-.p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.ql-source svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.ql-source svg path {
+.p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.custom-source svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.custom-source svg path {
   fill: var(--html-toolbar-button-background);
 }
-.p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.ql-source:hover svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.ql-source:hover svg path {
+.p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker .ql-picker-label.custom-source:hover svg path, .p-editor-container .p-editor-toolbar.ql-snow .ql-formats button.custom-source:hover svg path {
   fill: var(--html-toolbar-button-hover-background);
 }
 .p-editor-container .p-editor-toolbar.ql-snow .ql-formats .ql-picker.ql-expanded .ql-picker-options {
@@ -793,9 +819,9 @@ body {
 .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-asc .p-sortable-column-icon, .rc-table .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover.sort-des .p-sortable-column-icon {
   color: var(--table-sort-color);
 }
-.rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row.p-highlight > td.p-selectable-cell.p-highlight, .rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row > td.p-selectable-cell:focus {
-    outline: 2px solid var(--table-selectedcellborder-color); 
-    outline-offset: -2px;
+.rc-table .rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row.p-highlight > td.p-selectable-cell.p-highlight, .rc-table .rc-table.p-datatable-selectable-cell .p-datatable-tbody > tr.p-selectable-row > td.p-selectable-cell:focus {
+  outline: 2px solid var(--table-selectedcellborder-color);
+  outline-offset: -2px;
 }
 .rc-table .p-datatable-tbody > tr {
   background: var(--table-row-even-background);
@@ -918,6 +944,10 @@ body {
   color: var(--toolbar-color);
 }
 
+.rc-popup, .error-dialog {
+  border-radius: var(--dialog-border-radius);
+  background-color: var(--dialog-content-background);
+}
 .rc-popup .p-dialog-header, .error-dialog .p-dialog-header {
   background: var(--dialog-header-background);
   color: var(--dialog-header-text-color);
@@ -928,8 +958,15 @@ body {
 .rc-popup .p-dialog-content, .error-dialog .p-dialog-content {
   background: var(--dialog-content-background);
   color: var(--text-color);
+}
+.rc-popup .p-dialog-content:last-child, .error-dialog .p-dialog-content:last-child {
   border-bottom-left-radius: var(--dialog-border-radius);
   border-bottom-right-radius: var(--dialog-border-radius);
+}
+
+.p-dialog {
+  border-radius: var(--dialog-border-radius);
+  background-color: var(--dialog-content-background);
 }
 
 .rc-popup .p-dialog-header .p-dialog-header-icon {
