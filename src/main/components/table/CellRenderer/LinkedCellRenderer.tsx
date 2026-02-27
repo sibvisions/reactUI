@@ -92,7 +92,7 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
             </span>
             {props.isEditable ? <div style={{ 
                     display: document.getElementById(props.screenName)?.style.visibility === "hidden" ? "none" : undefined, 
-                    marginLeft: "auto" 
+                    marginLeft: "7px" 
                 }} 
                 tabIndex={-1} 
                 onClick={props.stateCallback !== undefined ? () => (props.stateCallback as Function)() : undefined} 
