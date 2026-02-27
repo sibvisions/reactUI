@@ -18,6 +18,7 @@ import { IExtendableTabsetPanel } from "../../../extend-components/panels/Extend
 import { createTabRequest } from "../../../factories/RequestFactory";
 import useComponents from "../../../hooks/components-hooks/useComponents";
 import REQUEST_KEYWORDS from "../../../request/REQUEST_KEYWORDS";
+import COMPONENT_CLASSNAMES from "../../COMPONENT_CLASSNAMES";
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import IconProps from "../../comp-props/IconProps";
 import { showTopBar } from "../../topbar/TopBar";
@@ -44,10 +45,19 @@ export type TabProperties = {
  */
 const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel & IComponentConstants> = (props) => {
     /** Current state of all Childcomponents as react children and their preferred sizes */
-    const [, components, compSizes] = useComponents(props.id, props.className);
+    const [children, components, compSizes] = useComponents(props.id, props.className);
 
     /** Reference value if there is currently a tab closing action */
     const closing = useRef(false);
+
+    /** update selectedIndex, if a tabset panel is directly added under a tabset panel. */
+    const correctedComponents = components.map((comp, idx) => {
+        const raw = (children[idx] as any);
+        if (raw && raw.className === COMPONENT_CLASSNAMES.TABSETPANEL && raw.selectedIndex !== comp.props.selectedIndex) {
+            return React.cloneElement(comp, { selectedIndex: raw.selectedIndex });
+        }
+        return comp;
+    });
 
     /** Sets up a TabsetPanelRequest which will be sent to the server either selectTab or closeTab*/
     const buildTabRequest = useCallback((tabId:number) => {
@@ -86,7 +96,7 @@ const UITabsetPanel: FC<ITabsetPanel & IExtendableTabsetPanel & IComponentConsta
     return (
         <TabsetPanelImpl
             {...props}
-            components={components} 
+            components={correctedComponents} 
             compSizes={compSizes} 
             compStyle={props.compStyle}
             layoutStyle={props.layoutStyle}
