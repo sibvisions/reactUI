@@ -1,6 +1,6 @@
 {
   "name": "@sibvisions/reactui",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "type": "module",
   "main": "moduleIndex.cjs",
   "module": "moduleIndex.js",
@@ -11,7 +11,7 @@
     "build": "npm run scss && vite build && npm run remove-config && npm run create-build-date",
     "build-ci": "npm run build && zip -r reactBuild build",
     "bundle": "vite build -c vite.library.config.ts && npm run remove-config",
-    "audit": "npm audit --omit=dev", 
+    "audit": "npm audit --omit=dev",
     "devbundle": "vite build --mode development -c vite.library.config.ts && npm run remove-config",
     "remove-config": "rimraf build/config.json && rimraf build/altConfig.json",
     "clean": "rimraf dist",
