@@ -211,6 +211,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
         if (props.onChange) {
             props.onChange({ value: currentImageValue, allowedValues: stringAllowedValues })
         }
+        console.log("TabIndex: ", props.focusable, "  ", props.tabIndex, "  ", getTabIndex(props.focusable, props.tabIndex));
     }, [currentImageValue, props.onChange]);
 
     return (
@@ -245,7 +246,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
             }}
             onFocus={(event) => handleFocusGained(props.name, props.cellEditor.className, props.eventFocusGained, props.focusable, event, props.name, props.context, props.isCellEditor)}
             onBlur={props.eventFocusLost ? () => onFocusLost(props.name, props.context.server) : undefined}
-            tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
+            tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable ?? true, props.tabIndex) ?? 0}
             {...usePopupMenu(props)}
         >
             <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />

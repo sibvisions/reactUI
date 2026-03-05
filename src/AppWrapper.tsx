@@ -235,6 +235,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                opacity: "0.7",
 //                               fontSize: "1.825rem"
                            }} 
+                           tabIndex={-1}
                            onClick={() => setShowDesignerView(prevState => !prevState)} 
                            data-pr-tooltip={translation.get("Style-Designer")} />
                 </>
