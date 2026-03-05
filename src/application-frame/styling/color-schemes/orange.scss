@@ -980,7 +980,7 @@ body {
 /// ChoiceCellEditor
 .rc-editor-choice:focus img {
     box-shadow: var(--focus-box-shadow);
-    border-radius: 2px;
+    border-radius: var(--checkbox-border-radius);
 }
 
 /// Inputfields
