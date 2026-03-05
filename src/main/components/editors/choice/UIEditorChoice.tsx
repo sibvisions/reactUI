@@ -211,7 +211,6 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
         if (props.onChange) {
             props.onChange({ value: currentImageValue, allowedValues: stringAllowedValues })
         }
-        console.log("TabIndex: ", props.focusable, "  ", props.tabIndex, "  ", getTabIndex(props.focusable, props.tabIndex));
     }, [currentImageValue, props.onChange]);
 
     return (
