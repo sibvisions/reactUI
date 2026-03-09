@@ -18,7 +18,6 @@ import BaseServer from "./BaseServer";
 import REQUEST_KEYWORDS from "../request/REQUEST_KEYWORDS";
 import RESPONSE_NAMES from "../response/RESPONSE_NAMES";
 import BaseResponse from "../response/BaseResponse";
-import ApplicationMetaDataResponse from "../response/app/ApplicationMetaDataResponse";
 import ApplicationParametersResponse from "../response/app/ApplicationParametersResponse";
 import UserDataResponse from "../response/login/UserDataResponse";
 import AuthenticationDataResponse from "../response/login/AuthenticationDataResponse";
@@ -161,7 +160,7 @@ class Server extends BaseServer {
             while (parent && !parent.includes("IF")) {
                 const parentComp = this.contentStore.getComponentById(parent);
                 if (parentComp && parentComp.visible !== false) {
-                    parent = parentComp.parent
+                    parent = parentComp.parent;
                 }
                 else {
                     return false;
@@ -466,17 +465,11 @@ class Server extends BaseServer {
      */
     closeScreen(closeScreenData: CloseScreenResponse) {
         let id = "";
-        for (let entry of this.contentStore.flatContent.entries()) {
-            if (entry[1].name === closeScreenData.componentId) {
-                id = entry[1].id;
-                if ((entry[1] as IPanel).screen_modal_) {
-                    this.lastClosedWasPopUp = true;
-                }
-                else {
-                    this.lastClosedWasPopUp = false;
-                }
-                break
-            }
+        const comp = this.contentStore.getComponentByName(closeScreenData.componentId);
+        if (comp)
+        {
+            id = comp.id;
+            this.lastClosedWasPopUp = (comp as IPanel).screen_modal_ ?? false;
         }
 
         // If there have been more than two screens opened in the application, remember the last closed screen
@@ -896,11 +889,14 @@ class Server extends BaseServer {
                 )) {
                     //count how many components for that screen there are
                     let c = 0;
-                    this.contentStore.flatContent.forEach((value:any) => {
-                        if(value.name === CSResponse.componentId) {
+                    for (const comp of this.contentStore.flatContent.values()) {
+                        if (comp.name === CSResponse.componentId) {
                             c++;
+                            if (c > 1) {
+                                break;
+                            }
                         }
-                    });
+                    }
                     //if there is only one don't remove it
                     if(c <= 1) {
                         return;

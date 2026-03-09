@@ -40,7 +40,7 @@ const UIMobileLauncher: FC<IWindow> = (props) => {
     const panelRef = useRef<any>(null);
 
     /** Hook for MouseListener */
-    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(props.name, props.className, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     return (
         <div id={props.name} ref={panelRef} className={concatClassnames(props.styleClassNames, "rc-mobile-launcher")} style={{...props.layoutStyle, ...props.compStyle}}>

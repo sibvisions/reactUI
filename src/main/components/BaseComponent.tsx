@@ -61,7 +61,7 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
     const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IBaseComponent>(baseProps, hasConstantFallback ? {visibility: "hidden"} : undefined);
 
     /** Hook for MouseListener */
-    useMouseListener(props.name, forwardedRef.current ? forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(props.name, props.className, forwardedRef.current ? forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** Repaints the resizers of the selectedComponent in the designer */
     useRepaintResizer(props.name, layoutStyle, forwardedRef.current);

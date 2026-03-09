@@ -224,15 +224,19 @@ export default class ContentStore extends BaseContentStore {
                             if (desktop) {
                                 this.removedDesktopContent.delete(newComponent.id);
                                 this.desktopContent.set(newComponent.id, existingComponent);
+                                this.desktopContentByName.set(newComponent.name, existingComponent);
                             }
                             else {
                                 this.removedContent.delete(newComponent.id);
+                                this.removedContentByName.delete(newComponent.name);
                                 this.flatContent.set(newComponent.id, existingComponent);
+                                this.flatContentByName.set(newComponent.name, existingComponent);
                             }
                         }
                         else {
                             this.removedCustomComponents.delete(newComponent.id);
                             this.replacedContent.set(newComponent.id, existingComponent);
+                            this.replacedContentByName.set(newComponent.name, existingComponent);
                         }
                     }
                 }
@@ -241,24 +245,31 @@ export default class ContentStore extends BaseContentStore {
                     if (!isCustom) {
                         if (desktop) {
                             this.desktopContent.delete(newComponent.id);
+                            this.desktopContentByName.delete(newComponent.name);
                             this.removedDesktopContent.set(newComponent.id, existingComponent);
                         }
                         else {
                             this.flatContent.delete(newComponent.id);
+                            this.flatContentByName.delete(newComponent.name);
                             this.invalidateChildren(newComponent.id, existingComponent.className);
                             this.removedContent.set(newComponent.id, existingComponent);
+                            this.removedContentByName.set(newComponent.name, existingComponent);
                         }
                     }
                     else {
                         this.replacedContent.delete(newComponent.id);
+                        this.replacedContentByName.delete(newComponent.name);
                         this.removedCustomComponents.set(newComponent.id, existingComponent);
                     }
                 }
 
                 if (newComponent["~destroy"]) {
                     this.flatContent.delete(newComponent.id);
+                    this.flatContentByName.delete(newComponent.name);
                     this.desktopContent.delete(newComponent.id);
+                    this.desktopContentByName.delete(newComponent.name);
                     this.removedContent.delete(newComponent.id);
+                    this.removedContentByName.delete(newComponent.name);
                     this.removedDesktopContent.delete(newComponent.id);
                     this.removedCustomComponents.delete(newComponent.id);
                 }
@@ -306,6 +317,7 @@ export default class ContentStore extends BaseContentStore {
                     if (newComponent["~remove"] !== 'true' && newComponent["~remove"] !== true && newComponent["~destroy"] !== 'true' && newComponent["~destroy"] !== true) {
                         if (desktop) {
                             this.desktopContent.set(newComponent.id, newComponent);
+                            this.desktopContentByName.set(newComponent.name, newComponent);
                         }
                         else {
                             // If the component was just created by the designer (dragged component in from menu) set designerNew to true
@@ -314,6 +326,7 @@ export default class ContentStore extends BaseContentStore {
                             }
 
                             this.flatContent.set(newComponent.id, newComponent);
+                            this.flatContentByName.set(newComponent.name, newComponent);
                         }
                     }
 
@@ -335,6 +348,7 @@ export default class ContentStore extends BaseContentStore {
                         className: ""
                     };
                     this.replacedContent.set(newComponent.id, newComp)
+                    this.replacedContentByName.set(newComponent.name, newComp)
                 }
             }
         });
@@ -351,8 +365,10 @@ export default class ContentStore extends BaseContentStore {
 
             if (existingComponent) {
                 if (existingComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                    const existingTbMain = this.flatContent.get(existingComponent.id + "-tbMain") || this.removedContent.get(existingComponent.id + "-tbMain");
-                    const existingTbCenter = this.flatContent.get(existingComponent.id + "-tbCenter") || this.removedContent.get(existingComponent.id + "-tbCenter");
+                    const tbMainId = existingComponent.id + "-tbMain";
+                    const tbCenterId = existingComponent.id + "-tbCenter";
+                    const existingTbMain = this.flatContent.get(tbMainId) ?? this.removedContent.get(tbMainId);
+                    const existingTbCenter = this.flatContent.get(tbCenterId) ?? this.removedContent.get(tbCenterId);
                     if (existingTbMain && existingTbCenter) {
                         const updateMain = this.subManager.propertiesSubscriber.get(existingTbMain.id);
                         const updateCenter = this.subManager.propertiesSubscriber.get(existingTbCenter.id);
@@ -363,7 +379,8 @@ export default class ContentStore extends BaseContentStore {
                     }
                 }
                 else if (existingComponent.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComponent as IPanel)) {
-                    const existingPopup = this.flatContent.get(existingComponent.id + "-popup") || this.removedContent.get(existingComponent.id + "-popup");
+                    const compId = existingComponent.id + "-popup";
+                    const existingPopup = this.flatContent.get(compId) ?? this.removedContent.get(compId);
                     if (existingPopup) {
                         const updatePopup = this.subManager.propertiesSubscriber.get(existingPopup.id);
                         if (updatePopup) {

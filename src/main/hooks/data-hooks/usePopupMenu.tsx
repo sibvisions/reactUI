@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { createContext, PropsWithChildren, FC, useContext, useCallback, useState, useRef, SyntheticEvent, useEffect } from "react";
+import { createContext, PropsWithChildren, FC, useContext, useCallback, useState, useRef, SyntheticEvent } from "react";
 import { ContextMenu } from 'primereact/contextmenu';
 import IBaseComponent from "../../util/types/IBaseComponent";
 import { MenuItem } from "primereact/menuitem";
@@ -41,7 +41,7 @@ const PopupContext = createContext<{
 
 // Creates the popupmenu
 function makeMenu(flatItems: Map<string, IBaseComponent>, parent: string, context: any): MenuItem[] {
-    return Array.from(flatItems.values())
+/*    return Array.from(flatItems.values())
         .filter(item => item.parent === parent)
         .map(item => {
             switch(item.className) {
@@ -68,8 +68,32 @@ function makeMenu(flatItems: Map<string, IBaseComponent>, parent: string, contex
                         ...(items.length ? { items } : {})
                     }
             }
-        })
-    
+        })*/
+    const result = [];
+    for (const item of flatItems.values()) {
+        if (item.parent === parent) {
+            if (item.className === "Separator") {
+                result.push({ separator: true });
+            }else {
+                const items = makeMenu(flatItems, item.id, context);
+                const iconProps = parseIconData("inherit", item.image);
+                result.push({
+                    label: item.text,
+                    icon: iconProps?.icon,
+                    style: { color: iconProps?.color },
+                    color: iconProps?.color,
+                    disabled: item.enabled === false,
+                    command: () => {
+                        const req = createDispatchActionRequest();
+                        req.componentId = item.name;
+                        context.server.sendRequest(req, REQUEST_KEYWORDS.PRESS_BUTTON);
+                    },
+                    ...(items.length ? { items } : {})
+                });
+            }
+        }
+    }
+    return result;    
 }
 
 // Provides the popup-context to its children

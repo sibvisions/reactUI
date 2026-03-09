@@ -75,7 +75,7 @@ const UIMapOSM: FC<IMap & IExtendableMap & IComponentConstants> = (props) => {
     const startZoom = useMemo(() => props.zoomLevel ? props.zoomLevel : 9, [props.zoomLevel]);
 
     /** Hook for MouseListener */
-    useMouseListener(props.name, props.forwardedRef.current ? props.forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(props.name, props.className, props.forwardedRef.current ? props.forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** The popup-menu of the map */
     const popupMenu = usePopupMenu(props);

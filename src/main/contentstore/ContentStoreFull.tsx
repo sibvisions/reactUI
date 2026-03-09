@@ -148,11 +148,14 @@ export default class ContentStoreFull extends BaseContentStore {
                     if (this.isRemovedComponent(newComponent.id)) {
                         if (!isCustom) {
                             this.removedContent.delete(newComponent.id);
+                            this.removedContentByName.delete(newComponent.name);
                             this.flatContent.set(newComponent.id, existingComponent);
+                            this.flatContentByName.set(newComponent.name, existingComponent);
                         }
                         else {
                             this.removedCustomComponents.delete(newComponent.id);
                             this.replacedContent.set(newComponent.id, existingComponent);
+                            this.replacedContentByName.set(newComponent.name, existingComponent);
                         }
                     }
                 }
@@ -166,11 +169,19 @@ export default class ContentStoreFull extends BaseContentStore {
                             }
                             else {
                                 // Close screen and delete InternalFrame when first child of InternalFrame is a workscreen or login
-                                const foundChild = Array.from(this.flatContent.values()).find(comp => comp.parent === existingComponent!.id)
+                                let foundChild;
+                                for (const comp of this.flatContent.values()) {
+                                    if (comp.parent === existingComponent!.id) {
+                                        foundChild = comp;
+                                        break;
+                                    }
+                                }
                                 if (foundChild) {
                                     this.flatContent.delete(newComponent.id);
+                                    this.flatContentByName.delete(newComponent.name);
                                     this.invalidateChildren(newComponent.id, existingComponent.className);
                                     this.removedContent.set(newComponent.id, existingComponent);
+                                    this.removedContentByName.set(newComponent.name, existingComponent);
                                     if (isWorkScreen(foundChild as IPanel)) {
                                         this.closeScreen(foundChild.id, foundChild.name);
                                     }
@@ -179,18 +190,23 @@ export default class ContentStoreFull extends BaseContentStore {
                         }
                         else {
                             this.flatContent.delete(newComponent.id);
+                            this.flatContentByName.delete(newComponent.name);
                             this.removedContent.set(newComponent.id, existingComponent);
+                            this.removedContentByName.set(newComponent.name, existingComponent);
                         }
                     }
                     else {
                         this.replacedContent.delete(newComponent.id);
+                        this.replacedContentByName.delete(newComponent.name);
                         this.removedCustomComponents.set(newComponent.id, existingComponent);
                     }
                 }
 
                 if (newComponent["~destroy"]) {
                     this.flatContent.delete(newComponent.id);
+                    this.flatContentByName.delete(newComponent.name);
                     this.removedContent.delete(newComponent.id);
+                    this.removedContentByName.delete(newComponent.name);
                     this.removedCustomComponents.delete(newComponent.id);
                 }
 
@@ -213,6 +229,7 @@ export default class ContentStoreFull extends BaseContentStore {
                         }
                         
                         this.flatContent.set(newComponent.id, newComponent);
+                        this.flatContentByName.set(newComponent.name, newComponent);
                     }
                 }
                 else {
@@ -228,6 +245,7 @@ export default class ContentStoreFull extends BaseContentStore {
                         className: ""
                     };
                     this.replacedContent.set(newComponent.id, newComp)
+                    this.replacedContentByName.set(newComponent.name, newComp)
                 }
             }
 
@@ -275,8 +293,10 @@ export default class ContentStoreFull extends BaseContentStore {
 
             if (existingComponent) {
                 if (existingComponent.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
-                    const existingTbMain = this.flatContent.get(existingComponent.id + "-tbMain") || this.removedContent.get(existingComponent.id + "-tbMain");
-                    const existingTbCenter = this.flatContent.get(existingComponent.id + "-tbCenter") || this.removedContent.get(existingComponent.id + "-tbCenter");
+                    const tbMainId = existingComponent.id + "-tbMain";
+                    const tbCenterId = existingComponent.id + "-tbCenter";
+                    const existingTbMain = this.flatContent.get(tbMainId) || this.removedContent.get(tbMainId);
+                    const existingTbCenter = this.flatContent.get(tbCenterId) || this.removedContent.get(tbCenterId);
                     if (existingTbMain && existingTbCenter) {
                         const updateMain = this.subManager.propertiesSubscriber.get(existingTbMain.id);
                         const updateCenter = this.subManager.propertiesSubscriber.get(existingTbCenter.id);
@@ -287,7 +307,8 @@ export default class ContentStoreFull extends BaseContentStore {
                     }
                 }
                 else if (existingComponent.className === COMPONENT_CLASSNAMES.PANEL && this.isPopup(existingComponent as IPanel)) {
-                    const existingPopup = this.flatContent.get(existingComponent.id + "-popup") || this.removedContent.get(existingComponent.id + "-popup");
+                    const compId = existingComponent.id + "-popup";
+                    const existingPopup = this.flatContent.get(compId) || this.removedContent.get(compId);
                     if (existingPopup) {
                         const updatePopup = this.subManager.propertiesSubscriber.get(existingPopup.id);
                         if (updatePopup) {
@@ -320,10 +341,15 @@ export default class ContentStoreFull extends BaseContentStore {
      * @param id - the id of the frame
      */
     getMenuBar(id:string) {
-        const mergedContent = [...this.flatContent, ...this.replacedContent];
-        const foundMenu = mergedContent.find(v => v[1].parent === id && v[1].className === COMPONENT_CLASSNAMES.MENUBAR);
-        if (foundMenu) {
-            return foundMenu[1];
+        for (const comp of this.flatContent.values()) {
+            if (comp.parent === id && comp.className === COMPONENT_CLASSNAMES.MENUBAR) {
+                return comp;
+            }
+        }
+        for (const comp of this.replacedContent.values()) {
+            if (comp.parent === id && comp.className === COMPONENT_CLASSNAMES.MENUBAR) {
+                return comp;
+            }
         }
         return undefined;
     }
@@ -427,7 +453,7 @@ export default class ContentStoreFull extends BaseContentStore {
             return this.server.getScreenName(dataProvider);
         }
         else {
-            let comp: IBaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
+            let comp: IBaseComponent | undefined = this.flatContent.get(id) ?? this.desktopContent.get(id);
             if (comp) {
                 while (comp?.parent) {
                     if ((comp as IPanel).screen_modal_ || (comp as IPanel).screen_navigationName_) {
@@ -441,7 +467,7 @@ export default class ContentStoreFull extends BaseContentStore {
                         return comp.name;
                     }
     
-                    comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
+                    comp = this.flatContent.get(comp.parent) ?? this.desktopContent.get(comp.parent);
                 }
             }
             if (comp?.nameComponentRef) {

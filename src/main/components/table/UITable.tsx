@@ -366,6 +366,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** Hook for MouseListener */
     useMouseListener(
         props.name, 
+        props.className, 
         props.forwardedRef.current ? props.forwardedRef.current : undefined,
         //tableRef.current ? tableRef.current.getTable().querySelector(".p-datatable-tbody") as HTMLElement : undefined, 
         props.eventMouseClicked, 

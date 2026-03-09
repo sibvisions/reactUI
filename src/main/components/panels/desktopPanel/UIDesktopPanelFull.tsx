@@ -126,7 +126,7 @@ const UIDesktopPanelFull: FC<IDesktopPanel> = (props) => {
     const panelRef = useRef<any>(null);
     
     /** Hook for MouseListener */
-    useMouseListener(props.name, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
+    useMouseListener(props.name, props.className, panelRef.current ? panelRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);
 
     /** 
      * The component reports its preferred-, minimum-, maximum and measured-size to the layout

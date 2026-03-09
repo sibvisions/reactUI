@@ -46,6 +46,7 @@ const getMouseButton = (button:number): "Left"|"Middle"|"Right" => {
  */
 const useMouseListener = (
     compName:string, 
+    compClassName: string,
     element?:HTMLElement, 
     eventMouseClicked?:boolean, 
     eventMousePressed?:boolean, 
@@ -65,14 +66,6 @@ const useMouseListener = (
     
     /** The y-position when clicking */
     const pressedY = useRef<number>(undefined);
-
-    /** The className of the component */
-    const componentClassName = useMemo(() => {
-        if (context.contentStore.getComponentByName(compName)) {
-            return context.contentStore.getComponentByName(compName)!.className
-        }
-        return undefined
-    }, [compName])
 
     /**
      * Checks where has been clicked and sends the data to the server
@@ -165,7 +158,7 @@ const useMouseListener = (
         pressedElement.current = false;
     }
 
-    useEventHandler(element, "mousedown", (event) => handleMousePressed(event as MouseEvent), isTable, componentClassName);
-    useEventHandler(document.body, "mouseup", (event) => handleMouseUp(event as MouseEvent), isTable, componentClassName);
+    useEventHandler(element, "mousedown", (event) => handleMousePressed(event as MouseEvent), isTable, compClassName);
+    useEventHandler(document.body, "mouseup", (event) => handleMouseUp(event as MouseEvent), isTable, compClassName);
 }
 export default useMouseListener;

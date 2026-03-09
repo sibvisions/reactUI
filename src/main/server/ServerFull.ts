@@ -73,19 +73,7 @@ export default class ServerFull extends BaseServer {
      * @param name - the name of the component
      */
     componentExists(name:string) {
-        for (let [, value] of this.contentStore.flatContent.entries()) {
-            if (value.name === name) {
-                return true;
-            }
-        }
-
-        for (let [, value] of this.contentStore.replacedContent.entries()) {
-            if (value.name === name) {
-                return true;
-            }
-        }
-
-        return false;
+        return !!this.contentStore.getComponentByName(name);
     }
 
     // A Map which contains the request-keyword as key and the server endpoint as value

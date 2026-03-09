@@ -13,7 +13,7 @@
  * the License.
  */
 
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { History } from "history";
 import SignaturePad, { ISignaturPad } from "../components/custom-comp/custom-container-components/SignaturePad";
 import TreePath from "../model/TreePath";
@@ -86,15 +86,21 @@ export default abstract class BaseContentStore {
 
     /** A Map which stores the component which are sent by the server and not removed, the key is the components id and the value the component */
     flatContent = new Map<string, IBaseComponent>();
+    /** A Map which stores the component which are sent by the server and not removed, the key is the components id and the value the component */
+    flatContentByName = new Map<string, IBaseComponent>();
 
     /** A Map which stores the children of components, the key is the id of the component and the value is a set of the children id's */
     componentChildren = new Map<string, Set<string>>();
 
     /** A Map which stores the component which are displayed in the desktop-panel, the key is the components id and the value the component */
     desktopContent = new Map<string, IBaseComponent>();
+    /** A Map which stores the component which are displayed in the desktop-panel, the key is the components id and the value the component */
+    desktopContentByName = new Map<string, IBaseComponent>();
 
     /** A Map which stores removed, but not deleted components, the key is the components id and the value the component */
     removedContent = new Map<string, IBaseComponent>();
+    /** A Map which stores removed, but not deleted components, the key is the components id and the value the component */
+    removedContentByName = new Map<string, IBaseComponent>();
 
     /** A Map which stores removed, but not deleted components of the desktop-panel, the key is the components id and the value the component */
     removedDesktopContent = new Map<string, IBaseComponent>();
@@ -113,6 +119,8 @@ export default abstract class BaseContentStore {
 
     /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
     replacedContent = new Map<string, IBaseComponent>();
+    /** A Map which stores custom components which replace components sent by the server, the key is the components id and the value the component */
+    replacedContentByName = new Map<string, IBaseComponent>();
 
     /** A Map which stores the navigation names for screens to route, the key is the navigation name of the screen and the value is an object containing the screenId and the componentId */
     navigationNames = new Map<string, { screenId: string, componentId: string}>();
@@ -203,29 +211,37 @@ export default abstract class BaseContentStore {
      * @returns the data/properties of a component based on the name
      */
      getComponentByName(componentName: string, withRemoved?:boolean): IBaseComponent | undefined {
-        let alreadyFound = false;
-        let mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
-
-        // also check removed content
-        if (withRemoved) {
-            mergedContent = new Map([...mergedContent, ...this.removedContent]);
-        }
-
-        const componentEntries = mergedContent.entries();
-        let foundEntry:IBaseComponent|undefined;
-        let entry = componentEntries.next();
-        while (!entry.done) {
-            if (entry.value[1].name === componentName && !entry.value[1].invalid) {
-                // Logs, if a components name isn't unique, this indicates either server issues, or issues with removing components
-                if (alreadyFound) {
-                    console.warn("Component 'name' is not unique (" + componentName + ")");
+        if (componentName) {
+            const comp = this.desktopContentByName.get(componentName) 
+                ?? this.replacedContentByName.get(componentName) 
+                ?? this.flatContentByName.get(componentName)
+                ?? (withRemoved ? this.removedContentByName.get(componentName) : undefined);
+            if (comp) return comp;
+            // Fall Back, in case eg a screen is replaced.
+            for (const comp of this.desktopContentByName.values()) {
+                if (comp.name === componentName) {
+                    return comp;
                 }
-                foundEntry = entry.value[1];
-                alreadyFound = true;
             }
-            entry = componentEntries.next();
+            for (const comp of this.replacedContent.values()) {
+                if (comp.name === componentName) {
+                    return comp;
+                }
+            }
+            for (const comp of this.flatContent.values()) {
+                if (comp.name === componentName) {
+                    return comp;
+                }
+            }
+            if (withRemoved) {
+                for (const comp of this.flatContent.values()) {
+                    if (comp.name === componentName) {
+                        return comp;
+                    }
+                }
+            }
         }
-        return foundEntry;
+        return undefined;
     }
 
     /**
@@ -235,26 +251,13 @@ export default abstract class BaseContentStore {
      */
     getComponentById(componentId?: string): IBaseComponent | undefined {
         if (componentId) {
-            return this.flatContent.get(componentId) 
+            return this.desktopContent.get(componentId) 
                 ?? this.replacedContent.get(componentId) 
-                ?? this.desktopContent.get(componentId);
+                ?? this.flatContent.get(componentId);
         }
         else {
             return undefined;
         }
-    }
-
-    /**
-     * Returns the parent of a component as IBaseComponent Object or undefined if the parent wasn't found
-     * @param parentId - the parent you wish to find
-     */
-    getParent(parentId:string): IBaseComponent|undefined {
-        let parent:IBaseComponent|undefined = undefined
-        const mergedContent = new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent]);
-        if (parentId) {
-            parent = mergedContent.get(parentId);
-        }
-        return parent;
     }
 
     /**
@@ -338,17 +341,17 @@ export default abstract class BaseContentStore {
      * Returns the component if it already exists in the contentstore
      * @param id - the id of the component
      */
-     getExistingComponent(id:string) {
-        return this.flatContent.get(id) || this.replacedContent.get(id) || this.desktopContent.get(id) || 
-               this.removedContent.get(id) || this.removedCustomComponents.get(id) ||this.removedDesktopContent.get(id);
+    getExistingComponent(id:string) {
+        return this.desktopContent.get(id) ?? this.replacedContent.get(id) ?? this.flatContent.get(id) ??
+               this.removedContent.get(id) ?? this.removedCustomComponents.get(id) ?? this.removedDesktopContent.get(id);
     }
 
     /**
      * Returns true if the component is in one of the "removed" maps in the contentstore
      * @param id - the id of the component
      */
-     isRemovedComponent(id:string) {
-        return this.removedContent.has(id) || this.removedCustomComponents.has(id) || this.removedDesktopContent.has(id);
+    isRemovedComponent(id:string) {
+        return this.removedContent.has(id) ?? this.removedCustomComponents.has(id) ?? this.removedDesktopContent.has(id);
     }
 
     /**
@@ -421,28 +424,36 @@ export default abstract class BaseContentStore {
      */
     handleModalPanel(existingComp:IPanel|undefined, newComp:IPanel) {
         if (existingComp) {
-            const popup = this.getExistingComponent(existingComp.id + "-popup");
+            const compId = existingComp.id + "-popup";
+            const compName = existingComp.name + "-popup";
+            const popup = this.getExistingComponent(compId);
             if (newComp["~remove"] !== true) {
                 if (this.isRemovedComponent(existingComp.id)) {
                     if (popup) {
-                        this.removedContent.delete(existingComp.id + "-popup");
-                        this.flatContent.set(existingComp.id + "-popup", popup);
+                        this.removedContent.delete(compId);
+                        this.removedContentByName.delete(compName);
+                        this.flatContent.set(compId, popup);
+                        this.flatContentByName.set(compName, popup);
                     }
                 }
             }
             else {
                 if (popup) {
-                    this.flatContent.delete(existingComp.id + "-popup");
-                    this.removedContent.set(existingComp.id + "-popup", popup);
+                    this.flatContent.delete(compId);
+                    this.flatContentByName.delete(compName);
+                    this.removedContent.set(compId, popup);
+                    this.removedContentByName.set(compName, popup);
                 }
             }
 
             if (newComp["~destroy"]) {
-                this.flatContent.delete(existingComp.id + "-popup");
-                this.removedContent.delete(existingComp.id + "-popup");
+                this.flatContent.delete(compId);
+                this.flatContentByName.delete(compName);
+                this.removedContent.delete(compId);
+                this.removedContentByName.delete(compName);
             }
             if (newComp.parent?.startsWith("IF")) {
-                existingComp.parent = existingComp.id + "-popup"
+                existingComp.parent = compId;
             }
         }
         else {
@@ -454,6 +465,7 @@ export default abstract class BaseContentStore {
             }
             newComp.parent = popup.id;
             this.flatContent.set(popup.id, popup);
+            this.flatContentByName.set(popup.name, popup);
         }
     }
 
@@ -464,35 +476,52 @@ export default abstract class BaseContentStore {
      */
      handleToolBarComponent(existingComp:IToolBarPanel|undefined, newComp:IToolBarPanel) {
         if (existingComp) {
-            const tbMain = this.getExistingComponent(existingComp.id + "-tbMain");
-            const tbCenter = this.getExistingComponent(existingComp.id + "-tbCenter");
+            const tbMainId = existingComp.id + "-tbMain";
+            const tbMainName = existingComp.name + "-tbMain";
+            const tbCenterId = existingComp.id + "-tbCenter";
+            const tbCenterName = existingComp.name + "-tbCenter";
+            const tbMain = this.getExistingComponent(tbMainId);
+            const tbCenter = this.getExistingComponent(tbCenterId);
             if (newComp["~remove"] !== true) {
                 if (this.isRemovedComponent(existingComp.id)) {
                     if (tbMain && tbCenter) {
-                        this.removedContent.delete(existingComp.id + "-tbMain");
-                        this.removedContent.delete(existingComp.id + "-tbCenter");
-                        this.flatContent.set(existingComp.id + "-tbMain", tbMain);
-                        this.flatContent.set(existingComp.id + "tbCenter", tbCenter);
+                        this.removedContent.delete(tbMainId);
+                        this.removedContentByName.delete(tbMainName);
+                        this.flatContent.set(tbMainId, tbMain);
+                        this.flatContentByName.set(tbMainName, tbMain);
+
+                        this.removedContent.delete(tbCenterId);
+                        this.removedContentByName.delete(tbCenterName);
+                        this.flatContent.set(tbCenterId, tbCenter);
+                        this.flatContentByName.set(tbCenterName, tbCenter);
                     }
                 }
             }
             else {
                 // When the toolbar-panel gets removed, also add the sub-panels to removedContent
                 if (tbMain && tbCenter) {
-                    this.flatContent.delete(existingComp.id + "-tbMain");
-                    this.removedContent.set(existingComp.id + "-tbMain", tbMain);
+                    this.flatContent.delete(tbMainId);
+                    this.flatContentByName.delete(tbMainName);
+                    this.removedContent.set(tbMainId, tbMain);
+                    this.removedContentByName.set(tbMainName, tbMain);
 
-                    this.flatContent.delete(existingComp.id + "-tbCenter");
-                    this.removedContent.set(existingComp.id + "-tbCenter", tbCenter);
+                    this.flatContent.delete(tbCenterId);
+                    this.flatContentByName.delete(tbCenterName);
+                    this.removedContent.set(tbCenterId, tbCenter);
+                    this.removedContentByName.set(tbCenterName, tbCenter);
                 }
             }
 
             if (newComp["~destroy"]) {
-                this.flatContent.delete(existingComp.id + "-tbMain");
-                this.flatContent.delete(existingComp.id + "-tbCenter");
+                this.flatContent.delete(tbMainId);
+                this.flatContentByName.delete(tbMainName);
+                this.removedContent.delete(tbMainId);
+                this.removedContentByName.delete(tbMainName);
 
-                this.removedContent.delete(existingComp.id + "-tbMain");
-                this.removedContent.delete(existingComp.id + "tb-Center");
+                this.flatContent.delete(tbCenterId);
+                this.flatContentByName.delete(tbCenterName);
+                this.removedContent.delete(tbCenterId);
+                this.removedContentByName.delete(tbCenterName);
             }
         }
         else {
@@ -529,7 +558,9 @@ export default abstract class BaseContentStore {
             }
 
             this.flatContent.set(tbMain.id, tbMain);
+            this.flatContentByName.set(tbMain.name, tbMain);
             this.flatContent.set(tbCenter.id, tbCenter);
+            this.flatContentByName.set(tbCenter.name, tbCenter);
         }
     }
 
@@ -541,7 +572,7 @@ export default abstract class BaseContentStore {
      addToNotifyList(comp:IBaseComponent, notifyList:string[]) {
         if (comp.parent) {
             // If the new component's parent is a toolbar-panel, check which of the artificial parents should be notified (based on ~additional)
-            if (this.getParent(comp.parent)?.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
+            if (this.getComponentById(comp.parent)?.className === COMPONENT_CLASSNAMES.TOOLBARPANEL) {
                 if (comp["~additional"]) {
                     notifyList.push(comp.parent + "-tbMain");
                 }
@@ -618,11 +649,12 @@ export default abstract class BaseContentStore {
      * @param id - the id of the parent
      * @param className - the classname of the component
      */
-     deleteChildren(id:string, className: string) {
+    deleteChildren(id:string, className: string) {
         const children = this.getAllChildren(id, className);
         children.forEach(child => {
             this.deleteChildren(child.id, child.className);
             this.flatContent.delete(child.id);
+            this.flatContentByName.delete(child.name);
         });
     }
 
@@ -644,18 +676,25 @@ export default abstract class BaseContentStore {
      * @param className - the className of the component to close
      * @param closeDirectly - If true, also remove components from the removedContent
      */
-     cleanUpUI(id:string, name:string|undefined, className: string, closeDirectly?:boolean) {
+    cleanUpUI(id:string, name:string|undefined, className: string, closeDirectly?:boolean) {
         if (name) {
-            const parentId = this.getComponentById(id)?.parent;
+            const component = this.getComponentById(id);
             this.deleteChildren(id, className);
-            this.flatContent.delete(id);
 
-            if (closeDirectly) {
-                this.removedContent.delete(id)
-            }
+            if (component)
+            {
+                this.flatContent.delete(id);
+                this.flatContentByName.delete(component.name);
 
-            if (parentId) {
-                this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []);
+                if (closeDirectly) {
+                    this.removedContent.delete(id);
+                    this.removedContentByName.delete(component.name)
+                }
+
+                const parentId = component?.parent;
+                if (parentId) {
+                    this.subManager.parentSubscriber.get(parentId)?.apply(undefined, []);
+                }
             }
         }
     }
@@ -663,12 +702,17 @@ export default abstract class BaseContentStore {
     /** Resets the contentStore */
     reset(){
         this.flatContent.clear();
+        this.flatContentByName.clear();
         this.removedContent.clear();
+        this.removedContentByName.clear();
         this.customScreens.clear();
         this.customComponents.clear();
         this.replaceScreens.clear();
         this.removedCustomComponents.clear();
         this.replacedContent.clear();
+        this.replacedContentByName.clear();
+        this.desktopContent.clear();
+        this.desktopContentByName.clear();
         this.navigationNames.clear();
         this.screenWrappers.clear();
         this.dataBooks.clear();
@@ -790,7 +834,7 @@ export default abstract class BaseContentStore {
             return splitDataProvider[1]
         }
         else {
-            let comp: IBaseComponent | undefined = this.flatContent.has(id) ? this.flatContent.get(id) : this.desktopContent.get(id);
+            let comp: IBaseComponent | undefined = this.flatContent.get(id) ?? this.desktopContent.get(id);
             if (comp) {
                 // go the parents of components upwards to get to the screen component to get it's name
                 while (comp?.parent) {
@@ -805,7 +849,7 @@ export default abstract class BaseContentStore {
                         return comp.name;
                     }
     
-                    comp = this.flatContent.has(comp.parent) ? this.flatContent.get(comp.parent) : this.desktopContent.get(comp.parent);
+                    comp = this.flatContent.get(comp.parent) ?? this.desktopContent.get(comp.parent);
                 }
             }
             if (comp?.nameComponentRef) {
@@ -1538,20 +1582,4 @@ export default abstract class BaseContentStore {
         return false;
     }
 
-    /** Returns the last id (numeric wise) which has been sent by the server */
-    getLastID() {
-        const allContent = Array.from(new Map([...this.flatContent, ...this.replacedContent, ...this.desktopContent, ...this.removedContent]).keys());
-        let valueToReturn = 0;
-
-        allContent.forEach(key => {
-            const matchedKey = key.match(/^[^\d]*(\d+)/);
-            if (matchedKey?.length === 2) {
-                const val = parseInt(matchedKey[1])
-                if (val > valueToReturn) {
-                    valueToReturn = val;
-                }
-            }
-        })
-        return valueToReturn;
-    }
 }
