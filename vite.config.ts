@@ -6,10 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   resolve: { // solves the problem with link modules and different react instances
-    alias: {
-      react: path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom')
-    }
+    dedupe: ['react', 'react-dom']
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
@@ -19,7 +16,8 @@ export default defineConfig({
     assetsDir: 'static',
     sourcemap: true,
     cssCodeSplit: true,
-    minify: 'esbuild',
+    minify: true,
+    chunkSizeWarningLimit: 3000,
     rollupOptions: {
       output: {
         entryFileNames: (chunkInfo) => {
@@ -28,9 +26,15 @@ export default defineConfig({
           }
           return 'static/js/[name].[hash].js';
         },
-        chunkFileNames: 'static/js/[name].[hash].js',
+        chunkFileNames: (chunkInfo) => {
+          if (chunkInfo.name.includes('rolldown-runtime')) {
+            return 'static/js/vendor-runtime.[hash].js';
+          }
+          return 'static/js/[name].[hash].js';
+        },        
         assetFileNames: (assetInfo) => {
-          const ext = assetInfo.name?.split('.').pop();
+          const name = assetInfo.names?.[0] ?? '';
+          const ext = name.split('.').pop();
           if (ext === 'css') {
             return 'static/css/[name]-[hash][extname]';
           }

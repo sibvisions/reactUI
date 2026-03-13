@@ -21,10 +21,7 @@ export default defineConfig({
     })],
   base: './',
   resolve: { // solves the problem with link modules and different react instances
-    alias: {
-      react: path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom')
-    }
+    dedupe: ['react', 'react-dom']
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
@@ -46,18 +43,21 @@ export default defineConfig({
           'react-dom': 'ReactDOM'
         },
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'moduleIndex.css') {
+          const name = assetInfo.names?.[0] ?? '';
+          if (name === 'moduleIndex.css') {
             return 'main.css'; // force name main.css instead of moduleIndex.css for compatibility reasons
           }
-          if (/\.css$/i.test(assetInfo.name ?? '')) {
+          if (/\.css$/i.test(name)) {
             return '[name][extname]';
           }
-          if (/fonts?/i.test(assetInfo.name ?? '')) {
+          if (/fonts?/i.test(name)) {
             return 'resources/fonts/[name][extname]';
           }
           return 'resources/assets/[name][extname]';
         },
-        inlineDynamicImports: true, // prevent extra auto.esm*.js due to chart.js
+        // prevent extra auto.esm*.js due to chart.js
+        //inlineDynamicImports: true, // deprecated
+        codeSplitting: false,
         manualChunks: undefined,  
       }
     }
