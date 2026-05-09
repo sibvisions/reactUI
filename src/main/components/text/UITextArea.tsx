@@ -50,7 +50,7 @@ const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
     const inputRef = useRef<any>(null);
 
     /** Input timer to send text changes only all 300ms. */
-    const inputTimer = useRef<NodeJS.Timeout | null>(null);
+    const inputTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     
     /** Hook for requesting focus */
     useRequestFocus(id, props.requestFocus, inputRef.current, props.context);

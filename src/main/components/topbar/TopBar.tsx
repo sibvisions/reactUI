@@ -70,10 +70,10 @@ const TopBar:FC = () => {
     const [designerTopbarChanged, setDesignerTopbarChanged] = useState<boolean>(false);
 
     /** A timeout for the medium color */
-    const mediumTimeout = useRef<NodeJS.Timeout|null>(null);
+    const mediumTimeout = useRef<ReturnType<typeof setTimeout>|null>(null);
 
     /** A timeout for the long color */
-    const longTimeout = useRef<NodeJS.Timeout|null>(null);
+    const longTimeout = useRef<ReturnType<typeof setTimeout>|null>(null);
 
     // Subscribes to the designer topbar color change
     useEffect(() => {
