@@ -14,7 +14,7 @@
  */
 
 /// <reference types="node" />
-/// <reference types="@types/google.maps" />
+/// <reference types="google.maps" />
 
 declare module '*.scss';
 declare module '*.css';
