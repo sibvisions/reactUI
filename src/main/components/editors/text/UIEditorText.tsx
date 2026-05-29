@@ -52,11 +52,10 @@ enum FieldTypes {
 
 /** custom divider blot to insert <hr> intro quill editor */
 const BlockEmbed = Quill.import('blots/block/embed');
-
-class DividerBlot extends (BlockEmbed as any) { }
-DividerBlot.blotName = 'divider';
-DividerBlot.tagName = 'hr';
-Quill.register(DividerBlot);
+class DividerBlot extends (BlockEmbed as any) { 
+    static blotName = "divider";
+    static tagName = "hr";
+}
 
 const Module = Quill.import('core/module')
 class DividerToolbar extends Module {
@@ -85,7 +84,13 @@ class DividerToolbar extends Module {
         }
     }
 }
-Quill.register('modules/divider', DividerToolbar)
+
+if ((Quill as any).__sibvisions_quill_init__ !== true) {
+    Quill.register(DividerBlot);
+    Quill.register("modules/divider", DividerToolbar);
+
+    (Quill as any).__sibvisions_quill_init__ = true;
+}
 
 /**
  * DOM transforms:
