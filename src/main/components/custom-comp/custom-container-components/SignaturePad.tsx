@@ -15,7 +15,7 @@
 
 import { Button } from "primereact/button"
 import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import SignatureCanvas from 'react-signature-canvas'
+import SignatureCanvas from 'react-signature-pad-wrapper';
 import tinycolor from "tinycolor2"
 import { createSetValuesRequest } from "../../../factories/RequestFactory"
 import useRowSelect from "../../../hooks/data-hooks/useRowSelect";
@@ -139,6 +139,58 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
         }
     }, [deviceStatus])
 
+    useEffect(() => {
+        const canvas = document.querySelector('.sigCanvas') as HTMLCanvasElement;
+        const container = canvas?.parentElement;
+        const pad = (sigRef.current as any)?.signaturePad || sigRef.current;
+
+        if (!canvas || !container || !pad) return;
+
+        pad.onBegin = () => container.classList.add('sigpad-drawing');
+        pad.onEnd = () => container.classList.remove('sigpad-drawing');
+
+        // sync internal resolution with CSS size
+        const resizeCanvas = () => {
+            const rect = canvas.getBoundingClientRect();
+            
+            // only if size is available
+            if (rect.width > 0 && rect.height > 0) {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                
+                // Cache value to restore
+                const isEmpty = pad.isEmpty();
+                const savedData = !isEmpty ? canvas.toDataURL() : null;
+
+                canvas.width = rect.width * ratio;
+                canvas.height = rect.height * ratio;
+
+                const ctx = canvas.getContext("2d");
+                if (ctx) {
+                    ctx.resetTransform();
+                    ctx.scale(ratio, ratio);
+                }
+
+                pad.clear();
+
+                // restore data
+                if (savedData) {
+                    pad.fromDataURL(savedData);
+                }
+            }
+        };
+
+        const resizeObserver = new ResizeObserver(() => {
+            // requestAnimationFrame avoids flickr
+            requestAnimationFrame(resizeCanvas);
+        });
+
+        resizeObserver.observe(container);
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [sigRef, layoutStyle?.width, layoutStyle?.height]);  
+
     /** Create the different footer buttons based on the editing status */
     const getFooterButtons = useCallback(() => {
         switch (editStatus) {
@@ -255,27 +307,30 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                     '--background': btnBgd,
                     '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                 } as CSSProperties} />}
-            <SignatureCanvas
-                ref={sigRef}
-                penColor={context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"}
-                canvasProps={{ 
-                    className: concatClassnames('sigCanvas', editStatus !== EDITLOCK_STATUS.EDITING ? "signature-pad-editing-locked" : ""), 
-                    style: { 
-                        width: layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400, 
-                        height: layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200
-                    } 
+            <div 
+                className="signature-pad-container"
+                style={{ 
+                    width: layoutStyle?.width ?? "100%", 
+                    height: layoutStyle?.height ?? "200px",
+                    
+                    position: "relative",
+                    boxSizing: "border-box"
                 }}
-                onBegin={() => {
-                    if (sigRef.current) {
-                        //add classname to remove the footerbuttons
-                        sigRef.current.getCanvas().parentElement.classList.add('sigpad-drawing');
-                    }
-                }}
-                onEnd={() => {
-                    if (sigRef.current && sigRef.current.getCanvas().parentElement.classList.contains('sigpad-drawing')) {
-                        sigRef.current.getCanvas().parentElement.classList.remove('sigpad-drawing')
-                    }
-                }} />
+            >
+                <SignatureCanvas
+                    ref={sigRef}
+                    options={{
+                        penColor: context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"
+                    }}
+                    canvasProps={{ 
+                        className: concatClassnames(
+                            'sigCanvas', 
+                            editStatus !== EDITLOCK_STATUS.EDITING ? "signature-pad-editing-locked" : ""
+                        ) ?? "",
+                        style: { width: "100%", height: "100%", display: "block" } 
+                    }}
+                />
+            </div>
             <div className={"signature-buttons"}>
                 {getFooterButtons()}
             </div>
