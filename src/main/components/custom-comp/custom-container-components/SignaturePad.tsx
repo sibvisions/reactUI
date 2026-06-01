@@ -106,6 +106,34 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
         }
     }, [deviceStatus]);
 
+    useEffect(() => {
+        if (!canvasRef.current) return;
+
+        const canvas = canvasRef.current;
+
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        const width = layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400;
+        const height = layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200;
+
+        // canvas scaling
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.scale(ratio, ratio);
+
+        padRef.current = new SignaturePadLib(canvas, {
+            penColor: context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"
+        });
+
+        if (selectedRow?.data[props.columnName]) {
+            const base64 = "data:image/png;base64," + selectedRow.data[props.columnName];
+            padRef.current.fromDataURL(base64);
+        }
+
+    }, [layoutStyle?.width, layoutStyle?.height]);
+
     /** Export helper */
     const exportSignature = async () => {
         if (!padRef.current) return "";
