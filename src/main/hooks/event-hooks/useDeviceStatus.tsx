@@ -33,7 +33,7 @@ const useDeviceStatus = (sigpad?:boolean) => {
 
     /** Subscribes to device-status to update the state of the components */
     useEffect(() => {
-        context.subscriptions.subscribeToDeviceMode((deviceStatus: DeviceStatus) => {
+        const deviceModeHandler = (deviceStatus: DeviceStatus) => {
             if (deviceStatus !== lastDeviceStatus.current) {
                 lastDeviceStatus.current = deviceStatus;
                 setDeviceStatus(deviceStatus);
@@ -41,17 +41,11 @@ const useDeviceStatus = (sigpad?:boolean) => {
             else if (sigpad) {
                 setDeviceStatus(prevState => sigpad ? !prevState : deviceStatus);
             }
-        })
+        };
 
-        return () => context.subscriptions.unsubscribeFromDeviceMode((deviceStatus: DeviceStatus) => {
-            if (deviceStatus !== lastDeviceStatus.current) {
-                lastDeviceStatus.current = deviceStatus;
-                setDeviceStatus(deviceStatus);
-            }
-            else if (sigpad) {
-                setDeviceStatus(prevState => sigpad ? !prevState : deviceStatus);
-            }
-        })
+        context.subscriptions.subscribeToDeviceMode(deviceModeHandler);
+
+        return () => context.subscriptions.unsubscribeFromDeviceMode(deviceModeHandler);
     }, [context.subscriptions])
 
     return deviceStatus

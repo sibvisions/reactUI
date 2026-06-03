@@ -468,10 +468,11 @@ const UIEditorLinked: FC<IEditorLinked & IExtendableLinkedEditor & IComponentCon
 
     // Subscribes to displaymap change
     useEffect(() => {
-        const onChange = () => setDisplayMapChanged(prevState => !prevState);
-        props.context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, onChange);
+        const onChangeHandler = () => setDisplayMapChanged(prevState => !prevState);
 
-        return () => props.context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, onChange);
+        props.context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, onChangeHandler);
+
+        return () => props.context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, props.cellEditor.linkReference.referencedDataBook, onChangeHandler);
     },[props.context.subscriptions])
 
     // Disable the dropdown-button if the editor is set to readonly

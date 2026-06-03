@@ -158,17 +158,15 @@ export const ProfileMenu:FC<IProfileMenu> = (props) => {
 
     // Subscribes to the menu-visibility and the visible-buttons displayed in the profile-menu
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
+        const appSettingsHandler = (menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
             setMenuOptions(menuOptions)
-
             setVisibleButtons(visibleButtons);
-        });
+        };
+
+        context.subscriptions.subscribeToAppSettings(appSettingsHandler);
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions, visibleButtons:VisibleButtons) => {
-                setMenuOptions(menuOptions)
-                setVisibleButtons(visibleButtons);
-            });
+            context.subscriptions.unsubscribeFromAppSettings(appSettingsHandler);
         }
     }, [context.subscriptions])
     

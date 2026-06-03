@@ -105,7 +105,7 @@ const ReactUI: FC<ICustomContent> = (props) => {
     const [tabTitle, setTabTitle] = useState<string>(context.appSettings.applicationMetaData.applicationName);
 
     /** A flag to rerender when messages should be displayed */
-    const [messageFlag, setMessageFlag] = useState<number>(0);
+    const [messageFlag, setMessageFlag] = useState<boolean>(true);
 
     /** Adds the application.css to the head */
     useLayoutEffect(() => {
@@ -124,15 +124,18 @@ const ReactUI: FC<ICustomContent> = (props) => {
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
+        const restartHandler = () => setRestart(prevState => !prevState);
+        const tabTitleHandler = (newTabTitle: string) => setTabTitle(newTabTitle);
+
         context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
-        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
-        context.subscriptions.subscribeToTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
-        context.subscriptions.subscribeToMessageDialogProps(() => setMessageFlag(Math.random()));
+        context.subscriptions.subscribeToRestart(restartHandler);
+        context.subscriptions.subscribeToTabTitle(tabTitleHandler);
+        context.subscriptions.subscribeToMessageDialogProps(() => setMessageFlag(prevState => !prevState));
 
         return () => {
             context.subscriptions.unsubscribeFromAppCssVersion();
-            context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
-            context.subscriptions.unsubscribeFromTabTitle((newTabTitle: string) => setTabTitle(newTabTitle));
+            context.subscriptions.unsubscribeFromRestart(restartHandler);
+            context.subscriptions.unsubscribeFromTabTitle(tabTitleHandler);
             context.subscriptions.unsubscribeFromMessageDialogProps();
         }
     }, [context.subscriptions]);

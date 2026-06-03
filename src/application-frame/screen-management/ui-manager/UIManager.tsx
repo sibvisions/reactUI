@@ -110,12 +110,14 @@ const UIManager: FC<IUIManagerProps> = (props) => {
 
     // Subscribes to the menu-visibility and theme
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuOptions:MenuOptions) => setMenuOptions(menuOptions));
+        const appSettingsHandler = (menuOptions:MenuOptions) => setMenuOptions(menuOptions);
+
+        context.subscriptions.subscribeToAppSettings(appSettingsHandler);
         context.subscriptions.subscribeToTheme("uimanager", (theme:string) => setAppTheme(theme));
         context.subscriptions.subscribeToActiveScreens("uimanager", (activeScreens:ActiveScreen[]) => setActiveScreens([...activeScreens]));
 
         return () => {
-            context.subscriptions.unsubscribeFromAppSettings((menuOptions:MenuOptions) => setMenuOptions(menuOptions));
+            context.subscriptions.unsubscribeFromAppSettings(appSettingsHandler);
             context.subscriptions.unsubscribeFromTheme("uimanager");
             context.subscriptions.unsubscribeFromActiveScreens("uimanager");
         }

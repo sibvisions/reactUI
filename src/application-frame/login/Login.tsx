@@ -124,7 +124,7 @@ const Login: FC = () => {
         return () => {
             context.subscriptions.unsubscribeFromMFAWait("login");
             context.subscriptions.unsubscribeFromMFAURL("login");
-            context.subscriptions.unsubscribeFromActiveLogin();
+            context.subscriptions.unsubscribeFromLoginActive();
         }
     }, [context.subscriptions])
 
