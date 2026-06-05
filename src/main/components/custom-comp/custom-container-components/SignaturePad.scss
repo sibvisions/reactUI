@@ -15,16 +15,34 @@
     }
 
     &.sigpad-drawing {
-        .signature-buttons {
+        .signature-header-buttons {
+            display: none;
+        }
+
+        .signature-footer-buttons {
             display: none;
         }
     }
 
-    .signature-buttons {
-        display: inline-block;
+    .no-focus:focus {
+        box-shadow: none;
+    }
+
+    .no-ripple .p-ink {
+        display: none;
+    }
+
+    .no-click {
+        cursor: default;
+    }
+
+    .signature-footer-buttons {
+        display: flex;
         position: absolute;
         bottom: 8px;
         right: 8px;
+        gap: 8px;
+        z-index: 3;
 
         .rc-button {
             width: 35px;
@@ -36,3 +54,4 @@
         }
     }
 }
+

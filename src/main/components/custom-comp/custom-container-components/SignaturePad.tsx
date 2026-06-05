@@ -35,118 +35,281 @@ export interface ISignaturPad extends IBaseComponent {
     saveLock?:boolean
 }
 
-enum EDITLOCK_STATUS {
-    LOCK = 0,
-    LOCK_DELETE = 1,
-    EDITING = 2,
-    NO_BUTTONS = 3
+enum EditMode {
+    noButtons = 0,
+    clearAndOk = 1,
+    startEdit = 2,
+    clearAndEndEdit = 3
 }
 
 const SignaturePad:FC<ISignaturPad> = (baseProps) => {
 
-    const [context, [props], layoutStyle,,styleClassNames] = useComponentConstants<ISignaturPad>(baseProps);
+    const [context, [props], layoutStyle,, styleClassNames] = useComponentConstants<ISignaturPad>(baseProps);
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow]);
     const [selectedRow] = useRowSelect(screenName, props.dataRow);
 
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    // the background image as state, to avoid overrides
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
+
+    // Use image state instead of raw data from record
+    const [localImageSrc, setLocalImageSrc] = useState<string | null>(null);
+
+    const bgCanvasRef = useRef<HTMLCanvasElement | null>(null);
+    const drawCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const padRef = useRef<SignaturePadLib | null>(null);
 
-    const [saveLocked, setSaveLocked] = useState<boolean>(props.saveLock && selectedRow && selectedRow.data[props.columnName])
-    const editLockEnabled = useMemo(() => props.editLock !== false, [props.editLock]);
-    const [editStatus, setEditStatus] = useState<EDITLOCK_STATUS>(saveLocked ? EDITLOCK_STATUS.NO_BUTTONS : (editLockEnabled ? EDITLOCK_STATUS.LOCK : EDITLOCK_STATUS.EDITING));
+    // the currently drawed signature (for resize)
+    // -> useRef instead of useState -> doesn't trigger repaint
+    const drawingDataRef = useRef<any[] | null>(null);
 
-    useDesignerUpdates("default-button");
-    const bgdUpdate = useButtonBackground();
-    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [bgdUpdate]);
-    const deviceStatus = useDeviceStatus(true);
-
-    /** Setup SignaturePad */
-    useEffect(() => {
-        if (!canvasRef.current) return;
-
-        const canvas = canvasRef.current;
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-
-        // Pixelgröße setzen
-        canvas.width = (layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400) * ratio;
-        canvas.height = (layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200) * ratio;
-
-        const ctx = canvas.getContext("2d");
-        ctx?.scale(ratio, ratio);
-
-        padRef.current = new SignaturePadLib(canvas, {
-            penColor: context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"
-        });
-
-    }, [layoutStyle?.width, layoutStyle?.height]);
-
-    /** Load signature from DB */
-    useEffect(() => {
-        if (!padRef.current) return;
-
-        padRef.current.clear();
-
-        if (selectedRow?.data[props.columnName]) {
-            const base64 = "data:image/png;base64," + selectedRow.data[props.columnName];
-            padRef.current.fromDataURL(base64);
-        } else if (saveLocked) {
-            setSaveLocked(false);
-            setEditStatus(EDITLOCK_STATUS.LOCK);
-        }
-    }, [selectedRow]);
-
-    /** Reload on device change */
-    useEffect(() => {
-        if (!padRef.current) return;
-
-        if (selectedRow?.data[props.columnName]) {
-            const base64 = "data:image/png;base64," + selectedRow.data[props.columnName];
-            padRef.current.clear();
-            padRef.current.fromDataURL(base64);
-        }
-    }, [deviceStatus]);
-
-    useEffect(() => {
-        if (!canvasRef.current) return;
-
-        const canvas = canvasRef.current;
+    /** Shows signature as background image. */
+    const loadBackground = useCallback((png: string, width: number, height: number) => {
+        const canvas = bgCanvasRef.current;
+        if (!canvas) return;
 
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        const width = layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400;
-        const height = layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200;
-
-        // canvas scaling
+        
+        // set internal pixel size (will clear canvas)
         canvas.width = width * ratio;
         canvas.height = height * ratio;
 
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
+
+        // scale High DPI
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(ratio, ratio);
 
-        padRef.current = new SignaturePadLib(canvas, {
-            penColor: context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black"
-        });
+        // show background image (important for first render)
+        setImageSrc(png);
 
-        if (selectedRow?.data[props.columnName]) {
-            const base64 = "data:image/png;base64," + selectedRow.data[props.columnName];
-            padRef.current.fromDataURL(base64);
+        //we render the image here as well, to fix resizing
+        const img = new Image();
+        img.onload = () => {
+            // be sure that canvas is available after load
+            if (bgCanvasRef.current === canvas) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                //uses css size, thanks to ctx.scale above
+                ctx.drawImage(img, 0, 0, width, height);
+            }
+        };
+        img.src = png;
+    }, []);
+
+    /** Initializes the canvas for drawing signature. */
+    const initSignaturePad = (width: number, height: number) => {
+        const canvas = drawCanvasRef.current;
+        if (!canvas) return;
+
+        if (padRef.current) {
+            padRef.current.off();
+            padRef.current = null;
         }
 
-    }, [layoutStyle?.width, layoutStyle?.height]);
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
 
-    /** Export helper */
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(ratio, ratio);
+
+        const pad = new SignaturePadLib(canvas, {
+            penColor: context.appSettings.applicationMetaData.applicationColorScheme.value === "dark" ? "white" : "black",
+            backgroundColor: "rgba(0,0,0,0)",
+        });
+
+        pad.addEventListener("beginStroke", () => {
+            //add classname to remove the buttons
+            if (drawCanvasRef && drawCanvasRef.current) {
+                drawCanvasRef.current.parentElement?.classList.add('sigpad-drawing');
+            }
+        });
+
+        pad.addEventListener("endStroke", () => {
+            drawingDataRef.current = pad.toData();
+
+            if (drawCanvasRef && drawCanvasRef.current) {
+                drawCanvasRef.current.parentElement?.classList.remove('sigpad-drawing');
+            }
+        });
+
+        padRef.current = pad;
+    };    
+
+    /** Clears background and signature canvas, and all states/refs. */
+    const clearAll = useCallback(() => {
+        //shows empty background immediate -> useEffect
+        setLocalImageSrc(null);
+        drawingDataRef.current = null;
+
+        const width = layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400;
+        const height = layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200;
+
+        initSignaturePad(width, height);
+    }, [layoutStyle?.width, layoutStyle?.height, initSignaturePad]);        
+
+    // We use refs to avoid function reference problems
+    const loadBackgroundRef = useRef(loadBackground);
+    const initSignaturePadRef = useRef(initSignaturePad);
+    const clearAllRef = useRef(clearAll);
+
+    //Fill real functions from references. Makes sure that functions get current states/props
+    //without triggering rendering
+    useEffect(() => {
+        loadBackgroundRef.current = loadBackground;
+        initSignaturePadRef.current = initSignaturePad;
+        clearAllRef.current = clearAll;
+    }); //NO dependency array -> fill with every render
+
+    useEffect(() => {
+        if (selectedRow?.data && selectedRow.data[props.columnName] != undefined) {
+            setLocalImageSrc("data:image/png;base64," + selectedRow.data[props.columnName]);
+        } else {
+            setLocalImageSrc(null);
+            drawingDataRef.current = null;
+        }
+    }, [selectedRow, props.columnName]);
+
+    /** Detects edit mode for current state. */
+    const detectEditMode = () => {
+        return props.saveLock ? 
+            props.saveLock === true && selectedRow?.data[props.columnName] != undefined ? 
+                EditMode.noButtons 
+                : 
+                props.editLock !== false ?
+                    EditMode.startEdit
+                    :
+                    EditMode.clearAndOk 
+            : 
+            props.editLock !== false?
+                EditMode.startEdit
+                :
+                EditMode.clearAndOk;
+    }
+
+    const [editMode, setEditMode] = useState<EditMode>(detectEditMode());
+
+    useDesignerUpdates("default-button");
+    
+    const btnBgdUpdate = useButtonBackground();
+
+    const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [btnBgdUpdate]);
+
+    /** Updates background image. */
+    useEffect(() => {
+        const canvas = bgCanvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // e.g. clearAll
+        if (!imageSrc) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }, [imageSrc]);
+
+    /** Sets edit mode for current record */
+    useEffect(() => {
+        setEditMode(detectEditMode());
+    }, [selectedRow, props.saveLock, props.editLock, props.columnName]);
+    
+    /** Resets flags when records is changed */
+    useEffect(() => {
+        drawingDataRef.current = null;
+    }, [selectedRow?.index, selectedRow]);
+
+    /** Shows signature of current record. */
+    useEffect(() => {
+        const canvas = bgCanvasRef.current;
+        if (!canvas) return;
+
+        const width = layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400;
+        const height = layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200;
+
+        // cleard-flag check is important, otherwise the canvas would be cleared after a single paint operation
+        // after we cleared all with clearAll
+        if (localImageSrc) {
+            loadBackground(localImageSrc, width, height);
+            initSignaturePad(width, height);
+
+            // If we currently draw and resize -> keep data and show current signature
+            if (drawingDataRef.current && padRef.current) {
+                padRef.current.fromData(drawingDataRef.current);
+            }            
+        } else {
+            //clear all
+
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                // Clear and recognize pixel ratio
+                ctx.clearRect(0, 0, width * ratio, height * ratio);
+            }            
+
+            initSignaturePad(width, height);
+
+            if (drawingDataRef.current && padRef.current) {
+                padRef.current.fromData(drawingDataRef.current);
+            }            
+        }
+    }, [layoutStyle?.width, layoutStyle?.height, selectedRow, props.columnName, localImageSrc, loadBackground, initSignaturePad]);
+
+    /** Creates the image for saving the signature. */
     const exportSignature = async () => {
-        if (!padRef.current) return "";
-        return padRef.current.toDataURL("image/png").replace("data:image/png;base64,", "");
+        const draw = drawCanvasRef.current;
+        if (!draw) return "";
+
+        // Use canvas size and avoids missing or not calculated layout for first time
+        const actualWidth = draw.width;
+        const actualHeight = draw.height;
+
+        const out = document.createElement("canvas");
+        out.width = actualWidth;
+        out.height = actualHeight;
+
+        const ctx = out.getContext("2d");
+        if (!ctx) return "";
+
+        // Draw signature with same resolution
+        ctx.drawImage(draw, 0, 0);
+
+        const base64Result = out.toDataURL("image/png").replace("data:image/png;base64,", "");
+        
+        return base64Result;
     };
 
-    /** Footer buttons */
+    /** Header buttons. */
+    const getHeaderButtons = useCallback(() => {
+        if (props.saveLock === true)
+            return (
+                <Button
+                    className="rc-button no-focus no-ripple no-click"
+                    icon="fas fa-lock"
+                    tabIndex={-1}
+                    style={{
+                        position: "absolute",
+                        height: "35px",
+                        width: "35px",
+                        top: "4px",
+                        left: "4px",
+                        zIndex: 3,
+                        '--background': btnBgd,
+                        '--hoverBackground': btnBgd
+                    } as CSSProperties}
+                />
+            );      
+    }, [props.saveLock]);
+
+    /** Footer buttons. */
     const getFooterButtons = useCallback(() => {
-        switch (editStatus) {
-            case EDITLOCK_STATUS.NO_BUTTONS:
+        switch (editMode) {
+            case EditMode.noButtons:
                 return;
 
-            case EDITLOCK_STATUS.LOCK:
+            case EditMode.startEdit:
                 return (
                     <Button
                         className="rc-button"
@@ -155,45 +318,60 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                             '--background': btnBgd,
                             '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                         } as CSSProperties}
-                        onClick={() => setEditStatus(EDITLOCK_STATUS.LOCK_DELETE)}
+                        onClick={() => {
+                            if (props.saveLock === true) {
+                                setEditMode(EditMode.clearAndOk)
+                            }
+                            else {
+                                console.debug(selectedRow);
+
+                                if (selectedRow?.data[props.columnName] != undefined) {
+                                    setEditMode(EditMode.clearAndEndEdit);
+                                }
+                                else {
+                                    setEditMode(EditMode.clearAndOk);
+                                }
+                            }
+                        }}
                     />
                 );
 
-            case EDITLOCK_STATUS.LOCK_DELETE:
+            case EditMode.clearAndEndEdit:
                 return (
                     <>
                         <Button
                             className="rc-button"
-                            icon="fas fa-edit"
+                            icon="fas fa-times"
                             style={{
                                 '--background': btnBgd,
                                 '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                             } as CSSProperties}
                             onClick={async () => {
-                                padRef.current?.clear();
-                                const svReq = createSetValuesRequest();
-                                svReq.componentId = props.name;
-                                svReq.dataProvider = props.dataRow;
-                                svReq.editorColumnName = props.columnName;
-                                svReq.columnNames = [props.columnName];
-                                svReq.values = [await exportSignature()];
-                                showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), context.server.topbar);
-                                setEditStatus(EDITLOCK_STATUS.EDITING);
+                                clearAll();
+
+                                setEditMode(EditMode.clearAndOk);
                             }}
                         />
                         <Button
                             className="rc-button"
-                            icon="fas fa-ban"
+                            icon={
+                                <span style={{ display: 'inline-grid', width: '1em', height: '1em', verticalAlign: 'middle' }}>
+                                    <i className="fas fa-pen" style={{ gridArea: '1/1'}}></i>
+                                    <i className="fas fa-slash" style={{ gridArea: '1/1', WebkitTextStroke: '1px'}}></i>
+                                </span>                                
+                            }
                             style={{
                                 '--background': btnBgd,
                                 '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                             } as CSSProperties}
-                            onClick={() => setEditStatus(EDITLOCK_STATUS.LOCK)}
+                            onClick={async () => {
+                                setEditMode(detectEditMode());
+                            }}
                         />
                     </>
                 );
 
-            case EDITLOCK_STATUS.EDITING:
+            case EditMode.clearAndOk:
             default:
                 return (
                     <>
@@ -205,14 +383,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                                 '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
                             } as CSSProperties}
                             onClick={async () => {
-                                padRef.current?.clear();
-                                const svReq = createSetValuesRequest();
-                                svReq.componentId = props.name;
-                                svReq.dataProvider = props.dataRow;
-                                svReq.editorColumnName = props.columnName;
-                                svReq.columnNames = [props.columnName];
-                                svReq.values = [await exportSignature()];
-                                showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), context.server.topbar);
+                                clearAll();
                             }}
                         />
                         <Button
@@ -229,50 +400,51 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                                 svReq.editorColumnName = props.columnName;
                                 svReq.columnNames = [props.columnName];
                                 svReq.values = [await exportSignature()];
-                                showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES), context.server.topbar);
 
-                                setEditStatus(props.saveLock ? EDITLOCK_STATUS.NO_BUTTONS : EDITLOCK_STATUS.LOCK);
-                                if (props.saveLock) setSaveLocked(true);
+                                showTopBar(context.server.sendRequest(svReq, REQUEST_KEYWORDS.SET_VALUES).then(() => { 
+                                    drawingDataRef.current = null;
+                                }), context.server.topbar);
                             }}
                         />
                     </>
                 );
         }
-    }, [editStatus]);
+    }, [editMode, btnBgd, context.server, props.name, props.dataRow, props.columnName, props.saveLock, props.editLock, selectedRow]);
 
     return (
-        <div className={concatClassnames("rc-signature-pad", styleClassNames)}>
-            {saveLocked &&
-                <Button
-                    className="rc-button"
-                    icon="fas fa-lock"
-                    tabIndex={-1}
-                    style={{
-                        position: "absolute",
-                        height: "35px",
-                        width: "35px",
-                        top: "4px",
-                        left: "4px",
-                        '--background': btnBgd,
-                        '--hoverBackground': tinycolor(btnBgd).darken(5).toString()
-                    } as CSSProperties}
-                />
-            }
+        <div className={concatClassnames("rc-signature-pad", styleClassNames)} style={{ position: "relative" }}>
+            <div className="signature-header-buttons">
+                {getHeaderButtons()}
+            </div>
 
             <canvas
-                ref={canvasRef}
-                className={concatClassnames(
-                    "sigCanvas",
-                    editStatus !== EDITLOCK_STATUS.EDITING ? "signature-pad-editing-locked" : ""
-                )}
+                ref={bgCanvasRef}
+                className="sigCanvas-bg"
                 style={{
                     width: layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400,
                     height: layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200,
-                    display: "block"
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    zIndex: 0
                 }}
             />
 
-            <div className="signature-buttons">
+            <canvas
+                ref={drawCanvasRef}
+                className="sigCanvas-draw"
+                style={{
+                    width: layoutStyle?.width ? parseInt(layoutStyle.width as string) : 400,
+                    height: layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200,
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    zIndex: 1,
+                    pointerEvents: editMode != EditMode.clearAndOk ? "none" : "auto"
+                }}
+            />
+
+            <div className="signature-footer-buttons">
                 {getFooterButtons()}
             </div>
         </div>
