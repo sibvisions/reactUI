@@ -13,7 +13,7 @@
  * the License.
  */
 
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useLayoutEffect, useMemo, useState } from "react";
 import { appContext } from "../../contexts/AppProvider";
 
 /**
@@ -55,8 +55,8 @@ const useRowSelect = (screenName:string, dataProvider: string, rowIndex?:number)
      * Subscribes to rowSelection which updates the value of selectedRow
      * @returns unsubscribes from rowSelection
      */
-    useEffect(() => {
-        const onRowSelection = (newRow: any) => {
+    useLayoutEffect(() => {
+        const onRowSelection = (newRow: any) => {    
             if (newRow) {
                 // If rowIndex is undefined or the rowIndex is the currently selectedRow/new row, use the data from the new row
                 if (rowIndex === undefined || (rowIndex !== undefined && rowIndex === newRow.index)) {
@@ -78,6 +78,7 @@ const useRowSelect = (screenName:string, dataProvider: string, rowIndex?:number)
                 setSelectedRow(undefined)
             }
         }
+
         context.subscriptions.subscribeToRowSelection(screenName, dataProvider, onRowSelection);
 
         return () => {
