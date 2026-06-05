@@ -46,7 +46,7 @@ const LoadingScreen: FC = () => {
     useEffect(() => {
         context.subscriptions.subscribeToAppReadyParams((params: AppReadyType) => setAppReadyParams({...params}));
 
-        return () => context.subscriptions.unsubscribeFromAppParamsSubscriber()
+        return () => context.subscriptions.unsubscribeFromAppReadyParams()
     }, [context.subscriptions]);
 
     /** The progression-text to know which parameters are still being loaded */

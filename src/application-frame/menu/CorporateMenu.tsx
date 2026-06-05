@@ -87,9 +87,11 @@ const CorporateMenu:FC<IMenu> = (props) => {
      *  @returns unsubscribe on unmounting
      */
     useEffect(() => {
-        context.subscriptions.subscribeToToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
+        const toolBarItemsHandler = (toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems));
 
-        return () => context.subscriptions.unsubscribeFromToolBarItems((toolBarItems:Array<BaseMenuButton>) => setToolbarItems(handleNewToolbarItems(toolBarItems)));
+        context.subscriptions.subscribeToToolBarItems(toolBarItemsHandler);
+
+        return () => context.subscriptions.unsubscribeFromToolBarItems(toolBarItemsHandler);
     }, [context.subscriptions]);
 
     var imgLogo = (<img draggable="false" 

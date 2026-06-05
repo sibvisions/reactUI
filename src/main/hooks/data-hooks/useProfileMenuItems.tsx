@@ -46,9 +46,11 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
 
     // Subscribes to appsettings
     useEffect(() => {
-        context.subscriptions.subscribeToAppSettings((menuOptions: MenuOptions, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
+        const appSettingsHandler = (menuOptions: MenuOptions, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled);
 
-        return () => context.subscriptions.unsubscribeFromAppSettings((menuOptions: MenuOptions, visibleButtons: VisibleButtons, changePWEnabled: boolean) => setChangePwEnabled(changePWEnabled));
+        context.subscriptions.subscribeToAppSettings(appSettingsHandler);
+
+        return () => context.subscriptions.unsubscribeFromAppSettings(appSettingsHandler);
     }, [])
 
     // Building the profile-menu-model

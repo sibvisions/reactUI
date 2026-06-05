@@ -26,9 +26,11 @@ const useButtonBackground = () => {
 
     /** Subscribes to button background changes */
     useEffect(() => {
-        context.designerSubscriptions.subscribeToButtonBackground(() => setDesignerBgdChanged(prevState => !prevState))
+        const buttonBackground = () => setDesignerBgdChanged(prevState => !prevState);
 
-        return () => context.designerSubscriptions.unsubscribeFromButtonBackground(() => setDesignerBgdChanged(prevState => !prevState));
+        context.designerSubscriptions.subscribeToButtonBackground(buttonBackground);
+
+        return () => context.designerSubscriptions.unsubscribeFromButtonBackground(buttonBackground);
     },[context.subscriptions]);
 
     return designerBgdChanged;

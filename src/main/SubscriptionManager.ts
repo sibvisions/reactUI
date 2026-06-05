@@ -267,9 +267,13 @@ export class SubscriptionManager {
      * @param subs - the subscription-map which should be unsubscribed from
      */
     handleScreenDataProviderUnsubs(screenName:string, dataProvider:string, fn:Function, subs:Map<string, Map<string, Array<Function>>>) {
-        const subscriber = subs.get(screenName)?.get(dataProvider)
-        if(subscriber)
-            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
+        const subscriber = subs.get(screenName)?.get(dataProvider);
+        if (subscriber) {
+            const index = subscriber.findIndex(subFunction => subFunction === fn);
+            if (index >= 0) {
+                subscriber.splice(index, 1);
+            }
+        }
     }
 
     /**
@@ -282,12 +286,28 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes a component from property changes
+     * @param id - the screen name
+     */
+    unsubscribeFromPropChange(id: string){
+        this.propertiesSubscriber.delete(id);
+    }
+
+    /**
      * Subscribes parents which use the useComponents hook, to change their childcomponent state
      * @param id - the screen name
      * @param fn - the function to update a parents childcomponent state
      */
     subscribeToParentChange(id: string, fn: Function){
         this.parentSubscriber.set(id, fn);
+    }
+
+    /**
+     * Unsubscribes a component from parentChanges
+     * @param id - the screen name
+     */
+    unsubscribeFromParentChange(id: string){
+        this.parentSubscriber.delete(id);
     }
 
     /**
@@ -298,10 +318,26 @@ export class SubscriptionManager {
     subscribeToDataProviders(screenName:string, fn:Function) {
         /** Check if there is already a function array for this screen */
         const subscriber = this.dataProvidersSubscriber.get(screenName);
-        if (subscriber)
-            subscriber.push(fn)
-        else
+        if (subscriber) {
+            subscriber.push(fn);
+        }else {
             this.dataProvidersSubscriber.set(screenName, new Array<Function>(fn));
+        }
+    }
+
+    /**
+    * Unsubscribes components from dataProviders
+    * @param screenName - the screen name of the screen
+    * @param fn - the function to update the dataProvider state
+    */
+    unsubscribeFromDataProviders(screenName:string, fn: Function) {
+        const subscriber = this.dataProvidersSubscriber.get(screenName);
+        if (subscriber) {
+            const index = subscriber.findIndex(subFunction => subFunction === fn);
+            if (index >= 0) {
+                subscriber.splice(index, 1);
+            }
+        }
     }
 
     /**
@@ -312,6 +348,16 @@ export class SubscriptionManager {
      */
     subscribeToRowSelection(screenName:string, dataProvider: string, fn: Function) {
         this.handleScreenDataProviderSubscriptions(screenName, dataProvider, fn, this.rowSelectionSubscriber);
+    }
+
+   /**
+     * Unsubscribes a component from rowSelection
+     * @param screenName - the screen name of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update the selectedRow state
+     */
+    unsubscribeFromRowSelection(screenName:string, dataProvider: string, fn: Function) {
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.rowSelectionSubscriber);
     }
 
     /**
@@ -325,6 +371,16 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscibes components from dataChange
+     * @param screenName - the screen name of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update the data state
+     */
+    unsubscribeFromDataChange(screenName:string, dataProvider: string, fn: Function) {
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.dataChangeSubscriber);
+    }
+
+    /**
      * Subscribes components which use the useMetadata hook, to change their metadata state
      * @param screenName - the name of the screen
      * @param dataProvider - the dataprovider
@@ -332,6 +388,16 @@ export class SubscriptionManager {
      */
     subscribeToMetaData(screenName:string, dataProvider:string, fn: Function) {
         this.handleScreenDataProviderSubscriptions(screenName, dataProvider, fn, this.metaDataSubscriber);
+    }
+
+    /**
+     * Unsubscibes components from metadata
+     * @param screenName - the screen name of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update the data state
+     */
+    unsubscribeFromMetaData(screenName:string, dataProvider: string, fn: Function) {
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.metaDataSubscriber);
     }
 
     /**
@@ -345,12 +411,30 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscibes components from displaymapchanges
+     * @param screenName - the screen name of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update the data state
+     */
+    unsubscribeFromLinkedDisplayMap(screenName:string, dataProvider: string, fn: Function) {
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.linkedDisplayMapSubscriber);
+    }
+
+    /**
      * Subscribes a component to its screen-data (every dataprovider data)
      * @param screenName - the name of the screen
      * @param fn - the function to update the state
      */
     subscribeToScreenDataChange(screenName:string, fn:Function) {
         this.screenDataChangeSubscriber.set(screenName, fn)
+    }
+
+    /**
+     * Unsubscribes a component from its screen-data (every dataprovider data)
+     * @param screenName - the screen name of the screen
+     */
+    unsubscribeFromScreenDataChange(screenName:string) {
+        this.screenDataChangeSubscriber.delete(screenName);
     }
 
     /**
@@ -363,6 +447,14 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes a component from its dataproviders selected-rows
+     * @param screenName 
+     */
+    unsubscribeFromScreenRowChange(screenName:string) {
+        this.screenRowSelectionSubscriber.delete(screenName);
+    }
+
+    /**
      * Subscribes components to the screen-name, to change their screen-name state
      * @param fn - the function to update the screen-name state
      */
@@ -371,11 +463,30 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes a component from screen-title changes
+     * @param id - the screen name
+     */
+    unsubscribeFromScreenTitle() {
+        this.screenTitleSubscriber = () => {}
+    }
+
+    /**
      * Subscribes the menu to menuChanges , to change the menu-item state
      * @param fn - the function to update the menu-item state
      */
-    subscribeToMenuChange(fn: Function){
+    subscribeToMenuChange(fn: Function) {
         this.menuSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes the menu from menuChanges
+     * @param fn - the function to update the menu-item state
+     */
+    unsubscribeFromMenuChange(fn: Function) {
+        const index = this.menuSubscriber.findIndex(subFunction => subFunction === fn);
+        if (index >= 0) {
+            this.menuSubscriber.splice(index, 1);
+        }
     }
 
     /**
@@ -388,16 +499,39 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes a component from menu-collapse
+     * @param id - the screen name
+     */
+    unsubscribeFromMenuCollapse(id:string) {
+        this.menuCollapseSubscriber.delete(id);
+    }
+
+    /**
      * Subscribes components to flip flag, to change their flag state
      * @param masterDataBook  - the master databook of the tree
      * @param fn  - the function to update the flip flag
      */
     subscribeToTreeChange(masterDataBook:string, fn:Function) {
         const subscriber = this.treeSubscriber.get(masterDataBook);
-        if (subscriber)
+        if (subscriber) {
             subscriber.push(fn)
-        else
+        } else {
             this.treeSubscriber.set(masterDataBook, new Array<Function>(fn));
+        }
+    }
+
+    /**
+     * Unsubscribes a tree from its flip flag
+     * @param masterDataBook - the master dataBook of the tree
+     */
+    unsubscribeFromTreeChange(masterDataBook:string, fn:Function) {
+        const subscriber = this.treeSubscriber.get(masterDataBook)
+        if (subscriber) {
+            const index = subscriber.findIndex(subFunction => subFunction === fn);
+            if (index >= 0) {
+                subscriber.splice(index, 1);
+            }
+        }
     }
 
     /**
@@ -410,6 +544,14 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes the tree from it's changed data
+     * @param id - the id of the tree
+     */
+    unsubscribeFromTreeDataChange(id:string) {
+        this.treeDataChangedSubscriber.delete(id);
+    }
+
+    /**
      * Subscribes a tree, to update their tree nodes to selected row changes in the tree's databooks
      * @param id - the id of the tree
      * @param fn - the function to update the state
@@ -419,11 +561,26 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes the tree from it's selected row changes
+     * @param id - the id of the tree
+     */
+    unsubscribeFromTreeSelectionChange(id:string) {
+        this.treeSelectionChangedSubscriber.delete(id);
+    }
+
+    /**
      * Subscribes the app to app-ready, to change the app-ready state
      * @param fn  - the function to change the app-ready state
      */
     subscribeToAppReady(fn:Function) {
         this.appReadySubscriber = fn;
+    }
+
+    /**
+     * Unsubscribes app from app-ready
+     */
+    unsubscribeFromAppReady() {
+        this.appReadySubscriber = () => {};
     }
 
     /**
@@ -437,11 +594,28 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes a component from sort-definition
+     * @param screenName - the screen name of the screen
+     * @param dataProvider - the dataprovider
+     * @param fn - the function to update sort-definition
+     */
+    unsubscribeFromSortDefinitions(screenName:string, dataProvider:string, fn: Function) {
+        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.sortDefinitionSubscriber);
+    }
+    
+    /**
      * Subscribes the error-bar component, to change its visible state
      * @param fn - the function to update the state
      */
     subscribeToErrorBarVisible(fn:Function) {
         this.errorBarVisibleSubscriber = fn
+    }
+
+    /**
+     * Unsubscribe error-bar from visible
+     */
+    unsubscribeFromErrorBarVisible() {
+        this.errorBarVisibleSubscriber = () => {};
     }
 
     /**
@@ -453,11 +627,25 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribe error-bar from visible
+     */
+    unsubscribeFromErrorBarProps() {
+        this.errorBarPropertiesSubscriber = () => {};
+    }
+
+    /**
      * Subscribes the change-password dialog, to change its visible state
      * @param fn - the function to update the state
      */
     subscribeToChangePasswordVisible(fn:Function) {
         this.changePasswordVisibleSubscriber = fn;
+    }
+
+    /**
+     * Unsubscribe change-password dialog from visible
+     */
+    unsubscribeFromChangePasswordVisible() {
+        this.changePasswordVisibleSubscriber = () => {};
     }
 
     /**
@@ -469,11 +657,23 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribe message dialog dialog from visible
+     */
+    unsubscribeFromMessageDialogProps() {
+        this.messageDialogPropsSubscriber = () => {};
+    }
+
+    /**
      * Subscribes the error-dialog component, to change its property state
      * @param fn 
      */
     subscribeToErrorDialogProps(fn:Function) {
         this.errorDialogPropsSubscriber = fn;
+    }
+
+    /** Unsubscribes from error dialog props */
+    unsubscribeFromErrorDialogProps() {
+        this.errorDialogPropsSubscriber = () => {};
     }
 
     /**
@@ -485,11 +685,31 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes from app-settings
+     */
+    unsubscribeFromAppSettings(fn:Function) {
+        const index = this.appSettingsSubscriber.findIndex(subFunction => subFunction === fn);
+        if (index >= 0) {
+            this.appSettingsSubscriber.splice(index, 1);
+        }
+    }
+
+    /**
      * Subscribes to deviceMode, to change the device-mode state
      * @param fn - the function to change the device-mode state
      */
     subscribeToDeviceMode(fn: Function) {
         this.deviceModeSubscriber.push(fn)
+    }
+
+    /**
+     * Unsubscribes from device-mode
+     */
+    unsubscribeFromDeviceMode(fn:Function) {
+        const index = this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn);
+        if (index >= 0) {
+            this.deviceModeSubscriber.splice(index, 1);
+        }
     }
 
     /**
@@ -501,12 +721,28 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes a component from toolbar-items
+     * @param fn - the function to update the toolbar-items
+     */
+    unsubscribeFromToolBarItems(fn:Function) {
+        const index = this.toolbarSubscriber.findIndex(subFunction => subFunction === fn);
+        if (index >= 0) {
+            this.toolbarSubscriber.splice(index, 1);
+        }
+    }
+
+    /**
      * Subscribes the UIToast to message-responses, to change the dialog-response state, to show the
      * UIToast
      * @param fn - the function to change the dialog-response state
      */
      subscribeToToast(fn:Function) {
         this.toastSubscriber = fn;
+    }
+
+    /** Unsubscribes UIToast from message-responses */
+    unsubscribeFromToast() {
+        this.toastSubscriber = () => {};
     }
 
     /**
@@ -519,11 +755,29 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes from active-screens
+     */
+    unsubscribeFromActiveScreens(key:string) {
+        this.activeScreenSubscriber.delete(key);
+    }
+
+    /**
      * Subscribes to restart
      * @param fn - the function to update the state
      */
     subscribeToRestart(fn:Function) {
         this.restartSubscriber.push(fn);
+    }
+
+    /**
+     * Unsubscribes from restart
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromRestart(fn:Function) {
+        const index = this.restartSubscriber.findIndex(subFunction => subFunction === fn);
+        if (index >= 0) {
+            this.restartSubscriber.splice(index, 1);
+        }
     }
 
     /**
@@ -535,11 +789,29 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes from tab-title
+     * @param fn - the function to update the state
+     */
+    unsubscribeFromTabTitle(fn:Function) {
+        const index = this.tabTitleSubscriber.findIndex(subFunction => subFunction === fn);
+        if (index >= 0) {
+            this.tabTitleSubscriber.splice(index, 1);
+        }
+    }
+
+    /**
      * Subscribes to application css-version
      * @param fn - the function to update the state
      */
     subscribeToAppCssVersion(fn:Function) {
         this.appCssVersionSubscriber = fn;
+    }
+
+    /**
+     * Unsubscribes from app css-version
+     */
+    unsubscribeFromAppCssVersion() {
+        this.appCssVersionSubscriber = () => {};
     }
 
     /**
@@ -552,11 +824,26 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes from theme
+     * @param id - the id to delete
+     */
+    unsubscribeFromTheme(id:string) {
+        this.themeSubscriber.delete(id);
+    }
+
+    /**
      * Subscribes to login-mode
      * @param fn - the function to update the state
      */
     subscribeToLogin(fn:Function) {
         this.loginSubscriber = fn;
+    }
+
+    /**
+     * Unsubscribes from login-mode
+     */
+    unsubscribeFromLogin() {
+        this.loginSubscriber = () => {};
     }
 
     /**
@@ -569,11 +856,25 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes from mfa-wait-properties
+     */
+    unsubscribeFromMFAWait(name: string) {
+        this.mFAWaitSubscriber.delete(name);
+    }
+
+    /**
      * Subscribes to mfa-url-properties
      * @param fn - the function to update the state
      */
     subscribeToMFAURL(name: string, fn:Function) {
         this.mFAURLSubscriber.set(name, fn);
+    }
+
+    /**
+     * Unsubscribes from mfa-url-properties
+     */
+    unsubscribeFromMFAURL(name: string) {
+        this.mFAURLSubscriber.delete(name);
     }
 
     /**
@@ -585,11 +886,25 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes from app-ready parameters
+     */
+    unsubscribeFromAppReadyParams() {
+        this.appReadyParamsSubscriber = () => {};
+    }
+
+    /**
      * Subscribes to active-login check
      * @param fn  - the function to update the state
      */
     subscribeToLoginActive(fn:Function) {
         this.loginActiveSubscriber = fn;
+    }
+
+    /**
+     * Unsubscribes from login active check
+     */
+    unsubscribeFromLoginActive() {
+        this.loginActiveSubscriber = () => {};
     }
 
     /**
@@ -601,303 +916,22 @@ export class SubscriptionManager {
     }
 
     /**
+     * Unsubscribes from session-expired status
+     */
+    unsubscribeFromSessionExpired(fn:Function) {
+        const index = this.sessionExpiredSubscriber.findIndex(subFunction => subFunction === fn);
+        if (index >= 0) {
+            this.sessionExpiredSubscriber.splice(index, 1);
+        }
+    }
+
+    /**
      * Subscribes the menubutton components to changes to their menu, to update their menu
      * @param key - the key of the menubutton
      * @param fn - the function to update the menu
      */
     subscribeToMenuButtonItems(key: string, fn: Function) {
         this.menuButtonItemsSubscriber.set(key, fn);
-    }
-
-    /** 
-     * Subscribes the UploadDialog, to know if it is visible and which fileId to use
-     * @param fn - the function to update the state
-     */
-    subscribeToUploadDialog(fn: Function) {
-        this.uploadDialogSubscriber = fn;
-    }
-
-    /**
-     * Unsubscribes the menu from menuChanges
-     * @param fn - the function to update the menu-item state
-     */
-    unsubscribeFromMenuChange(fn: Function){
-        this.menuSubscriber.splice(this.menuSubscriber.findIndex(subFunction => subFunction === fn), 1);
-    }
-
-    /**
-    * Unsubscribes components from dataProviders
-    * @param screenName - the screen name of the screen
-    * @param fn - the function to update the dataProvider state
-    */
-    unsubscribeFromDataProviders(screenName:string, fn: Function) {
-        const subscriber = this.dataProvidersSubscriber.get(screenName);
-        if (subscriber)
-            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn), 1)
-    }
-
-    /**
-     * Unsubscibes components from dataChange
-     * @param screenName - the screen name of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the data state
-     */
-    unsubscribeFromDataChange(screenName:string, dataProvider: string, fn: Function) {
-        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.dataChangeSubscriber);
-    }
-
-    /**
-     * Unsubscibes components from metadata
-     * @param screenName - the screen name of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the data state
-     */
-     unsubscribeFromMetaData(screenName:string, dataProvider: string, fn: Function) {
-        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.metaDataSubscriber);
-    }
-
-    /**
-     * Unsubscibes components from displaymapchanges
-     * @param screenName - the screen name of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the data state
-     */
-    unsubscribeFromLinkedDisplayMap(screenName:string, dataProvider: string, fn: Function) {
-        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.linkedDisplayMapSubscriber);
-    }
-
-    /**
-     * Unsubscribes a component from its screen-data (every dataprovider data)
-     * @param screenName - the screen name of the screen
-     */
-    unsubscribeFromScreenDataChange(screenName:string) {
-        this.screenDataChangeSubscriber.delete(screenName);
-    }
-
-    /**
-     * Unsubscribes a component from its dataproviders selected-rows
-     * @param screenName 
-     */
-    unsubscribeFromScreenRowChange(screenName:string) {
-        this.screenRowSelectionSubscriber.delete(screenName);
-    }
-
-    /**
-     * Unsubscribes a component from rowSelection
-     * @param screenName - the screen name of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update the selectedRow state
-     */
-    unsubscribeFromRowSelection(screenName:string, dataProvider: string, fn: Function){
-        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.rowSelectionSubscriber);
-    }
-
-    /**
-     * Unsubscribes a component from parentChanges
-     * @param id - the screen name
-     */
-    unsubscribeFromParentChange(id: string){
-        this.parentSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes a component from property changes
-     * @param id - the screen name
-     */
-    unsubscribeFromPropChange(id: string){
-        this.propertiesSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes a component from screen-title changes
-     * @param id - the screen name
-     */
-    unsubscribeFromScreenTitle() {
-        this.screenTitleSubscriber = () => {}
-    }
-
-    /**
-     * Unsubscribes a component from menu-collapse
-     * @param id - the screen name
-     */
-    unsubscribeFromMenuCollapse(id:string) {
-        this.menuCollapseSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes a tree from its flip flag
-     * @param masterDataBook - the master dataBook of the tree
-     */
-    unsubscribeFromTreeChange(masterDataBook:string, fn:Function) {
-        const subscriber = this.treeSubscriber.get(masterDataBook)
-        if (subscriber)
-            subscriber.splice(subscriber.findIndex(subFunction => subFunction === fn),1);
-    }
-
-    /**
-     * Unsubscribes the tree from it's changed data
-     * @param id - the id of the tree
-     */
-    unsubscribeFromTreeDataChange(id:string) {
-        this.treeDataChangedSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes the tree from it's selected row changes
-     * @param id - the id of the tree
-     */
-    unsubscribeFromTreeSelectionChange(id:string) {
-        this.treeSelectionChangedSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes app from app-ready
-     */
-    unsubscribeFromAppReady() {
-        this.appReadySubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribe error-bar from visible
-     */
-    unsubscribeFromErrorBarProps() {
-        this.errorBarPropertiesSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribe error-bar from visible
-     */
-    unsubscribeFromErrorBarVisible() {
-        this.errorBarVisibleSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribe change-password dialog from visible
-     */
-     unsubscribeFromChangePasswordVisible() {
-        this.changePasswordVisibleSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribe message dialog dialog from visible
-     */
-     unsubscribeFromMessageDialogProps() {
-        this.messageDialogPropsSubscriber = () => {};
-    }
-
-    /** Unsubscribes from error dialog props */
-    unsubscribeFromErrorDialogProps() {
-        this.errorDialogPropsSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribes from app-settings
-     */
-     unsubscribeFromAppSettings(fn:Function) {
-        this.appSettingsSubscriber.splice(this.appSettingsSubscriber.findIndex(subFunction => subFunction === fn), 1);
-    }
-
-    /**
-     * Unsubscribes from device-mode
-     */
-     unsubscribeFromDeviceMode(fn:Function) {
-        this.deviceModeSubscriber.splice(this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn), 1);
-    }
-
-    /**
-     * Unsubscribes a component from sort-definition
-     * @param screenName - the screen name of the screen
-     * @param dataProvider - the dataprovider
-     * @param fn - the function to update sort-definition
-     */
-    unsubscribeFromSortDefinitions(screenName:string, dataProvider:string, fn: Function) {
-        this.handleScreenDataProviderUnsubs(screenName, dataProvider, fn, this.sortDefinitionSubscriber);
-    }
-    
-    /**
-     * Unsubscribes a component from toolbar-items
-     * @param fn - the function to update the toolbar-items
-     */
-    unsubscribeFromToolBarItems(fn:Function) {
-        this.deviceModeSubscriber.splice(this.deviceModeSubscriber.findIndex(subFunction => subFunction === fn), 1);
-    }
-
-    /** Unsubscribes UIToast from message-responses */
-    unsubscribeFromToast() {
-        this.toastSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribes from active-screens
-     */
-     unsubscribeFromActiveScreens(key:string) {
-        this.activeScreenSubscriber.delete(key);
-    }
-
-    /**
-     * Unsubscribes from restart
-     * @param fn - the function to update the state
-     */
-    unsubscribeFromRestart(fn:Function) {
-        this.restartSubscriber.splice(this.restartSubscriber.findIndex(subFunction => subFunction === fn), 1);
-    }
-
-    /**
-     * Unsubscribes from tab-title
-     * @param fn - the function to update the state
-     */
-    unsubscribeFromTabTitle(fn:Function) {
-        this.tabTitleSubscriber.splice(this.tabTitleSubscriber.findIndex(subFunction => subFunction === fn), 1);
-    }
-
-    /**
-     * Unsubscribes from app css-version
-     */
-    unsubscribeFromAppCssVersion() {
-        this.appCssVersionSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribes from theme
-     * @param id - the id to delete
-     */
-    unsubscribeFromTheme(id:string) {
-        this.themeSubscriber.delete(id);
-    }
-
-    /**
-     * Unsubscribes from login-mode
-     */
-    unsubscribeFromLogin() {
-        this.loginSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribes from mfa-wait-properties
-     */
-    unsubscribeFromMFAWait(name: string) {
-        this.mFAWaitSubscriber.delete(name);
-    }
-
-    /**
-     * Unsubscribes from mfa-url-properties
-     */
-    unsubscribeFromMFAURL(name: string) {
-        this.mFAURLSubscriber.delete(name);
-    }
-
-    /**
-     * Unsubscribes from app-ready parameters
-     */
-    unsubscribeFromAppParamsSubscriber() {
-        this.appReadyParamsSubscriber = () => {};
-    }
-
-    /**
-     * Unsubscribes from login active check
-     */
-    unsubscribeFromActiveLogin() {
-        this.loginActiveSubscriber = () => {};
     }
 
     /**
@@ -908,11 +942,12 @@ export class SubscriptionManager {
         this.menuButtonItemsSubscriber.delete(key)
     }
 
-    /**
-     * Unsubscribes from session-expired status
+    /** 
+     * Subscribes the UploadDialog, to know if it is visible and which fileId to use
+     * @param fn - the function to update the state
      */
-    unsubscribeFromSessionExpired(fn:Function) {
-        this.sessionExpiredSubscriber.splice(this.sessionExpiredSubscriber.findIndex(subFunction => subFunction === fn), 1)
+    subscribeToUploadDialog(fn: Function) {
+        this.uploadDialogSubscriber = fn;
     }
 
     /**
@@ -1150,9 +1185,9 @@ export class SubscriptionManager {
 
     /** Tell the close-frame subscribers that a frame has closed */
     emitCloseFrame(closeFrameData: CloseFrameResponse) {
-        const foundIndex = (this.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === closeFrameData.componentId : false);
-        if (foundIndex > -1) {
-            (this.contentStore as ContentStore).openMessages.splice(foundIndex, 1);
+        const index = (this.contentStore as ContentStore).openMessages.findIndex(message => message ? message.id === closeFrameData.componentId : false);
+        if (index >= 0) {
+            (this.contentStore as ContentStore).openMessages.splice(index, 1);
         }
         this.messageDialogPropsSubscriber.apply(undefined, []);
     }

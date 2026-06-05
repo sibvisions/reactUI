@@ -380,6 +380,7 @@ const UITree: FC<ITree & IExtendableTree & IComponentConstants> = (props) => {
         const updateRebuildTree = () => {
             setExpandedKeys(prevKeys => ({...prevKeys}));
         }
+        
         if (props.dataBooks && props.dataBooks.length) {
             props.context.subscriptions.subscribeToTreeChange(props.dataBooks[0], updateRebuildTree);
         }

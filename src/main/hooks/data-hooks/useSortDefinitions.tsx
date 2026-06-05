@@ -35,9 +35,11 @@ const useSortDefinitions = (screenName:string, dataProvider:string) => {
      * @returns unsubscribes from sort-definitions
      */
     useEffect(() => {
-        context.subscriptions.subscribeToSortDefinitions(screenName, dataProvider, () => setSortDefinitions(context.contentStore.getDataBook(screenName, dataProvider)?.sortedColumns));
+        const sortDefinitionHandler = () => setSortDefinitions(context.contentStore.getDataBook(screenName, dataProvider)?.sortedColumns);
+        
+        context.subscriptions.subscribeToSortDefinitions(screenName, dataProvider, sortDefinitionHandler);
 
-        return () => context.subscriptions.unsubscribeFromSortDefinitions(screenName, dataProvider, () => setSortDefinitions(context.contentStore.getDataBook(screenName, dataProvider)?.sortedColumns));
+        return () => context.subscriptions.unsubscribeFromSortDefinitions(screenName, dataProvider, sortDefinitionHandler);
     }, [context.subscriptions, screenName, dataProvider]);
 
     return [sortDefinitions]

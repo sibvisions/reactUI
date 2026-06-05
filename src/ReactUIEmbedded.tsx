@@ -66,13 +66,15 @@ const ReactUIEmbedded:FC<ICustomContent> = (props) => {
      * @returns unsubscribes from app-name, css-version and restart
      */
     useEffect(() => {
+        const restartHandler = () => setRestart(prevState => !prevState);
+
         context.subscriptions.subscribeToAppCssVersion((version: string) => setCssVersions(version));
-        context.subscriptions.subscribeToRestart(() => setRestart(prevState => !prevState));
+        context.subscriptions.subscribeToRestart(restartHandler);
         context.subscriptions.subscribeToMessageDialogProps(() => setMessageFlag(prevState => !prevState));
 
         return () => {
             context.subscriptions.unsubscribeFromAppCssVersion();
-            context.subscriptions.unsubscribeFromRestart(() => setRestart(prevState => !prevState));
+            context.subscriptions.unsubscribeFromRestart(restartHandler);
             context.subscriptions.unsubscribeFromMessageDialogProps();
         }
     }, [context.subscriptions]);

@@ -48,9 +48,11 @@ const LinkedCellRenderer: FC<ICellRender> = (props) => {
 
     // Subscribes to displayMap changes
     useEffect(() => {
-        context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
+        const onChangeHandler = () => setDisplayMapChanged(prevState => !prevState);
+        
+        context.subscriptions.subscribeToLinkedDisplayMap(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, onChangeHandler);
 
-        return () => context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, () => setDisplayMapChanged(prevState => !prevState));
+        return () => context.subscriptions.unsubscribeFromLinkedDisplayMap(props.screenName, cellEditorMetaData.linkReference.referencedDataBook, onChangeHandler);
     },[context.subscriptions])
 
     // If there is a cell-data fetch the linkedReference Databook so the correct value can be displayed
