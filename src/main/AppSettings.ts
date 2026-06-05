@@ -404,7 +404,7 @@ export default class AppSettings {
         }
     }
 
-    /** Sets one of the app-ready parameters, if all of the needed parameters are true, set appReady to true,, then the loadingscreen gets removed and the menu/login is shown */
+    /** Sets one of the app-ready parameters, if all of the needed parameters are true, set appReady to true, then the loadingscreen gets removed and the menu/login is shown */
     setAppReadyParam(param:"applicationCSS"|"schemeCSS"|"themeCSS"|"startup"|"userOrLogin"|"translation"|"cssTranslation") {
         switch (param) {
             case "applicationCSS":
