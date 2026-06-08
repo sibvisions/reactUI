@@ -19,28 +19,23 @@ import { DeviceStatus } from "../../response/event/DeviceStatusResponse";
 
 /**
  * Returns the current devicestatus of the application
- * @param sigpad - true, if the caller of this hook is a signaturepad
  */
-const useDeviceStatus = (sigpad?:boolean) => {
+const useDeviceStatus = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
 
-    /** Current state of the loaded translation */
-    const [deviceStatus, setDeviceStatus] = useState<DeviceStatus|boolean>(sigpad ? false : context.appSettings.deviceStatus);
-    
-    /** Last value of deviceStatus to prevent unnecassary state updates */
-    const lastDeviceStatus = useRef<DeviceStatus>(context.appSettings.deviceStatus);
+    /** Current state of the device status */
+    const [deviceStatus, setDeviceStatus] = useState<DeviceStatus>(context.appSettings.deviceStatus);
 
     /** Subscribes to device-status to update the state of the components */
     useEffect(() => {
-        const deviceModeHandler = (deviceStatus: DeviceStatus) => {
-            if (deviceStatus !== lastDeviceStatus.current) {
-                lastDeviceStatus.current = deviceStatus;
-                setDeviceStatus(deviceStatus);
-            }
-            else if (sigpad) {
-                setDeviceStatus(prevState => sigpad ? !prevState : deviceStatus);
-            }
+        const deviceModeHandler = (newStatus: DeviceStatus) => {
+            setDeviceStatus((prevStatus) => {
+                if (prevStatus !== newStatus) {
+                    return newStatus; // triggers re-render
+                }
+                return prevStatus; // same state -> react will stop
+            });
         };
 
         context.subscriptions.subscribeToDeviceMode(deviceModeHandler);
