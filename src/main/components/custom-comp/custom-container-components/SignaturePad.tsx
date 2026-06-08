@@ -48,9 +48,6 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     const screenName = useMemo(() => context.contentStore.getScreenName(props.id, props.dataRow) as string, [props.id, props.dataRow]);
     const [selectedRow] = useRowSelect(screenName, props.dataRow);
 
-    // the background image as state, to avoid overrides
-    const [imageSrc, setImageSrc] = useState<string | null>(null);
-
     // Use image state instead of raw data from record
     const [localImageSrc, setLocalImageSrc] = useState<string | null>(null);
 
@@ -62,8 +59,9 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     // -> useRef instead of useState -> doesn't trigger repaint
     const drawingDataRef = useRef<any[] | null>(null);
 
+
     /** Shows signature as background image. */
-    const loadBackground = useCallback((png: string, width: number, height: number) => {
+    const loadBackground = (imgSrc: string | null, width: number, height: number) => {
         const canvas = bgCanvasRef.current;
         if (!canvas) return;
 
@@ -80,8 +78,11 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(ratio, ratio);
 
-        // show background image (important for first render)
-        setImageSrc(png);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (imgSrc == null) {
+            return;
+        }
 
         //we render the image here as well, to fix resizing
         const img = new Image();
@@ -93,8 +94,8 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                 ctx.drawImage(img, 0, 0, width, height);
             }
         };
-        img.src = png;
-    }, []);
+        img.src = imgSrc;
+    };
 
     /** Initializes the canvas for drawing signature. */
     const initSignaturePad = (width: number, height: number) => {
@@ -139,7 +140,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     };    
 
     /** Clears background and signature canvas, and all states/refs. */
-    const clearAll = useCallback(() => {
+    const clearAll = () => {
         //shows empty background immediate -> useEffect
         setLocalImageSrc(null);
         drawingDataRef.current = null;
@@ -148,29 +149,38 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
         const height = layoutStyle?.height ? parseInt(layoutStyle.height as string) : 200;
 
         initSignaturePad(width, height);
-    }, [layoutStyle?.width, layoutStyle?.height, initSignaturePad]);        
+    };      
 
-    // We use refs to avoid function reference problems
-    const loadBackgroundRef = useRef(loadBackground);
-    const initSignaturePadRef = useRef(initSignaturePad);
-    const clearAllRef = useRef(clearAll);
+    /** Creates the image for saving the signature. */
+    const exportSignature = async () => {
+        //we won't save empty image as image -> handle like null
+        if (padRef.current) {
+            var points = padRef.current?.toData();
 
-    //Fill real functions from references. Makes sure that functions get current states/props
-    //without triggering rendering
-    useEffect(() => {
-        loadBackgroundRef.current = loadBackground;
-        initSignaturePadRef.current = initSignaturePad;
-        clearAllRef.current = clearAll;
-    }); //NO dependency array -> fill with every render
-
-    useEffect(() => {
-        if (selectedRow?.data && selectedRow.data[props.columnName] != undefined) {
-            setLocalImageSrc("data:image/png;base64," + selectedRow.data[props.columnName]);
-        } else {
-            setLocalImageSrc(null);
-            drawingDataRef.current = null;
+            if (!points || points.length == 0) {
+                return null;
+            }
         }
-    }, [selectedRow, props.columnName]);
+
+        const draw = drawCanvasRef.current;
+        if (!draw) return null;
+
+        // Use canvas size and avoids missing or not calculated layout for first time
+        const actualWidth = draw.width;
+        const actualHeight = draw.height;
+
+        const out = document.createElement("canvas");
+        out.width = actualWidth;
+        out.height = actualHeight;
+
+        const ctx = out.getContext("2d");
+        if (!ctx) return null;
+
+        // Draw signature with same resolution
+        ctx.drawImage(draw, 0, 0);
+
+        return out.toDataURL("image/png").replace("data:image/png;base64,", "");
+    };    
 
     /** Detects edit mode for current state. */
     const detectEditMode = () => {
@@ -194,22 +204,16 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     useDesignerUpdates("default-button");
     
     const btnBgdUpdate = useButtonBackground();
-
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [btnBgdUpdate]);
 
-    /** Updates background image. */
     useEffect(() => {
-        const canvas = bgCanvasRef.current;
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // e.g. clearAll
-        if (!imageSrc) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (selectedRow?.data && selectedRow.data[props.columnName] != undefined) {
+            setLocalImageSrc("data:image/png;base64," + selectedRow.data[props.columnName]);
+        } else {
+            drawingDataRef.current = null;
+            setLocalImageSrc(null);
         }
-    }, [imageSrc]);
+    }, [selectedRow, props.columnName]);
 
     /** Sets edit mode for current record */
     useEffect(() => {
@@ -241,6 +245,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
             }            
         } else {
             //clear all
+            loadBackground(null, width, height);
 
             const ctx = canvas.getContext("2d");
             if (ctx) {
@@ -255,31 +260,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                 padRef.current.fromData(drawingDataRef.current);
             }            
         }
-    }, [layoutStyle?.width, layoutStyle?.height, selectedRow, props.columnName, localImageSrc, loadBackground, initSignaturePad]);
-
-    /** Creates the image for saving the signature. */
-    const exportSignature = async () => {
-        const draw = drawCanvasRef.current;
-        if (!draw) return "";
-
-        // Use canvas size and avoids missing or not calculated layout for first time
-        const actualWidth = draw.width;
-        const actualHeight = draw.height;
-
-        const out = document.createElement("canvas");
-        out.width = actualWidth;
-        out.height = actualHeight;
-
-        const ctx = out.getContext("2d");
-        if (!ctx) return "";
-
-        // Draw signature with same resolution
-        ctx.drawImage(draw, 0, 0);
-
-        const base64Result = out.toDataURL("image/png").replace("data:image/png;base64,", "");
-        
-        return base64Result;
-    };
+    }, [layoutStyle?.width, layoutStyle?.height, props.columnName, localImageSrc]);
 
     /** Header buttons. */
     const getHeaderButtons = useCallback(() => {
@@ -301,7 +282,7 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                     } as CSSProperties}
                 />
             );      
-    }, [props.saveLock]);
+    }, [btnBgd, props.saveLock]);
 
     /** Footer buttons. */
     const getFooterButtons = useCallback(() => {
@@ -323,8 +304,6 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
                                 setEditMode(EditMode.clearAndOk)
                             }
                             else {
-                                console.debug(selectedRow);
-
                                 if (selectedRow?.data[props.columnName] != undefined) {
                                     setEditMode(EditMode.clearAndEndEdit);
                                 }
