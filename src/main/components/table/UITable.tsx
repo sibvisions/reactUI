@@ -48,6 +48,7 @@ import { IComponentConstants } from "../BaseComponent";
 import CellRenderer from "./CellRenderer/CellRenderer";
 import { getPrimaryKeys } from "../../util/data-util/GetMetaData";
 import { VirtualScrollerChangeEvent } from "primereact/virtualscroller";
+import { Checkbox } from "primereact/checkbox";
 
 
 /** Interface for Table */
@@ -1157,6 +1158,36 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     sortIndex = (foundIndex + 1).toString();
                 }
             }
+
+            if (props.columnLabels[colIndex] === "☐") {
+                return (
+                    <div>
+                        <Checkbox 
+                        className="header-checkbox"
+                            onChange={(e) => {
+                            }} 
+                            checked={false}
+                        />
+                        {(isNullable === false ?
+                            props.context.appSettings.applicationMetaData.mandatoryMarkVisible ? " " + (props.context.appSettings.applicationMetaData.mandatoryMark ?? " *") : "" : "")}
+                    </div>
+                );
+            }
+            else if (props.columnLabels[colIndex] === "☑") {
+                return (
+                    <div>
+                        <Checkbox 
+                            className="header-checkbox"
+                            onChange={(e) => {
+                            }} 
+                            checked={true}
+                        />
+                        {(isNullable === false ?
+                            props.context.appSettings.applicationMetaData.mandatoryMarkVisible ? " " + (props.context.appSettings.applicationMetaData.mandatoryMark ?? " *") : "" : "")}
+                    </div>
+                );
+            }
+
             return (
                 <>
                     <span /*onClick={() => handleSort(colName)}*/ dangerouslySetInnerHTML={{

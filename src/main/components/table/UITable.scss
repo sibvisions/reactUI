@@ -53,6 +53,18 @@
                 font-weight: bold;
                 padding: 0.6rem 1rem;
 
+                .header-checkbox {
+                    border-width: 1px;
+
+                    .p-checkbox-box, .p-checkbox-input {
+                        border-width: 1px;
+                    }
+
+                    &:hover .p-checkbox-box, .p-checkbox-input:hover {
+                        cursor: default;
+                    }
+                }
+
                 &.select-column {
                     justify-content: center;
                     .p-column-header-content {
