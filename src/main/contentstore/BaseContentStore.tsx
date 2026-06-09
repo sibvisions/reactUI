@@ -283,14 +283,16 @@ export default abstract class BaseContentStore {
                 const tbpChildren = this.componentChildren.get(string) || new Set<string>();
                 tbpChildren.add(component.id);
                 this.componentChildren.set(string, tbpChildren);
-                // add child at correct indexOf position
-                if (component.indexOf !== undefined) {
-                    children.splice(component.indexOf, 0, string);
+                if (children.indexOf(string) < 0)
+                {
+                    // add child at correct indexOf position
+                    if (component.indexOf !== undefined) {
+                        children.splice(component.indexOf, 0, string);
+                    }
+                    else {
+                        children.push(string)
+                    }
                 }
-                else {
-                    children.push(string)
-                }
-                
             }
             else {
                 // add child at correct indexOf position
@@ -328,7 +330,10 @@ export default abstract class BaseContentStore {
                 const tbpChildren = this.componentChildren.get(string) || new Set<string>();
                 tbpChildren.delete(component.id);
                 this.componentChildren.set(string, tbpChildren);
-                children.delete(string);
+                if (children.size === 1)
+                {
+                    children.delete(string);
+                }
             }
             else {
                 children.delete(child.id);
