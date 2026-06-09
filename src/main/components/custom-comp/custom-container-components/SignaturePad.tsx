@@ -205,7 +205,14 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
     
     const btnBgdUpdate = useButtonBackground();
     const btnBgd = useMemo(() => window.getComputedStyle(document.documentElement).getPropertyValue('--primary-color'), [btnBgdUpdate]);
-
+ 
+    useEffect(() => {
+        return () => {
+            padRef.current?.off();
+            padRef.current = null;
+        }
+    }, []);
+ 
     useEffect(() => {
         if (selectedRow?.data && selectedRow.data[props.columnName] != undefined) {
             setLocalImageSrc("data:image/png;base64," + selectedRow.data[props.columnName]);
@@ -428,6 +435,13 @@ const SignaturePad:FC<ISignaturPad> = (baseProps) => {
             </div>
         </div>
     );
+ 
 };
 
 export default SignaturePad;
+
+if (import.meta.hot) {
+  import.meta.hot.accept(() => {
+    window.location.reload();
+  });
+}

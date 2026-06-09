@@ -7,6 +7,7 @@
   "types": "moduleIndex.d.ts",
   "license": "Apache-2.0 license",
   "scripts": {
+    "dev": "vite",
     "start": "vite",
     "build": "npm run scss && vite build && npm run remove-config && npm run create-build-date",
     "build-ci": "npm run build && zip -r reactBuild build",
