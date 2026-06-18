@@ -1800,7 +1800,7 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
                     cellSelection
                     //scrollHeight="flex"
                     scrollHeight={props.layoutStyle?.height ? `${props.layoutStyle?.height}px` : undefined}
-                    scrollable={props.layoutStyle?.height && virtualEnabled ? true : false}
+                    scrollable={props.layoutStyle?.height ? true : false} // scrollable should indepently of virtualEnabled be true 
                     virtualScrollerOptions={ virtualEnabled ? { 
                         itemSize: rowHeight, 
                         lazy: true,

@@ -321,13 +321,13 @@
         // }
     }
 
-    &.p-datatable-scrollable .p-datatable-wrapper {
+    &.p-datatable-scrollable .p-datatable-wrapper:has(.p-virtualscroller) {
         overflow-y: hidden !important;
     }
 
-    .p-column-header-content {
-        width: inherit;
-    }
+//    .p-column-header-content { 
+//        width: calc(100%); // inherit causes center and right align not working, because conent is too large. 
+//    }                      // There is no advantage setting this against setting nothing, so it is commented.
 
     .p-column-title {
         user-select: none;
