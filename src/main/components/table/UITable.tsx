@@ -609,7 +609,6 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
                         // First set width of headers for columns then rows
                         for (let i = 0; i < theader.length; i++) {
-                            // theader[i].style.removeProperty('width') // We use table internal width setting with header style
                             const newCellWidth = { widthPreSet: false, width: 0 }
                             const colName = window.getComputedStyle(theader[i]).getPropertyValue('--columnName');
                             const columnMetaData = getColMetaData(colName, metaData?.columns);
@@ -1071,7 +1070,12 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     startEditing={props.startEditing}
                     insertEnabled={metaData?.insertEnabled}
                     deleteEnabled={metaData?.deleteEnabled}
-                    setIsEditing={setIsEditing}
+                    //setIsEditing={setIsEditing}
+                    setIsEditing={(isEditing: boolean) => {
+                        setIsEditing(isEditing);
+                        editingColumnRef.current = isEditing ? colName : undefined;
+                        writeColumnWidthsAndCreateStyle();
+                    }}
                     rowNumber={tableInfo.rowIndex}
                     colIndex={colIndex}
                     removeTableLinkRef={
@@ -1350,6 +1354,8 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
 
     /** fixedWidth for storing manual widths. */
     const fixedWidthsRef = useRef<Record<string, number>>({});
+    /** The editingColumn */
+    const editingColumnRef = useRef<string>(undefined);
     /** The prId is an internal unique id used from data table, for writing width styles. */
     const prIdRef = useRef<string | undefined>(null);
 
@@ -1420,10 +1426,20 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         if (!pStyle || !prId) {
             return;
         }
+        const widths = { ...fixedWidthsRef.current };
+        const editingColumn = editingColumnRef.current;
+        if (editingColumn && !fixedWidthsRef.current[editingColumn])
+        {
+            const headerElement = props.forwardedRef.current.querySelector(`th[style*="--columnName: ${editingColumn}"]`);
+            if (headerElement) {
+                widths[editingColumn] = headerElement.getBoundingClientRect().width;
+            }
+        }
+
         let css = "";
         const columnOrder = columnOrderRef.current;
         const virtualScrollerStyle = virtualEnabled ? ' > [data-pc-name="virtualscroller"]' : '';
-        Object.entries(fixedWidthsRef.current).forEach(([field, width]) => {
+        Object.entries(widths).forEach(([field, width]) => {
             const nth = columnOrder.indexOf(field) + 1;
             css += `
 [data-pc-name="datatable"][${prId}] > [data-pc-section="wrapper"]${virtualScrollerStyle} > [data-pc-section="table"] > [data-pc-section="thead"] > tr > th:nth-child(${nth}),
@@ -1452,11 +1468,10 @@ width: ${width}px !important; max-width: ${width}px !important; }`;
             const prId = prIdRef.current;
             if (prId) {
                 style = document.createElement('style');
-                style.textContent = `[data-pc-name="datatable"][${prId}] { }`; // causes mutation
-
+//                style.textContent = `[data-pc-name="datatable"][${prId}] { }`; // causes mutation
                 document.head.appendChild(style);
 
-//                writeColumnWidthsToStyle(style);
+                writeColumnWidthsToStyle(style); // mutation is now too late, we have to write it immediatelly for measuring.
             }
         }
     }

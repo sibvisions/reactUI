@@ -92,9 +92,6 @@ export interface ICellEditor {
 function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDescription | undefined, props: any, stopCellEditing: Function, passedValues: string) {
     let editor = <div>{props.cellData}</div>
     if (metaData) {
-        const headerElement = props.tableContainer.querySelector(`th[style*="--columnName: ${props.colName}"]`);
-        const colWidth = headerElement?.getBoundingClientRect().width; // We set the editor to colWidth, to avoid jumping column sizes.
-        
         editor = <CellEditorWrapper
             {...{
                 ...metaData,
@@ -118,7 +115,7 @@ function displayEditor(metaData: LengthBasedColumnDescription | NumericColumnDes
                 context: props.context,
                 topbar: props.topbar,
                 layoutStyle: { 
-                    width: colWidth+"px", 
+                    width: "100%", 
                     height: "100%"
                 }
             }} />
@@ -134,7 +131,12 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     const { selectNext, selectPrevious, tableContainer } = props;
     
     /** State if editing is currently possible */
-    const [edit, setEdit] = useState(0);
+    const [edit, setEditIntern] = useState(0);
+    /** Sets the table state immediatelly, so the table can measure the current width. */
+    const setEdit = (pEdit: number) => {
+        setEditIntern(pEdit);
+        props.setIsEditing(pEdit != 0);
+    };
 
     /** Reference for element wrapping the cell value/editor */
     const wrapperRef = useRef(null);
@@ -227,7 +229,7 @@ export const CellEditor: FC<ICellEditor> = (props) => {
         if (focusTable) {
             tableContainer.focus();
         }
-    }, [setEdit, selectNext, selectPrevious, tableContainer]);
+    }, [selectNext, selectPrevious, tableContainer, setEdit]);
 
     /** Hook which detects if there was a click outside of the element (to close editor) */
     useOutsideClick(wrapperRef, () => { 
@@ -256,11 +258,6 @@ export const CellEditor: FC<ICellEditor> = (props) => {
     /** Adds Keylistener to the tableContainer */
     useEventHandler(tableContainer, "keydown", handleCellKeyDown);
 
-    /** Sets the table state if the cell is currently editing or not */
-    useEffect(() => {
-        props.setIsEditing(edit);
-    }, [edit])
-    
     /** When the table is no longer selecting and there is a storedClickEvent, call it and then reset it */
     useEffect(() => {
         if (!props.tableIsSelecting && storedClickEvent) {

@@ -44,7 +44,7 @@ export interface ICellRenderer {
     cellFormatting?: Map<string, CellFormatting>,
     isHTML: boolean,
     setStoredClickEvent?: (value: React.SetStateAction<Function | undefined>) => void
-    setEdit?: (value: React.SetStateAction<number>) => void,
+    setEdit?: (value: number) => void,
     decreaseCallback?: Function|undefined,
     isEditable: boolean,
     addReadOnlyClass: boolean,
