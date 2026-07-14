@@ -189,8 +189,10 @@ const CellRenderer = React.forwardRef<(HTMLDivElement), ICellRenderer>((props, f
         if ([CELLEDITOR_CLASSNAMES.IMAGE, CELLEDITOR_CLASSNAMES.CHECKBOX, CELLEDITOR_CLASSNAMES.CHOICE].indexOf(columnMetaData?.cellEditor.className as CELLEDITOR_CLASSNAMES) === -1 &&
             props.setStoredClickEvent && props.setEdit) {
             props.setStoredClickEvent(() => {
-                props.setEdit!(1);
-            })
+                return () => {
+                    props.setEdit!(1);
+                };
+            });
         }
     }, []);
 
