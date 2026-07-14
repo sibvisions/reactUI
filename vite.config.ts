@@ -29,7 +29,11 @@ export default defineConfig(({ mode }) => {
           },
           chunkFileNames: (chunkInfo) => {
             if (chunkInfo.name.includes('rolldown-runtime')) {
-              return 'static/js/vendor-runtime.[hash].js';
+              return 'static/js/vendor-loader.[hash].js'; 
+              // vendor-runtime may be missleading, runtime.[hash].js would be better. 
+              // Usually it contains interaction between the separated js files and handles
+              // lazy loading of externalized vendor modules.
+              // For me vendor-loader.[hash].js would be the best name.
             }
             return 'static/js/[name].[hash].js';
           },        

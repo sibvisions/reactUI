@@ -431,7 +431,7 @@ export default abstract class BaseServer {
                             this.compress = true;
                             return response.arrayBuffer().then((buffer: any) => {
                                 const uint8 = new Uint8Array(buffer);
-                                const decompressed = ungzip(uint8, { to: 'string' });
+                                const decompressed = ungzip(uint8, { toText: true });
 
                                 return JSON.parse(decompressed);
                             });
