@@ -122,7 +122,7 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
         let vCompCount = 0;
 
         /** If compSizes is set (every component in this layout reported its sizes) */
-        if(compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
+        if(compSizes && compSizes.size === children.size && context.contentStore.getComponentById(id)?.visible !== false) {
             clearDesignerLayoutInfo(borderLayoutAssistant, LAYOUTS.BORDERLAYOUT);
 
             /** Preferred Sizes for BorderLayout areas */
@@ -408,7 +408,6 @@ const BorderLayout: FC<ILayout> = (baseProps) => {
             }
 
             setCalculatedStyle({ height: layoutSize.height, width: layoutSize.width, position: 'relative' });
-            
         }
         return sizeMap;
     }, [compSizes, style.width, style.height, reportSize, id, context.contentStore, components, 

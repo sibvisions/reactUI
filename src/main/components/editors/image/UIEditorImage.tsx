@@ -26,6 +26,7 @@ import { sendOnLoadCallback } from "../../../util/server-util/SendOnLoadCallback
 import { concatClassnames } from "../../../util/string-util/ConcatClassnames";
 import { getTabIndex } from "../../../util/component-util/GetTabIndex";
 import { IExtendableImageEditor } from "../../../extend-components/editors/ExtendImageEditor";
+import { parseIconData } from "../../comp-props/ComponentProperties";
 import { removeLayoutStyle } from "../../../util/component-util/RemoveLayoutStyle";
 import { IComponentConstants } from "../../BaseComponent";
 
@@ -117,13 +118,14 @@ export const UIEditorImage: FC<IEditorImage & IExtendableImageEditor & IComponen
                     return "data:image/jpeg;base64," + props.selectedRow.data[props.columnName];
                 }
                 else {
-                    return props.context.server.RESOURCE_URL + props.selectedRow.data[props.columnName];
+                    return props.context.server.RESOURCE_URL + parseIconData(undefined, props.selectedRow.data[props.columnName]).icon;
                 }
             } 
         }
         else if (props.cellEditor.defaultImageName) {
-            return props.context.server.RESOURCE_URL + props.cellEditor.defaultImageName;
+            return props.context.server.RESOURCE_URL + parseIconData(undefined, props.cellEditor.defaultImageName).icon;
         }
+        console.log("No Image ");
         return undefined
     }
 

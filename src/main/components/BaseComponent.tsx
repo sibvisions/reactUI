@@ -50,15 +50,16 @@ const BaseComponent: FC<IBaseComponent & BaseComponentRender> = (baseProps) => {
     const forwardedRef = useRef<any>(null);
 
     /** Returns true, if there is a fallback for the layoutStyle */
-    const hasConstantFallback = useMemo(() => {
+/*    const hasConstantFallback = useMemo(() => {
         if ([COMPONENT_CLASSNAMES.INTERNAL_FRAME, COMPONENT_CLASSNAMES.MOBILELAUNCHER, COMPONENT_CLASSNAMES.DESKTOPPANEL, COMPONENT_CLASSNAMES.GROUPPANEL, COMPONENT_CLASSNAMES.PANEL, COMPONENT_CLASSNAMES.SCROLLPANEL, COMPONENT_CLASSNAMES.SPLITPANEL, COMPONENT_CLASSNAMES.TABSETPANEL, COMPONENT_CLASSNAMES.TOOLBARPANEL, COMPONENT_CLASSNAMES.TOOLBARHELPERCENTER, COMPONENT_CLASSNAMES.TOOLBARHELPERMAIN].indexOf(baseProps.className as COMPONENT_CLASSNAMES) !== -1) {
             return true;
         }
         return false;
-    }, [baseProps.className])
+    }, [baseProps.className])*/
 
     /** Component constants for contexts, properties and style */
-    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IBaseComponent>(baseProps, hasConstantFallback ? {visibility: "hidden"} : undefined);
+    const [context, [props], layoutStyle, compStyle, styleClassNames] = useComponentConstants<IBaseComponent>(baseProps); //, hasConstantFallback ? {visibility: "hidden"} : undefined);
+                                                                                                                          // hidden is set in any case, so no need to have any logic here.                        
 
     /** Hook for MouseListener */
     useMouseListener(props.name, props.className, forwardedRef.current ? forwardedRef.current : undefined, props.eventMouseClicked, props.eventMousePressed, props.eventMouseReleased);

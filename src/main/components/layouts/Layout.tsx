@@ -87,19 +87,16 @@ export function clearDesignerLayoutInfo(layoutAssistant: LayoutAssistant|null, l
  */
 const Layout: FC<ILayout> = (props) => {
     if (props.layout) {
-        if (props.layout.includes("FormLayout"))
+        if (props.layout.startsWith("FormLayout")) {
             return <FormLayout {...props} />
-        else if (props.layout.includes("BorderLayout"))
+        }else if (props.layout.startsWith("BorderLayout")) {
             return <BorderLayout {...props} />
-        else if (props.layout.includes("FlowLayout"))
+        }else if (props.layout.startsWith("FlowLayout")) {
             return <FlowLayout {...props} />
-        else if (props.layout.includes("GridLayout"))
+        }else if (props.layout.startsWith("GridLayout")) {
             return <GridLayout {...props} />
-        else
-            return <NullLayout {...props} />
+        }
     }
-    else
-        return <NullLayout {...props} />
-
+    return <NullLayout {...props} />
 }
 export default Layout

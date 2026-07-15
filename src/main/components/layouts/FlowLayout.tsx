@@ -181,7 +181,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         }
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
-        if(compSizes && childrenSorted.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
+        if(compSizes && compSizes.size === childrenSorted.size && context.contentStore.getComponentById(id)?.visible !== false) {
             clearDesignerLayoutInfo(flowLayoutAssistant, LAYOUTS.FLOWLAYOUT);
 
             /**

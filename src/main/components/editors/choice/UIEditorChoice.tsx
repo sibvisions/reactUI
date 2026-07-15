@@ -88,28 +88,16 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
 
     /** Returns an object of the allowed values as key and the corresponding image as value */
     const validImages = useMemo(() => {
-        let mergedValImg: any
-        /**
-         * Returns a merged object of two arrays keys for the object are taken from the first array values form the second
-         * @param keys - the array which should represent the keys of the merged object
-         * @param values - the array which should represent the values of the merged object
-         */
-        const mergeObject = (keys: Array<string | boolean>, values: Array<string>) => {
-            let mergedObj: any = {};
-            if (keys && values) {
-                for (let i = 0; i < keys.length; i++) {
-                    let value: string | IconProps = values[i]
-                    if (typeof value === "string" && value.includes("FontAwesome")) {
-                        value = parseIconData(undefined, value);
-                    }
-                    mergedObj[getValAsString(keys[i])] = value;
-                }
+        let mergedValImg: any = {};
+        if (stringAllowedValues && props.cellEditor.imageNames) {
+            for (let i = 0; i < stringAllowedValues.length; i++) {
+                mergedValImg[getValAsString(stringAllowedValues[i])] = parseIconData(undefined, props.cellEditor.imageNames[i]);
             }
-            return mergedObj;
         }
-        mergedValImg = mergeObject(stringAllowedValues, props.cellEditor.imageNames);
+        mergedValImg[getValAsString(props.cellEditor.defaultImageName)] = parseIconData(undefined, props.cellEditor.defaultImageName);
+
         return mergedValImg;
-    }, [stringAllowedValues, props.cellEditor.imageNames])
+    }, [stringAllowedValues, props.cellEditor.imageNames, props.cellEditor.defaultImageName])
 
     /**
      * Returns the current image value based on the props.selectedRow if there is no row selected check for a defaultimage else invalid
@@ -249,7 +237,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
             {...usePopupMenu(props)}
         >
             <Tooltip target={!props.isCellEditor ? "#" + props.name : undefined} />
-            {validImages[currentImageValue] && validImages[currentImageValue].icon ?
+            {validImages[currentImageValue] && isFAIcon(validImages[currentImageValue].icon) ?
                 <i
                     ref={imgRef}
                     layoutstyle-wrapper={props.name}
@@ -289,10 +277,7 @@ const UIEditorChoice: FC<IEditorChoice & IExtendableChoiceEditor & IComponentCon
                         setNextValue()
                     }}
                     src={currentImageValue !== "invalid" ?
-                        props.context.server.RESOURCE_URL + (currentImageValue === props.cellEditor.defaultImageName ?
-                            currentImageValue
-                            :
-                            validImages[currentImageValue])
+                        props.context.server.RESOURCE_URL + validImages[currentImageValue].icon
                         : ""
                     }
                     onLoad={onChoiceLoaded}

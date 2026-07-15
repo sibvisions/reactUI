@@ -118,7 +118,7 @@ const GridLayout: FC<ILayout> = (baseProps) => {
         const sizeMap = new Map<string, CSSProperties>();
 
         /** If compSizes is set (every component in this layout reported its preferred size) */
-        if (compSizes && children.size === compSizes.size && context.contentStore.getComponentById(id)?.visible !== false) {
+        if (compSizes && compSizes.size === children.size && context.contentStore.getComponentById(id)?.visible !== false) {
             clearDesignerLayoutInfo(gridLayoutAssistant, LAYOUTS.GRIDLAYOUT);
             
             /** The widest single grid of all components */
