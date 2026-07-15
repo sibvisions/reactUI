@@ -154,6 +154,8 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
 
     const onDateClicked = useRef<boolean>(false);
 
+    const ignoreFocus = useRef<boolean>(false);
+
     /** The month/year which is currently displayed in the panel */
     const [viewDate, setViewDate] = useState<any>(convertToTimeZone(true));
 
@@ -477,9 +479,14 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     // isChanging.current = true; // removed by Max for some reason. So Hide will never send values.
                     if (event.originalEvent?.type === "click" || event.originalEvent?.type === "keydown") {
                         onDateClicked.current = true;
-                        setTimeout(() => handleDateInput(), 0);
-
-                        handleEnterKey(event.originalEvent, event.originalEvent.target, props.name, props.stopCellEditing);
+                        setTimeout(() => {
+                            handleDateInput();
+                            setVisible(false); 
+                            if (props.enterNavigationMode != 0 || props.isCellEditor) {
+                                ignoreFocus.current = event.originalEvent?.type === "keydown";
+                                handleEnterKey(event.originalEvent, event.originalEvent?.target, props.name, props.stopCellEditing);
+                            }
+                        }, 0);
                     }
                 }}
                 onFocus={(event) => {
@@ -514,7 +521,11 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
 //                        isChanging.current = false;
 //                    }
                     setViewDate(convertToTimeZone(true));
-                    calendarInput.current?.focus();
+                    if (ignoreFocus.current) {
+                        ignoreFocus.current = false;
+                    }else {
+                        calendarInput.current?.focus();
+                    }
                 }}
                 tabIndex={props.isCellEditor ? -1 : getTabIndex(props.focusable, props.tabIndex)}
                 readOnlyInput={props.isReadOnly || hasError}
