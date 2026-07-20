@@ -684,7 +684,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     displayedRows = 3;
                 }
 
-                scrollpos = selectedRow.index - Math.floor(displayedRows / 3);
+                scrollpos = selectedRow ? selectedRow.index - Math.floor(displayedRows / 3) : 0;
                 if (scrollpos < 0) {
                     scrollpos = 0;
                 }

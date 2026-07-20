@@ -41,7 +41,7 @@ function removeActiveClassName(items: MenuItem[]) {
         }
         else {
             if (item.className && item.className.includes("p-menuitem--active")) {
-                item.className = item.className.replace(" p-menuitem--active", "");
+                item.className = item.className.replace("p-menuitem--active", "").replace("  ", " ").trim();
             }
         }
     })
@@ -307,9 +307,18 @@ const useMenuItems = (menus?:string[], isCorp?:boolean) => {
 
     useEffect(() => {
         if (menuItems.length) {
-            removeActiveClassName(menuItems);
-            addActiveClassName(menuItems, selectedMenuItemId);
-            setMenuItems([...menuItems]);
+            const cloneMenuItems = (items: MenuItem[]): MenuItem[] => {
+                return items.map(item => ({
+                    ...item,
+                    ...(item.items ? { items: cloneMenuItems(item.items as MenuItem[]) } : {})
+                }));
+            };
+
+            const updatedMenuItems = cloneMenuItems(menuItems);
+            removeActiveClassName(updatedMenuItems);
+            addActiveClassName(updatedMenuItems, selectedMenuItemId);
+
+            setMenuItems(updatedMenuItems);
         }
     }, [selectedMenuItemId])
 
