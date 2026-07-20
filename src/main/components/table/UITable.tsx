@@ -304,8 +304,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     })());
 
     /** The current firstRow displayed in the table */
-    const firstRowIndex = useRef(0);
-    const lastRowIndex = useRef(rows);
+    const firstRowIndex = useRef(-1);
+    const lastRowIndex = useRef(-1);
+    const isFetching = useRef(false);
 
     /** The current sort-definitions */
     const [sortDefinitions] = useSortDefinitions(screenName, props.dataBook);
@@ -672,8 +673,45 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
     /** When providerData changes set state of virtual rows*/
     useLayoutEffect(() => {
         setVirtualRows((() => { 
-            const out = Array.from({ length: providerData.length });
-            out.splice(firstRowIndex.current, lastRowIndex.current - firstRowIndex.current, ...providerData.slice(firstRowIndex.current, lastRowIndex.current));
+            const virtualScroller = (tableRef.current as any)?.getVirtualScroller?.();
+
+            let firstRow = firstRowIndex.current;
+            let lastRow = lastRowIndex.current;
+            let scrollpos = firstRow;
+            if (firstRow < 0 || lastRow < 0) { // -1 means, that there was a manual reload, so we scroll to selectedRow.
+                let displayedRows = getNumberOfRowsPerPage() as number;
+                if (!displayedRows) {
+                    displayedRows = 3;
+                }
+
+                scrollpos = selectedRow.index - Math.floor(displayedRows / 3);
+                if (scrollpos < 0) {
+                    scrollpos = 0;
+                }
+                firstRow = scrollpos - rows;
+                lastRow = scrollpos + rows;
+
+                if (firstRow < 0) {
+                    firstRow = 0;
+                }
+                if (lastRow > providerData.length) {
+                    lastRow = providerData.length;
+                }
+            }
+            firstRowIndex.current = -1;
+            lastRowIndex.current = -1;
+
+            const len = providerData.length;
+            const out = new Array(len);
+            for (let i = firstRow; i < lastRow; i++) {
+                out[i] = providerData[i];
+            }
+
+            virtualScroller.scrollToIndex(scrollpos);
+            setTimeout(() => {
+                virtualScroller.scrollToIndex(scrollpos);
+            }, 0);
+
             return out;
         })());
     }, [providerData, rows]);
@@ -1317,22 +1355,20 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      */
     const handleLazyLoad = useCallback((e: VirtualScrollerChangeEvent) => {
         let {first, last} = e;
-        if (
-            typeof first === "number" && 
-            typeof last === "number" && 
-            (
-                firstRowIndex.current !== first || 
-                lastRowIndex.current !== last
-            ) 
-        ) {
-            last = Math.max(first, last);
+
+        if (typeof first === "number" && typeof last === "number") {
             //setListLoading(true);
-            if(props.dataBook && (providerData.length <= last) && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
+            if(props.dataBook && !isFetching.current && last >= providerData.length && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
+                isFetching.current = true;
+                firstRowIndex.current = first;
+                lastRowIndex.current = last;
                 const fetchReq = createFetchRequest();
                 fetchReq.dataProvider = props.dataBook;
                 fetchReq.fromRow = providerData.length;
                 fetchReq.rowCount = 100;
                 showTopBar(props.context.server.sendRequest(fetchReq, REQUEST_KEYWORDS.FETCH), props.context.server.topbar).then((result) => {
+                    isFetching.current = false;
+
                     if (props.onLazyLoadFetch && result[0]) {
                         props.onLazyLoadFetch(props.context.server.buildDatasets(result[0]))
                     }
@@ -1341,14 +1377,18 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                 });
             } 
             else {
-                const slicedProviderData = providerData.slice(first, last);
-                const data = [...virtualRows];
-                data.splice(first, slicedProviderData.length, ...slicedProviderData);
+                const data = virtualRows.slice();
+                const targetLength = Math.max(providerData.length, last);
+                if (data.length < targetLength) {
+                    data.length = targetLength;
+                }
+                const limit = Math.min(last, providerData.length);
+                for (let i = first; i < limit; i++) {
+                    data[i] = providerData[i];
+                }
                 setVirtualRows(data);
                 //setListLoading(false);
             }
-            firstRowIndex.current = first;
-            lastRowIndex.current = last;
         }
     }, [virtualRows]);
 

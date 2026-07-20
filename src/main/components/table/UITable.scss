@@ -316,9 +316,9 @@
     .p-datatable-wrapper {
         height: calc(100% - 1px);
 
-        // .p-virtualscroller {
-        //     height: 100% !important;
-        // }
+        .p-virtualscroller {
+            height: 100% !important;
+        }
     }
 
     &.p-datatable-scrollable .p-datatable-wrapper:has(.p-virtualscroller) {
