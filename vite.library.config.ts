@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       lib: {
-        entry: path.resolve(__dirname, 'src/moduleIndex.ts'),
+        entry: path.resolve(import.meta.dirname, 'src/moduleIndex.ts'),
         name: '@sibvisions/reactui',
         fileName: 'moduleIndex',
         formats: ['es', 'umd', 'cjs'] // Order is essential as umd build uses structures of previous cjs build, which can cause problems
