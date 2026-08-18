@@ -1357,6 +1357,9 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
         let {first, last} = e;
 
         if (typeof first === "number" && typeof last === "number") {
+            if (last === 0 || last <= first) {
+                return; // ignore 0 height requests, as this can happen when table is temporary 0px due to eg tab change.
+            }
             //setListLoading(true);
             if(props.dataBook && !isFetching.current && last >= providerData.length && !props.context.contentStore.getDataBook(screenName, props.dataBook)?.isAllFetched) {
                 isFetching.current = true;
