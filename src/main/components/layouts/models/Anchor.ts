@@ -70,7 +70,7 @@ class Anchor{
     }
 
     /**
-     * Returns wether the orientation of the anchor is horizontal or vertical
+     * Returns whether the orientation of the anchor is horizontal or vertical
      * @param anchorName - name of the anchor
      */
     getOrientationFromData(anchorName: string):ORIENTATION{

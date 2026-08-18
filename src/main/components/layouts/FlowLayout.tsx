@@ -120,7 +120,7 @@ const FlowLayout: FC<ILayout> = (baseProps) => {
         const outerVa = parseInt(layoutParts[9]);
         /** Alignment of the components */
         const innerAlignment = parseInt(layoutParts[10]);
-        /** Wether the layout should be wrapped if there is not enough space for all components */
+        /** Whether the layout should be wrapped if there is not enough space for all components */
         const autoWrap = (layoutParts[11] === 'true')
         /** If the orientation is horizontal */
         const isRowOrientation = parseInt(layoutParts[7]) === ORIENTATION.HORIZONTAL;

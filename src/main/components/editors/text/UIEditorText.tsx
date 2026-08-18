@@ -221,7 +221,7 @@ export function isCellEditorReadOnly(props:IRCCellEditor) {
 }
 
 /**
- * TextCellEditor is an inputfield which allows to enter text. Based on the contentType the server sends it is decided wether
+ * TextCellEditor is an inputfield which allows to enter text. Based on the contentType the server sends it is decided whether
  * the CellEditor becomes a normal texteditor, a textarea or a passwor field, when the value is changed the databook on the server is changed
  * @param props - Initial properties sent by the server for this component
  */

@@ -18,7 +18,7 @@ import { getNumberSeparators, ScaleType } from "../../components/editors/number/
 /**
  * Returns true, if there is a ',' in the number format to enable grouping
  * @param numberFormat - the number format
- * @returns true or false wether there is a ',' in number format or not
+ * @returns true or false whether there is a ',' in number format or not
  */
 export function getGrouping(numberFormat:string) {
     return numberFormat.includes(',');

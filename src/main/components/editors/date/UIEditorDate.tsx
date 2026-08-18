@@ -12,9 +12,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-import React, { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Calendar } from 'primereact/calendar';
-import { format, parse, isValid, formatISO, startOfDay } from 'date-fns'
+import { format, isValid, formatISO, startOfDay } from 'date-fns'
+import { Locale } from 'date-fns/locale';
 import tinycolor from "tinycolor2";
 import { handleFocusGained, onFocusLost } from "../../../util/server-util/FocusUtil";
 import { IRCCellEditor } from "../CellEditorWrapper";
@@ -52,40 +53,266 @@ export interface IEditorDate extends IRCCellEditor {
     cellEditor: ICellEditorDate
 }
 
-// Supported date-time formats
-const dateTimeFormats = [
-    "dd.MM.yyyy HH:mm",
-    "dd-MM-yyyy HH:mm",
-    "dd/MM/yyyy HH:mm",
-    "dd.MMMMM.yy HH:mm",
-    "dd-MMMMM-yyyy HH:mm",
-    "dd/MMMM/yyyyy HH:mm",
-]
+/** Supported date symbols of parser. */
+type BaseToken = 'y' | 'M' | 'd' | 'H' | 'm' | 's' | 'S' | 'a' | 'G' | 'Z';
 
-// Supported date formats
-const dateFormats = [
-    "dd.MM.yyyy",
-    "dd-MM-yyyy",
-    "dd/MM/yyyy",
-    "dd.MMMMM.yy",
-    "dd-MMMMM-yyyy",
-    "dd/MMMM/yyyyy"
-]
+/**
+ * Gets the month strings for the given locale.
+ * @param locale the locale.
+ * @returns an array with long and short month string.
+ */
+function getMonthMapForLocale(locale: Locale): Array<{ monthIndex: number; names: string[] }> {
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const dummyDate = new Date(1970, i, 1);
+    const fullName = format(dummyDate, 'MMMM', { locale }).toLowerCase();
+    const shortName = format(dummyDate, 'MMM', { locale }).toLowerCase().replace(/\./g, '');
+    months.push({
+      monthIndex: i + 1,
+      names: Array.from(new Set([fullName, shortName]))
+    });
+  }
+  return months;
+}
 
-// Parses a date-string through multiple formats and returns the result if it is valid
-const parseMultiple = (
-    dateString: string,
-    formatString: string[],
-    referenceDate: Date,
-    options?: Parameters<typeof parse>[3]
-) => {
-    let result;
-    for (let i = 0; i < formatString.length; i++) {
-        if (!formatString[i]) continue;
-        result = parse(dateString, formatString[i], referenceDate, options);
-        if (isValid(result)) { break; }
+/**
+ * Gets the am and pm string for the given locale.
+ * @param locale the locale
+ * @returns a map with am and pm strings.
+ */
+function getAmPmForLocale(locale: Locale): { am: string[]; pm: string[] } {
+  const amDate = new Date(1970, 0, 1, 9, 0);
+  const pmDate = new Date(1970, 0, 1, 21, 0);
+
+  const amFormatted = format(amDate, 'a', { locale }).toLowerCase();
+  const pmFormatted = format(pmDate, 'a', { locale }).toLowerCase();
+
+  return {
+    am: Array.from(new Set(['am', amFormatted])),
+    pm: Array.from(new Set(['pm', pmFormatted]))
+  };
+}
+
+/**
+ * Gets the era strings for the given locale.
+ * @param locale the locale
+ * @returns a map with the era strings.
+ */
+function getErasForLocale(locale: Locale): { bc: string[]; ad: string[] } {
+  const adDate = new Date(1970, 0, 1);
+  const bcDate = new Date(0, 0, 1);
+  bcDate.setFullYear(-1);
+
+  const adFormatted = format(adDate, 'G', { locale }).toLowerCase();
+  const bcFormatted = format(bcDate, 'G', { locale }).toLowerCase();
+
+  return {
+    ad: Array.from(new Set(['ad', 'n.chr', adFormatted.replace(/\./g, '')])),
+    bc: Array.from(new Set(['bc', 'v.chr', bcFormatted.replace(/\./g, '')]))
+  };
+}
+
+/**
+ * Tokenizes the format string, to get the correct order.
+ * @param dateFormat the date format
+ * @returns the tokenized format
+ */
+function tokenizeFormat(dateFormat: string): BaseToken[] {
+  const tokens: BaseToken[] = [];
+
+  const regex = /y+|Y+|R+|u+|M+|L+|d+|H+|h+|m+|s+|S+|a+|G+|z+|Z+|X+/g;
+  let match;
+
+  while ((match = regex.exec(dateFormat)) !== null) {
+    const rawChar = match[0][0];
+
+    switch (rawChar) {
+      case 'y': case 'Y': case 'R': case 'u': tokens.push('y'); break;
+      case 'M': case 'L':                     tokens.push('M'); break;
+      case 'H': case 'h':                     tokens.push('H'); break;
+      case 'z': case 'Z': case 'X':           tokens.push('Z'); break;
+      case 'd': case 'm': case 's': 
+      case 'S': case 'a': case 'G':           tokens.push(rawChar); break;
     }
+  }
+  return tokens;
+}
+
+/**
+ * Parses the given date string flexible and error tolerant.
+ * 
+ * @param input the text input
+ * @param dateFormat the date format
+ * @param locale the locale
+ * @param referenceDate the reference date, default is now.
+ * @returns the date instance
+ */
+function parseDateTime(input: string | undefined, dateFormat: string, locale: Locale, referenceDate: Date = new Date()): Date | null {
+  if (!input || !input.trim()) return null;
+
+  const tokens = tokenizeFormat(dateFormat);
+  if (tokens.length === 0) return null;
+
+  const hasDateTokens = tokens.some(t => ['d', 'M', 'y'].includes(t));
+  const baseDate = hasDateTokens ? startOfDay(referenceDate) : new Date(1970, 0, 1);
+
+  let day = baseDate.getDate();
+  let month = baseDate.getMonth() + 1;
+  let year = baseDate.getFullYear();
+  let hour = 0;
+  let minute = 0;
+  let second = 0;
+  let millisecond = 0;
+  let isPm = false;
+  let isAm = false;
+  let eraMultiplier = 1;
+  let cleanInput = input.trim();
+  for (const token of tokens) {
+    cleanInput = cleanInput.replace(/^[^a-zA-Z0-9äöüßÄÖÜ\+\-]+/, '');
+    if (!cleanInput) break;
+
+    switch (token) {
+      case 'd': {
+        const match = cleanInput.match(/^(\d{1,2})/);
+        if (match) {
+          day = parseInt(match[1], 10);
+          cleanInput = cleanInput.substring(match[1].length);
+        }
+        break;
+      }
+      case 'M': {
+        if (/^\d/.test(cleanInput)) {
+          const match = cleanInput.match(/^(\d{1,2})/);
+          if (match) {
+            month = parseInt(match[1], 10);
+            cleanInput = cleanInput.substring(match[1].length);
+          }
+        } else {
+          const textMatch = cleanInput.match(/^([a-zA-ZäöüßÄÖÜ]+)/);
+          if (textMatch) {
+            const text = textMatch[1].toLowerCase();
+            const monthMap = getMonthMapForLocale(locale); // wie gehabt
+            let matched = false;
+
+            for (const item of monthMap) {
+              if (item.names.some(name => name.startsWith(text) || text.startsWith(name))) {
+                month = item.monthIndex;
+                cleanInput = cleanInput.substring(textMatch[1].length);
+                matched = true;
+                break;
+              }
+            }
+            if (!matched) return null;
+          }
+        }
+        break;
+      }
+      case 'y': {
+        const match = cleanInput.match(/^(\d{1,4})/);
+        if (match) {
+          let y = parseInt(match[1], 10);
+          if (match[1].length <= 2) {
+            const currentYear = referenceDate.getFullYear();
+            y += Math.floor(currentYear / 100) * 100;
+            if (y >= currentYear + 50) {
+                y -= 100;
+            }else if (y < currentYear - 50) {
+                y += 100;
+            }
+          }
+          year = y;
+          cleanInput = cleanInput.substring(match[1].length);
+        }
+        break;
+      }
+      case 'H': {
+        const match = cleanInput.match(/^(\d{1,2})/);
+        if (match) {
+          hour = parseInt(match[1], 10);
+          cleanInput = cleanInput.substring(match[1].length);
+        }
+        break;
+      }
+      case 'm': {
+        const match = cleanInput.match(/^(\d{1,2})/);
+        if (match) {
+          minute = parseInt(match[1], 10);
+          cleanInput = cleanInput.substring(match[1].length);
+        }
+        break;
+      }
+      case 's': {
+        const match = cleanInput.match(/^(\d{1,2})/);
+        if (match) {
+          second = parseInt(match[1], 10);
+          cleanInput = cleanInput.substring(match[1].length);
+        }
+        break;
+      }
+      case 'S': {
+        const match = cleanInput.match(/^(\d{1,3})/);
+        if (match) {
+          const rawMs = match[1];
+          millisecond = parseInt(rawMs.padEnd(3, '0'), 10);
+          cleanInput = cleanInput.substring(rawMs.length);
+        }
+        break;
+      }
+      case 'a': {
+        const match = cleanInput.match(/^([a-zA-ZäöüßÄÖÜ\.]+)/);
+        if (match) {
+          const text = match[1].toLowerCase().replace(/\./g, '');
+          const amPmMap = getAmPmForLocale(locale);
+
+          if (amPmMap.pm.some(p => p === text || text.startsWith(p))) {
+            isPm = true;
+            cleanInput = cleanInput.substring(match[1].length);
+          } else if (amPmMap.am.some(a => a === text || text.startsWith(a))) {
+            isAm = true;
+            cleanInput = cleanInput.substring(match[1].length);
+          }
+        }
+        break;
+      }
+      case 'G': {
+        const match = cleanInput.match(/^([a-zA-ZäöüßÄÖÜ\.]+)/);
+        if (match) {
+          const text = match[1].toLowerCase().replace(/\./g, '');
+          const eraMap = getErasForLocale(locale);
+
+          if (eraMap.bc.some(b => b === text || text.startsWith(b))) {
+            eraMultiplier = -1;
+            cleanInput = cleanInput.substring(match[1].length);
+          } else if (eraMap.ad.some(a => a === text || text.startsWith(a))) {
+            eraMultiplier = 1;
+            cleanInput = cleanInput.substring(match[1].length);
+          }
+        }
+        break;
+      }
+      case 'Z': {
+        const match = cleanInput.match(/^(Z|UTC|GMT|[+-]\d{2}:?\d{2})/i);
+        if (match) {
+          cleanInput = cleanInput.substring(match[0].length);
+        }
+        break;
+      }
+    }
+  }
+
+  if (isPm && hour < 12) hour += 12;
+  if (isAm && hour === 12) hour = 0;
+
+  const finalYear = year * eraMultiplier;
+  const result = new Date(finalYear, month - 1, day, hour, minute, second, millisecond);
+
+  if (isValid(result) &&
+      result.getDate() === day &&
+      result.getMonth() === month - 1) {
     return result;
+  }
+
+  return null;
 }
 
 /**
@@ -178,13 +405,13 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
     /** The horizontal- and vertical alignments */
     const textAlignment = useMemo(() => getTextAlignment(props), [props]);
 
-    /** Wether the DateCellEditor is a time-editor */
+    /** Whether the DateCellEditor is a time-editor */
     const showTime = props.cellEditor.isTimeEditor;
 
-    /** Wether the DateCellEditor should show seconds */
+    /** Whether the DateCellEditor should show seconds */
     const showSeconds = props.cellEditor.isSecondEditor;
 
-    /** Wether the DateCellEditor should only show time and no date */
+    /** Whether the DateCellEditor should only show time and no date */
     const timeOnly = props.cellEditor.isTimeEditor && !props.cellEditor.isDateEditor;
 
     /** Reference if the DateCellEditor is already focused */
@@ -285,25 +512,10 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
      * to send the date to the server and remove PrimeReact time if necassary
      */
     const handleDateInput = () => {
-        let inputDate: Date = new Date();
         //@ts-ignore
         const emptyValue = calendarInput.current.value === "";
 
-        if (showTime) {
-            //@ts-ignore
-            inputDate = parseMultiple(calendarInput.current.value, [
-                props.cellEditor.dateFormat || '',
-                ...dateTimeFormats,
-                ...dateFormats
-            ], new Date(), { locale: locale });
-        }
-        else {
-            //@ts-ignore
-            inputDate = parseMultiple(calendarInput.current.value, [
-                props.cellEditor.dateFormat || '',
-                ...dateFormats
-            ], new Date(), { locale: locale });
-        }
+        const inputDate = parseDateTime(calendarInput.current?.value, props.cellEditor.dateFormat || '', locale ? locale : getGlobalLocale());
 
         let dateToSend: Date | null = inputDate;
 
@@ -311,7 +523,7 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
         // Not valid check if empty -> null, else restore the old date
         if (isValidDate(inputDate)) {
             setDateValue(inputDate);
-            dateToSend = toDate(formatInTimeZone(inputDate, Intl.DateTimeFormat().resolvedOptions().timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }), { timeZone: timeZone });
+            dateToSend = toDate(formatInTimeZone(inputDate!, Intl.DateTimeFormat().resolvedOptions().timeZone, 'yyyy-MM-dd HH:mm:ss', { locale: locale }), { timeZone: timeZone });
         }
         else if (emptyValue) {
             dateToSend = null;
@@ -599,17 +811,9 @@ const UIEditorDate: FC<IEditorDate & IExtendableDateEditor & IComponentConstants
                     return formattedValue;
                 }}
                 parseDateTime={(text: string) => {
-                    let date = parseMultiple(text, [dateFormat || '', ...dateFormats], new Date(), { locale: locale ? locale : getGlobalLocale() }) || new Date();
+                    let date = parseDateTime(text, props.cellEditor.dateFormat || '', locale ? locale : getGlobalLocale());
 
-                    if (timeOnly) {
-                        date = new Date();
-                        date.setHours(date.getHours());
-                        date.setMinutes(date.getMinutes());
-                        date.setSeconds(date.getSeconds());
-                    } else if (!showTime) {
-                        date = startOfDay(date);
-                    }
-                    return date;
+                    return date ?? new Date(NaN);
                 }} />
         </span>
 

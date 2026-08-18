@@ -19,7 +19,7 @@ import { appContext } from "../../contexts/AppProvider"
 import WorkScreen from "../../../application-frame/screen-management/workscreen/WorkScreen";
 import { getScreenIdFromNavigation } from "../../util/component-util/GetScreenNameFromNavigation";
 
-/** This component for global screen-wrapppers, decides wether the screen should display a screen-wrapper or just the workscreen */
+/** This component for global screen-wrapppers, decides whether the screen should display a screen-wrapper or just the workscreen */
 const ScreenWrapperManager:FC = () => {
     /** Use context to gain access for contentstore and server methods */
     const context = useContext(appContext);
