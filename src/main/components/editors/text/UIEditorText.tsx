@@ -688,6 +688,10 @@ const UIEditorText: FC<IEditorText & IExtendableTextEditor & IComponentConstants
                 <InputTextarea
                     {...primeProps}
                     {...popupMenu}
+                    style={{
+                        ...primeProps.style,
+                        whiteSpace: props.cellEditor?.contentType?.includes('wrapped') ? 'pre-wrap' : 'pre',
+                        overflowX: props.cellEditor?.contentType?.includes('wrapped') ? 'hidden' : 'auto' }}
                     autoResize={false}
                     cols={18}
                     rows={4} />

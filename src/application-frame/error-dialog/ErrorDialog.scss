@@ -87,15 +87,14 @@
     }
 
     .error-dialog-details-caption {
-        margin-top: 1rem;
-        text-align: "left";
+        text-align: left;
     }
 
     .p-listbox {
-        flex: 1 0 82px;
+        flex: 1 0 120px;
         max-height: 155px;
         text-align: left;
-        margin-top: 1rem;
+        margin-top: 5px;
         width: 100%;
 
         .p-listbox-list-wrapper {
@@ -107,14 +106,16 @@
             font-size: 0px;
 
             .p-listbox-item-group {
-                font-size: 16px;
+                font-size: 14px;
+                padding-top: 8px;
+                padding-bottom: 8px;
             }
 
             .p-listbox-item {
                 white-space: nowrap;
                 display: inline-block;
                 min-width: 100%;
-                font-size: 16px;
+                font-size: 14px;
 
                 &.p-highlight {
                     outline: 2px solid #7f7f7f;
@@ -142,17 +143,6 @@
                 flex: 1;
                 overflow: hidden;
 
-                .rc-panel-group-caption {
-                    border-bottom: none;
-                    min-height: 30px;
-
-                    > span {
-                        border-bottom: var(--input-border);
-                        display: block;
-                        width: 100%;
-                    }
-                }
-
                 .error-dialog-footer-details {
                     display: flex;
                     flex-direction: column;
@@ -162,8 +152,8 @@
             }
 
             .error-dialog-textarea {
-                flex: 1 0 100px;
-                margin-top: 1rem;
+                flex: 1 0 160px;
+                margin-top: 5px;
                 width: 100%;
 
                 &:hover {

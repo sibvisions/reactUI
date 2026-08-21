@@ -29,7 +29,8 @@ import useRequestFocus from "../../hooks/event-hooks/useRequestFocus";
 
 /** Interface for TextAreas */
 interface ITextArea extends ITextField {
-    rows?:number
+    rows?:number,
+    wordWrap?:boolean
 }
 
 /**
@@ -78,7 +79,12 @@ const UITextArea: FC<ITextArea & IExtendableText> = (props) => {
                     props.styleClassNames
                 )}
                 value={text ?? ""}
-                style={{ ...props.compStyle, resize: 'none', width: "100%", height: "100%" }} 
+                style={{ ...props.compStyle, 
+                        resize: 'none', 
+                        width: "100%", 
+                        height: "100%",
+                        whiteSpace: props.wordWrap ? 'pre-wrap' : 'pre',
+                        overflowX: props.wordWrap ? 'hidden' : 'auto' }} 
                 onChange={event => {
                     startedEditing.current = true;
                     const newValue = event.currentTarget.value;

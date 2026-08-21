@@ -141,52 +141,6 @@ function getNextSort(mode?: "Ascending" | "Descending" | "None") {
     }
 }
 
-/**
- * Helper function to see if the next element in a container is fully or partly visible
- * @param ele - the element which needs to be checked
- * @param container - the container of the element
- * @param cell  - the current cell
- * @returns if the element is fully or partly visible
- */
-function isVisible(ele:HTMLElement, container:HTMLElement, cell:any, rowHeight:number) {
-    if (ele) {
-        const eleLeft = ele.offsetLeft;
-        const eleRight = eleLeft + ele.clientWidth;
-    
-        const containerLeft = container.scrollLeft;
-        const containerRight = containerLeft + container.clientWidth;
-
-        const eleTop = cell.rowIndex * rowHeight;
-        const eleBottom = eleTop + ele.clientHeight;
-    
-        const containerTop = container.scrollTop;
-        const containerBottom = containerTop + container.clientHeight;
-
-        let visLeft:CellVisibility = CellVisibility.NOT_VISIBLE;
-        let visTop:CellVisibility = CellVisibility.NOT_VISIBLE;
-
-        if (eleLeft >= containerLeft && eleRight <= containerRight) {
-            visLeft = CellVisibility.FULL_VISIBLE;
-        }
-        if ((eleLeft < containerLeft && containerLeft < eleRight) || (eleLeft < containerRight && containerRight < eleRight)) {
-            visLeft = CellVisibility.PART_VISIBLE;
-        }
-
-        if (eleTop >= containerTop && eleBottom <= containerBottom) {
-            visTop = CellVisibility.FULL_VISIBLE;
-        }
-        if ((eleTop < containerTop && containerTop < eleBottom) ||(eleTop < containerBottom && containerBottom < eleBottom)) {
-            visTop = CellVisibility.PART_VISIBLE;
-        }
-    
-        // The element is fully visible in the container
-        return {visLeft: visLeft, visTop: visTop}
-    }
-    else {
-        return {visLeft: CellVisibility.NOT_VISIBLE, visTop: CellVisibility.NOT_VISIBLE}
-    }
-};
-
 function negotiateRowHeight(min?: number, height?: number, max?: number) {
     return Math.min(
         (max ?? Number.POSITIVE_INFINITY) - 8, 
@@ -422,7 +376,7 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
      * @param isNext - if the new selected cell is below or above the previous
      */
     const scrollToSelectedCell = (cell:any, isNext:boolean) => {
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             if (tableRef.current) {
                 const table = tableRef.current.getElement();
                 if (table) {
@@ -431,35 +385,21 @@ const UITable: FC<TableProps & IExtendableTable & IComponentConstants> = (props)
                     const loadingTable = DomHandler.findSingle(table, '.p-datatable-loading-virtual-table');
 
                     if (!loadingTable || window.getComputedStyle(loadingTable).getPropertyValue("display") !== "table") {
-                        const moveDirections = isVisible(selectedElem, container, cell, rowHeight);
-                        if (pageKeyPressed.current !== false) {
-                            pageKeyPressed.current = false;
-                            container.scrollTo(selectedElem ? selectedElem.offsetLeft : 0, cell.rowIndex * rowHeight);
-                            container.focus();
+                        if (selectedElem) {
+                            selectedElem.scrollIntoView({
+                                behavior: 'auto',
+                                block: 'nearest', // vertical
+                                inline: 'nearest' // horizontal
+                            });
                         }
-                        else if (selectedElem !== null) {
-                            let sLeft:number = container.scrollLeft
-                            let sTop:number = container.scrollTop
-        
-                            if (moveDirections.visLeft !== CellVisibility.FULL_VISIBLE) {
-                                sLeft = selectedElem.offsetLeft;
-                            }
-        
-                            if (moveDirections.visTop === CellVisibility.NOT_VISIBLE) {
-                                sTop = cell.rowIndex * rowHeight;
-                            }
-                            else if (moveDirections.visTop === CellVisibility.PART_VISIBLE) {
-                                sTop = container.scrollTop + (isNext ? rowHeight : -rowHeight);
-                            }
-                            container.scrollTo(sLeft, sTop);
-                        }
-                        else {
-                            container.scrollTo(container.scrollLeft, cell.rowIndex * rowHeight);
+                        const eleTop = cell.rowIndex * rowHeight;
+                        if (eleTop < container.scrollTop) { // check, if selected row is under header
+                            container.scrollTop = eleTop;
                         }
                     }
                 }
             }
-        }, 0)
+        });
     }
 
     /** Creates and returns the selectedCell object */

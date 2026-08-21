@@ -17,7 +17,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import { ListBox } from "primereact/listbox"
-import React, { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { CSSProperties, FC, useCallback, useContext, useEffect, useMemo, useState, useRef } from "react";
 import tinycolor from "tinycolor2";
 import ErrorResponse from "../../main/response/error/ErrorResponse";
 import { translation } from "../../main/util/other-util/Translation";
@@ -73,6 +73,8 @@ const ErrorDialog:FC = () => {
     /** The currently selected error when details is expanded */
     const [selectedError, setSelectedError] = useState<{label: string, exception: string} | null>(null)
 
+    const listBoxRef = useRef<ListBox>(null);
+
     // Builds the error-causes as items to show in the Listbox 
     const errorItems = useMemo(() => {
         return [{
@@ -106,14 +108,27 @@ const ErrorDialog:FC = () => {
         }
     }, [showDetails]);
 
-    // When the errorItems change, select the first item
+    // When the errorItems change, select the last item
     useEffect(() => {
-        if (errorItems.length) {
-            if (errorItems[0].items[0]) {
-                setSelectedError(errorItems[0].items[0])
-            }
+        if (errorItems.length && errorItems[0].items[0]) {
+            setSelectedError(errorItems[0].items[errorItems[0].items.length - 1]);
         }
     }, [errorItems])
+
+    /** Scrolls to selected row. */
+    useEffect(() => {
+        if (!selectedError || !showDetails || !listBoxRef.current) return;
+
+        requestAnimationFrame(() => {
+            const listElement = listBoxRef.current?.getElement();
+            const selectedElement = listElement?.querySelector('.p-highlight');
+
+            selectedElement?.scrollIntoView({
+                behavior: 'auto',
+                block: 'nearest'
+            });
+        });
+    }, [selectedError, showDetails]);
 
     /** Set visibility to false and send a close frame request to the server */ 
     const handleOnHide = useCallback(() => {
@@ -140,7 +155,7 @@ const ErrorDialog:FC = () => {
                         } as CSSProperties}
                         label={translation.get("Details")}
                         onClick={() => {
-                            setSelectedError(errorItems.length ? errorItems[0].items[0] : null);
+                            setSelectedError(errorItems.length && errorItems[0].items[0] ? errorItems[0].items[errorItems[0].items.length - 1] : null);
                             setShowDetails(prevState => !prevState)
                         }} />
                     }
@@ -157,12 +172,11 @@ const ErrorDialog:FC = () => {
                 </div>
                 {showDetails &&
                     <div className="error-dialog-footer-details">
-                        <div
-                            className="rc-panel-group-caption error-dialog-details-caption"
-                            style={{ marginTop: "1rem", textAlign: "left" }}>
-                            <span>Details</span>
+                        <div className="rc-panel-group-caption error-dialog-details-caption">
+                            Details
                         </div>
                         <ListBox
+                            ref={listBoxRef}
                             className="error-dialog-listbox"
                             value={selectedError}
                             optionGroupLabel="label"
@@ -177,7 +191,7 @@ const ErrorDialog:FC = () => {
                         <InputTextarea
                             className={concatClassnames("rc-input", "error-dialog-textarea")}
                             value={selectedError?.exception}
-                            style={{ resize: 'none' }}
+                            style={{ resize: 'none', whiteSpace: 'pre', overflowX: 'auto'}}
                             readOnly />
                     </div>
                 }
