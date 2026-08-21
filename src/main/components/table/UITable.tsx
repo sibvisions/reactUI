@@ -79,12 +79,6 @@ enum Navigation {
     NAVIGATION_ROW_AND_FOCUS = 3
 }
 
-enum CellVisibility {
-    FULL_VISIBLE = 2,
-    PART_VISIBLE = 1,
-    NOT_VISIBLE = 0
-}
-
 /** Interface for selected cells */
 interface ISelectedCell {
     selectedCellId?:string
