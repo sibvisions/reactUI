@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import path from 'path';
-import copy from 'rollup-plugin-copy';
+import fs from 'fs-extra';
 
 export default defineConfig(({ mode }) => {
   return {
@@ -13,17 +13,17 @@ export default defineConfig(({ mode }) => {
         entryRoot: 'src',
         outDirs: 'dist'
       }),
-      copy({
-        targets: [
-          { src: 'public/color-schemes/*.css', dest: 'dist/resources/color-schemes' },
-          { src: 'public/themes/*.css', dest: 'dist/resources/themes' },
-          { src: 'public/assets/*', dest: 'dist/resources/assets' },
-          { src: 'public/fonts/roboto/*', dest: 'dist/resources/fonts/roboto' },
-          { src: 'public/application.css', dest: 'dist/resources' },
-          { src: 'src/SetupPackage.cjs', dest: 'dist' }
-        ],
-        hook: 'writeBundle'
-      })],
+      {
+        name: 'copy-resources',
+        writeBundle() {
+          fs.copySync('public/color-schemes', 'dist/resources/color-schemes');
+          fs.copySync('public/themes', 'dist/resources/themes');
+          fs.copySync('public/assets', 'dist/resources/assets');
+          fs.copySync('public/fonts/roboto', 'dist/resources/fonts/roboto');
+          fs.copySync('public/application.css', 'dist/resources/application.css');
+          fs.copySync('src/SetupPackage.cjs', 'dist/SetupPackage.cjs');
+        }
+      }],
     base: './',
     resolve: { // solves the problem with link modules and different react instances
       dedupe: ['react', 'react-dom']
