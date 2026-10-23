@@ -533,10 +533,25 @@ class Server extends BaseServer {
      * @param uploadData - the uploadResponse
      */
     upload(uploadData: UploadResponse, request:DispatchActionRequest) {
+        let acceptValue = '';
+        if (uploadData.url) {
+            try {
+                const urlParams = new URL(uploadData.url).searchParams;
+                const allowedValue = urlParams.get('allowedExtensions');
+                if (allowedValue) {
+                    acceptValue = "." + allowedValue.replaceAll(' ', '').replaceAll('.', '').replaceAll('*', '').replaceAll(';', ',').replaceAll(',', ',.');
+                }
+            } catch (e) {
+                console.error("Fehler beim Parsen der URL", e);
+            }
+        }
         if (!request || !request.isUploadButton) {
             try {
                 const inputElem = document.createElement('input');
                 inputElem.type = 'file';
+                if (acceptValue) {
+                    inputElem.accept = acceptValue;
+                }
                 //@ts-ignore
                 inputElem.showPicker();
                 inputElem.onchange = (e) => {
@@ -558,6 +573,9 @@ class Server extends BaseServer {
                 if (inputElem) {
                     try {
                         inputElem.setAttribute("upload-file-id", uploadData.fileId);
+                        if (acceptValue) {
+                            inputElem.setAttribute("accept", acceptValue);
+                        }
                         //@ts-ignore
                         inputElem.showPicker()
                     }

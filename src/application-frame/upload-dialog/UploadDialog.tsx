@@ -32,18 +32,23 @@ const UploadDialog:FC = () => {
     /** True, if the UploadDialog is visible */
     const [visible, setVisible] = useVisibleWithHistoryBlock(false, () => {
         setFileId("");
+        setAccept("");
     });
 
     /** The fileId to send in the upload request */
     const [fileId, setFileId] = useState<string>("");
+
+    /** The accept extensions. */
+    const [accept, setAccept] = useState<string>("");
 
     /** Reference for the file input element */
     const inputRef = useRef<HTMLInputElement>(null);
 
     /** Subscribes to upload dialog visibility and fileId */
     useEffect(() => {
-        context.subscriptions.subscribeToUploadDialog((fileId: string) => {
+        context.subscriptions.subscribeToUploadDialog((fileId: string, acceptValue?: string) => {
             setFileId(fileId);
+            setAccept(acceptValue ?? "");
             setVisible(true);
         })
     }, [context.subscriptions]);
@@ -54,7 +59,7 @@ const UploadDialog:FC = () => {
             header={translation.get("Upload")}
             baseZIndex={1010}
             visible={visible}
-            onHide={() => { setVisible(false); setFileId("") }}>
+            onHide={() => { setVisible(false); setFileId(""); setAccept(""); }}>
             <Button
                 label={translation.get("Upload")}
                 icon="pi pi-upload"
@@ -67,6 +72,7 @@ const UploadDialog:FC = () => {
             <input
                 type="file"
                 ref={inputRef}
+                accept={accept}
                 style={{ visibility: "hidden", height: "0px", width: "0px" }}
                 onChange={(e) => {
                     if (inputRef.current) {

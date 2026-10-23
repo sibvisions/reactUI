@@ -205,7 +205,7 @@ export class SubscriptionManager {
     menuButtonItemsSubscriber:Map<string, Function> = new Map<string, Function>();
 
     /** A function to set the upload dialog visible and set the fileId, to send the correct file id to the server */
-    uploadDialogSubscriber: Function = () => {};
+    uploadDialogSubscriber: (fileId: string, acceptValue?: string) => void = () => {};
 
     /**
      * @constructor constructs submanager instance
@@ -946,7 +946,7 @@ export class SubscriptionManager {
      * Subscribes the UploadDialog, to know if it is visible and which fileId to use
      * @param fn - the function to update the state
      */
-    subscribeToUploadDialog(fn: Function) {
+    subscribeToUploadDialog(fn: (fileId: string, acceptValue?: string) => void) {
         this.uploadDialogSubscriber = fn;
     }
 
@@ -1079,8 +1079,8 @@ export class SubscriptionManager {
      * Notifies the UploadDialog to be visible and the fileid to send to the server
      * @param fileId 
      */
-    notifyUploadDialog(fileId: string) {
-        this.uploadDialogSubscriber.apply(undefined, [fileId])
+    notifyUploadDialog(fileId: string, acceptValue?: string) {
+        this.uploadDialogSubscriber(fileId, acceptValue);
     }
 
     /**

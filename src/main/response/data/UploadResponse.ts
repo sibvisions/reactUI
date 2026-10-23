@@ -17,6 +17,7 @@ import BaseResponse from "../BaseResponse"
 
 /** Interface for UploadResponse */
 interface UploadResponse extends BaseResponse{
-    fileId: string
+    fileId: string,
+    url: string
 }
 export default UploadResponse
