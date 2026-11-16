@@ -38,7 +38,7 @@ const useProfileMenuItems = (logoutVisible?: boolean, restartVisible?:boolean) =
     /** removes authKey from local storage, resets contentstore and sends logout-request to server */
     const sendLogout = useCallback(() => {
         const logoutRequest = createLogoutRequest();
-        localStorage.removeItem("authKey")
+        localStorage.removeItem("authKey");
         context.contentStore.reset();
         (context.contentStore as ContentStore).currentUser  = new UserData();
         showTopBar(context.server.sendRequest(logoutRequest, REQUEST_KEYWORDS.LOGOUT), context.server.topbar)

@@ -716,8 +716,8 @@ export default abstract class BaseContentStore {
         this.removedCustomComponents.clear();
         this.replacedContent.clear();
         this.replacedContentByName.clear();
-        this.desktopContent.clear();
-        this.desktopContentByName.clear();
+//        this.desktopContent.clear(); // Do not clear desktop content, as it is not sent again after logout
+//        this.desktopContentByName.clear();
         this.navigationNames.clear();
         this.screenWrappers.clear();
         this.dataBooks.clear();

@@ -233,6 +233,7 @@ const AppWrapper: FC<IAppWrapper> = (props) => {
                                bottom: "30px",
                                right: "30px",
                                opacity: "0.7",
+                               zIndex: 99999
 //                               fontSize: "1.825rem"
                            }} 
                            tabIndex={-1}
